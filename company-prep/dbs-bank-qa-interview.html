@@ -1,0 +1,3058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBS Bank QA Automation — Interview Run Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0d0f;
+  --bg-soft: #0d1114;
+  --panel: #12171a;
+  --panel-2: #161c20;
+  --border: #232b2f;
+  --border-soft: #1a2124;
+  --text: #e6edee;
+  --text-dim: #93a3a7;
+  --text-faint: #57676b;
+  --red: #ff4d5e;
+  --red-dim: #7a2530;
+  --green: #35d488;
+  --green-dim: #12301f;
+  --amber: #f2b84b;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(255,77,94,0.10), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 0%, rgba(53,212,136,0.06), transparent 55%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--red-dim); color: #fff; }
+
+a { color: inherit; }
+
+/* ---------- scanline texture ---------- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.012),
+    rgba(255,255,255,0.012) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: .5;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 20px 100px; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10,13,15,0.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-inner {
+  max-width: 900px; margin: 0 auto; padding: 12px 20px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12.5px; color: var(--text-dim);
+  overflow-x: auto; white-space: nowrap;
+}
+.topbar .dots { display: flex; gap: 6px; margin-right: 4px; flex: none; }
+.topbar .dot { width: 9px; height: 9px; border-radius: 50%; background: #2a3236; }
+.topbar .dot.r { background: #5c2b31; }
+.topbar .dot.y { background: #5c4f2b; }
+.topbar .dot.g { background: #235c3d; }
+.topbar .prompt-user { color: var(--green); flex: none; }
+.topbar .prompt-path { color: #6b93c9; flex: none; }
+.topbar .prompt-cmd { color: var(--text); flex: none; }
+.cursor {
+  display: inline-block; width: 7px; height: 14px; background: var(--red);
+  margin-left: 2px; vertical-align: -2px;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- hero ---------- */
+.hero { padding: 46px 0 30px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--red); border: 1px solid var(--red-dim); background: rgba(255,77,94,0.06);
+  padding: 5px 10px; border-radius: 3px; margin-bottom: 18px;
+}
+.hero-eyebrow::before { content: "●"; color: var(--green); font-size: 8px; }
+h1 {
+  font-family: var(--mono);
+  font-size: clamp(26px, 4.2vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 12px;
+  line-height: 1.15;
+}
+h1 .accent { color: var(--green); }
+.hero-sub { color: var(--text-dim); max-width: 640px; font-size: 14.5px; margin: 0 0 30px; }
+.hero-sub code { color: var(--amber); background: var(--panel); padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border-soft); font-size: 13px; }
+
+/* ---------- stats ---------- */
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--border); border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden; margin-bottom: 34px;
+}
+.stat { background: var(--panel); padding: 18px 16px; }
+.stat .num { font-size: 26px; font-weight: 800; color: var(--text); line-height: 1; }
+.stat.pass .num { color: var(--green); }
+.stat .label { margin-top: 8px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
+
+/* ---------- search / nav ---------- */
+.controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.search-box {
+  flex: 1; min-width: 220px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 12px;
+}
+.search-box::before { content: "grep -i"; color: var(--text-faint); font-size: 12.5px; }
+.search-box input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: var(--mono); font-size: 13.5px;
+}
+.search-box input::placeholder { color: var(--text-faint); }
+#search-count { color: var(--text-faint); font-size: 12px; flex: none; }
+
+.nav-rail {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 38px;
+  scrollbar-width: thin;
+}
+.nav-pill {
+  flex: none; display: flex; align-items: center; gap: 8px;
+  background: var(--panel); border: 1px solid var(--border);
+  padding: 8px 12px; border-radius: 20px; font-size: 12.5px; text-decoration: none;
+  color: var(--text-dim); transition: border-color .15s, color .15s;
+}
+.nav-pill:hover { border-color: var(--red-dim); color: var(--text); }
+.nav-pill.active { border-color: var(--red); color: var(--text); background: rgba(255,77,94,0.07); }
+.nav-pill-idx { color: var(--red); font-weight: 700; }
+.nav-pill-count { color: var(--text-faint); background: var(--bg-soft); padding: 1px 6px; border-radius: 10px; font-size: 10.5px; }
+
+/* ---------- round sections ---------- */
+.round { margin-bottom: 44px; scroll-margin-top: 70px; }
+.round-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.round-head-left { display: flex; align-items: center; gap: 12px; }
+.round-tag {
+  font-size: 10.5px; letter-spacing: .06em; padding: 4px 8px; border-radius: 4px;
+  border: 1px solid var(--border); color: var(--text-dim); background: var(--panel);
+}
+.round-tag.r1 { color: #ff8b7a; border-color: #4a2620; }
+.round-tag.r2 { color: #f2b84b; border-color: #4a3c1e; }
+.round-tag.r3 { color: #35d488; border-color: #1b4530; }
+.round-tag.r4 { color: #7aa8ff; border-color: #23345c; }
+.round-head h2 { font-size: 16.5px; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+.round-head-right { display: flex; align-items: center; gap: 12px; }
+.round-count { color: var(--text-faint); font-size: 12px; }
+.toggle-all {
+  font-family: var(--mono); font-size: 11.5px; color: var(--text-dim);
+  background: var(--panel); border: 1px solid var(--border); padding: 6px 10px;
+  border-radius: 5px; cursor: pointer;
+}
+.toggle-all:hover { border-color: var(--red-dim); color: var(--text); }
+
+/* ---------- test cases ---------- */
+.test-case {
+  border: 1px solid var(--border-soft); border-radius: 7px; background: var(--panel);
+  margin-bottom: 8px; overflow: hidden;
+}
+.test-case + .test-case { margin-top: 8px; }
+.test-case summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; user-select: none;
+}
+.test-case summary::-webkit-details-marker { display: none; }
+.tc-check {
+  flex: none; width: 18px; height: 18px; border-radius: 4px;
+  background: var(--green-dim); color: var(--green); font-size: 11px;
+  display: flex; align-items: center; justify-content: center; font-weight: 700;
+}
+.tc-id { flex: none; color: var(--text-faint); font-size: 11.5px; min-width: 52px; }
+.tc-name { flex: 1; color: var(--text); font-size: 13.5px; }
+.tc-name::before { content: ""; }
+.tc-chev { flex: none; color: var(--text-faint); transition: transform .15s; font-size: 11px; }
+.test-case[open] .tc-chev { transform: rotate(90deg); color: var(--red); }
+.test-case[open] summary { border-bottom: 1px solid var(--border-soft); }
+.test-case:hover { border-color: var(--border); }
+.test-case[open] { border-color: var(--border); }
+
+.tc-body { padding: 4px 18px 18px 42px; font-size: 13.8px; color: #cbd6d8; }
+.tc-body p { margin: 10px 0; }
+.tc-body strong { color: var(--text); }
+.tc-body ul, .tc-body ol { padding-left: 20px; margin: 10px 0; }
+.tc-body li { margin: 5px 0; }
+.tc-body code {
+  font-family: var(--mono); background: var(--bg-soft); color: var(--amber);
+  padding: 1.5px 5px; border-radius: 3px; font-size: 12.6px; border: 1px solid var(--border-soft);
+}
+
+/* tables */
+.tc-body table {
+  width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 12.8px;
+  border: 1px solid var(--border-soft); border-radius: 6px; overflow: hidden;
+}
+.tc-body th, .tc-body td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border-soft); border-right: 1px solid var(--border-soft); }
+.tc-body th:last-child, .tc-body td:last-child { border-right: none; }
+.tc-body tr:last-child td { border-bottom: none; }
+.tc-body th { background: var(--bg-soft); color: var(--red); font-weight: 700; letter-spacing: .02em; text-transform: uppercase; font-size: 10.8px; }
+.tc-body tr:nth-child(even) td { background: rgba(255,255,255,0.012); }
+
+/* code blocks */
+.tc-body pre {
+  background: var(--bg-soft); border: 1px solid var(--border-soft); border-radius: 7px;
+  margin: 14px 0; overflow: hidden; padding: 0;
+}
+.tc-body pre code {
+  display: block; padding: 14px 16px; overflow-x: auto; background: none; border: none;
+  color: #d7dee0; font-size: 12.6px; line-height: 1.65; border-radius: 0;
+}
+.code-lang {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 14px; border-bottom: 1px solid var(--border-soft);
+  font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint);
+}
+.code-lang .lang-dots { display: flex; gap: 5px; }
+.code-lang .lang-dots span { width: 7px; height: 7px; border-radius: 50%; background: #2a3236; }
+
+/* syntax token colors (applied via JS) */
+.tok-kw { color: #ff8b7a; }
+.tok-str { color: var(--green); }
+.tok-com { color: var(--text-faint); font-style: italic; }
+.tok-type { color: #7aa8ff; }
+.tok-ann { color: var(--amber); }
+.tok-num { color: #c792ea; }
+
+/* ---------- footer ---------- */
+.footer {
+  border-top: 1px solid var(--border); margin-top: 50px; padding-top: 22px;
+  color: var(--text-faint); font-size: 12px;
+}
+.footer .line { margin: 4px 0; }
+.footer .ok { color: var(--green); }
+.footer .path { color: #6b93c9; }
+
+.no-results { display: none; color: var(--text-faint); font-size: 13px; padding: 30px 0; text-align: center; }
+
+@media (max-width: 640px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .tc-body { padding-left: 18px; }
+  .round-head { align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></span>
+    <span class="prompt-user">sai@interview-prep</span><span class="prompt-path">:~/dbs-bank-qa$</span>
+    <span class="prompt-cmd">./run-suite.sh --full<span class="cursor"></span></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Suite executed · 75 test cases · 4 rounds</div>
+    <h1>DBS Bank QA Automation<br><span class="accent">— Interview Run Log</span></h1>
+    <p class="hero-sub">Selenium + Cucumber + TestNG, REST Assured API testing, SQL, and Java core rounds — answered at senior-SDET depth for banking automation. Every case is expandable — click <code>it(...)</code> to see the full assertion.</p>
+
+    <div class="stats">
+      <div class="stat pass"><div class="num">75/75</div><div class="label">Passed</div></div>
+      <div class="stat"><div class="num">04</div><div class="label">Rounds</div></div>
+      <div class="stat"><div class="num">75</div><div class="label">Test cases</div></div>
+      <div class="stat"><div class="num">Java</div><div class="label">Primary lang</div></div>
+    </div>
+
+    <div class="controls">
+      <div class="search-box">
+        <input id="search" type="text" placeholder="filter test cases…" autocomplete="off">
+        <span id="search-count"></span>
+      </div>
+    </div>
+
+    <nav class="nav-rail" id="nav-rail">
+      <a class="nav-pill" href="#round-1" data-round="round-1"><span class="nav-pill-idx">01</span><span class="nav-pill-label">Core Selenium, Cucumber &amp; Java Foundations</span><span class="nav-pill-count">15</span></a>
+<a class="nav-pill" href="#round-2" data-round="round-2"><span class="nav-pill-idx">02</span><span class="nav-pill-label">Selenium, Cucumber &amp; TestNG Deep Dive</span><span class="nav-pill-count">20</span></a>
+<a class="nav-pill" href="#round-3" data-round="round-3"><span class="nav-pill-idx">03</span><span class="nav-pill-label">API Testing, SQL &amp; Java Coding</span><span class="nav-pill-count">20</span></a>
+<a class="nav-pill" href="#round-4" data-round="round-4"><span class="nav-pill-idx">04</span><span class="nav-pill-label">Framework Design, Java Advanced &amp; Process</span><span class="nav-pill-count">20</span></a>
+    </nav>
+  </div>
+
+  
+    <section class="round" id="round-1">
+      <div class="round-head">
+        <div class="round-head-left">
+          <span class="round-tag r1">SEL/CUKE/JAVA</span>
+          <h2>Round 1 · Core Selenium, Cucumber &amp; Java Foundations</h2>
+        </div>
+        <div class="round-head-right">
+          <span class="round-count">15 cases</span>
+          <button class="toggle-all" data-target="round-1" data-state="collapsed">expand all</button>
+        </div>
+      </div>
+      <div class="round-body">
+        
+        <details class="test-case" data-title="validate whether text is highlighted and underlined on a webpage">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.01</span>
+            <span class="tc-name">Validate whether text is highlighted and underlined on a webpage</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Selenium has no built-in "is highlighted" or "is underlined" check — these are CSS rendering effects, so you read the computed CSS via <code>getCssValue()</code>. Think of it like checking a document with a magnifying glass: Selenium can't "see" the highlighter pen, but it can read the paint underneath.</p>
+<pre><code class="language-java">WebElement element = driver.findElement(By.id(&quot;targetText&quot;));
+
+// Underline check
+String textDecoration = element.getCssValue(&quot;text-decoration-line&quot;);
+boolean isUnderlined = textDecoration.contains(&quot;underline&quot;);
+
+// Highlight check (commonly background-color)
+String backgroundColor = element.getCssValue(&quot;background-color&quot;);
+boolean isHighlighted = !backgroundColor.equalsIgnoreCase(&quot;rgba(0, 0, 0, 0)&quot;)
+        &amp;&amp; !backgroundColor.equalsIgnoreCase(&quot;transparent&quot;);
+
+System.out.println(&quot;Underlined: &quot; + isUnderlined);
+System.out.println(&quot;Highlighted: &quot; + isHighlighted);
+
+Assert.assertTrue(isUnderlined, &quot;Text is not underlined&quot;);
+Assert.assertTrue(isHighlighted, &quot;Text is not highlighted&quot;);
+</code></pre>
+<p><strong>Note:</strong> If the highlight is applied via a <code>&lt;mark&gt;</code> tag or a specific class instead of inline background-color, it's more robust to assert on the tag name or CSS class rather than a raw color value.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="purpose of the `background` section in cucumber">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.02</span>
+            <span class="tc-name">Purpose of the `Background` section in Cucumber</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>Background</code> is like a "before each scene" setup in a play — every actor needs to be in position before the scene (Scenario) starts. It holds <code>Given</code> steps that are common to <strong>every</strong> Scenario in a Feature file, so you don't repeat the same setup steps over and over.</p>
+<pre><code class="language-gherkin">Feature: Fund Transfer
+
+  Background:
+    Given the user is logged into the banking portal
+    And the user is on the &quot;Fund Transfer&quot; page
+
+  Scenario: Successful transfer within own accounts
+    When the user transfers 5000 to account &quot;12345&quot;
+    Then the transaction should be successful
+
+  Scenario: Transfer fails when balance is insufficient
+    When the user transfers 999999 to account &quot;12345&quot;
+    Then the transaction should be declined
+</code></pre>
+<p>It runs <strong>before every Scenario</strong> in that Feature (similar to <code>@BeforeMethod</code> in TestNG), keeping feature files DRY and readable.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `and` and `but` in cucumber">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.03</span>
+            <span class="tc-name">Difference between `And` and `But` in Cucumber</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Functionally, <strong>there is no difference</strong> — Cucumber treats both as a continuation of the preceding <code>Given</code>/<code>When</code>/<code>Then</code> keyword. They exist purely for <strong>readability</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Typical usage</th>
+<th>Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>And</code></td>
+<td>Adds another step of the <em>same polarity</em> (positive condition)</td>
+<td>"...and also do this"</td>
+</tr>
+<tr>
+<td><code>But</code></td>
+<td>Adds a step that expresses a <em>contrast or negative condition</em></td>
+<td>"...but not this"</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-gherkin">Scenario: Login validation
+  Given the user is on the login page
+  And the user enters valid credentials
+  When the user clicks login
+  Then the dashboard should be displayed
+  But an error message should not appear
+</code></pre>
+<p>Both <code>And</code> and <code>But</code> are converted internally by the step-matching engine to whatever the previous concrete keyword was (Given/When/Then) — it's purely syntactic sugar for the human reader.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is a scenario outline in cucumber?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.04</span>
+            <span class="tc-name">What is a Scenario Outline in Cucumber?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>A <code>Scenario Outline</code> is a <strong>template scenario</strong> run multiple times with different sets of data — think of it as a <code>for</code> loop or a TestNG <code>@DataProvider</code> for Gherkin. Each row in the <code>Examples</code> table becomes one full test execution.</p>
+<pre><code class="language-gherkin">Scenario Outline: Login with different credential sets
+  Given the user is on the login page
+  When the user enters username &quot;&lt;username&gt;&quot; and password &quot;&lt;password&gt;&quot;
+  Then the login result should be &quot;&lt;result&gt;&quot;
+
+  Examples:
+    | username   | password   | result  |
+    | dbsuser1   | Pass@123   | success |
+    | dbsuser2   | wrongpass  | failure |
+    | invalidUsr | Pass@123   | failure |
+</code></pre>
+<p>Use it whenever the <strong>steps stay the same</strong> but the <strong>input/output data varies</strong> — avoids copy-pasting near-identical scenarios.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="skeleton of a cucumber test runner class (testng)">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.05</span>
+            <span class="tc-name">Skeleton of a Cucumber Test Runner class (TestNG)</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>With TestNG, the runner extends <code>AbstractTestNGCucumberTests</code> instead of using <code>@RunWith</code>.</p>
+<pre><code class="language-java">package runners;
+
+import io.cucumber.testng.AbstractTestNGCucumberTests;
+import io.cucumber.testng.CucumberOptions;
+
+@CucumberOptions(
+        features = &quot;src/test/resources/features&quot;,
+        glue = {&quot;stepDefinitions&quot;, &quot;hooks&quot;},
+        plugin = {
+                &quot;pretty&quot;,
+                &quot;html:target/cucumber-reports/report.html&quot;,
+                &quot;json:target/cucumber-reports/report.json&quot;
+        },
+        tags = &quot;@regression and not @wip&quot;,
+        monochrome = true
+)
+public class TestRunner extends AbstractTestNGCucumberTests {
+
+    // Optional: enable parallel scenario execution
+    @Override
+    @org.testng.annotations.DataProvider(parallel = true)
+    public Object[][] scenarios() {
+        return super.scenarios();
+    }
+}
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how to scroll down a webpage using selenium webdriver">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.06</span>
+            <span class="tc-name">How to scroll down a webpage using Selenium WebDriver</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Selenium's native API doesn't have a scroll command, so you go through <code>JavascriptExecutor</code> (most common) or <code>Actions</code>.</p>
+<pre><code class="language-java">JavascriptExecutor js = (JavascriptExecutor) driver;
+
+// Scroll by pixels
+js.executeScript(&quot;window.scrollBy(0, 500);&quot;);
+
+// Scroll to the bottom of the page
+js.executeScript(&quot;window.scrollTo(0, document.body.scrollHeight);&quot;);
+
+// Scroll a specific element into view
+WebElement footer = driver.findElement(By.id(&quot;footer&quot;));
+js.executeScript(&quot;arguments[0].scrollIntoView(true);&quot;, footer);
+</code></pre>
+<p>Alternative using <code>Actions</code> (keyboard-driven):</p>
+<pre><code class="language-java">new Actions(driver).sendKeys(Keys.PAGE_DOWN).perform();
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how to perform a right-click (context click) in selenium">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.07</span>
+            <span class="tc-name">How to perform a right-click (context click) in Selenium</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Use the <code>Actions</code> class — it's Selenium's way of simulating complex mouse/keyboard gestures, like a conductor choreographing multiple movements.</p>
+<pre><code class="language-java">WebElement element = driver.findElement(By.id(&quot;menuItem&quot;));
+Actions actions = new Actions(driver);
+actions.contextClick(element).perform();
+</code></pre>
+<p>To then select an option from the context menu that appears:</p>
+<pre><code class="language-java">actions.contextClick(element)
+       .sendKeys(Keys.ARROW_DOWN)
+       .sendKeys(Keys.ENTER)
+       .perform();
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `final`, `finally`, and `finalize` in java">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.08</span>
+            <span class="tc-name">Difference between `final`, `finally`, and `finalize` in Java</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Think of them as three unrelated words that just happen to share a root — like "car", "cart", and "career":</p>
+<table>
+<thead>
+<tr>
+<th>Keyword</th>
+<th>Type</th>
+<th>Purpose</th>
+<th>Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>final</code></td>
+<td>Modifier</td>
+<td>Makes a variable constant, a method non-overridable, or a class non-inheritable</td>
+<td>A sealed envelope — once closed, contents can't change</td>
+</tr>
+<tr>
+<td><code>finally</code></td>
+<td>Block (try-catch-<strong>finally</strong>)</td>
+<td>Code that <strong>always executes</strong>, whether an exception occurred or not (cleanup, closing resources)</td>
+<td>The "no matter what happens, do this" step — like locking the door whether or not the alarm went off</td>
+</tr>
+<tr>
+<td><code>finalize()</code></td>
+<td>Method (from <code>Object</code>, now deprecated)</td>
+<td>Called by the Garbage Collector before destroying an object, for last-minute cleanup</td>
+<td>A will executed after death — unreliable timing, deprecated since Java 9</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">final int MAX_LIMIT = 100; // final variable
+
+try {
+    riskyOperation();
+} catch (Exception e) {
+    handle(e);
+} finally {
+    closeConnection(); // always runs
+}
+
+@Override
+protected void finalize() throws Throwable {
+    // deprecated — avoid using in modern Java; use try-with-resources instead
+}
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `git rebase` and `git clone`">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.09</span>
+            <span class="tc-name">Difference between `git rebase` and `git clone`</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>These aren't really comparable operations — they solve completely different problems, like comparing "editing a manuscript" to "photocopying a library":</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th><code>git clone</code></th>
+<th><code>git rebase</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Downloads/copies an <strong>entire remote repository</strong> (all history, branches) to your local machine</td>
+<td><strong>Rewrites commit history</strong> by moving a branch's commits onto a new base commit</td>
+</tr>
+<tr>
+<td>When used</td>
+<td>Once, at the start — to get a local copy of a repo</td>
+<td>Repeatedly, during development — to keep a feature branch up to date or clean up history before merging</td>
+</tr>
+<tr>
+<td>Analogy</td>
+<td>Photocopying an entire book to take home</td>
+<td>Re-ordering chapters of your draft so it reads cleanly before publishing</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># clone — get a local copy of a remote repo
+git clone https://github.com/company/project.git
+
+# rebase — replay your commits on top of the latest main branch
+git checkout feature-branch
+git rebase main
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="reduce multiple spaces between words to a single space (java)">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.10</span>
+            <span class="tc-name">Reduce multiple spaces between words to a single space (Java)</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public class SpaceReducer {
+    public static String normalizeSpaces(String input) {
+        if (input == null) return null;
+        return input.trim().replaceAll(&quot;\\s+&quot;, &quot; &quot;);
+    }
+
+    public static void main(String[] args) {
+        String input = &quot;I  am   Testing&quot;;
+        System.out.println(normalizeSpaces(input)); // Output: &quot;I am Testing&quot;
+    }
+}
+</code></pre>
+<p><code>\\s+</code> matches <strong>one or more</strong> whitespace characters and collapses them into a single space; <code>.trim()</code> removes any leading/trailing spaces first.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="can we execute a java program without a `main()` method?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.11</span>
+            <span class="tc-name">Can we execute a Java program without a `main()` method?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><strong>In modern Java (JDK 7+), no</strong> — this is a common trick question. There used to be a workaround using a <code>static</code> initializer block, since static blocks run during class loading, before <code>main()</code> is invoked:</p>
+<pre><code class="language-java">public class NoMain {
+    static {
+        System.out.println(&quot;Static block executed&quot;);
+        System.exit(0); // needed pre-JDK7 to avoid &quot;main not found&quot; error after the block ran
+    }
+}
+</code></pre>
+<ul>
+<li><strong>Pre-JDK 6:</strong> This worked — the static block ran, then the JVM threw a <code>NoSuchMethodError</code> for <code>main</code>, but <code>System.exit(0)</code> stopped execution before that error surfaced.</li>
+<li><strong>JDK 7 onward:</strong> The JVM now checks for the presence of a valid <code>main()</code> method <strong>before</strong> initializing the class at all, so the static block never even runs. You'll get a direct error: <code>Error: Main method not found in class NoMain</code>.</li>
+</ul>
+<p>So the honest answer: <strong>not with a standard <code>java</code> launch on any current JDK.</strong></p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what happens if `main()` is declared `private`?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.12</span>
+            <span class="tc-name">What happens if `main()` is declared `private`?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>The code <strong>compiles successfully</strong> — the compiler doesn't enforce access modifiers on <code>main</code>. But at <strong>runtime</strong>, the JVM's launcher specifically looks for a <code>public static void main(String[] args)</code>. Since a private method isn't visible to the JVM launcher, you get:</p>
+<pre><code>Error: Main method not found in class HelloWorld, please define the main method as:
+   public static void main(String[] args)
+</code></pre>
+<pre><code class="language-java">public class HelloWorld {
+    private static void main(String[] args) { // compiles fine
+        System.out.println(&quot;Hello&quot;);
+    }
+}
+// Runtime error: Main method not found
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how to check whether an array is empty or `null` in java">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.13</span>
+            <span class="tc-name">How to check whether an array is empty or `null` in Java</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static boolean isEmptyOrNull(int[] array) {
+    return array == null || array.length == 0;
+}
+</code></pre>
+<p>Always check <code>null</code> <strong>first</strong> with <code>&amp;&amp;</code> short-circuit ordering — if you check <code>array.length == 0</code> before <code>array == null</code>, you'd get a <code>NullPointerException</code> on a null array.</p>
+<pre><code class="language-java">int[] arr1 = null;
+int[] arr2 = new int[0];
+int[] arr3 = {1, 2, 3};
+
+System.out.println(isEmptyOrNull(arr1)); // true
+System.out.println(isEmptyOrNull(arr2)); // true
+System.out.println(isEmptyOrNull(arr3)); // false
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="sql queries using `where`, `order by`, and `group by`">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.14</span>
+            <span class="tc-name">SQL queries using `WHERE`, `ORDER BY`, and `GROUP BY`</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Assume a table <code>transactions(txn_id, account_id, amount, txn_date, status)</code>.</p>
+<pre><code class="language-sql">-- WHERE: filter rows
+SELECT txn_id, account_id, amount, status
+FROM transactions
+WHERE status = 'FAILED';
+
+-- ORDER BY: sort results (descending by amount)
+SELECT txn_id, account_id, amount
+FROM transactions
+WHERE status = 'SUCCESS'
+ORDER BY amount DESC;
+
+-- GROUP BY: aggregate rows (count of transactions per account)
+SELECT account_id, COUNT(*) AS total_transactions, SUM(amount) AS total_amount
+FROM transactions
+GROUP BY account_id;
+
+-- Combined: WHERE + GROUP BY + HAVING + ORDER BY
+SELECT account_id, COUNT(*) AS failed_count
+FROM transactions
+WHERE status = 'FAILED'
+GROUP BY account_id
+HAVING COUNT(*) &gt; 3
+ORDER BY failed_count DESC;
+</code></pre>
+<p><strong>Execution order to remember:</strong> <code>WHERE</code> filters rows <em>before</em> grouping; <code>HAVING</code> filters <em>after</em> grouping; <code>ORDER BY</code> runs last.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="explain jenkins and its role in automation testing">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R1.15</span>
+            <span class="tc-name">Explain Jenkins and its role in automation testing</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Jenkins is an open-source <strong>CI/CD automation server</strong> — think of it as the factory assembly-line manager: every time a developer commits code, Jenkins automatically picks it up, builds it, runs the tests, and reports back — without a human needing to trigger each step manually.</p>
+<p><strong>Role in automation testing:</strong>
+- <strong>Triggers test execution automatically</strong> — on every code commit (via webhook), on a schedule (cron), or on-demand.
+- <strong>Runs your TestNG/Cucumber suites</strong> as part of a build <strong>Pipeline</strong> (<code>Jenkinsfile</code>), often via Maven/Gradle commands (<code>mvn test</code>).
+- <strong>Publishes reports</strong> — integrates with plugins (e.g., Cucumber Reports, TestNG Results, Allure) to visualize pass/fail trends over builds.
+- <strong>Enables CI/CD</strong> — ties automated regression suites into the deployment pipeline, so code isn't promoted to the next environment unless tests pass (a "quality gate").
+- <strong>Parallel &amp; distributed execution</strong> — can distribute test runs across multiple agent nodes to cut execution time.</p>
+<pre><code class="language-groovy">// Simplified Jenkinsfile example
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps { git 'https://github.com/company/automation-suite.git' }
+        }
+        stage('Run Tests') {
+            steps { sh 'mvn clean test -Dsurefire.suiteXmlFiles=testng.xml' }
+        }
+        stage('Publish Report') {
+            steps { cucumber buildStatus: 'UNSTABLE', jsonReportDirectory: 'target/cucumber-reports' }
+        }
+    }
+}
+</code></pre>
+<p>In short: Jenkins is the glue that turns your Selenium/Cucumber/TestNG suite from "something I run manually on my laptop" into "something that runs automatically, consistently, and reports results on every change."</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="round" id="round-2">
+      <div class="round-head">
+        <div class="round-head-left">
+          <span class="round-tag r2">SEL/CUKE/NG</span>
+          <h2>Round 2 · Selenium, Cucumber &amp; TestNG Deep Dive</h2>
+        </div>
+        <div class="round-head-right">
+          <span class="round-count">20 cases</span>
+          <button class="toggle-all" data-target="round-2" data-state="collapsed">expand all</button>
+        </div>
+      </div>
+      <div class="round-body">
+        
+        <details class="test-case" data-title="difference between implicit wait, explicit wait, and fluent wait in selenium">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.01</span>
+            <span class="tc-name">Difference between Implicit Wait, Explicit Wait, and Fluent Wait in Selenium</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Think of it like waiting for a bus: <strong>Implicit wait</strong> is a blanket rule — "I'll wait up to 10 seconds at every stop, no matter what." <strong>Explicit wait</strong> is specific — "I'll wait up to 10 seconds, but only at <em>this</em> stop, for <em>this</em> bus to arrive." <strong>Fluent wait</strong> is the most flexible — "I'll wait up to 10 seconds, checking every 2 seconds, and I'll ignore it if a stray dog runs past (ignoring certain exceptions)."</p>
+<pre><code class="language-java">// Implicit wait — applies globally to all findElement calls
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+// Explicit wait — condition-specific, for one element
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+WebElement el = wait.until(ExpectedConditions.elementToBeClickable(By.id(&quot;submitBtn&quot;)));
+
+// Fluent wait — custom polling interval + exceptions to ignore
+Wait&lt;WebDriver&gt; fluentWait = new FluentWait&lt;&gt;(driver)
+        .withTimeout(Duration.ofSeconds(20))
+        .pollingEvery(Duration.ofSeconds(2))
+        .ignoring(NoSuchElementException.class);
+
+WebElement el2 = fluentWait.until(d -&gt; d.findElement(By.id(&quot;submitBtn&quot;)));
+</code></pre>
+<p><strong>Rule of thumb:</strong> never mix implicit and explicit waits in the same script — it causes unpredictable wait times.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you handle a dropdown in selenium webdriver?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.02</span>
+            <span class="tc-name">How do you handle a dropdown in Selenium WebDriver?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Selenium provides a dedicated <code>Select</code> class for standard HTML <code>&lt;select&gt;</code> dropdowns — like a remote control built specifically for that one device.</p>
+<pre><code class="language-java">WebElement dropdownElement = driver.findElement(By.id(&quot;country&quot;));
+Select dropdown = new Select(dropdownElement);
+
+dropdown.selectByVisibleText(&quot;India&quot;);
+dropdown.selectByValue(&quot;IN&quot;);
+dropdown.selectByIndex(2);
+
+// Get selected option
+String selected = dropdown.getFirstSelectedOption().getText();
+</code></pre>
+<p>For <strong>custom dropdowns</strong> (built with <code>&lt;div&gt;</code>/<code>&lt;li&gt;</code> instead of <code>&lt;select&gt;</code>), <code>Select</code> won't work — you must click to open the dropdown, then click the desired option like any other element.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you switch between multiple windows/tabs in selenium?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.03</span>
+            <span class="tc-name">How do you switch between multiple windows/tabs in Selenium?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Every browser window/tab has a unique <strong>handle</strong> (like a ticket number). You capture the current handle, get the set of all handles, and switch to the one you need.</p>
+<pre><code class="language-java">String parentWindow = driver.getWindowHandle();
+
+// Trigger action that opens a new tab/window
+driver.findElement(By.id(&quot;openNewTabLink&quot;)).click();
+
+Set&lt;String&gt; allWindows = driver.getWindowHandles();
+for (String handle : allWindows) {
+    if (!handle.equals(parentWindow)) {
+        driver.switchTo().window(handle);
+        break;
+    }
+}
+
+// Do actions in the new window...
+driver.close(); // close current (child) window
+driver.switchTo().window(parentWindow); // go back to parent
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you handle an iframe in selenium?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.04</span>
+            <span class="tc-name">How do you handle an iframe in Selenium?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>An iframe is like a "window within a window" — Selenium's default focus is the main page, so you must explicitly step <em>into</em> the iframe before interacting with elements inside it, and step back <em>out</em> afterward.</p>
+<pre><code class="language-java">// Switch by index, name/id, or WebElement
+driver.switchTo().frame(0);
+driver.switchTo().frame(&quot;frameName&quot;);
+driver.switchTo().frame(driver.findElement(By.cssSelector(&quot;iframe.payment-frame&quot;)));
+
+driver.findElement(By.id(&quot;cardNumber&quot;)).sendKeys(&quot;4111111111111111&quot;);
+
+// Go back to the main page
+driver.switchTo().defaultContent();
+
+// Or go up one level (useful for nested iframes)
+driver.switchTo().parentFrame();
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you handle a javascript alert/popup in selenium?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.05</span>
+            <span class="tc-name">How do you handle a JavaScript alert/popup in Selenium?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Selenium interacts with native JS alerts through the <code>Alert</code> interface — you can't click them with normal <code>findElement</code> calls since they're outside the DOM.</p>
+<pre><code class="language-java">Alert alert = driver.switchTo().alert();
+
+String alertText = alert.getText();
+alert.accept();  // clicks OK
+// alert.dismiss(); // clicks Cancel
+// alert.sendKeys(&quot;some input&quot;); // for prompt-type alerts, then alert.accept();
+</code></pre>
+<p>It's good practice to wrap this in a <code>wait.until(ExpectedConditions.alertIsPresent())</code> since alerts can take a moment to render.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is `staleelementreferenceexception` and how do you handle it?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.06</span>
+            <span class="tc-name">What is `StaleElementReferenceException` and how do you handle it?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>This happens when the DOM has changed after you located an element — the reference you're holding points to an element that's no longer attached to the page (e.g., after a page reload, an AJAX re-render, or a navigation). It's like holding a claim ticket for a coat that the cloakroom just reorganized — the ticket number no longer matches anything.</p>
+<p><strong>Handling strategies:</strong></p>
+<pre><code class="language-java">// Re-locate the element right before interacting with it, instead of caching it early
+public void safeClick(By locator) {
+    int attempts = 0;
+    while (attempts &lt; 3) {
+        try {
+            driver.findElement(locator).click();
+            break;
+        } catch (StaleElementReferenceException e) {
+            attempts++;
+        }
+    }
+}
+</code></pre>
+<p>Other fixes: use explicit waits with <code>ExpectedConditions.refreshed(...)</code>, avoid storing <code>WebElement</code> references across page transitions, and re-fetch elements inside loops rather than outside them.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what are cucumber hooks? explain `@before` and `@after`">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.07</span>
+            <span class="tc-name">What are Cucumber Hooks? Explain `@Before` and `@After`</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Hooks are setup/teardown blocks that run around <strong>every Scenario</strong>, similar to <code>@BeforeMethod</code>/<code>@AfterMethod</code> in TestNG — but they live in a dedicated "hooks" class rather than the feature file.</p>
+<pre><code class="language-java">public class Hooks {
+
+    @Before
+    public void setUp(Scenario scenario) {
+        driver = new ChromeDriver();
+        System.out.println(&quot;Starting scenario: &quot; + scenario.getName());
+    }
+
+    @After
+    public void tearDown(Scenario scenario) {
+        if (scenario.isFailed()) {
+            byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+            scenario.attach(screenshot, &quot;image/png&quot;, &quot;FailureScreenshot&quot;);
+        }
+        driver.quit();
+    }
+}
+</code></pre>
+<ul>
+<li><code>@Before</code> runs <strong>before each Scenario</strong> (e.g., launch browser, log in).</li>
+<li><code>@After</code> runs <strong>after each Scenario</strong> (e.g., attach screenshots on failure, quit driver).</li>
+<li>You can also scope hooks with tags: <code>@Before("@regression")</code> runs only before scenarios tagged <code>@regression</code>.</li>
+</ul>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you pass a data table in cucumber and read it in step definitions?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.08</span>
+            <span class="tc-name">How do you pass a Data Table in Cucumber and read it in step definitions?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>A <code>DataTable</code> is used when a <strong>single step</strong> needs structured tabular input (different from <code>Scenario Outline</code>, which re-runs the whole scenario per row).</p>
+<pre><code class="language-gherkin">Scenario: Register a new customer
+  Given the following customer details are submitted
+    | field       | value          |
+    | name        | Rahul Sharma   |
+    | email       | rahul@dbs.com  |
+    | accountType | Savings        |
+</code></pre>
+<pre><code class="language-java">@Given(&quot;the following customer details are submitted&quot;)
+public void submitCustomerDetails(DataTable dataTable) {
+    Map&lt;String, String&gt; data = dataTable.asMap(String.class, String.class);
+    String name = data.get(&quot;name&quot;);
+    String email = data.get(&quot;email&quot;);
+    String accountType = data.get(&quot;accountType&quot;);
+    // use these values to fill the form
+}
+</code></pre>
+<p>For a table representing <strong>multiple rows/records</strong> (like a list of transactions), use <code>dataTable.asMaps()</code> to get a <code>List&lt;Map&lt;String, String&gt;&gt;</code>.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you run specific scenarios using tags in cucumber?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.09</span>
+            <span class="tc-name">How do you run specific scenarios using Tags in Cucumber?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Tags (<code>@smoke</code>, <code>@regression</code>, <code>@wip</code>) let you selectively execute scenarios — like sticky notes marking which pages of a book to read.</p>
+<pre><code class="language-gherkin">@regression @fundTransfer
+Scenario: Successful transfer within own accounts
+  ...
+
+@smoke
+Scenario: Login validation
+  ...
+</code></pre>
+<p>Run via the runner's <code>tags</code> attribute:</p>
+<pre><code class="language-java">@CucumberOptions(tags = &quot;@smoke and not @wip&quot;)
+</code></pre>
+<p>Or via Maven command line (overrides the annotation):</p>
+<pre><code class="language-bash">mvn test -Dcucumber.filter.tags=&quot;@regression and not @wip&quot;
+</code></pre>
+<p>Boolean expressions supported: <code>and</code>, <code>or</code>, <code>not</code> — e.g., <code>"@smoke or @regression"</code>.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `@beforemethod`, `@beforeclass`, `@beforesuite` in testng">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.10</span>
+            <span class="tc-name">Difference between `@BeforeMethod`, `@BeforeClass`, `@BeforeSuite` in TestNG</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>They differ purely by <strong>scope/frequency</strong> — like the difference between prepping before every customer, prepping once per store, and prepping once for the entire company:</p>
+<table>
+<thead>
+<tr>
+<th>Annotation</th>
+<th>Runs</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@BeforeMethod</code></td>
+<td>Before <strong>every</strong> <code>@Test</code> method</td>
+<td>Navigate to a fresh page, reset test data</td>
+</tr>
+<tr>
+<td><code>@BeforeClass</code></td>
+<td>Once, before the <strong>first</strong> test method in that class</td>
+<td>Initialize WebDriver for the class</td>
+</tr>
+<tr>
+<td><code>@BeforeSuite</code></td>
+<td>Once, before <strong>all</strong> tests in the entire suite (across classes)</td>
+<td>Read global config, start reporting, set up environment</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">@BeforeSuite
+public void globalSetup() { /* runs once for the whole suite.xml */ }
+
+@BeforeClass
+public void classSetup() { driver = new ChromeDriver(); }
+
+@BeforeMethod
+public void methodSetup() { driver.get(&quot;https://app.dbs.com/login&quot;); }
+</code></pre>
+<p>Corresponding <code>@AfterMethod</code>, <code>@AfterClass</code>, <code>@AfterSuite</code> exist for teardown, in reverse order.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you set test priority and dependency in testng?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.11</span>
+            <span class="tc-name">How do you set test priority and dependency in TestNG?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><strong>Priority</strong> controls the <em>order</em> tests run in (lower number runs first); <strong>dependency</strong> enforces that a test only runs if another test <strong>passed</strong>.</p>
+<pre><code class="language-java">public class LoginTests {
+
+    @Test(priority = 1)
+    public void testValidLogin() {
+        // runs first
+    }
+
+    @Test(priority = 2, dependsOnMethods = &quot;testValidLogin&quot;)
+    public void testDashboardLoads() {
+        // only runs if testValidLogin passed; runs after it
+    }
+}
+</code></pre>
+<p>If <code>testValidLogin</code> fails, <code>testDashboardLoads</code> is automatically <strong>skipped</strong> (not failed) — TestNG assumes it's pointless to check the dashboard if login itself didn't work.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between hard assert and soft assert in testng">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.12</span>
+            <span class="tc-name">Difference between hard assert and soft assert in TestNG</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>A <strong>hard assert</strong> (<code>Assert</code>) is like a security guard who stops you the instant you break one rule — the test halts immediately on the first failure. A <strong>soft assert</strong> (<code>SoftAssert</code>) is like an inspector who notes down <em>every</em> violation on a checklist, then reports all of them at the end.</p>
+<pre><code class="language-java">// Hard assert — stops execution immediately on failure
+Assert.assertEquals(actualTitle, expectedTitle);
+Assert.assertTrue(isLoginSuccessful); // never reached if above fails
+
+// Soft assert — collects failures, continues execution
+SoftAssert softAssert = new SoftAssert();
+softAssert.assertEquals(actualTitle, expectedTitle);
+softAssert.assertTrue(isLoginSuccessful);
+softAssert.assertAll(); // must call this at the end to actually report failures
+</code></pre>
+<p>Use soft asserts when validating <strong>multiple independent fields on one page</strong> (e.g., checking 5 labels), so you get a full picture of what's broken in one run instead of fixing failures one at a time.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between an abstract class and an interface in java">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.13</span>
+            <span class="tc-name">Difference between an abstract class and an interface in Java</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Both allow abstraction, but they answer different questions: an <strong>abstract class</strong> answers "what <em>is</em> this thing" (an "is-a" relationship with shared state), while an <strong>interface</strong> answers "what <em>can</em> this thing do" (a contract of capabilities).</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Abstract class</th>
+<th>Interface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Methods</td>
+<td>Can have both abstract and concrete methods</td>
+<td>Traditionally all abstract; since Java 8 can have <code>default</code>/<code>static</code> methods</td>
+</tr>
+<tr>
+<td>Fields</td>
+<td>Can have instance variables with any access modifier</td>
+<td>Fields are implicitly <code>public static final</code> (constants)</td>
+</tr>
+<tr>
+<td>Inheritance</td>
+<td>A class can extend <strong>only one</strong> abstract class</td>
+<td>A class can implement <strong>multiple</strong> interfaces</td>
+</tr>
+<tr>
+<td>Constructor</td>
+<td>Can have a constructor</td>
+<td>Cannot have a constructor</td>
+</tr>
+<tr>
+<td>Use case</td>
+<td>Shared base behavior across closely related classes</td>
+<td>Defining a capability/contract across unrelated classes</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">abstract class Vehicle {
+    String brand;
+    abstract void start(); // must be implemented
+    void honk() { System.out.println(&quot;Beep!&quot;); } // shared concrete method
+}
+
+interface Drivable {
+    void drive();
+}
+
+class Car extends Vehicle implements Drivable {
+    void start() { System.out.println(&quot;Car started&quot;); }
+    public void drive() { System.out.println(&quot;Car is driving&quot;); }
+}
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between checked and unchecked exceptions in java">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.14</span>
+            <span class="tc-name">Difference between checked and unchecked exceptions in Java</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><strong>Checked exceptions</strong> are like mandatory safety checks the compiler forces you to plan for before takeoff (must be declared with <code>throws</code> or caught). <strong>Unchecked exceptions</strong> are like sudden turbulence — they happen at runtime and the compiler doesn't force you to handle them in advance.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Checked</th>
+<th>Unchecked</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Checked at</td>
+<td>Compile-time</td>
+<td>Runtime</td>
+</tr>
+<tr>
+<td>Parent class</td>
+<td><code>Exception</code> (excluding <code>RuntimeException</code>)</td>
+<td><code>RuntimeException</code></td>
+</tr>
+<tr>
+<td>Must declare/handle?</td>
+<td>Yes (<code>throws</code> or try-catch)</td>
+<td>No, optional</td>
+</tr>
+<tr>
+<td>Examples</td>
+<td><code>IOException</code>, <code>SQLException</code></td>
+<td><code>NullPointerException</code>, <code>ArrayIndexOutOfBoundsException</code>, <code>ArithmeticException</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">// Checked — compiler forces handling
+public void readFile() throws IOException {
+    FileReader fr = new FileReader(&quot;data.txt&quot;);
+}
+
+// Unchecked — compiler doesn't force handling, but it can still occur
+public void divide(int a, int b) {
+    int result = a / b; // may throw ArithmeticException at runtime
+}
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `arraylist` and `linkedlist`">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.15</span>
+            <span class="tc-name">Difference between `ArrayList` and `LinkedList`</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Think of <code>ArrayList</code> as a row of numbered lockers — fast to jump to locker #50 directly, but inserting a new locker in the middle means shifting everyone down. <code>LinkedList</code> is like a chain of people holding hands — inserting someone in the middle is easy (just re-link two hands), but finding person #50 means walking the chain one by one.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>ArrayList</th>
+<th>LinkedList</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Underlying structure</td>
+<td>Dynamic array</td>
+<td>Doubly linked list</td>
+</tr>
+<tr>
+<td>Random access (<code>get(index)</code>)</td>
+<td>Fast — O(1)</td>
+<td>Slow — O(n)</td>
+</tr>
+<tr>
+<td>Insert/delete in middle</td>
+<td>Slow — O(n) (elements shift)</td>
+<td>Fast — O(1) (once position is found)</td>
+</tr>
+<tr>
+<td>Memory overhead</td>
+<td>Lower</td>
+<td>Higher (stores next/prev pointers)</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Frequent reads/iteration</td>
+<td>Frequent insertions/deletions</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">List&lt;String&gt; arrayList = new ArrayList&lt;&gt;();
+List&lt;String&gt; linkedList = new LinkedList&lt;&gt;();
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `hashmap` and `hashtable`">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.16</span>
+            <span class="tc-name">Difference between `HashMap` and `Hashtable`</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>HashMap</th>
+<th>Hashtable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thread safety</td>
+<td>Not synchronized (not thread-safe)</td>
+<td>Synchronized (thread-safe, but slower)</td>
+</tr>
+<tr>
+<td>Null keys/values</td>
+<td>Allows <strong>one</strong> null key, multiple null values</td>
+<td>Does not allow null key or null value</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Faster (no locking overhead)</td>
+<td>Slower due to synchronization</td>
+</tr>
+<tr>
+<td>Legacy status</td>
+<td>Modern, part of Java Collections Framework</td>
+<td>Legacy class (pre-dates Collections Framework)</td>
+</tr>
+<tr>
+<td>Modern alternative for thread-safety</td>
+<td>Use <code>ConcurrentHashMap</code> instead of <code>Hashtable</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">Map&lt;String, String&gt; hashMap = new HashMap&lt;&gt;();
+hashMap.put(null, &quot;allowed&quot;);
+
+Map&lt;String, String&gt; hashtable = new Hashtable&lt;&gt;();
+// hashtable.put(null, &quot;value&quot;); // throws NullPointerException
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `git merge` and `git rebase`">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.17</span>
+            <span class="tc-name">Difference between `git merge` and `git rebase`</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Both integrate changes from one branch into another, but they tell the story differently — <code>merge</code> is like stapling two documents together with a note ("these were combined here"), keeping full history intact with a merge commit. <code>rebase</code> is like retyping your document's pages on top of the latest version, producing a <strong>clean, linear history</strong> with no merge commit.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th><code>git merge</code></th>
+<th><code>git rebase</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>History</td>
+<td>Preserves full branching history (creates a merge commit)</td>
+<td>Rewrites history — replays your commits on top of the target branch</td>
+</tr>
+<tr>
+<td>Commit graph</td>
+<td>Non-linear (shows branches/merges)</td>
+<td>Linear (looks like work happened sequentially)</td>
+</tr>
+<tr>
+<td>Safety on shared branches</td>
+<td>Safe — doesn't rewrite existing commits</td>
+<td>Risky on shared/public branches — rewrites commit hashes</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>Merging a completed feature branch into <code>main</code></td>
+<td>Keeping a local feature branch up to date with <code>main</code> before raising a PR</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-bash"># merge
+git checkout main
+git merge feature-branch
+
+# rebase
+git checkout feature-branch
+git rebase main
+</code></pre>
+<p><strong>Golden rule:</strong> never rebase a branch that others have already pulled/pushed to — it rewrites commit history and breaks their local copies.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is `git cherry-pick` and when would you use it?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.18</span>
+            <span class="tc-name">What is `git cherry-pick` and when would you use it?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>cherry-pick</code> lets you take <strong>one specific commit</strong> from another branch and apply it onto your current branch — without merging the whole branch. It's like picking a single ripe fruit from a neighboring tree instead of chopping down the whole branch.</p>
+<pre><code class="language-bash">git checkout main
+git cherry-pick a1b2c3d   # applies just that one commit's changes onto main
+</code></pre>
+<p><strong>Common use case in QA automation:</strong> a critical bug-fix commit was made on a <code>feature</code> branch, but you don't want the <em>rest</em> of that branch's unfinished work — you cherry-pick just the fix commit onto <code>main</code> or a <code>hotfix</code> branch.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `inner join` and `left join` in sql">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.19</span>
+            <span class="tc-name">Difference between `INNER JOIN` and `LEFT JOIN` in SQL</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>INNER JOIN</code> returns only the rows that <strong>match in both tables</strong> — like the overlapping section of a Venn diagram. <code>LEFT JOIN</code> returns <strong>all rows from the left table</strong>, plus matching rows from the right table (or <code>NULL</code> if there's no match) — like keeping the entire left circle and only borrowing overlap from the right.</p>
+<pre><code class="language-sql">-- INNER JOIN: only accounts that have at least one transaction
+SELECT a.account_id, t.txn_id, t.amount
+FROM accounts a
+INNER JOIN transactions t ON a.account_id = t.account_id;
+
+-- LEFT JOIN: all accounts, even those with zero transactions (txn columns will be NULL)
+SELECT a.account_id, t.txn_id, t.amount
+FROM accounts a
+LEFT JOIN transactions t ON a.account_id = t.account_id;
+</code></pre>
+<p>In QA, <code>LEFT JOIN</code> is especially useful for <strong>finding orphan/missing records</strong> — e.g., accounts with no transactions:</p>
+<pre><code class="language-sql">SELECT a.account_id
+FROM accounts a
+LEFT JOIN transactions t ON a.account_id = t.account_id
+WHERE t.txn_id IS NULL;
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is a jenkins pipeline, and declarative vs scripted pipeline?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R2.20</span>
+            <span class="tc-name">What is a Jenkins Pipeline, and Declarative vs Scripted Pipeline?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>A <strong>Pipeline</strong> is Jenkins' way of defining your entire build/test/deploy process <strong>as code</strong> (in a <code>Jenkinsfile</code>) instead of clicking through UI job configurations — like writing a recipe instead of verbally instructing a chef each time.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Declarative Pipeline</th>
+<th>Scripted Pipeline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Syntax</td>
+<td>Structured, fixed format (<code>pipeline { stages { ... } }</code>)</td>
+<td>Groovy-based, full scripting flexibility</td>
+</tr>
+<tr>
+<td>Ease of use</td>
+<td>Easier to read/write, good for most CI/CD needs</td>
+<td>More complex, needs Groovy knowledge</td>
+</tr>
+<tr>
+<td>Flexibility</td>
+<td>Limited to predefined structure (with some <code>script{}</code> escapes)</td>
+<td>Full programmatic control (loops, conditionals anywhere)</td>
+</tr>
+<tr>
+<td>Recommended for</td>
+<td>Most teams / standard pipelines</td>
+<td>Complex, highly custom pipeline logic</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-groovy">// Declarative
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            steps { sh 'mvn test' }
+        }
+    }
+}
+
+// Scripted
+node {
+    stage('Test') {
+        sh 'mvn test'
+    }
+}
+</code></pre>
+<p>Declarative is the <strong>recommended default</strong> today — it's easier to maintain and has better error-checking, while Scripted is reserved for edge cases needing custom Groovy logic.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="round" id="round-3">
+      <div class="round-head">
+        <div class="round-head-left">
+          <span class="round-tag r3">API/SQL/JAVA</span>
+          <h2>Round 3 · API Testing, SQL &amp; Java Coding</h2>
+        </div>
+        <div class="round-head-right">
+          <span class="round-count">20 cases</span>
+          <button class="toggle-all" data-target="round-3" data-state="collapsed">expand all</button>
+        </div>
+      </div>
+      <div class="round-body">
+        
+        <details class="test-case" data-title="what is rest assured, and how do you validate a get api&#x27;s status code and json body?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.01</span>
+            <span class="tc-name">What is REST Assured, and how do you validate a GET API&#x27;s status code and JSON body?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>REST Assured is a Java library that lets you write API tests in a fluent, readable style — like writing a sentence: "Given these headers, When I call this endpoint, Then I expect this response." It removes the boilerplate of manually building HTTP requests with raw <code>HttpURLConnection</code>.</p>
+<pre><code class="language-java">import static io.restassured.RestAssured.*;
+import static org.hamcrest.Matchers.*;
+
+@Test
+public void validateGetAccountDetails() {
+    given()
+        .baseUri(&quot;https://api.dbs.com&quot;)
+        .header(&quot;Content-Type&quot;, &quot;application/json&quot;)
+    .when()
+        .get(&quot;/accounts/12345&quot;)
+    .then()
+        .statusCode(200)
+        .body(&quot;accountId&quot;, equalTo(&quot;12345&quot;))
+        .body(&quot;status&quot;, equalTo(&quot;ACTIVE&quot;))
+        .body(&quot;balance&quot;, greaterThan(0));
+}
+</code></pre>
+<p>The <code>given()-when()-then()</code> structure mirrors Gherkin's BDD style, which is why REST Assured pairs so naturally with Cucumber-based frameworks.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between get, post, put, patch, delete http methods">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.02</span>
+            <span class="tc-name">Difference between GET, POST, PUT, PATCH, DELETE HTTP methods</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Think of a customer record like a form: <strong>GET</strong> reads it, <strong>POST</strong> creates a brand-new one, <strong>PUT</strong> replaces the <em>entire</em> form with a new version, <strong>PATCH</strong> edits just <em>one field</em> on the existing form, and <strong>DELETE</strong> throws the form away.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Purpose</th>
+<th>Idempotent?</th>
+<th>Typical body</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>Retrieve a resource</td>
+<td>Yes</td>
+<td>None</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>Create a new resource</td>
+<td>No</td>
+<td>Yes — full resource data</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>Replace an entire existing resource</td>
+<td>Yes</td>
+<td>Yes — full resource data</td>
+</tr>
+<tr>
+<td>PATCH</td>
+<td>Partially update a resource</td>
+<td>No (usually)</td>
+<td>Yes — only changed fields</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>Remove a resource</td>
+<td>Yes</td>
+<td>Usually none</td>
+</tr>
+</tbody>
+</table>
+<p><em>Idempotent</em> means calling it multiple times has the same effect as calling it once — e.g., deleting an already-deleted record still results in "record gone," but posting the same data twice creates two records.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you validate response schema in api testing?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.03</span>
+            <span class="tc-name">How do you validate response schema in API testing?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Rather than checking every field manually, you validate that the response <strong>structure</strong> (data types, required fields) matches an agreed JSON Schema — like checking a form has all required boxes filled in the right format, without reading every answer.</p>
+<pre><code class="language-java">given()
+    .baseUri(&quot;https://api.dbs.com&quot;)
+.when()
+    .get(&quot;/accounts/12345&quot;)
+.then()
+    .statusCode(200)
+    .body(matchesJsonSchemaInClasspath(&quot;account-schema.json&quot;));
+</code></pre>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [&quot;accountId&quot;, &quot;status&quot;, &quot;balance&quot;],
+  &quot;properties&quot;: {
+    &quot;accountId&quot;: { &quot;type&quot;: &quot;string&quot; },
+    &quot;status&quot;: { &quot;type&quot;: &quot;string&quot; },
+    &quot;balance&quot;: { &quot;type&quot;: &quot;number&quot; }
+  }
+}
+</code></pre>
+<p>This catches <strong>contract-breaking changes</strong> (e.g., a field type silently changing from <code>number</code> to <code>string</code>) even if individual field values happen to pass.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between api testing and ui testing">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.04</span>
+            <span class="tc-name">Difference between API testing and UI testing</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>API Testing</th>
+<th>UI Testing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Layer tested</td>
+<td>Business logic / backend directly</td>
+<td>Full stack, including rendering, CSS, JS</td>
+</tr>
+<tr>
+<td>Speed</td>
+<td>Fast (no browser rendering)</td>
+<td>Slower (page loads, animations, waits)</td>
+</tr>
+<tr>
+<td>Stability</td>
+<td>More stable — less affected by UI changes</td>
+<td>More flaky — breaks on locator/DOM changes</td>
+</tr>
+<tr>
+<td>Tools</td>
+<td>REST Assured, Postman</td>
+<td>Selenium, Playwright</td>
+</tr>
+<tr>
+<td>Test pyramid position</td>
+<td>Middle layer — should have more tests than UI</td>
+<td>Top layer — fewer, high-value end-to-end tests</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rule of thumb (Test Pyramid):</strong> most coverage should live at the unit/API level, with a smaller number of UI tests covering critical user journeys — because UI tests are the slowest and most brittle.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you handle authentication (bearer token / basic auth) in rest assured?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.05</span>
+            <span class="tc-name">How do you handle authentication (Bearer token / Basic Auth) in REST Assured?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">// Bearer token authentication
+given()
+    .header(&quot;Authorization&quot;, &quot;Bearer &quot; + accessToken)
+.when()
+    .get(&quot;/accounts/12345&quot;)
+.then()
+    .statusCode(200);
+
+// Basic authentication
+given()
+    .auth().preemptive().basic(&quot;username&quot;, &quot;password&quot;)
+.when()
+    .get(&quot;/secure-endpoint&quot;)
+.then()
+    .statusCode(200);
+</code></pre>
+<p>For OAuth2 flows, you typically make an initial POST call to the token endpoint, extract the <code>access_token</code> from the response, and reuse it in subsequent request headers — similar to logging in once and reusing a session cookie in UI automation.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between soap and rest">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.06</span>
+            <span class="tc-name">Difference between SOAP and REST</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>SOAP</th>
+<th>REST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protocol/style</td>
+<td>Strict protocol (XML-based messaging)</td>
+<td>Architectural style, not a strict protocol</td>
+</tr>
+<tr>
+<td>Data format</td>
+<td>XML only</td>
+<td>JSON, XML, plain text — usually JSON</td>
+</tr>
+<tr>
+<td>Statefulness</td>
+<td>Can be stateful</td>
+<td>Stateless by design</td>
+</tr>
+<tr>
+<td>Standards</td>
+<td>Built-in standards (WS-Security, WSDL)</td>
+<td>No built-in standard, relies on HTTP conventions</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Heavier (verbose XML envelopes)</td>
+<td>Lighter, faster</td>
+</tr>
+<tr>
+<td>Common in</td>
+<td>Legacy banking/enterprise systems</td>
+<td>Modern web/mobile APIs</td>
+</tr>
+</tbody>
+</table>
+<p>Banking domains (like DBS) often still have legacy <strong>SOAP</strong> services for core banking alongside newer <strong>REST</strong> APIs for digital channels — so it's common to test both.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you extract a value from a json response and chain it into a subsequent request?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.07</span>
+            <span class="tc-name">How do you extract a value from a JSON response and chain it into a subsequent request?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>This is common when, say, you create a resource via POST and need its generated ID for a follow-up GET/PUT call.</p>
+<pre><code class="language-java">// Step 1: create an account, extract the generated accountId
+Response response =
+    given()
+        .contentType(&quot;application/json&quot;)
+        .body(&quot;{ \&quot;customerName\&quot;: \&quot;Rahul Sharma\&quot; }&quot;)
+    .when()
+        .post(&quot;/accounts&quot;);
+
+String accountId = response.jsonPath().getString(&quot;accountId&quot;);
+
+// Step 2: use that accountId in the next request
+given()
+    .pathParam(&quot;id&quot;, accountId)
+.when()
+    .get(&quot;/accounts/{id}&quot;)
+.then()
+    .statusCode(200)
+    .body(&quot;status&quot;, equalTo(&quot;ACTIVE&quot;));
+</code></pre>
+<p><code>jsonPath()</code> lets you navigate the JSON tree with dot/bracket notation (e.g., <code>"data.accounts[0].id"</code>), similar to XPath for XML.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="reverse a string without using a built-in reverse method">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.08</span>
+            <span class="tc-name">Reverse a string without using a built-in reverse method</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static String reverseString(String input) {
+    char[] chars = input.toCharArray();
+    int left = 0, right = chars.length - 1;
+    while (left &lt; right) {
+        char temp = chars[left];
+        chars[left] = chars[right];
+        chars[right] = temp;
+        left++;
+        right--;
+    }
+    return new String(chars);
+}
+// reverseString(&quot;Testing&quot;) -&gt; &quot;gnitseT&quot;
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="check if a string is a palindrome">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.09</span>
+            <span class="tc-name">Check if a string is a palindrome</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static boolean isPalindrome(String input) {
+    String cleaned = input.toLowerCase().replaceAll(&quot;[^a-z0-9]&quot;, &quot;&quot;);
+    int left = 0, right = cleaned.length() - 1;
+    while (left &lt; right) {
+        if (cleaned.charAt(left) != cleaned.charAt(right)) return false;
+        left++;
+        right--;
+    }
+    return true;
+}
+// isPalindrome(&quot;Madam&quot;) -&gt; true
+// isPalindrome(&quot;Selenium&quot;) -&gt; false
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="find duplicate elements in an array">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.10</span>
+            <span class="tc-name">Find duplicate elements in an array</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static Set&lt;Integer&gt; findDuplicates(int[] arr) {
+    Set&lt;Integer&gt; seen = new HashSet&lt;&gt;();
+    Set&lt;Integer&gt; duplicates = new LinkedHashSet&lt;&gt;();
+    for (int num : arr) {
+        if (!seen.add(num)) {
+            duplicates.add(num);
+        }
+    }
+    return duplicates;
+}
+// findDuplicates({1,2,3,2,4,1,5}) -&gt; [2, 1]
+</code></pre>
+<p><code>seen.add(num)</code> returns <code>false</code> if the element already exists in the set — that's the signal it's a duplicate.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="find the second largest element in an array">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.11</span>
+            <span class="tc-name">Find the second largest element in an array</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static int secondLargest(int[] arr) {
+    int largest = Integer.MIN_VALUE, secondLargest = Integer.MIN_VALUE;
+    for (int num : arr) {
+        if (num &gt; largest) {
+            secondLargest = largest;
+            largest = num;
+        } else if (num &gt; secondLargest &amp;&amp; num != largest) {
+            secondLargest = num;
+        }
+    }
+    return secondLargest;
+}
+// secondLargest({10, 25, 3, 25, 18}) -&gt; 18
+</code></pre>
+<p>Single pass, O(n) — no need to sort the entire array just to find two values.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="check if two strings are anagrams">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.12</span>
+            <span class="tc-name">Check if two strings are anagrams</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Two strings are anagrams if they contain the exact same characters, just rearranged — like "listen" and "silent."</p>
+<pre><code class="language-java">public static boolean isAnagram(String s1, String s2) {
+    char[] a = s1.toLowerCase().replaceAll(&quot;\\s&quot;, &quot;&quot;).toCharArray();
+    char[] b = s2.toLowerCase().replaceAll(&quot;\\s&quot;, &quot;&quot;).toCharArray();
+    if (a.length != b.length) return false;
+    Arrays.sort(a);
+    Arrays.sort(b);
+    return Arrays.equals(a, b);
+}
+// isAnagram(&quot;listen&quot;, &quot;silent&quot;) -&gt; true
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="print fibonacci series up to n terms">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.13</span>
+            <span class="tc-name">Print Fibonacci series up to n terms</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static void printFibonacci(int n) {
+    int a = 0, b = 1;
+    for (int i = 0; i &lt; n; i++) {
+        System.out.print(a + &quot; &quot;);
+        int next = a + b;
+        a = b;
+        b = next;
+    }
+}
+// printFibonacci(8) -&gt; 0 1 1 2 3 5 8 13
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="find the first non-repeated character in a string">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.14</span>
+            <span class="tc-name">Find the first non-repeated character in a string</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static Character firstNonRepeatedChar(String input) {
+    Map&lt;Character, Integer&gt; freq = new LinkedHashMap&lt;&gt;();
+    for (char c : input.toCharArray()) {
+        freq.put(c, freq.getOrDefault(c, 0) + 1);
+    }
+    for (Map.Entry&lt;Character, Integer&gt; entry : freq.entrySet()) {
+        if (entry.getValue() == 1) return entry.getKey();
+    }
+    return null; // no non-repeated character found
+}
+// firstNonRepeatedChar(&quot;swiss&quot;) -&gt; 'w'
+</code></pre>
+<p><code>LinkedHashMap</code> preserves insertion order so the first qualifying character found is genuinely the first one in the string.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="swap two numbers without using a third variable">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.15</span>
+            <span class="tc-name">Swap two numbers without using a third variable</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <pre><code class="language-java">public static void swap(int a, int b) {
+    a = a + b;
+    b = a - b;
+    a = a - b;
+    System.out.println(&quot;a = &quot; + a + &quot;, b = &quot; + b);
+}
+// swap(5, 10) -&gt; a = 10, b = 5
+</code></pre>
+<p>Alternative using XOR (common follow-up): <code>a = a ^ b; b = a ^ b; a = a ^ b;</code> — works only for integers, and can overflow with addition on very large values, which is worth mentioning if the interviewer probes further.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is page object model (pom), and why use it?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.16</span>
+            <span class="tc-name">What is Page Object Model (POM), and why use it?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>POM is a design pattern where each web page is represented as a <strong>class</strong>, with its elements as fields and its actions as methods — like a remote control for that specific page. Your test code then calls high-level actions (<code>loginPage.login(user, pass)</code>) instead of raw <code>driver.findElement(...)</code> calls scattered everywhere.</p>
+<pre><code class="language-java">public class LoginPage {
+    private WebDriver driver;
+
+    @FindBy(id = &quot;username&quot;) private WebElement usernameField;
+    @FindBy(id = &quot;password&quot;) private WebElement passwordField;
+    @FindBy(id = &quot;loginBtn&quot;) private WebElement loginButton;
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    public void login(String username, String password) {
+        usernameField.sendKeys(username);
+        passwordField.sendKeys(password);
+        loginButton.click();
+    }
+}
+</code></pre>
+<p><strong>Benefits:</strong> if a locator changes, you update it in <strong>one place</strong> (the page class) instead of every test that uses it — dramatically reducing maintenance effort, and keeping test code readable at the business-action level.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is the defect life cycle in software testing?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.17</span>
+            <span class="tc-name">What is the Defect Life Cycle in software testing?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>The Defect Life Cycle tracks a bug's journey from discovery to closure — like a support ticket moving through stages until resolved.</p>
+<pre><code>New -&gt; Assigned -&gt; Open (In Progress) -&gt; Fixed -&gt; Retest -&gt; Verified -&gt; Closed
+                                       -&gt; Reopened (if retest fails) -&gt; back to Open
+                        -&gt; Rejected / Duplicate / Deferred (alternate paths)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New</td>
+<td>Defect logged by tester</td>
+</tr>
+<tr>
+<td>Assigned</td>
+<td>Assigned to a developer</td>
+</tr>
+<tr>
+<td>Open</td>
+<td>Developer is actively working on it</td>
+</tr>
+<tr>
+<td>Fixed</td>
+<td>Developer has made the code change</td>
+</tr>
+<tr>
+<td>Retest</td>
+<td>Tester re-verifies the fix</td>
+</tr>
+<tr>
+<td>Verified/Closed</td>
+<td>Fix confirmed working, defect closed</td>
+</tr>
+<tr>
+<td>Reopened</td>
+<td>Fix didn't actually resolve the issue</td>
+</tr>
+<tr>
+<td>Rejected</td>
+<td>Not a valid defect (e.g., works as designed)</td>
+</tr>
+<tr>
+<td>Deferred</td>
+<td>Valid, but postponed to a future release</td>
+</tr>
+</tbody>
+</table>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between smoke, sanity, and regression testing">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.18</span>
+            <span class="tc-name">Difference between Smoke, Sanity, and Regression testing</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Think of it as three levels of "is this safe to proceed": <strong>Smoke</strong> is a quick check that the build didn't catch fire ("does the app even launch?"). <strong>Sanity</strong> is a focused check that a specific fix/feature works as expected, without going deep. <strong>Regression</strong> is the full sweep, making sure nothing <em>else</em> broke as a side effect.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Scope</th>
+<th>When run</th>
+<th>Depth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Smoke</td>
+<td>Critical, broad functionalities</td>
+<td>Right after a new build is deployed</td>
+<td>Shallow, wide</td>
+</tr>
+<tr>
+<td>Sanity</td>
+<td>Specific feature/bug-fix area</td>
+<td>After a minor fix or small change</td>
+<td>Narrow, quick</td>
+</tr>
+<tr>
+<td>Regression</td>
+<td>Entire application (or large areas)</td>
+<td>Before a release, after major changes</td>
+<td>Deep, comprehensive</td>
+</tr>
+</tbody>
+</table>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is maven, and what&#x27;s the purpose of `pom.xml`?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.19</span>
+            <span class="tc-name">What is Maven, and what&#x27;s the purpose of `pom.xml`?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Maven is a <strong>build automation and dependency management tool</strong> for Java — instead of manually downloading and managing <code>.jar</code> files for Selenium, TestNG, REST Assured, etc., Maven fetches them automatically based on what you declare, like a grocery delivery service that brings exactly the ingredients your recipe calls for.</p>
+<p><code>pom.xml</code> (<strong>P</strong>roject <strong>O</strong>bject <strong>M</strong>odel) is the project's configuration file — it declares dependencies, plugins, build settings, and project metadata.</p>
+<pre><code class="language-xml">&lt;project&gt;
+    &lt;groupId&gt;com.dbs.automation&lt;/groupId&gt;
+    &lt;artifactId&gt;qa-framework&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+            &lt;artifactId&gt;selenium-java&lt;/artifactId&gt;
+            &lt;version&gt;4.21.0&lt;/version&gt;
+        &lt;/dependency&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.testng&lt;/groupId&gt;
+            &lt;artifactId&gt;testng&lt;/artifactId&gt;
+            &lt;version&gt;7.10.2&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;
+</code></pre>
+<p>Common Maven commands used in automation: <code>mvn clean</code> (remove old build artifacts), <code>mvn test</code> (run tests), <code>mvn install</code> (build and install to local repo).</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between mocking and stubbing in test automation">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R3.20</span>
+            <span class="tc-name">Difference between Mocking and Stubbing in test automation</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Both are ways to <strong>fake a dependency</strong> during testing so you don't rely on a real system (like a slow third-party payment gateway) — but they serve slightly different purposes.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Stub</th>
+<th>Mock</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Provides <strong>canned/fixed responses</strong> to let the test proceed</td>
+<td>Also <strong>verifies interactions</strong> — did the method get called, how many times, with what arguments</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td>State-based ("does my code behave correctly given this input?")</td>
+<td>Behavior-based ("was this dependency actually called correctly?")</td>
+</tr>
+<tr>
+<td>Example</td>
+<td>A stub always returns <code>balance = 5000</code> regardless of input</td>
+<td>A mock asserts that <code>paymentGateway.charge(amount)</code> was called exactly once with <code>amount = 100</code></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">// Stubbing with Mockito
+when(accountService.getBalance(&quot;12345&quot;)).thenReturn(5000.0);
+
+// Mocking + verifying interaction
+PaymentGateway mockGateway = mock(PaymentGateway.class);
+orderService.placeOrder(order, mockGateway);
+verify(mockGateway, times(1)).charge(100.0);
+</code></pre>
+<p>In practice, in API/service-layer testing, you commonly use <strong>stubs</strong> (via WireMock or Mockito <code>when()</code>) to isolate the component under test from external systems that are slow, unstable, or cost money to call repeatedly (like a real payment gateway).</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="round" id="round-4">
+      <div class="round-head">
+        <div class="round-head-left">
+          <span class="round-tag r4">FRAMEWORK/ADV</span>
+          <h2>Round 4 · Framework Design, Java Advanced &amp; Process</h2>
+        </div>
+        <div class="round-head-right">
+          <span class="round-count">20 cases</span>
+          <button class="toggle-all" data-target="round-4" data-state="collapsed">expand all</button>
+        </div>
+      </div>
+      <div class="round-body">
+        
+        <details class="test-case" data-title="what are xpath axes? give examples for dynamic elements">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.01</span>
+            <span class="tc-name">What are XPath axes? Give examples for dynamic elements</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>XPath axes let you navigate the DOM <strong>relative to a known element</strong> — like giving directions relative to a landmark ("two doors down from the bakery") instead of a fixed address, which is essential when an element itself has no unique ID but a nearby element does.</p>
+<pre><code class="language-java">// parent::  — go up to the immediate parent
+driver.findElement(By.xpath(&quot;//input[@id='email']/parent::div&quot;));
+
+// following-sibling:: — next sibling element(s)
+driver.findElement(By.xpath(&quot;//label[text()='Email']/following-sibling::input&quot;));
+
+// preceding-sibling:: — previous sibling element(s)
+driver.findElement(By.xpath(&quot;//input[@id='submitBtn']/preceding-sibling::input&quot;));
+
+// ancestor:: — any ancestor up the tree
+driver.findElement(By.xpath(&quot;//span[text()='Error']/ancestor::form&quot;));
+
+// descendant:: — any descendant down the tree
+driver.findElement(By.xpath(&quot;//div[@id='card']/descendant::button&quot;));
+
+// contains() and text() — for dynamic/partial attribute matching
+driver.findElement(By.xpath(&quot;//button[contains(@class,'btn-primary')]&quot;));
+driver.findElement(By.xpath(&quot;//*[text()='Submit']&quot;));
+</code></pre>
+<p>These axes are the go-to fix when a target element has no reliable locator of its own but sits near one that does (a very common situation in poorly-tagged banking UI grids/tables).</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="css selector vs xpath — which is faster and why?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.02</span>
+            <span class="tc-name">CSS Selector vs XPath — which is faster and why?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Both locate elements, but <strong>CSS Selectors are generally faster</strong> because browsers have a native, highly optimized CSS engine (used for styling every page anyway), whereas XPath relies on a separate, more general-purpose traversal engine — like taking a dedicated highway (CSS) versus a scenic backroad that can go anywhere but isn't built for speed (XPath).</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>CSS Selector</th>
+<th>XPath</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speed</td>
+<td>Faster (native browser engine)</td>
+<td>Slower (especially in older IE, less so in modern browsers)</td>
+</tr>
+<tr>
+<td>Traverse upward (parent)</td>
+<td>Not possible</td>
+<td>Possible (<code>parent::</code>, <code>ancestor::</code>)</td>
+</tr>
+<tr>
+<td>Text-based matching</td>
+<td>Not supported directly</td>
+<td>Supported (<code>text()</code>, <code>contains()</code>)</td>
+</tr>
+<tr>
+<td>Readability</td>
+<td>Generally shorter/cleaner</td>
+<td>Can get verbose</td>
+</tr>
+<tr>
+<td>Cross-browser support</td>
+<td>Excellent</td>
+<td>Excellent</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">// CSS
+driver.findElement(By.cssSelector(&quot;input#email&quot;));
+driver.findElement(By.cssSelector(&quot;div.card &gt; button.primary&quot;));
+
+// XPath (needed here because CSS can't go &quot;upward&quot; or match by text)
+driver.findElement(By.xpath(&quot;//button[text()='Submit']/ancestor::form&quot;));
+</code></pre>
+<p><strong>Practical guidance:</strong> prefer CSS for straightforward locators; fall back to XPath only when you need text matching or upward traversal.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is selenium grid, and how does it help with parallel execution?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.03</span>
+            <span class="tc-name">What is Selenium Grid, and how does it help with parallel execution?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Selenium Grid distributes test execution across multiple machines/browsers/OS combinations simultaneously — like a call center routing incoming calls to whichever available agent (node) matches the required skill (browser + OS), instead of one agent handling every call sequentially.</p>
+<p><strong>Architecture (Selenium 4 Grid):</strong>
+- <strong>Hub/Router</strong> — receives test requests and routes them to a matching node.
+- <strong>Nodes</strong> — machines registered with the hub, each capable of running specific browser/OS combinations.</p>
+<pre><code class="language-java">// Connect to Grid instead of a local browser
+DesiredCapabilities caps = new DesiredCapabilities();
+caps.setBrowserName(&quot;chrome&quot;);
+caps.setPlatform(Platform.WINDOWS);
+
+WebDriver driver = new RemoteWebDriver(new URL(&quot;http://gridhub:4444/wd/hub&quot;), caps);
+</code></pre>
+<p><strong>Benefits:</strong> drastically cuts regression suite execution time by running tests in parallel across many machines, and enables cross-browser/cross-OS coverage without needing every combination installed locally. Cloud vendors like BrowserStack/Sauce Labs are essentially managed Selenium Grid services.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you run tests in parallel using testng, and how do you avoid webdriver conflicts?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.04</span>
+            <span class="tc-name">How do you run tests in parallel using TestNG, and how do you avoid WebDriver conflicts?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>TestNG supports parallel execution at the <code>methods</code>, <code>classes</code>, <code>tests</code>, or <code>suites</code> level via <code>testng.xml</code>. The danger is that if all threads share <strong>one static <code>WebDriver</code> instance</strong>, they'll interfere with each other — like multiple people trying to drive the same car at once. The fix is <code>ThreadLocal&lt;WebDriver&gt;</code>, giving each thread its own isolated driver instance.</p>
+<pre><code class="language-xml">&lt;suite name=&quot;RegressionSuite&quot; parallel=&quot;methods&quot; thread-count=&quot;4&quot;&gt;
+    &lt;test name=&quot;LoginTests&quot;&gt;
+        &lt;classes&gt;
+            &lt;class name=&quot;tests.LoginTest&quot;/&gt;
+        &lt;/classes&gt;
+    &lt;/test&gt;
+&lt;/suite&gt;
+</code></pre>
+<pre><code class="language-java">public class DriverManager {
+    private static ThreadLocal&lt;WebDriver&gt; driver = new ThreadLocal&lt;&gt;();
+
+    public static void setDriver() {
+        driver.set(new ChromeDriver());
+    }
+
+    public static WebDriver getDriver() {
+        return driver.get();
+    }
+
+    public static void quitDriver() {
+        driver.get().quit();
+        driver.remove();
+    }
+}
+</code></pre>
+<p>Each thread calls <code>getDriver()</code> and gets <strong>its own</strong> browser instance — no shared state, no race conditions.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what are data-driven, keyword-driven, and hybrid frameworks?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.05</span>
+            <span class="tc-name">What are Data-Driven, Keyword-Driven, and Hybrid frameworks?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>These are three approaches to organizing automation logic, in increasing order of abstraction:</p>
+<table>
+<thead>
+<tr>
+<th>Framework type</th>
+<th>Core idea</th>
+<th>Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data-Driven</strong></td>
+<td>Test logic is fixed; only input <strong>data</strong> varies (from Excel/CSV/DB)</td>
+<td>Same recipe, different ingredient quantities each time</td>
+</tr>
+<tr>
+<td><strong>Keyword-Driven</strong></td>
+<td>Actions are represented as <strong>keywords</strong> (e.g., "Click", "Type") in a spreadsheet, interpreted by a generic engine — testers with no coding skill can write test steps</td>
+<td>A universal remote where each button (keyword) does a predefined action</td>
+</tr>
+<tr>
+<td><strong>Hybrid</strong></td>
+<td>Combines both — data-driven inputs <strong>and</strong> keyword-style reusable actions, often layered with POM</td>
+<td>A recipe book where each recipe (keyword sequence) can be run with different ingredient sets (data)</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">// Data-driven with TestNG @DataProvider
+@DataProvider(name = &quot;loginData&quot;)
+public Object[][] getData() {
+    return new Object[][] {
+        {&quot;user1&quot;, &quot;pass1&quot;},
+        {&quot;user2&quot;, &quot;pass2&quot;}
+    };
+}
+
+@Test(dataProvider = &quot;loginData&quot;)
+public void testLogin(String username, String password) {
+    loginPage.login(username, password);
+}
+</code></pre>
+<p>Most real-world enterprise frameworks (like what you'd build for a bank) are <strong>hybrid</strong> — POM for structure, data providers for inputs, and Cucumber/BDD for readability.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is the java 8 stream api? example filtering and collecting a list">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.06</span>
+            <span class="tc-name">What is the Java 8 Stream API? Example filtering and collecting a list</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Streams let you process collections <strong>declaratively</strong> — describing <em>what</em> you want, not <em>how</em> to loop through it — similar to giving instructions to a factory line ("filter out defective ones, then package the rest") rather than manually inspecting each item yourself.</p>
+<pre><code class="language-java">List&lt;String&gt; accounts = Arrays.asList(&quot;SAV123&quot;, &quot;CUR456&quot;, &quot;SAV789&quot;, &quot;LOAN001&quot;);
+
+List&lt;String&gt; savingsAccounts = accounts.stream()
+        .filter(acc -&gt; acc.startsWith(&quot;SAV&quot;))
+        .map(String::toLowerCase)
+        .collect(Collectors.toList());
+
+System.out.println(savingsAccounts); // [sav123, sav789]
+
+// Common use in test automation: filtering failed test results
+List&lt;String&gt; failedTests = testResults.stream()
+        .filter(r -&gt; r.getStatus().equals(&quot;FAILED&quot;))
+        .map(TestResult::getTestName)
+        .collect(Collectors.toList());
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is a lambda expression and a functional interface in java?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.07</span>
+            <span class="tc-name">What is a Lambda expression and a Functional Interface in Java?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>A <strong>Lambda expression</strong> is a compact way to write an anonymous function inline — like writing a quick sticky note instead of a formal letter for a one-off instruction. It only works with a <strong>Functional Interface</strong> — an interface with exactly <strong>one</strong> abstract method (the "contract" the lambda fulfills).</p>
+<pre><code class="language-java">// Functional interface (built-in: java.util.function.Predicate)
+Predicate&lt;Integer&gt; isEven = num -&gt; num % 2 == 0;
+System.out.println(isEven.test(10)); // true
+
+// Custom functional interface
+@FunctionalInterface
+interface Validator {
+    boolean validate(String input);
+}
+
+Validator emailValidator = email -&gt; email.contains(&quot;@&quot;);
+System.out.println(emailValidator.validate(&quot;test@dbs.com&quot;)); // true
+
+// Common Selenium use: waiting with a lambda condition
+wait.until(driver -&gt; driver.findElement(By.id(&quot;status&quot;)).getText().equals(&quot;Ready&quot;));
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `string`, `stringbuilder`, and `stringbuffer`">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.08</span>
+            <span class="tc-name">Difference between `String`, `StringBuilder`, and `StringBuffer`</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>String</code> is <strong>immutable</strong> — every "modification" actually creates a brand-new object, like photocopying a document every time you edit one line, instead of editing in place. <code>StringBuilder</code>/<code>StringBuffer</code> are <strong>mutable</strong> — they edit an internal buffer directly, like editing a Word document.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>String</th>
+<th>StringBuilder</th>
+<th>StringBuffer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mutability</td>
+<td>Immutable</td>
+<td>Mutable</td>
+<td>Mutable</td>
+</tr>
+<tr>
+<td>Thread safety</td>
+<td>N/A (immutable, inherently safe)</td>
+<td>Not synchronized (not thread-safe)</td>
+<td>Synchronized (thread-safe)</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Slow for repeated concatenation</td>
+<td>Fast</td>
+<td>Slower than StringBuilder (due to sync overhead)</td>
+</tr>
+<tr>
+<td>When to use</td>
+<td>Fixed/rarely-changed text</td>
+<td>Single-threaded string building (e.g., building a report string in a loop)</td>
+<td>Multi-threaded string building</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-java">StringBuilder sb = new StringBuilder();
+for (String test : testNames) {
+    sb.append(test).append(&quot;, &quot;); // efficient — no new object per iteration
+}
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `==` and `.equals()`, and why override `equals()` and `hashcode()` together">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.09</span>
+            <span class="tc-name">Difference between `==` and `.equals()`, and why override `equals()` and `hashCode()` together</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>==</code> compares <strong>references</strong> (are these two variables pointing to the exact same object in memory?), while <code>.equals()</code> compares <strong>content/value</strong> (do these two objects logically represent the same thing?) — like comparing whether two people are holding the <em>same physical photograph</em> (<code>==</code>) versus whether the <em>photographs look identical</em> (<code>.equals()</code>).</p>
+<pre><code class="language-java">String a = new String(&quot;DBS&quot;);
+String b = new String(&quot;DBS&quot;);
+
+System.out.println(a == b);        // false — different objects in memory
+System.out.println(a.equals(b));   // true — same content
+</code></pre>
+<p><strong>Why override both together:</strong> Java's contract states that if two objects are <code>.equals()</code>, they <strong>must</strong> produce the same <code>hashCode()</code> — otherwise, collections like <code>HashMap</code>/<code>HashSet</code> break (an object could be "equal" to another but stored in a different bucket, so lookups silently fail).</p>
+<pre><code class="language-java">@Override
+public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Account)) return false;
+    Account acc = (Account) o;
+    return this.accountId.equals(acc.accountId);
+}
+
+@Override
+public int hashCode() {
+    return Objects.hash(accountId);
+}
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `comparable` and `comparator` in java">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.10</span>
+            <span class="tc-name">Difference between `Comparable` and `Comparator` in Java</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>Comparable</code> defines an object's <strong>natural, default sort order</strong> — built into the class itself (like a person having one fixed height they're always sorted by). <code>Comparator</code> defines <strong>external, custom</strong> sort orders — you can have many, without touching the original class (like sorting the same people by height <em>or</em> age <em>or</em> name, depending on the situation).</p>
+<pre><code class="language-java">class Account implements Comparable&lt;Account&gt; {
+    String accountId;
+    double balance;
+
+    @Override
+    public int compareTo(Account other) {
+        return this.accountId.compareTo(other.accountId); // natural order: by ID
+    }
+}
+
+// External Comparator: sort by balance instead
+Comparator&lt;Account&gt; byBalance = (a1, a2) -&gt; Double.compare(a1.balance, a2.balance);
+accounts.sort(byBalance);
+
+// Or with method references
+accounts.sort(Comparator.comparing(Account::getBalance).reversed());
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is try-with-resources in java?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.11</span>
+            <span class="tc-name">What is try-with-resources in Java?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>try-with-resources</code> automatically closes resources (like file streams, DB connections, or Selenium's <code>WebDriver</code> in some patterns) at the end of the block — even if an exception occurs — without needing an explicit <code>finally</code> block. It's like a self-locking door that shuts automatically once you walk out, instead of you having to remember to lock it yourself.</p>
+<pre><code class="language-java">// Traditional way — verbose, error-prone if you forget finally
+Connection conn = null;
+try {
+    conn = DriverManager.getConnection(url, user, pass);
+    // use conn
+} finally {
+    if (conn != null) conn.close();
+}
+
+// try-with-resources — automatic cleanup
+try (Connection conn = DriverManager.getConnection(url, user, pass);
+     Statement stmt = conn.createStatement()) {
+    ResultSet rs = stmt.executeQuery(&quot;SELECT * FROM accounts&quot;);
+    // use rs
+} // conn and stmt are automatically closed here, even on exception
+</code></pre>
+<p>Requires the resource class to implement <code>AutoCloseable</code>.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="difference between `throw` and `throws` in java">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.12</span>
+            <span class="tc-name">Difference between `throw` and `throws` in Java</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><code>throw</code> is the <strong>action</strong> of actually raising an exception at a specific point in the code. <code>throws</code> is a <strong>declaration</strong> in the method signature, warning callers "this method might raise this exception, handle it." Think of <code>throws</code> as a warning label on a product ("may contain nuts") and <code>throw</code> as the moment the allergic reaction actually happens.</p>
+<pre><code class="language-java">public void withdraw(double amount) throws InsufficientFundsException { // declaration
+    if (amount &gt; balance) {
+        throw new InsufficientFundsException(&quot;Insufficient balance&quot;); // actual raise
+    }
+    balance -= amount;
+}
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="how do you connect to a database and validate data using jdbc in a test?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.13</span>
+            <span class="tc-name">How do you connect to a database and validate data using JDBC in a test?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>JDBC lets your Java test code query the database directly — useful for <strong>backend validation</strong>, e.g., confirming a UI action actually persisted correctly in the database.</p>
+<pre><code class="language-java">public void validateAccountBalance(String accountId, double expectedBalance) throws SQLException {
+    String url = &quot;jdbc:mysql://localhost:3306/bankingdb&quot;;
+    try (Connection conn = DriverManager.getConnection(url, &quot;user&quot;, &quot;password&quot;);
+         PreparedStatement stmt = conn.prepareStatement(
+                 &quot;SELECT balance FROM accounts WHERE account_id = ?&quot;)) {
+
+        stmt.setString(1, accountId);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                double actualBalance = rs.getDouble(&quot;balance&quot;);
+                Assert.assertEquals(actualBalance, expectedBalance, 0.01,
+                        &quot;Balance mismatch for account &quot; + accountId);
+            } else {
+                Assert.fail(&quot;Account not found: &quot; + accountId);
+            }
+        }
+    }
+}
+</code></pre>
+<p><code>PreparedStatement</code> is preferred over raw <code>Statement</code> — it prevents SQL injection and handles parameter escaping automatically.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is postman, and how is it different from rest assured?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.14</span>
+            <span class="tc-name">What is Postman, and how is it different from REST Assured?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Postman is a <strong>GUI-based API client</strong> — great for manually exploring, debugging, and quickly testing APIs without writing code. REST Assured is a <strong>code-based Java library</strong> — meant for automating API tests as part of a CI/CD suite, version-controlled alongside the rest of your framework.</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Postman</th>
+<th>REST Assured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interface</td>
+<td>GUI, point-and-click</td>
+<td>Java code</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Manual/exploratory API testing, quick debugging</td>
+<td>Automated regression suites, CI/CD integration</td>
+</tr>
+<tr>
+<td>Version control</td>
+<td>Collections can be exported as JSON, but less natural in Git diffs</td>
+<td>Naturally lives in your Java/Maven project, clean Git history</td>
+</tr>
+<tr>
+<td>Scripting</td>
+<td>JavaScript (pre-request/test scripts)</td>
+<td>Java, integrates with TestNG/JUnit assertions</td>
+</tr>
+<tr>
+<td>Automation in CI</td>
+<td>Via <strong>Newman</strong> (Postman's CLI runner)</td>
+<td>Native — runs directly via Maven/Jenkins</td>
+</tr>
+</tbody>
+</table>
+<p>In practice, teams often use <strong>Postman for exploration</strong> during API development, then <strong>REST Assured for building the permanent automated regression suite</strong>.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="equivalence partitioning and boundary value analysis — with an example">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.15</span>
+            <span class="tc-name">Equivalence Partitioning and Boundary Value Analysis — with an example</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Both are <strong>black-box test design techniques</strong> used to pick a smart, minimal set of test inputs instead of testing every possible value.</p>
+<p><strong>Equivalence Partitioning (EP):</strong> Divide inputs into groups ("partitions") that should behave the same way, then test <strong>one representative value per group</strong> — since testing every value in a group is redundant if they all should behave identically.</p>
+<p><strong>Boundary Value Analysis (BVA):</strong> Bugs love to hide at the <strong>edges</strong> of a range, so specifically test values at, just below, and just above each boundary.</p>
+<p><strong>Example:</strong> A fund transfer field accepts amounts from ₹1 to ₹100,000.</p>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Test values</th>
+<th>Reasoning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Equivalence Partitioning</td>
+<td>-50 (invalid, below range), 500 (valid, mid-range), 150000 (invalid, above range)</td>
+<td>One representative from each partition: invalid-low, valid, invalid-high</td>
+</tr>
+<tr>
+<td>Boundary Value Analysis</td>
+<td>0, 1, 2 (near lower boundary), 99999, 100000, 100001 (near upper boundary)</td>
+<td>Bugs commonly occur exactly at "off by one" boundary conditions</td>
+</tr>
+</tbody>
+</table>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="agile methodology and qa&#x27;s role in scrum ceremonies">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.16</span>
+            <span class="tc-name">Agile methodology and QA&#x27;s role in Scrum ceremonies</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Agile is an iterative approach to software delivery — working in short cycles (<strong>Sprints</strong>, typically 2 weeks) instead of one long waterfall release, allowing faster feedback and adaptation. Scrum is the most common Agile framework, structured around defined ceremonies:</p>
+<table>
+<thead>
+<tr>
+<th>Ceremony</th>
+<th>QA's role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sprint Planning</strong></td>
+<td>Estimate testing effort for stories; flag testability concerns early</td>
+</tr>
+<tr>
+<td><strong>Daily Standup</strong></td>
+<td>Report testing progress, blockers (e.g., "waiting on a test environment fix")</td>
+</tr>
+<tr>
+<td><strong>Backlog Refinement</strong></td>
+<td>Review acceptance criteria for clarity/testability before stories enter a sprint</td>
+</tr>
+<tr>
+<td><strong>Sprint Review/Demo</strong></td>
+<td>Validate that demoed features actually meet acceptance criteria</td>
+</tr>
+<tr>
+<td><strong>Retrospective</strong></td>
+<td>Raise process improvements — e.g., "we need earlier access to test data"</td>
+</tr>
+</tbody>
+</table>
+<p>QA in Agile works <strong>throughout</strong> the sprint (shift-left testing) rather than only at the end — writing test cases as stories are refined, automating as features stabilize, and continuously regression-testing.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is jmeter, and how is it used for performance testing?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.17</span>
+            <span class="tc-name">What is JMeter, and how is it used for performance testing?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Apache JMeter is an open-source tool for <strong>load and performance testing</strong> — it simulates many virtual users hitting your application simultaneously, to see how it behaves under stress (like flooding a bank's website with thousands of simultaneous "login" requests to see if it slows down or crashes).</p>
+<p><strong>Key components:</strong>
+- <strong>Thread Group</strong> — defines number of virtual users, ramp-up time, loop count.
+- <strong>Sampler</strong> (e.g., HTTP Request) — the actual request being sent (e.g., <code>POST /login</code>).
+- <strong>Listener</strong> — collects and displays results (response time, throughput, error rate).</p>
+<pre><code>Thread Group: 500 users, ramp-up 60s, loop 10 times
+  -&gt; HTTP Request Sampler: POST /api/login
+  -&gt; Response Assertion: status code == 200
+  -&gt; Listener: View Results Tree / Summary Report
+</code></pre>
+<p><strong>Typical metrics QA looks at:</strong> average/90th-percentile response time, throughput (requests/sec), and error rate under load — critical for banking systems where transaction endpoints must stay responsive during peak hours.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is docker, and why would a qa automation engineer use it?">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.18</span>
+            <span class="tc-name">What is Docker, and why would a QA automation engineer use it?</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>Docker packages an application (and everything it needs — OS libraries, dependencies, config) into a <strong>container</strong> — a lightweight, portable unit that runs identically anywhere. It's like a shipping container: standardized on the outside so any ship/crane can handle it, regardless of what's packed inside.</p>
+<p><strong>Why QA uses it:</strong>
+- <strong>Consistent test environments</strong> — "works on my machine" problems disappear since the container is identical everywhere (local, CI, staging).
+- <strong>Selenium Grid in containers</strong> — spin up isolated browser nodes (<code>selenium/standalone-chrome</code>) instantly without installing browsers locally.
+- <strong>Disposable test databases</strong> — spin up a fresh, clean DB container for each test run, then tear it down — no leftover test data polluting future runs.</p>
+<pre><code class="language-bash"># Run a Selenium Chrome node in Docker for automation
+docker run -d -p 4444:4444 --shm-size=2g selenium/standalone-chrome
+
+# Point RemoteWebDriver at it
+new RemoteWebDriver(new URL(&quot;http://localhost:4444/wd/hub&quot;), chromeOptions);
+</code></pre>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="what is a branching strategy? explain git flow / feature branching">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.19</span>
+            <span class="tc-name">What is a branching strategy? Explain Git Flow / feature branching</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p>A branching strategy is a team's agreed convention for how code changes flow through branches before reaching production — like traffic rules that keep multiple people from stepping on each other's changes.</p>
+<p><strong>Feature Branching (most common in modern teams):</strong></p>
+<pre><code>main (always production-ready)
+  -&gt; develop (integration branch)
+        -&gt; feature/fund-transfer-automation
+        -&gt; feature/api-regression-suite
+        -&gt; bugfix/login-flaky-test
+</code></pre>
+<ul>
+<li>Each new feature/fix gets its <strong>own branch</strong>, created off <code>develop</code> (or <code>main</code>).</li>
+<li>Work happens in isolation; merged back via a <strong>Pull Request</strong> with code review.</li>
+<li><code>main</code> is always deployable; <code>develop</code> (if used) integrates completed features before release.</li>
+</ul>
+<p><strong>Git Flow</strong> (a stricter, more structured variant) additionally defines <code>release/*</code> and <code>hotfix/*</code> branches for formal release management — common in regulated environments like banking, where release processes need clear audit trails.</p>
+<p>For QA automation repos specifically, this means: your regression suite lives on <code>main</code>/<code>develop</code>, new test additions go through feature branches and PR review just like application code, keeping the framework maintainable and reviewed.</p>
+          </div>
+        </details>
+
+        <details class="test-case" data-title="bug vs defect vs enhancement — and general best practices for writing good test cases">
+          <summary>
+            <span class="tc-check" aria-hidden="true">✓</span>
+            <span class="tc-id">R4.20</span>
+            <span class="tc-name">Bug vs Defect vs Enhancement — and general best practices for writing good test cases</span>
+            <span class="tc-chev" aria-hidden="true">▸</span>
+          </summary>
+          <div class="tc-body">
+            <p><strong>Terminology (often used loosely, but technically distinct):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Bug</strong></td>
+<td>An issue found <strong>during testing</strong>, before release — the app doesn't behave as expected</td>
+</tr>
+<tr>
+<td><strong>Defect</strong></td>
+<td>An issue found <strong>after release</strong> (in production) — same root concept as a bug, different discovery phase</td>
+</tr>
+<tr>
+<td><strong>Enhancement</strong></td>
+<td>Not a failure at all — a request to <strong>add new capability</strong> beyond current requirements</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Best practices for writing good test cases:</strong>
+- <strong>One test, one purpose</strong> — each test case should validate a single, specific behavior, so a failure immediately tells you what broke.
+- <strong>Independent &amp; isolated</strong> — a test shouldn't depend on another test's leftover state (e.g., don't assume "account created in Test A" still exists when Test B runs).
+- <strong>Clear pass/fail criteria</strong> — the expected result must be unambiguous, not "check if it looks right."
+- <strong>Use realistic + edge-case data</strong> — combine typical inputs with boundary/negative values (ties back to EP/BVA above).
+- <strong>Traceable to requirements</strong> — each test case should map back to a specific requirement/acceptance criterion, so coverage gaps are visible.
+- <strong>Repeatable &amp; environment-agnostic</strong> — should produce the same result on any run/environment, not rely on manual pre-setup steps that aren't automated.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+  <p class="no-results" id="no-results">$ grep: no test cases matched your query — try a different term</p>
+
+  <div class="footer">
+    <div class="line"><span class="path">node</span>: dbs-bank-round-1..4 · assertions: hard-technical, senior-SDET depth</div>
+    <div class="line">$ echo $?</div>
+    <div class="line ok">0</div>
+  </div>
+
+</div>
+
+<script>
+// ---- syntax highlighting (lightweight, regex-based) ----
+(function() {
+  const KEYWORDS = /\b(public|private|protected|static|final|void|class|interface|abstract|extends|implements|new|return|if|else|for|while|do|try|catch|finally|throw|throws|import|package|this|super|null|true|false|int|long|double|float|boolean|char|String|var|default|switch|case|break|continue|instanceof|synchronized)\b/g;
+  const TYPES = /\b([A-Z][a-zA-Z0-9_]*(?:<[^>]*>)?)\b(?=[\s\.\(\)\[\],;]|$)/g;
+  const ANNOT = /(@[A-Za-z][A-Za-z0-9_]*)/g;
+  const SQLKW = /\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|HAVING|JOIN|INNER JOIN|LEFT JOIN|RIGHT JOIN|ON|AS|COUNT|SUM|AVG|DESC|ASC|AND|OR|NOT|NULL|IS|INSERT|INTO|VALUES|UPDATE|SET|DELETE|CREATE|TABLE)\b/gi;
+
+  function escapeHtml(s) {
+    return s;
+  }
+
+  function highlight(code, lang) {
+    // split by strings/comments first to avoid double-processing inside them
+    const tokens = [];
+    let src = code;
+    // protect strings
+    src = src.replace(/(".*?"|'.*?')/g, m => {
+      tokens.push('<span class="tok-str">' + m + '</span>');
+      return '\u0000' + (tokens.length - 1) + '\u0000';
+    });
+    // protect comments
+    src = src.replace(/(\/\/[^\n]*|#[^\n]*|--[^\n]*)/g, m => {
+      tokens.push('<span class="tok-com">' + m + '</span>');
+      return '\u0000' + (tokens.length - 1) + '\u0000';
+    });
+
+    if (lang === 'sql') {
+      src = src.replace(SQLKW, '<span class="tok-kw">$1</span>');
+    } else if (lang === 'java' || lang === 'groovy' || lang === 'xml') {
+      src = src.replace(ANNOT, '<span class="tok-ann">$1</span>');
+      src = src.replace(KEYWORDS, '<span class="tok-kw">$1</span>');
+      src = src.replace(/\b(\d+\.?\d*)\b/g, '<span class="tok-num">$1</span>');
+    } else if (lang === 'bash') {
+      src = src.replace(/\b(git|mvn|docker|npm|sh|npx)\b/g, '<span class="tok-kw">$1</span>');
+    } else if (lang === 'gherkin') {
+      src = src.replace(/\b(Feature|Scenario|Scenario Outline|Background|Given|When|Then|And|But|Examples)\b/g, '<span class="tok-kw">$1</span>');
+    }
+
+    // restore protected tokens
+    src = src.replace(/\u0000(\d+)\u0000/g, (m, i) => tokens[parseInt(i)]);
+    return src;
+  }
+
+  document.querySelectorAll('.tc-body pre code').forEach(block => {
+    const cls = [...block.classList].find(c => c.startsWith('language-'));
+    const lang = cls ? cls.replace('language-', '') : 'text';
+    const raw = block.textContent;
+    block.innerHTML = highlight(block.innerHTML, lang);
+
+    const pre = block.parentElement;
+    const header = document.createElement('div');
+    header.className = 'code-lang';
+    header.innerHTML = '<span>' + lang + '</span><span class="lang-dots"><span></span><span></span><span></span></span>';
+    pre.insertBefore(header, block);
+  });
+})();
+
+// ---- expand / collapse all per round ----
+document.querySelectorAll('.toggle-all').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const round = document.getElementById(btn.dataset.target);
+    const cases = round.querySelectorAll('.test-case');
+    const expand = btn.dataset.state === 'collapsed';
+    cases.forEach(c => c.open = expand);
+    btn.dataset.state = expand ? 'expanded' : 'collapsed';
+    btn.textContent = expand ? 'collapse all' : 'expand all';
+  });
+});
+
+// ---- search filter ----
+const searchInput = document.getElementById('search');
+const searchCount = document.getElementById('search-count');
+const noResults = document.getElementById('no-results');
+const allCases = document.querySelectorAll('.test-case');
+const allRounds = document.querySelectorAll('.round');
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  let visible = 0;
+  allRounds.forEach(round => {
+    let roundVisible = 0;
+    round.querySelectorAll('.test-case').forEach(tc => {
+      const match = !q || tc.dataset.title.includes(q);
+      tc.style.display = match ? '' : 'none';
+      if (match) { roundVisible++; visible++; }
+    });
+    round.style.display = roundVisible === 0 ? 'none' : '';
+  });
+  searchCount.textContent = q ? (visible + ' match' + (visible === 1 ? '' : 'es')) : '';
+  noResults.style.display = (q && visible === 0) ? 'block' : 'none';
+});
+
+// ---- active nav pill on scroll ----
+const navPills = document.querySelectorAll('.nav-pill');
+const sections = document.querySelectorAll('.round');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    const pill = document.querySelector('.nav-pill[data-round="' + entry.target.id + '"]');
+    if (!pill) return;
+    if (entry.isIntersecting) {
+      navPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
