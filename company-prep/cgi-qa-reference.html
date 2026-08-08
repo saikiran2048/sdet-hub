@@ -89,10 +89,34 @@
     border-radius:6px; margin-bottom:8px;
   }
   footer{text-align:center; color:var(--muted); font-size:0.8em; padding:24px;}
+  /* --- Back to Hub button --- */
+.back-to-hub {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px;
+  padding: 8px 14px;
+  background: #101b2d;
+  border: 1px solid #223252;
+  border-radius: 8px;
+  color: #4fd1e8;
+  text-decoration: none;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.back-to-hub:hover {
+  border-color: #4fd1e8;
+  transform: translateX(-2px);
+}
 </style>
 </head>
 <body>
-
+<a href="../index.html" class="back-to-hub">&larr; Back to Hub</a>
 <header>
   <h1>CGI Interview Prep — Q&amp;A Reference</h1>
   <p>Senior Automation Test Engineer · J0326-0983 · Assessment &amp; F2F prep</p>

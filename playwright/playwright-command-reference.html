@@ -118,10 +118,34 @@
     #sidebar{width:100%;height:auto;position:relative;border-right:none;border-bottom:1px solid var(--border);}
     #main{padding:24px 18px 60px;}
   }
+  /* --- Back to Hub button --- */
+.back-to-hub {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px;
+  padding: 8px 14px;
+  background: #101b2d;
+  border: 1px solid #223252;
+  border-radius: 8px;
+  color: #4fd1e8;
+  text-decoration: none;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.back-to-hub:hover {
+  border-color: #4fd1e8;
+  transform: translateX(-2px);
+}
 </style>
 </head>
 <body>
-
+<a href="../index.html" class="back-to-hub">&larr; Back to Hub</a>
 <nav id="sidebar">
   <div class="brand">
     <div class="prompt">$ npx playwright test --list</div>

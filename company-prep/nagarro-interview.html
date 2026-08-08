@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nagarro SDET Interview — Prep Guide</title>
+<style>
+  :root{
+    --bg: #0b0f14;
+    --bg-panel: #10161d;
+    --bg-card: #131b23;
+    --border: #223140;
+    --text: #d8e2ea;
+    --text-dim: #8ea3b3;
+    --text-faint: #5c7181;
+    --accent: #ffb454;      /* signal amber */
+    --accent-2: #7cc7ff;    /* signal blue */
+    --accent-3: #6ee7b7;    /* success green */
+    --danger: #ff8080;
+    --mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: "IBM Plex Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  a { color: var(--accent-2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ===== Layout shell ===== */
+  .shell{
+    display:grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar{
+    position: sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    padding: 24px 18px 60px;
+  }
+  .sidebar-brand{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-faint);
+    letter-spacing: .08em;
+    margin-bottom: 4px;
+  }
+  .sidebar-title{
+    font-family: var(--mono);
+    font-weight:700;
+    font-size: 17px;
+    color: var(--text);
+    margin: 0 0 22px;
+  }
+  .sidebar-title .cursor{
+    display:inline-block;
+    width:8px; height:16px;
+    background: var(--accent);
+    margin-left:4px;
+    animation: blink 1.1s steps(1) infinite;
+    vertical-align: -2px;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .nav-group{ margin-bottom: 18px; }
+  .nav-group-label{
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--text-faint);
+    margin: 0 0 8px 2px;
+  }
+  .nav-link{
+    display:flex;
+    gap:8px;
+    align-items:baseline;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    padding: 5px 8px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover{ color: var(--text); background: rgba(255,255,255,0.03); text-decoration:none; }
+  .nav-link .tag{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--accent);
+    flex-shrink:0;
+  }
+
+  /* ===== Main content ===== */
+  main{ padding: 56px 56px 120px; max-width: 980px; }
+
+  .hero{
+    border: 1px solid var(--border);
+    background: linear-gradient(160deg, var(--bg-card), var(--bg-panel));
+    border-radius: 14px;
+    padding: 34px 34px 30px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(600px 200px at 85% -10%, rgba(255,180,84,.10), transparent 60%),
+      radial-gradient(500px 200px at 0% 110%, rgba(124,199,255,.08), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-eyebrow{
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--accent);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin:0 0 12px;
+  }
+  .hero h1{
+    font-family: var(--mono);
+    font-size: 34px;
+    line-height:1.25;
+    margin: 0 0 14px;
+    color:#fff;
+    letter-spacing: -0.01em;
+  }
+  .hero p{ color: var(--text-dim); max-width: 640px; margin: 0 0 18px; font-size:15px; }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap: 10px;
+    font-family: var(--mono); font-size: 12px;
+  }
+  .pill{
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-dim);
+    padding: 5px 11px;
+    border-radius: 999px;
+  }
+  .pill b{ color: var(--accent-2); font-weight:600; }
+
+  .round-anchor{ scroll-margin-top: 24px; }
+
+  .round-header{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    margin: 64px 0 26px;
+  }
+  .round-header:first-of-type{ margin-top: 0; }
+  .round-num{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  .round-header h2{
+    font-family: var(--mono);
+    font-size: 22px;
+    margin:0;
+    color:#fff;
+  }
+  .round-header .subtitle{
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-left: auto;
+    text-align:right;
+    font-family: var(--mono);
+  }
+
+  .prose{ color: var(--text-dim); }
+  .prose p{ margin: 0 0 14px; }
+  .prose ul, .prose ol{ margin: 0 0 14px; padding-left: 22px; }
+  .prose li{ margin-bottom: 6px; }
+  .prose strong{ color: var(--text); }
+
+  /* ===== Question cards ===== */
+  .qcard{
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    border-radius: 12px;
+    margin-bottom: 18px;
+    overflow:hidden;
+  }
+  .qcard > summary{
+    list-style:none;
+    cursor:pointer;
+    padding: 16px 20px;
+    display:flex;
+    align-items:flex-start;
+    gap: 14px;
+    font-weight:600;
+    color: var(--text);
+    font-size: 15px;
+  }
+  .qcard > summary::-webkit-details-marker{ display:none; }
+  .qcard > summary::after{
+    content: "+";
+    margin-left:auto;
+    font-family: var(--mono);
+    color: var(--text-faint);
+    font-size: 18px;
+    flex-shrink:0;
+  }
+  .qcard[open] > summary::after{ content: "–"; color: var(--accent); }
+  .qnum{
+    font-family: var(--mono);
+    color: var(--accent-2);
+    font-size: 13px;
+    flex-shrink:0;
+    padding-top:1px;
+  }
+  .qcard-body{
+    padding: 0 20px 20px 52px;
+    color: var(--text-dim);
+    font-size: 14.5px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .qcard-body p{ margin: 0 0 12px; }
+  .qcard-body ul, .qcard-body ol{ margin: 0 0 12px; padding-left: 20px; }
+  .qcard-body li{ margin-bottom: 6px; }
+  .qcard-body strong{ color: var(--text); }
+
+  code, pre code{ font-family: var(--mono); }
+  code{
+    background: rgba(255,180,84,0.12);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+  }
+  pre{
+    background: #0a0e13;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x:auto;
+    margin: 10px 0 14px;
+    position:relative;
+  }
+  pre code{
+    background:none; color:#c9e6c9; padding:0; font-size: 13px; line-height:1.55;
+  }
+  .code-lang{
+    position:absolute; top:8px; right:12px;
+    font-family: var(--mono); font-size:10.5px;
+    color: var(--text-faint); text-transform:uppercase; letter-spacing:.06em;
+  }
+
+  table{ width:100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 13.5px; }
+  th, td{ border: 1px solid var(--border); padding: 9px 12px; text-align:left; vertical-align:top; }
+  th{ background: rgba(255,255,255,0.04); color: var(--text); font-family: var(--mono); font-size:12.5px; }
+  td{ color: var(--text-dim); }
+
+  .callout{
+    border-left: 3px solid var(--accent-2);
+    background: rgba(124,199,255,0.06);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    margin: 14px 0;
+  }
+  .callout b{ color: var(--accent-2); }
+
+  .callout.warn{ border-left-color: var(--accent); background: rgba(255,180,84,0.07); }
+  .callout.warn b{ color: var(--accent); }
+
+  .bridge-box{
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 20px 0 10px;
+    background: rgba(110,231,183,0.03);
+  }
+  .bridge-box h3{
+    font-family: var(--mono);
+    color: var(--accent-3);
+    font-size: 14px;
+    margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing:.05em;
+  }
+  .bridge-box ul{ margin:0; padding-left:20px; color: var(--text-dim); font-size:13.5px; }
+  .bridge-box li{ margin-bottom:8px; }
+  .bridge-box li b{ color: var(--text); }
+
+  .divider{
+    height:1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 56px 0 0;
+  }
+
+  footer{
+    max-width: 980px;
+    padding: 30px 0 10px;
+    color: var(--text-faint);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .bonus-banner{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--bg);
+    background: var(--accent-3);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight:700;
+    margin-bottom: 12px;
+  }
+
+  ::-webkit-scrollbar{ width: 10px; height:10px; }
+  ::-webkit-scrollbar-track{ background: var(--bg); }
+  ::-webkit-scrollbar-thumb{ background: var(--border); border-radius: 6px; }
+
+  /* --- Back to Hub button --- */
+  .back-to-hub {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px;
+    padding: 8px 14px;
+    background: #101b2d;
+    border: 1px solid #223252;
+    border-radius: 8px;
+    color: #4fd1e8;
+    text-decoration: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-to-hub:hover {
+    border-color: #4fd1e8;
+    transform: translateX(-2px);
+    text-decoration: none;
+  }
+
+  /* ===== Mobile-friendly refinements ===== */
+  .table-scroll{ overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 12px 0 16px; }
+  .table-scroll table{ margin: 0; min-width: 480px; }
+
+  @media (max-width: 640px){
+    body{ font-size: 15px; }
+    .back-to-hub{ margin: 10px; padding: 7px 12px; font-size: 0.8rem; }
+
+    main{ padding: 20px 16px 80px; }
+
+    .hero{ padding: 22px 18px 22px; border-radius: 12px; margin-bottom: 34px; }
+    .hero h1{ font-size: 24px; line-height:1.3; }
+    .hero p{ font-size: 13.5px; }
+    .hero-meta{ gap: 8px; }
+    .pill{ font-size: 11px; padding: 4px 9px; }
+
+    .round-header{ flex-wrap: wrap; gap: 8px 12px; margin: 40px 0 18px; }
+    .round-header h2{ font-size: 18px; }
+    .round-header .subtitle{ margin-left: 0; text-align: left; width: 100%; }
+
+    .qcard > summary{ padding: 13px 14px; gap: 10px; font-size: 14px; }
+    .qcard-body{ padding: 0 14px 16px 14px; font-size: 13.5px; }
+    .qnum{ font-size: 12px; }
+
+    pre{ padding: 12px 14px; border-radius: 8px; }
+    pre code{ font-size: 12px; }
+    .code-lang{ top: 6px; right: 10px; font-size: 9.5px; }
+
+    table{ font-size: 12.5px; }
+    th, td{ padding: 7px 9px; }
+
+    .bridge-box{ padding: 16px 16px; }
+
+    .sidebar{ padding: 16px 14px 40px; }
+  }
+
+  @media (max-width: 900px){
+    .shell{ grid-template-columns: 1fr; }
+    .sidebar{
+      position: static;
+      height:auto;
+      max-height: 240px;
+      overflow-y:auto;
+      border-right:none;
+      border-bottom:1px solid var(--border);
+    }
+    main{ padding: 36px 22px 90px; }
+  }
+
+  @media print{
+    .sidebar{ display:none; }
+    .back-to-hub{ display:none; }
+    .shell{ grid-template-columns: 1fr; }
+    .qcard-body{ display:block !important; }
+  }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-to-hub">&larr; Back to Hub</a>
+
+<div class="shell">
+
+  <nav class="sidebar" aria-label="Guide navigation">
+    <div class="sidebar-brand">SDET / INTERVIEW PREP</div>
+    <div class="sidebar-title">Nagarro Track<span class="cursor"></span></div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Rounds</div>
+      <a class="nav-link" href="#round1"><span class="tag">R1</span> Aptitude + Technical Test</a>
+      <a class="nav-link" href="#round2"><span class="tag">R2</span> Technical Round</a>
+      <a class="nav-link" href="#round3"><span class="tag">R3</span> Technical Round</a>
+      <a class="nav-link" href="#round4"><span class="tag">R4</span> HR Round</a>
+      <a class="nav-link" href="#bridge"><span class="tag">✓</span> Cross-Reference Map</a>
+      <a class="nav-link" href="#bonus"><span class="tag">+20</span> Bonus Questions</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Bonus topics</div>
+      <a class="nav-link" href="#bonus">Java, Karate, Kafka</a>
+      <a class="nav-link" href="#bonus">TestNG, CI/CD, DB</a>
+      <a class="nav-link" href="#bonus">API design, Playwright</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <div class="hero">
+      <p class="hero-eyebrow">// interview prep · offline reference</p>
+      <h1>Nagarro SDET Interview<br>Detailed Prep Guide</h1>
+      <p>A round-by-round breakdown of the Nagarro SDET interview loop — aptitude screening, two technical rounds, and HR — with model answers, code, and callbacks to real DBS / GM Financial project experience. Extended with 20 additional bonus questions spanning Java, Karate + Kafka, TestNG, CI/CD, SQL, and Playwright.</p>
+      <div class="hero-meta">
+        <span class="pill">Rounds: <b>4</b></span>
+        <span class="pill">Core Qs: <b>26</b></span>
+        <span class="pill">Bonus Qs: <b>20</b></span>
+        <span class="pill">Stack: <b>Java · Selenium · Karate · Kafka · TestNG · Playwright · JMeter</b></span>
+      </div>
+    </div>
+
+    <!-- ================= ROUND 1 ================= -->
+    <section id="round1" class="round-anchor">
+      <div class="round-header">
+        <span class="round-num">R1</span>
+        <h2>Aptitude + Technical Online Test</h2>
+        <span class="subtitle">Proctored · Webcam</span>
+      </div>
+      <div class="prose">
+        <p><strong>Format:</strong> Verbal ability + Java "predict the output" questions, proctored via webcam.</p>
+        <p><strong>Prep tips:</strong></p>
+        <ul>
+          <li>Revise Java output-based traps: operator precedence, <code>String</code> pool vs <code>new String()</code>, static/instance block execution order, overloading vs overriding resolution, autoboxing edge cases (<code>Integer</code> caching -128 to 127), <code>finally</code> block overriding <code>return</code>, exception hierarchy in <code>catch</code> ordering.</li>
+          <li>Verbal: standard reading comprehension, sentence correction, para jumbles — no special prep needed beyond general aptitude practice (RS Aggarwal / IndiaBix level).</li>
+        </ul>
+        <div class="callout warn">
+          <b>Critical logistics:</b> Test on a wired connection if possible, close all background apps, ensure webcam/mic permissions are granted <em>before</em> the test starts, and sit in a well-lit, quiet room. A single disconnect can flag you for disqualification — treat this like a live proctored exam, not a casual online test.
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ================= ROUND 2 ================= -->
+    <section id="round2" class="round-anchor">
+      <div class="round-header">
+        <span class="round-num">R2</span>
+        <h2>Technical Round</h2>
+        <span class="subtitle">10 questions</span>
+      </div>
+
+      <details class="qcard" open>
+        <summary><span class="qnum">2.1</span> Shift all even numbers to the left side of an array, odd numbers to the right side</summary>
+        <div class="qcard-body">
+          <p>This is a <strong>partitioning problem</strong>, same pattern as the "Dutch National Flag" / partition step in quicksort. Use two pointers.</p>
+          <pre><span class="code-lang">java</span><code>public class EvenOddPartition {
+    public static void partition(int[] arr) {
+        int left = 0, right = arr.length - 1;
+        while (left &lt; right) {
+            // move left forward while it's even
+            while (left &lt; right &amp;&amp; arr[left] % 2 == 0) left++;
+            // move right backward while it's odd
+            while (left &lt; right &amp;&amp; arr[right] % 2 != 0) right--;
+            if (left &lt; right) {
+                int temp = arr[left];
+                arr[left] = arr[right];
+                arr[right] = temp;
+            }
+        }
+    }
+    public static void main(String[] args) {
+        int[] arr = {12, 7, 5, 8, 3, 10, 9, 4};
+        partition(arr);
+        System.out.println(java.util.Arrays.toString(arr));
+    }
+}</code></pre>
+          <ul>
+            <li><strong>Time complexity:</strong> O(n), single pass with two pointers.</li>
+            <li><strong>Space complexity:</strong> O(1), in-place swap.</li>
+            <li>Note: this does <strong>not</strong> preserve original relative order (it's not "stable"). If asked for a stable version, mention you'd need an auxiliary array (O(n) space) — collect evens in order, then odds in order, then merge.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.2</span> Can you create an object of an interface / abstract class? Explain.</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Directly, no</strong> — you cannot do <code>new MyInterface()</code> or <code>new MyAbstractClass()</code>. Both are incomplete types; interfaces have no implementation (pre-Java 8) and abstract classes may have unimplemented (abstract) methods, so the JVM can't build a concrete instance.</li>
+            <li><strong>Indirectly, yes</strong>, via:
+              <ul>
+                <li><strong>Anonymous inner class:</strong> <code>MyInterface obj = new MyInterface() { public void method() {...} };</code> — this actually creates a concrete subclass on the fly and instantiates <em>that</em>.</li>
+                <li><strong>A concrete implementing/extending class:</strong> <code>MyInterface obj = new MyImpl();</code> — reference type is the interface, but the object is of the concrete class.</li>
+                <li><strong>Lambda expressions</strong> (for functional interfaces with a single abstract method) — syntactic sugar over an anonymous implementation.</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="callout"><b>Key line to say:</b> "The interface/abstract class reference variable can point to an object, but the object itself must belong to a concrete class that provides implementations for all abstract methods."</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.3</span> Why is String immutable in Java?</summary>
+        <div class="qcard-body">
+          <p>Give 3–4 reasons, don't just say "security":</p>
+          <ul>
+            <li><strong>String pool / interning:</strong> literals are cached in the String Constant Pool, so immutability lets multiple references safely share the same object.</li>
+            <li><strong>Security:</strong> strings back class names, file paths, network connections, DB URLs, credentials. A mutable string could change after validation but before use (classic TOCTOU issue).</li>
+            <li><strong>Thread safety:</strong> immutable objects are inherently thread-safe — no synchronization needed when shared across threads.</li>
+            <li><strong>Hashcode caching:</strong> since the value never changes, <code>String</code> caches its <code>hashCode()</code> after first computation, making it efficient as a <code>HashMap</code>/<code>HashSet</code> key.</li>
+            <li><strong>Enforcement:</strong> the internal <code>char[]</code>/<code>byte[]</code> (Java 9+ uses compact <code>byte[]</code>) is <code>private final</code>, and the class is <code>final</code> so no subclass can override behavior.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.4</span> Purpose of LinkedHashMap in Java? Have you used it in a framework?</summary>
+        <div class="qcard-body">
+          <p><code>LinkedHashMap</code> extends <code>HashMap</code> but maintains a <strong>doubly linked list</strong> across entries, preserving <strong>insertion order</strong> (or <strong>access order</strong> with the <code>accessOrder=true</code> constructor — useful for an LRU cache).</p>
+          <p>vs <code>HashMap</code> (no order guarantee) and <code>TreeMap</code> (sorted by key, O(log n)) — <code>LinkedHashMap</code> gives predictable iteration at near-<code>HashMap</code> performance.</p>
+          <div class="callout"><b>Framework angle:</b> useful for building ordered JSON request bodies in REST Assured where field order matters for a legacy API, storing Excel/CSV row data in original column order, or an LRU-style cache of WebDriver elements / API responses during a run.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.5</span> What is <code>invocationCount</code> used for in TestNG?</summary>
+        <div class="qcard-body">
+          <p>A <code>@Test</code> annotation attribute that runs the same test method multiple times.</p>
+          <pre><span class="code-lang">java</span><code>@Test(invocationCount = 5)
+public void loginTest() { ... }</code></pre>
+          <p>Common uses: load/stability testing of a single flow (run a flaky-prone login test 10 times to confirm consistency), or repeated runs with randomized data.</p>
+          <p>Related attributes: <code>threadPoolSize</code> (parallel invocations), <code>invocationTimeOut</code> (max time per invocation), <code>successPercentage</code> (pass overall if this % of invocations succeed — useful for tests with acceptable flakiness thresholds).</p>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.6</span> How would you wait for visibility of an element in Selenium?</summary>
+        <div class="qcard-body">
+          <p><strong>Explicit wait</strong> (preferred, most interview-correct answer):</p>
+          <pre><span class="code-lang">java</span><code>WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+WebElement element = wait.until(
+    ExpectedConditions.visibilityOfElementLocated(By.id("submitBtn")));</code></pre>
+          <p><code>visibilityOfElementLocated</code> waits until the element is present <strong>and</strong> displayed (width/height &gt; 0, not <code>display:none</code>), polling every 500ms by default (<code>FluentWait</code> under the hood).</p>
+          <p>Other conditions: <code>visibilityOf(WebElement)</code> (already have the reference), <code>elementToBeClickable</code> (visible + enabled), <code>presenceOfElementLocated</code> (in DOM only).</p>
+          <div class="callout warn"><b>Avoid <code>Thread.sleep()</code>:</b> it's a hard wait — wastes time on fast loads and still fails on slow ones. Mixing implicit + explicit waits is also an anti-pattern (inconsistent wait times) — mentioning this shows framework maturity.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.7</span> How would you use AutoIT to upload a file?</summary>
+        <div class="qcard-body">
+          <p>Selenium's <code>sendKeys()</code> works for most native <code>&lt;input type="file"&gt;</code> uploads without AutoIT — say this first. AutoIT is a fallback for <strong>native OS dialog boxes</strong> Selenium can't touch.</p>
+          <p><strong>Workflow:</strong></p>
+          <ol>
+            <li>Write an AutoIT script (<code>.au3</code>) that identifies the "Choose File" dialog, sets the file path, and clicks "Open":
+              <pre><span class="code-lang">autoit</span><code>ControlFocus("Open", "", "Edit1")
+ControlSetText("Open", "", "Edit1", "C:\Users\test\file.pdf")
+ControlClick("Open", "", "Button1")</code></pre>
+            </li>
+            <li>Compile into an <code>.exe</code> via Aut2Exe.</li>
+            <li>From the Selenium Java test, invoke it: <code>Runtime.getRuntime().exec("path/to/script.exe")</code>.</li>
+          </ol>
+          <div class="callout warn"><b>Caveat:</b> AutoIT is Windows-only and not CI/CD-friendly (headless Linux Docker agents can't run it) — mostly legacy/last-resort. Modern frameworks use <code>sendKeys()</code> directly, or Robot class / JavaScriptExecutor tricks.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.8</span> What is <code>ElementClickInterceptedException</code>? How to resolve it?</summary>
+        <div class="qcard-body">
+          <p>Thrown when Selenium tries to click an element but <strong>another element overlaps it</strong> at the click coordinates (sticky header, spinner, modal, ad banner).</p>
+          <p><strong>Resolutions, in order of preference:</strong></p>
+          <ol>
+            <li>Wait for the overlay to disappear (<code>invisibilityOfElementLocated</code>).</li>
+            <li>Scroll into view: <code>((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);</code></li>
+            <li>JS click as fallback: <code>((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);</code> — bypasses the mouse-event overlay check, use sparingly (can mask real UI bugs).</li>
+            <li>Use the <code>Actions</code> class to move-then-click.</li>
+            <li>Dismiss cookie banners / chat widgets / promo pop-ups explicitly at test start.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.9</span> What challenges have you faced while working with your framework?</summary>
+        <div class="qcard-body">
+          <p>Frame using real DBS/GMF experience — 2–3 concrete challenges, not generic ones:</p>
+          <ul>
+            <li><strong>Dynamic/flaky elements</strong> in the DBS Playwright-Java framework — attributes changing between dev vs UAT, solved with resilient locators (<code>normalize-space</code>, data-testid) instead of brittle absolute XPaths.</li>
+            <li><strong>Parallel execution + thread safety</strong> — shared WebDriver instances caused test pollution when scaling; resolved with <code>ThreadLocal&lt;WebDriver&gt;</code> per thread.</li>
+            <li><strong>Environment-specific data dependencies</strong> — GMF's Oracle DB-backed email campaign flows needed careful test data seeding/cleanup to avoid cross-test pollution; talk about idempotent setup/teardown.</li>
+            <li><strong>CI/CD flakiness at scale</strong> — Jenkins Remote Build API polling for DB status at DBS; async status updates not ready when checked, solved with backoff polling instead of fixed sleeps.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">2.10</span> What is <code>normalize-space()</code> in XPath? What is its use?</summary>
+        <div class="qcard-body">
+          <p>Strips leading/trailing whitespace and collapses internal whitespace/newlines/tabs into a single space.</p>
+          <p>Syntax: <code>normalize-space(string)</code> — with no argument, applies to the context node's text.</p>
+          <p><strong>Why it matters:</strong> real HTML text often has inconsistent whitespace from source formatting (<code>&lt;span&gt;  Submit  \n&lt;/span&gt;</code>), which breaks exact-match XPath like <code>//span[text()='Submit']</code>. Use <code>//span[normalize-space(text())='Submit']</code> instead.</p>
+          <p>Commonly combined with <code>contains()</code>: <code>//button[contains(normalize-space(text()), 'Save')]</code>.</p>
+        </div>
+      </details>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ================= ROUND 3 ================= -->
+    <section id="round3" class="round-anchor">
+      <div class="round-header">
+        <span class="round-num">R3</span>
+        <h2>Technical Round</h2>
+        <span class="subtitle">10 questions</span>
+      </div>
+
+      <details class="qcard" open>
+        <summary><span class="qnum">3.1</span> Singleton Design Pattern in Java — advantages?</summary>
+        <div class="qcard-body">
+          <p>Ensures a class has <strong>exactly one instance</strong> and provides a <strong>global point of access</strong> to it.</p>
+          <pre><span class="code-lang">java</span><code>public class DriverManager {
+    private static volatile DriverManager instance;
+    private DriverManager() {}
+    public static DriverManager getInstance() {
+        if (instance == null) {
+            synchronized (DriverManager.class) {
+                if (instance == null) {
+                    instance = new DriverManager();
+                }
+            }
+        }
+        return instance;
+    }
+}</code></pre>
+          <p>This is <strong>double-checked locking</strong> — <code>volatile</code> prevents instruction reordering so another thread never sees a half-constructed object.</p>
+          <ul>
+            <li>Controlled single access point (e.g. a shared config/properties reader).</li>
+            <li>Saves memory/resources — avoids repeated expensive object creation.</li>
+            <li>Useful for a shared <code>ExtentReports</code> instance, <code>ConfigReader</code>, or logger.</li>
+          </ul>
+          <div class="callout warn"><b>Caveat (shows depth):</b> Singleton + Selenium <code>WebDriver</code> is an anti-pattern in parallel execution — one global driver breaks test isolation. That's exactly why <code>ThreadLocal&lt;WebDriver&gt;</code> is used instead of a plain singleton for the driver itself.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.2</span> How do you disable images in Selenium?</summary>
+        <div class="qcard-body">
+          <p><strong>Chrome:</strong></p>
+          <pre><span class="code-lang">java</span><code>Map&lt;String, Object&gt; prefs = new HashMap&lt;&gt;();
+prefs.put("profile.managed_default_content_settings.images", 2); // 2 = block
+ChromeOptions options = new ChromeOptions();
+options.setExperimentalOption("prefs", prefs);
+WebDriver driver = new ChromeDriver(options);</code></pre>
+          <p><strong>Firefox:</strong></p>
+          <pre><span class="code-lang">java</span><code>FirefoxProfile profile = new FirefoxProfile();
+profile.setPreference("permissions.default.image", 2);
+FirefoxOptions options = new FirefoxOptions();
+options.setProfile(profile);
+WebDriver driver = new FirefoxDriver(options);</code></pre>
+          <p><strong>Purpose:</strong> speeds up page load in CI pipelines since images aren't rendered — useful when tests don't need to visually verify images.</p>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.3</span> Difference between <code>Action</code> vs <code>Actions</code> in Selenium</summary>
+        <div class="qcard-body">
+          <p><strong><code>Actions</code></strong> (plural) is the <strong>builder class</strong> used directly in test code — chain low-level interactions then <code>.build()</code> and <code>.perform()</code>.</p>
+          <pre><span class="code-lang">java</span><code>Actions actions = new Actions(driver);
+actions.moveToElement(element).click().build().perform();</code></pre>
+          <p><strong><code>Action</code></strong> (singular) is the <strong>interface/type</strong> returned by <code>.build()</code> — the composed, ready-to-execute sequence. You rarely touch it directly.</p>
+          <div class="callout"><b>Interview phrasing:</b> "<code>Actions</code> is the builder I use to chain gestures; <code>Action</code> is the resulting object that represents that chained sequence, executed via <code>.perform()</code>."</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.4</span> How do you deal with elements that change attributes dynamically at runtime?</summary>
+        <div class="qcard-body">
+          <p>Avoid brittle absolute/attribute-dependent locators. Strategies, roughly in order of robustness:</p>
+          <ol>
+            <li>Relative/contains-based XPath on structurally stable attributes: <code>//div[contains(@id,'row_')]</code>.</li>
+            <li>Prefer stable attributes like <code>data-testid</code>, <code>name</code>, or <code>aria-label</code> — push for these in code review if missing.</li>
+            <li>XPath axes (parent/sibling/ancestor) to locate relative to a stable nearby anchor.</li>
+            <li><code>normalize-space()</code> + <code>contains()</code> for whitespace-tolerant text matches.</li>
+            <li>For randomly-suffixed IDs, use CSS attribute selectors (<code>[id^='btn_']</code>, <code>[id*='dynamic']</code>).</li>
+            <li>Last resort: coordinate with dev team to add automation-friendly hooks — resilient locators are a collaboration problem as much as a technical one.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.5</span> Purpose of using <code>ThreadLocal</code> class in Selenium</summary>
+        <div class="qcard-body">
+          <p>Gives <strong>each thread its own isolated copy</strong> of the WebDriver instance when running tests in <strong>parallel</strong> (TestNG parallel="methods"/"classes").</p>
+          <p>Without it, a shared <code>WebDriver</code> gets corrupted across threads — one thread navigates away while another is mid-assertion, causing <code>StaleElementReferenceException</code> or wrong-page failures.</p>
+          <pre><span class="code-lang">java</span><code>public class DriverManager {
+    private static ThreadLocal&lt;WebDriver&gt; driver = new ThreadLocal&lt;&gt;();
+    public static WebDriver getDriver() { return driver.get(); }
+    public static void setDriver(WebDriver d) { driver.set(d); }
+    public static void unload() { driver.remove(); }
+}</code></pre>
+          <div class="callout warn"><b>Always call <code>.remove()</code></b> after teardown — CI thread pools reuse threads across runs, and stale <code>ThreadLocal</code> references leak memory.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.6</span> API status codes: 200, 400, 410, 403 — differences</summary>
+        <div class="qcard-body">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Code</th><th>Meaning</th><th>Category</th><th>Typical cause</th></tr></thead>
+            <tbody>
+              <tr><td><strong>200 OK</strong></td><td>Request succeeded</td><td>2xx Success</td><td>Successful GET/POST/PUT with valid response body</td></tr>
+              <tr><td><strong>400 Bad Request</strong></td><td>Client sent malformed/invalid request</td><td>4xx Client Error</td><td>Missing field, invalid JSON syntax, invalid param type</td></tr>
+              <tr><td><strong>403 Forbidden</strong></td><td>Understood but refuses to authorize</td><td>4xx Client Error</td><td>Authenticated user lacks permission (vs 401 = not authenticated)</td></tr>
+              <tr><td><strong>410 Gone</strong></td><td>Resource used to exist, permanently removed</td><td>4xx Client Error</td><td>Deliberately deleted/deprecated (vs 404 = never found / unknown)</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="callout"><b>Good interview point:</b> contrast 401 vs 403 (authentication vs authorization) and 404 vs 410 (unknown vs deliberately removed) — interviewers often probe semantic understanding, not memorized numbers.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.7</span> How do you write a test case in Postman to validate the status code?</summary>
+        <div class="qcard-body">
+          <p>In the <strong>Tests</strong> tab (JavaScript, using the <code>pm</code> API):</p>
+          <pre><span class="code-lang">javascript</span><code>pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+// Alternative / more flexible:
+pm.test("Status code is 200", function () {
+    pm.expect(pm.response.code).to.eql(200);
+});
+
+// Validate against a list of acceptable codes:
+pm.test("Status code is either 200 or 201", function () {
+    pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+});</code></pre>
+          <p>These run automatically after the request executes; results appear in <strong>Test Results</strong>, and the same scripts run via <strong>Collection Runner</strong>, <strong>Newman (CLI)</strong>, or in a CI pipeline.</p>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.8</span> How would you perform data-driven testing in Postman?</summary>
+        <div class="qcard-body">
+          <p><strong>Collection Runner + external data file (CSV/JSON):</strong></p>
+          <ol>
+            <li>Parameterize request body/URL with variables: <code>{{username}}</code>, <code>{{password}}</code>.</li>
+            <li>Prepare a CSV/JSON file with columns/keys matching variable names, one row per iteration.</li>
+            <li>Open Collection Runner, select the collection, upload the data file — Postman runs it once per row.</li>
+          </ol>
+          <p><strong>Via Newman (CI-friendly):</strong></p>
+          <pre><span class="code-lang">bash</span><code>newman run collection.json -d data.csv -e environment.json --reporters cli,html</code></pre>
+          <p><strong>Programmatic:</strong> pre-request scripts using <code>pm.iterationData.get("key")</code> for extra logic before sending.</p>
+          <div class="callout"><b>Tie to experience:</b> layer this with Newman inside a Jenkins/GitHub Actions pipeline for CI-driven API regression, similar to your GitHub Actions setup for the REST Assured framework.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.9</span> Difference between HEAD and OPTIONS API methods</summary>
+        <div class="qcard-body">
+          <p><strong>HEAD:</strong> identical to GET but returns <strong>only headers, no body</strong>. Used to check resource existence, metadata (<code>Content-Length</code>, <code>Last-Modified</code>), or cache validity without downloading the payload.</p>
+          <p><strong>OPTIONS:</strong> discovers what HTTP methods a resource supports. Server responds with an <code>Allow</code> header (e.g. <code>Allow: GET, POST, PUT</code>). Central to browser <strong>CORS preflight</strong> requests before cross-origin POST/PUT with custom headers.</p>
+          <div class="callout"><b>One-liner:</b> "HEAD tells you about a specific resource (metadata, no body); OPTIONS tells you what you're allowed to do with it (supported methods), and it's the backbone of CORS preflight checks."</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">3.10</span> JMeter basics — Thread Group, Listeners</summary>
+        <div class="qcard-body">
+          <p><strong>Thread Group:</strong> the starting point of any test plan — defines the virtual users simulating concurrent load.</p>
+          <ul>
+            <li><strong>Number of Threads (users):</strong> concurrent virtual users to simulate.</li>
+            <li><strong>Ramp-up period:</strong> time over which JMeter starts all threads (e.g., 100 threads / 50s ramp-up = 2 threads/sec, avoiding an unrealistic instant spike).</li>
+            <li><strong>Loop Count:</strong> repetitions per thread, or "Infinite" for duration-based tests.</li>
+            <li>Also worth naming: <strong>Stepping Thread Group</strong> (gradual staged increase) and <strong>Ultimate Thread Group</strong> (custom load patterns via plugins).</li>
+          </ul>
+          <p><strong>Listeners</strong> collect and display run results: <strong>View Results Tree</strong> (per-request detail, memory-heavy — debugging only), <strong>Summary Report</strong> (avg/min/max, throughput, error %), <strong>Aggregate Report</strong>, <strong>Response Time Graph</strong>.</p>
+          <div class="callout warn"><b>Practical tip:</b> disable heavy listeners like View Results Tree during real load runs — they skew results at higher thread counts.</div>
+          <div class="callout"><b>Bridge:</b> tie this to your DBS 300 TPS JMeter sign-off — JVM heap tuning, and switching log level from DEBUG to ERROR as concrete tuning steps you personally owned.</div>
+        </div>
+      </details>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ================= ROUND 4 ================= -->
+    <section id="round4" class="round-anchor">
+      <div class="round-header">
+        <span class="round-num">R4</span>
+        <h2>HR Round</h2>
+        <span class="subtitle">2 questions</span>
+      </div>
+
+      <details class="qcard" open>
+        <summary><span class="qnum">4.1</span> How soon can you join?</summary>
+        <div class="qcard-body">
+          <p>Be honest and specific. You're on a <strong>90-day notice period</strong> at Deloitte. A strong answer:</p>
+          <div class="callout">"My official notice period is 90 days. I'm open to discussing a possible buyout or negotiated early release with my current employer if the offer and timeline work out — but I want to set the expectation clearly upfront rather than overpromise."</div>
+          <p>If pushed for faster: mention you can <em>initiate discussions</em> with Deloitte about a shorter serving period once you have an offer in hand, but don't commit to a date you can't guarantee.</p>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">4.2</span> How was your interview experience with us?</summary>
+        <div class="qcard-body">
+          <p>Keep it genuine, specific, and positive without being generic ("It was great, thank you!" is weak). Reference something concrete from the actual rounds:</p>
+          <div class="callout">"It was a well-structured process — I appreciated that the technical rounds went deep into real framework design decisions (like ThreadLocal for parallel execution and handling dynamic locators) rather than just surface-level syntax questions. It felt like a genuine assessment of hands-on experience, and I enjoyed the conversation."</div>
+          <p>If something was tough (e.g., the online round's webcam/disconnect pressure), mention it lightly and diplomatically if asked directly — don't lead with a complaint unprompted.</p>
+        </div>
+      </details>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ================= BRIDGE MAP ================= -->
+    <section id="bridge" class="round-anchor">
+      <div class="round-header">
+        <span class="round-num">✓</span>
+        <h2>Cross-Reference to Your Experience</h2>
+      </div>
+      <div class="bridge-box">
+        <h3>Bridge Answers Back to DBS / GMF</h3>
+        <ul>
+          <li><b>ThreadLocal + parallel execution</b> → your Playwright-Java DBS framework and REST Assured GitHub Actions parallel runs.</li>
+          <li><b>JMeter Thread Group/Listeners</b> → your 300 TPS JMeter sign-off story (JVM heap tuning, DEBUG→ERROR log level change).</li>
+          <li><b>Dynamic element handling</b> → DBS/GMF dynamic attribute challenges across environments.</li>
+          <li><b>API status codes / Postman</b> → your Node.js/PostgreSQL banking API practice framework and Loan Servicing Notification Validator project.</li>
+          <li><b>Framework challenges</b> → Jenkins Remote Build API polling, chaos engineering with Wreckoon (if the conversation extends into architecture depth).</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ================= BONUS ================= -->
+    <section id="bonus" class="round-anchor">
+      <div class="round-header">
+        <span class="round-num">+20</span>
+        <h2>Bonus Questions</h2>
+        <span class="subtitle">Java · Karate/Kafka · TestNG · CI/CD · SQL · Playwright</span>
+      </div>
+      <div class="bonus-banner">EXTENDED SET — not in the original transcript</div>
+      <p class="prose">These extend the core guide into areas that map directly onto your stack — Karate + Kafka, Cucumber BDD, Playwright, CI/CD design, and SQL — likely to surface in a senior SDET loop or a deeper follow-up round.</p>
+
+      <details class="qcard" open>
+        <summary><span class="qnum">B.1</span> What is the difference between TestNG and JUnit 5?</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Parallel execution:</strong> TestNG has native, fine-grained parallel support (methods/classes/suites via <code>testng.xml</code>); JUnit 5 needs the <code>junit-platform-properties</code> parallel config and is comparatively newer at it.</li>
+            <li><strong>Test dependencies:</strong> TestNG supports <code>dependsOnMethods</code>/<code>dependsOnGroups</code> natively; JUnit 5 has no built-in equivalent (by design — tests should be independent).</li>
+            <li><strong>Grouping:</strong> TestNG groups (<code>@Test(groups="smoke")</code>) vs JUnit 5 tags (<code>@Tag("smoke")</code>) — functionally similar.</li>
+            <li><strong>Data-driven testing:</strong> TestNG <code>@DataProvider</code> vs JUnit 5 <code>@ParameterizedTest</code> + <code>@MethodSource</code>/<code>@CsvSource</code> — JUnit 5's syntax is more declarative.</li>
+            <li><strong>Ecosystem fit:</strong> TestNG is still dominant in enterprise Selenium/Java automation (your DBS/GMF stack); JUnit 5 is the default for Spring Boot unit/integration tests and increasingly common with Playwright-Java.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.2</span> Explain the Karate DSL — how does it differ from REST Assured?</summary>
+        <div class="qcard-body">
+          <p>Karate is a <strong>BDD-style, Gherkin-based API testing framework</strong> where the test itself is written in a domain-specific language (<code>.feature</code> files) rather than plain Java code — no step-definition glue code is required, unlike Cucumber+Java.</p>
+          <pre><span class="code-lang">gherkin</span><code>Scenario: Get user details
+  Given url baseUrl + '/users/1'
+  When method GET
+  Then status 200
+  And match response.name == 'John'</code></pre>
+          <ul>
+            <li><strong>Built-in assertions and JSON/XML matching</strong> — no need for separate assertion libraries.</li>
+            <li><strong>Native parallel execution</strong> via JUnit runners without extra config.</li>
+            <li>Can call Java code directly when logic gets complex, and supports UI automation too (Karate now wraps Playwright under the hood).</li>
+            <li>REST Assured, by contrast, is a pure Java library — more code, more flexibility for complex logic/assertions, and integrates naturally into an existing Java/TestNG codebase without introducing a DSL.</li>
+          </ul>
+          <div class="callout"><b>Interview angle:</b> Karate lowers the barrier for non-Java testers to write API tests, while REST Assured suits teams that want full Java control and reuse of existing utility classes.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.3</span> How do you validate a Kafka message in an automated test?</summary>
+        <div class="qcard-body">
+          <p>Typical pattern with a Kafka consumer in the test framework (or Karate's Kafka plugin):</p>
+          <ol>
+            <li>Spin up a test consumer subscribed to the target topic, with a unique <code>group.id</code> per test run to avoid offset collisions.</li>
+            <li>Trigger the producing action (API call, UI action, or upstream event).</li>
+            <li>Poll the topic with a bounded timeout (e.g., <code>consumer.poll(Duration.ofSeconds(5))</code>) rather than blocking indefinitely.</li>
+            <li>Deserialize the message (JSON/Avro) and assert on key fields — schema, correlation ID, business payload values.</li>
+            <li>Clean up: close the consumer, and if using a shared topic, filter by a correlation ID unique to the test to avoid picking up another test's message.</li>
+          </ol>
+          <div class="callout warn"><b>Common pitfall:</b> polling with no timeout, or reusing consumer groups across parallel tests — causes flaky "message not found" failures. Always scope a unique group/correlation ID per test.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.4</span> What is a Cucumber <code>Background</code> block used for?</summary>
+        <div class="qcard-body">
+          <p><code>Background</code> defines steps that run <strong>before every scenario</strong> in a feature file — common setup (login, navigating to a page, seeding shared test data) that would otherwise be duplicated in every <code>Scenario</code>.</p>
+          <pre><span class="code-lang">gherkin</span><code>Feature: Loan application
+
+  Background:
+    Given the user is logged in as "testuser"
+    And the dashboard is loaded
+
+  Scenario: Submit a new loan application
+    When the user submits a loan request
+    Then the application status is "Pending"</code></pre>
+          <div class="callout warn"><b>Caveat:</b> overusing Background for unrelated setup makes scenarios harder to read in isolation — keep it to truly shared preconditions, not a dumping ground for every step.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.5</span> Explain optimistic vs pessimistic locking — how does this affect test data isolation?</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Pessimistic locking:</strong> acquires a lock on a row/record before reading it (<code>SELECT ... FOR UPDATE</code>), blocking other transactions until release. Safer under high contention, but reduces concurrency and can cause deadlocks.</li>
+            <li><strong>Optimistic locking:</strong> no lock is taken upfront; instead a version column (or timestamp) is checked at write time, and the write fails/retries if the version changed since read. Higher throughput, but requires retry logic.</li>
+          </ul>
+          <div class="callout"><b>SDET angle:</b> in parallel test execution against a shared DB, optimistic locking failures show up as intermittent "stale data" test failures — a strong sign you need per-test data isolation (unique test records, transactional rollback per test, or a dedicated schema per parallel worker) rather than shared fixtures.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.6</span> What is <code>StaleElementReferenceException</code> and how do you handle it?</summary>
+        <div class="qcard-body">
+          <p>Thrown when the previously located <code>WebElement</code> is no longer attached to the DOM — the page was reloaded, the element was re-rendered by JS (React/Angular re-render), or navigation occurred after the element was found.</p>
+          <ul>
+            <li><strong>Re-locate the element</strong> right before interacting with it rather than caching a reference across steps.</li>
+            <li>Wrap the interaction in a small retry loop that catches the exception and re-finds the element (common in a custom wait utility).</li>
+            <li>Use explicit waits with a condition that re-fetches the element, like <code>ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator))</code>.</li>
+            <li>Avoid storing <code>WebElement</code> references as class fields across test steps in frameworks with heavy client-side re-rendering — store the <code>By</code> locator instead and resolve it fresh each time.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.7</span> Difference between <code>@BeforeMethod</code>, <code>@BeforeClass</code>, and <code>@BeforeSuite</code> in TestNG</summary>
+        <div class="qcard-body">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Annotation</th><th>Runs</th><th>Typical use</th></tr></thead>
+            <tbody>
+              <tr><td><code>@BeforeMethod</code></td><td>Before <em>every</em> <code>@Test</code> method</td><td>Fresh browser/driver instance, reset UI state per test</td></tr>
+              <tr><td><code>@BeforeClass</code></td><td>Once, before the first method in the class</td><td>Expensive setup shared across a test class (e.g., login once, reuse session)</td></tr>
+              <tr><td><code>@BeforeSuite</code></td><td>Once, before the entire suite (across all classes)</td><td>Global setup — start Selenium Grid, load environment config, spin up test data seeds</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="callout"><b>Interview point:</b> misusing <code>@BeforeMethod</code> for expensive setup (like spinning up a WebDriver Grid session) tanks execution time at scale — matching the right scope to the right lifecycle is a design decision, not just syntax.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.8</span> What is a JWT, and how do you validate it in API tests?</summary>
+        <div class="qcard-body">
+          <p>A <strong>JSON Web Token</strong> is a compact, self-contained token — <code>header.payload.signature</code>, Base64URL-encoded — used for stateless authentication/authorization.</p>
+          <ul>
+            <li><strong>Structural validation:</strong> assert the token has 3 dot-separated segments and decodes to valid JSON.</li>
+            <li><strong>Claims validation:</strong> decode the payload and assert on <code>exp</code> (not expired), <code>iss</code> (expected issuer), <code>sub</code>/custom claims matching the test user.</li>
+            <li><strong>Signature validation:</strong> re-verify the signature using the known public key/secret (for HS256/RS256) to confirm the token wasn't tampered with — important for security-focused API tests.</li>
+            <li><strong>Negative tests:</strong> expired token → 401; tampered payload → 401; missing token on a protected endpoint → 401/403.</li>
+          </ul>
+          <div class="callout"><b>Tooling:</b> in Java, <code>io.jsonwebtoken:jjwt</code> or Auth0's <code>java-jwt</code> library decode/verify tokens directly inside REST Assured or Karate assertions.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.9</span> Explain the difference between a Mock, a Stub, and a Spy</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Stub:</strong> a fake object that returns pre-programmed responses — used to isolate the system under test from a dependency, with no assertions on how it was called.</li>
+            <li><strong>Mock:</strong> a fake object that additionally <strong>verifies interactions</strong> — you assert it was called with specific arguments, a specific number of times (<code>verify(mock).methodX(arg)</code> in Mockito).</li>
+            <li><strong>Spy:</strong> wraps a <em>real</em> object, delegating calls to it by default, but lets you selectively override or verify specific method calls — useful when you want real behavior mostly intact but need to intercept one method.</li>
+          </ul>
+          <div class="callout"><b>SDET framing:</b> stubs answer "does my code handle this response correctly"; mocks answer "did my code call the dependency correctly"; spies answer "did this real object behave as expected while I tweak one part of it."</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.10</span> How do you handle flaky tests in a CI/CD pipeline?</summary>
+        <div class="qcard-body">
+          <ol>
+            <li><strong>Quarantine, don't ignore:</strong> tag known-flaky tests (e.g., <code>@Flaky</code>) and run them in a separate non-blocking CI stage so they don't block deployments while still surfacing failures for investigation.</li>
+            <li><strong>Root-cause classify:</strong> timing/sync issues (fix with proper waits, not retries), test data collisions (fix with isolation), environment instability (fix at infra level), genuine app bugs (file a defect — don't just "fix" the test).</li>
+            <li><strong>Controlled retry:</strong> a bounded retry (e.g., TestNG <code>IRetryAnalyzer</code>, max 1–2 retries) as a safety net for genuinely environment-flaky tests — but track retry counts as a metric, not silently.</li>
+            <li><strong>Track flakiness as a metric</strong> over time (pass rate per test in Allure/reporting) so quarantined tests get real attention instead of living there forever.</li>
+          </ol>
+          <div class="callout warn"><b>Anti-pattern to call out:</b> blanket retry-on-failure for the whole suite hides real regressions and erodes trust in the pipeline — this is a strong thing to say explicitly in an interview.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.11</span> Difference between soft assert and hard assert</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Hard assert</strong> (<code>Assert.assertEquals</code> in TestNG/JUnit): fails and <strong>immediately stops</strong> the test method on the first failed assertion — subsequent assertions in that method never run.</li>
+            <li><strong>Soft assert</strong> (TestNG's <code>SoftAssert</code>): records failures but <strong>continues executing</strong> the rest of the test method; you must call <code>assertAll()</code> at the end to actually fail the test and report all accumulated failures together.</li>
+          </ul>
+          <pre><span class="code-lang">java</span><code>SoftAssert softAssert = new SoftAssert();
+softAssert.assertEquals(actualTitle, expectedTitle);
+softAssert.assertEquals(actualPrice, expectedPrice);
+softAssert.assertAll(); // reports all failures at once</code></pre>
+          <div class="callout"><b>When to use which:</b> soft asserts are useful for validating multiple independent fields on one page (form validation, dashboard checks) so you see all mismatches in one run instead of fixing them one at a time; hard asserts suit sequential flows where a later step is meaningless if an earlier one failed (e.g., can't verify order confirmation if login itself failed).</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.12</span> Page Object Model vs Page Factory — what's the actual difference?</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Page Object Model (POM)</strong> is the design pattern itself: one class per page, encapsulating locators and actions, hiding implementation detail from test methods.</li>
+            <li><strong>PageFactory</strong> is a Selenium utility class that implements POM using <strong>annotations</strong> (<code>@FindBy</code>) and lazy initialization via <code>PageFactory.initElements(driver, this)</code> — it's one way to build a POM, not a separate pattern.</li>
+          </ul>
+          <pre><span class="code-lang">java</span><code>public class LoginPage {
+    @FindBy(id = "username") WebElement usernameField;
+    public LoginPage(WebDriver driver) {
+        PageFactory.initElements(driver, this);
+    }
+}</code></pre>
+          <div class="callout warn"><b>Modern nuance:</b> PageFactory's lazy proxy elements are a common source of <code>StaleElementReferenceException</code> in SPA-heavy apps with frequent re-renders — many modern frameworks (including your Playwright-based EventHub project) skip PageFactory and use plain locator methods or component objects instead, re-resolving elements fresh each call.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.13</span> What is CORS, and how would you test it?</summary>
+        <div class="qcard-body">
+          <p><strong>Cross-Origin Resource Sharing</strong> is a browser security mechanism that restricts web pages from making requests to a different origin (scheme + host + port) than the one that served the page, unless the server explicitly allows it via response headers (<code>Access-Control-Allow-Origin</code>, etc.).</p>
+          <ul>
+            <li><strong>API-level testing:</strong> send a request with an <code>Origin</code> header and assert the correct <code>Access-Control-Allow-Origin</code> value comes back (exact match, wildcard, or absence for disallowed origins).</li>
+            <li><strong>Preflight testing:</strong> for non-simple requests (custom headers, PUT/DELETE), send an <code>OPTIONS</code> request and verify <code>Access-Control-Allow-Methods</code>/<code>-Headers</code> reflect what's actually permitted.</li>
+            <li><strong>Negative case:</strong> request from a disallowed origin should either omit the CORS header (browser blocks it client-side) or be explicitly rejected server-side, depending on the implementation.</li>
+          </ul>
+          <div class="callout"><b>Note:</b> CORS is enforced by the <em>browser</em>, not the server — a tool like Postman/REST Assured will still get the response body even without proper CORS headers, so CORS bugs often only surface in real browser/UI testing, not pure API testing.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.14</span> Explain database indexing and how <code>EXPLAIN</code> helps in test/data validation</summary>
+        <div class="qcard-body">
+          <p>An <strong>index</strong> is a separate data structure (typically a B-tree) that lets the database locate rows without scanning the entire table — trades write speed and storage for read speed.</p>
+          <ul>
+            <li><strong>Without an index:</strong> a query does a full table scan — O(n), slow on large tables.</li>
+            <li><strong>With an index</strong> on the queried column, lookup is closer to O(log n).</li>
+            <li><code>EXPLAIN</code> (MySQL) / <code>EXPLAIN ANALYZE</code> (PostgreSQL) shows the query execution plan — whether it's using an index (<code>type: ref</code>/<code>range</code> in MySQL) or falling back to a full scan (<code>type: ALL</code>), estimated rows scanned, and join order.</li>
+          </ul>
+          <div class="callout"><b>SDET angle:</b> when a data validation query in a test suite runs slow and starts causing timeouts under CI, running <code>EXPLAIN</code> on it is the first diagnostic step — often reveals a missing index on a column the test framework filters/joins on frequently (e.g., a correlation ID or test-run tag column).</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.15</span> What is idempotency in REST APIs, and why does it matter for testing?</summary>
+        <div class="qcard-body">
+          <p>An operation is <strong>idempotent</strong> if making the same request multiple times produces the same result/state as making it once (though the response itself may differ, e.g. a repeated timestamp).</p>
+          <ul>
+            <li><strong>Idempotent by spec:</strong> GET, PUT, DELETE, HEAD, OPTIONS.</li>
+            <li><strong>Not idempotent:</strong> POST (typically creates a new resource each call) and PATCH (depends on implementation).</li>
+          </ul>
+          <div class="callout warn"><b>Testing implication:</b> a critical test case for payment/loan-disbursement style APIs (relevant to your banking domain) is verifying that retrying a POST after a network timeout doesn't create a duplicate transaction — this is where idempotency keys come in: the client sends a unique key per logical operation, and the server deduplicates retries with the same key. Testing this means firing the same request twice with the same idempotency key and asserting only one resource/side-effect was created.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.16</span> What is shift-left testing, and how have you applied it?</summary>
+        <div class="qcard-body">
+          <p>Shift-left means moving testing activities <strong>earlier</strong> in the SDLC — testing requirements, designs, and code as they're written rather than waiting for a dedicated QA phase after development.</p>
+          <ul>
+            <li><strong>Requirements phase:</strong> reviewing Gherkin/BDD scenarios with BAs/devs before coding starts, catching ambiguous acceptance criteria early.</li>
+            <li><strong>Dev phase:</strong> API contract tests and unit tests run in the same PR pipeline as the code change, not a separate downstream QA cycle.</li>
+            <li><strong>CI integration:</strong> smoke/regression suites triggered on every PR (not just nightly), so failures surface within minutes of a code change.</li>
+          </ul>
+          <div class="callout"><b>Bridge:</b> your GitHub Actions pipelines with sharded execution and PR-triggered runs are a concrete shift-left example worth citing directly.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.17</span> What is contract testing, and how does it differ from end-to-end testing?</summary>
+        <div class="qcard-body">
+          <p><strong>Contract testing</strong> (e.g., Pact) verifies that a consumer and provider of an API agree on the shape of requests/responses — <strong>without</strong> spinning up the full integrated system. The consumer defines expectations ("contract"), and the provider is verified against that contract independently.</p>
+          <ul>
+            <li><strong>Faster and more stable</strong> than full E2E — no need to deploy every dependent service to run the test.</li>
+            <li><strong>Catches breaking changes early</strong> — if a provider changes a response field, the contract verification fails in the provider's own CI, before it ever reaches a shared environment.</li>
+            <li><strong>E2E testing</strong>, by contrast, exercises the real integrated system end-to-end and catches issues contract tests can't (like actual business logic across services), but is slower, flakier, and more expensive to maintain.</li>
+          </ul>
+          <div class="callout"><b>Interview framing:</b> "Contract tests answer 'will this API change break my consumer,' fast and in isolation. E2E tests answer 'does the whole system actually work together,' slower but with full realism. Mature test strategies use both — a testing pyramid with contract tests near the base."</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.18</span> Horizontal vs vertical scaling — how does this apply to a Selenium Grid?</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Vertical scaling:</strong> adding more resources (CPU/RAM) to a single node, or raising <code>SE_NODE_MAX_SESSIONS</code> to cram more browser sessions onto one Grid node.</li>
+            <li><strong>Horizontal scaling:</strong> adding more nodes (machines/containers) to the Grid so sessions distribute across independent hosts.</li>
+          </ul>
+          <div class="callout warn"><b>Why horizontal is the stronger interview answer:</b> raising max sessions per node beyond a small number causes resource contention — CPU/memory pressure across concurrently running browsers on the same host leads to slow, flaky tests even though "more sessions" are technically available. Adding a second node instead keeps each session's resource footprint isolated, which is more predictable at scale and matches how you scaled the Docker-based Selenium Grid on Oracle Cloud.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.19</span> Playwright's auto-waiting vs Selenium's explicit waits — what's actually different?</summary>
+        <div class="qcard-body">
+          <ul>
+            <li><strong>Selenium:</strong> waits are opt-in and explicit — you choose a condition (<code>visibilityOfElementLocated</code>, <code>elementToBeClickable</code>) and wrap it around each interaction; nothing waits automatically.</li>
+            <li><strong>Playwright:</strong> actionability checks are <strong>built into every action</strong> by default — before clicking, Playwright automatically waits for the element to be attached, visible, stable (not animating), enabled, and receiving pointer events, with no explicit wait code needed for the common case.</li>
+          </ul>
+          <div class="callout"><b>Trade-off to mention:</b> Playwright's auto-waiting reduces boilerplate and a whole class of flaky "not clickable" failures, but it can mask a genuinely slow-loading app if you don't also assert on business-meaningful conditions (like data actually loading) — auto-wait only guarantees the element is interactable, not that the underlying data is correct or complete.</div>
+        </div>
+      </details>
+
+      <details class="qcard">
+        <summary><span class="qnum">B.20</span> What is a race condition, and how would you design a test to catch one?</summary>
+        <div class="qcard-body">
+          <p>A <strong>race condition</strong> occurs when the correctness of a system depends on the relative timing of concurrent operations — two threads/processes/requests access or modify shared state in an order that isn't guaranteed, producing inconsistent results.</p>
+          <ul>
+            <li><strong>Concurrency testing approach:</strong> fire multiple identical requests simultaneously (e.g., two "redeem coupon" calls for a single-use coupon at the same instant) using parallel threads or an async HTTP client, then assert only one succeeded and the other correctly failed/rejected.</li>
+            <li><strong>Database-level check:</strong> verify no duplicate/inconsistent row was created — e.g., a balance wasn't debited twice for one logical transaction.</li>
+            <li><strong>Tooling:</strong> JMeter with synchronized timers (forces all threads to fire at once) is a practical way to simulate this at load, or a small custom test harness using <code>CompletableFuture.allOf()</code> in Java to fire concurrent calls precisely.</li>
+          </ul>
+          <div class="callout warn"><b>Why this matters for banking/FinTech:</b> race conditions in payment/loan-disbursement flows are exactly the class of bug that causes double-charges — worth explicitly connecting this to your GM Financial / DBS domain experience if asked for a real example.</div>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      Nagarro SDET Interview — Detailed Prep Guide · generated reference document
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>

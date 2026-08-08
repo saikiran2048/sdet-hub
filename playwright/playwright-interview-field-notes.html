@@ -318,10 +318,34 @@ footer{
   .topbar{padding:12px 16px;gap:10px;}
   .tabs{display:none;}
 }
+/* --- Back to Hub button --- */
+.back-to-hub {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px;
+  padding: 8px 14px;
+  background: #101b2d;
+  border: 1px solid #223252;
+  border-radius: 8px;
+  color: #4fd1e8;
+  text-decoration: none;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.back-to-hub:hover {
+  border-color: #4fd1e8;
+  transform: translateX(-2px);
+}
 </style>
 </head>
 <body>
-
+<a href="../index.html" class="back-to-hub">&larr; Back to Hub</a>
 <div class="topbar">
   <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
