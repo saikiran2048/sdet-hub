@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CGI Interview Prep — Q&A Reference</title>
+<style>
+  :root{
+    --navy:#1a2942; --light:#eef1f6; --text:#1f2430; --muted:#555;
+    --border:#dde2ea; --code-bg:#1e2530; --code-text:#e6e9ef;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    background:var(--light); color:var(--text); margin:0; padding:0;
+  }
+  header{
+    background:linear-gradient(135deg,#1a2942,#2c3e63); color:#fff; padding:26px 20px; text-align:center;
+  }
+  header h1{margin:0; font-size:1.5em;}
+  header p{margin:8px 0 0; color:#c3cee5; font-size:0.92em;}
+  .container{max-width:920px; margin:0 auto; padding:16px;}
+  .controls{
+    display:flex; gap:10px; margin:18px 0; flex-wrap:wrap; align-items:center;
+    position:sticky; top:0; background:var(--light); padding:8px 0; z-index:10;
+  }
+  #search{
+    flex:1; min-width:200px; padding:11px 14px; border:1px solid var(--border);
+    border-radius:8px; font-size:0.95em;
+  }
+  .controls button{
+    padding:10px 16px; border:none; background:var(--navy); color:#fff;
+    border-radius:8px; cursor:pointer; font-size:0.88em; font-weight:600;
+  }
+  .controls button.secondary{background:#fff; color:var(--navy); border:1px solid var(--navy);}
+
+  .cat{
+    background:#fff; border-radius:12px; margin-bottom:16px; overflow:hidden;
+    border:1px solid var(--border); border-left:6px solid var(--accent);
+    box-shadow:0 1px 3px rgba(0,0,0,0.05);
+  }
+  .cat-header{
+    padding:14px 18px; cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center; font-weight:700;
+    font-size:1.02em; color:var(--accent);
+  }
+  .cat-header .count{
+    font-weight:600; font-size:0.78em; color:#fff; background:var(--accent);
+    padding:3px 10px; border-radius:12px;
+  }
+  .cat-body{display:none; padding:2px 0 8px 0;}
+  .cat-body.open{display:block;}
+  .qa{ border-top:1px solid var(--border); padding:0; }
+  .qa:first-child{border-top:none;}
+  .q{
+    padding:13px 18px; cursor:pointer; display:flex; justify-content:space-between;
+    align-items:flex-start; gap:10px; font-weight:600; font-size:0.94em;
+  }
+  .q:hover{background:#f7f8fb;}
+  .q .marker{color:var(--accent); font-weight:800; flex-shrink:0;}
+  .a{
+    display:none; padding:2px 18px 18px 18px; color:var(--muted); font-size:0.91em;
+    line-height:1.65;
+  }
+  .a.open{display:block;}
+  .a p{margin:0 0 10px 0;}
+  .a p:last-child{margin-bottom:0;}
+  .toggle-icon{color:var(--accent); font-size:1.1em; flex-shrink:0; font-weight:700;}
+  .code-block{ margin:12px 0; border-radius:10px; overflow:hidden; border:1px solid #2f394a; }
+  .code-lang{
+    background:#141a24; color:#8fb3ff; font-size:0.72em; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.6px; padding:6px 14px;
+    border-bottom:1px solid #2f394a;
+  }
+  pre{
+    background:var(--code-bg); color:var(--code-text); padding:16px 18px;
+    overflow-x:auto; font-size:1em; margin:0; line-height:1.65;
+    border-left:4px solid var(--accent);
+  }
+  code{
+    font-family:"SF Mono", Menlo, Consolas, "Courier New", monospace;
+    white-space:pre; font-size:0.95em;
+  }
+  .a p code{
+    background:#eef0f5; color:#c7254e; padding:1px 6px; border-radius:4px; font-size:0.9em;
+  }
+  .tag{
+    display:inline-block; font-size:0.72em; font-weight:700; text-transform:uppercase;
+    letter-spacing:0.4px; background:var(--accent); color:#fff; padding:2px 8px;
+    border-radius:6px; margin-bottom:8px;
+  }
+  footer{text-align:center; color:var(--muted); font-size:0.8em; padding:24px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>CGI Interview Prep — Q&amp;A Reference</h1>
+  <p>Senior Automation Test Engineer · J0326-0983 · Assessment &amp; F2F prep</p>
+</header>
+
+<div class="container">
+  <div class="controls">
+    <input id="search" type="text" placeholder="Search questions or answers...">
+    <button onclick="expandAll()">Expand All</button>
+    <button class="secondary" onclick="collapseAll()">Collapse All</button>
+  </div>
+  <div id="catList"></div>
+</div>
+
+<footer>Git · HTTP · Coding · Java/OOP · Selenium · TestNG · API Testing · SQL · Testing Concepts</footer>
+
+<script>
+// Escapes HTML special characters safely, in the correct order
+function escapeHtml(str){
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+// Helper: converts ```code``` blocks in a string into <pre><code> and rest into <p>
+// Also strips a leading language tag (e.g. "java", "sql", "xml") on its own first line
+function fmt(text){
+  const parts = text.split("```");
+  let html = "";
+  parts.forEach((part, i) => {
+    if(i % 2 === 1){
+      let code = part.replace(/^\n+/, "").replace(/\n+$/, "");
+      const langMatch = code.match(/^([A-Za-z][A-Za-z0-9+#]{0,10})\n/);
+      let lang = "";
+      if(langMatch){
+        lang = langMatch[1];
+        code = code.slice(langMatch[0].length);
+      }
+      const label = lang ? `<div class="code-lang">${lang}</div>` : "";
+      html += `<div class="code-block">${label}<pre><code>${escapeHtml(code)}</code></pre></div>`;
+    } else {
+      const paras = part.trim().split("\n\n").filter(p=>p.trim().length);
+      paras.forEach(p => { html += `<p>${p.trim().replace(/\n/g,"<br>")}</p>`; });
+    }
+  });
+  return html;
+}
+
+const colors = ["#e8590c","#1971c2","#9c36b5","#2f9e44","#0c8599","#e64980","#5f3dc4","#8b5a2b","#495057"];
+
+const data = [
+{
+  cat: "1. Git",
+  items: [
+["Difference between git merge and git rebase? When to use each?",
+`Both integrate changes from one branch into another, but they handle history very differently.
+
+**merge**: Combines two branch histories by creating a new merge commit with two parents. Nothing is rewritten — the full, true history (including all the messy intermediate commits) is preserved exactly as it happened.
+
+**rebase**: Takes your commits and replays them one-by-one on top of the target branch's latest commit, as if you'd started your work from there. This produces a clean, linear history — but it rewrites commit hashes, so anyone else who has those original commits will have a mismatched history.
+
+\`\`\`
+# merge
+git checkout feature
+git merge main
+
+# rebase
+git checkout feature
+git rebase main
+\`\`\`
+
+**Rule of thumb:** rebase your own local/unshared feature branch to keep history clean before merging it in. Never rebase a branch that others have already pulled — use merge for shared/public branches instead.`],
+
+["What happens to commit history in a rebase vs a merge?",
+`Merge preserves both branches' full history and shows exactly when and how they diverged and rejoined — you'll see a "diamond" shape in the commit graph with a merge commit at the join point.
+
+Rebase produces a straight line — your commits appear to have been made sequentially after the target branch's latest commit. This looks cleaner in \`git log\`, but the original commit SHAs are gone, replaced with new ones, because the commit's parent (and therefore its hash) changed.`],
+
+["What is a fast-forward merge?",
+`If the branch you're merging into (say \`main\`) hasn't diverged — meaning it has no new commits since your feature branch was created — Git doesn't need to create a merge commit at all. It just moves the \`main\` pointer forward to your feature branch's latest commit.
+
+\`\`\`
+git checkout main
+git merge feature   # fast-forwards if main has no new commits
+\`\`\`
+You can force a merge commit even when fast-forward is possible with \`git merge --no-ff\`, which some teams prefer for traceability.`],
+
+["How do you resolve a merge conflict? Walk through the steps.",
+`1. Run \`git merge\` or \`git pull\` — Git stops and lists the conflicting files.
+2. Open each conflicted file. Git inserts conflict markers:
+\`\`\`
+<<<<<<< HEAD
+your current branch's version
+=======
+incoming branch's version
+>>>>>>> feature-branch
+\`\`\`
+3. Manually edit the file to keep the correct code (yours, theirs, or a combination), then delete the marker lines.
+4. Stage the resolved file: \`git add <filename>\`
+5. Complete the merge: \`git commit\` (Git auto-fills a merge commit message), or \`git rebase --continue\` if you were mid-rebase instead of a merge.
+
+If you want to bail out entirely: \`git merge --abort\` or \`git rebase --abort\`.`],
+
+["What's git cherry-pick used for?",
+`Applies the changes from one specific commit (identified by its hash) onto your current branch, without merging the entire source branch.
+
+\`\`\`
+git cherry-pick <commit-hash>
+\`\`\`
+Common real-world use: a critical bug fix was committed on a development branch, and you need that exact fix on a release/hotfix branch without pulling in unrelated in-progress work.`],
+
+["Difference between git fetch and git pull?",
+`\`git fetch\` downloads new commits, branches, and tags from the remote into your local repo's remote-tracking branches (e.g. \`origin/main\`) — but it does NOT touch your current working branch or merge anything.
+
+\`git pull\` = \`git fetch\` + \`git merge\` (or rebase, if configured) in one step — it immediately integrates those remote changes into your current branch.
+
+Best practice: \`git fetch\` first to inspect incoming changes safely, then decide to merge/rebase — gives you more control than a blind \`pull\`.`],
+
+["What does git stash do? How do you apply a specific stash?",
+`\`git stash\` temporarily shelves your uncommitted (staged and/or unstaged) changes, resetting your working directory to match the last commit — useful when you need to switch branches urgently without committing half-done work.
+
+\`\`\`
+git stash                  # stash current changes
+git stash list             # view all stashes
+git stash apply stash@{2}  # apply a specific stash, keep it in the list
+git stash pop               # apply the most recent stash AND remove it from the list
+\`\`\`
+Use \`apply\` when you want to reuse the same stash elsewhere too; use \`pop\` when you're done with it.`],
+
+["Difference between git reset --soft, --mixed, and --hard?",
+`All three move the branch pointer (HEAD) to a target commit, but differ in what happens to your staging area and working directory:
+
+\`\`\`
+git reset --soft HEAD~1   # moves HEAD back; changes stay STAGED
+git reset --mixed HEAD~1  # (default) moves HEAD back; changes become UNSTAGED but kept in working dir
+git reset --hard HEAD~1   # moves HEAD back; ALL changes are DISCARDED — irreversible
+\`\`\`
+\`--hard\` is destructive — always double-check you don't need those changes before running it.`],
+
+["Difference between git revert and git reset?",
+`\`git revert <commit>\` creates a brand-new commit that applies the inverse of the changes in the target commit — history is preserved, nothing is rewritten. Safe to use on commits that have already been pushed/shared.
+
+\`git reset\` moves the branch pointer backward and can discard commits from history entirely — this rewrites history, so it should only be used on local commits that haven't been pushed/shared with others.`],
+
+["How do you undo the last commit without losing changes?",
+`\`\`\`
+git reset --soft HEAD~1
+\`\`\`
+This moves HEAD back one commit but keeps all the changes staged and ready — you can immediately edit, add more changes, and re-commit. If you just want to edit the commit message or add a forgotten file to the same commit, use \`git commit --amend\` instead.`],
+
+["What's a detached HEAD state, and how do you get out of it?",
+`Normally HEAD points to a branch, which points to a commit. In a detached HEAD state, HEAD points directly to a specific commit or tag (e.g., after \`git checkout <commit-hash>\`) instead of a branch — any new commits you make here aren't tracked by any branch and can be lost once you switch away.
+
+To recover: if you want to keep new work made in this state, create a branch from it immediately:
+\`\`\`
+git checkout -b new-branch-name
+\`\`\`
+Otherwise, just switch back to a real branch: \`git checkout main\``],
+
+["Scenario: You accidentally merged broken code into main. What do you do?",
+`First, communicate immediately — don't let others pull broken code silently.
+
+If it hasn't been pushed yet: \`git reset --hard <commit-before-merge>\` to wipe it out locally.
+
+If it's already pushed and others may have pulled it: don't rewrite shared history. Instead:
+\`\`\`
+git revert -m 1 <merge-commit-hash>
+\`\`\`
+The \`-m 1\` tells Git which parent (mainline) to revert to, since merge commits have two parents. This creates a new commit undoing the merge's changes safely, then you fix the underlying issue properly and re-merge.`],
+
+["Scenario: You need to update your feature branch with latest main — merge or rebase, and why?",
+`Depends on whether the branch is shared:
+
+- If it's your own local/unshared feature branch: **rebase** onto main. This keeps history linear and avoids an unnecessary merge commit cluttering the log.
+\`\`\`
+git checkout feature
+git rebase main
+\`\`\`
+- If teammates are also working on that same branch: **merge** main into it instead, because rebasing would rewrite commit hashes and break everyone else's copy of the branch.`],
+
+["What is git rebase -i (interactive rebase) used for?",
+`Lets you rewrite a range of commits before they go further — reorder them, edit messages, squash multiple commits into one, or drop unwanted commits entirely.
+
+\`\`\`
+git rebase -i HEAD~4
+\`\`\`
+Opens an editor listing the last 4 commits with actions like \`pick\`, \`squash\`, \`reword\`, \`drop\`. Commonly used to clean up a messy series of "WIP" or "fix typo" commits into one meaningful commit before merging into main.`],
+
+["What's the difference between a git tag and a branch?",
+`A **branch** is a movable pointer — it automatically advances to point at the latest commit each time you commit on it.
+
+A **tag** is a fixed, permanent pointer to one specific commit — it never moves. Tags are typically used to mark release points (e.g., \`v1.2.0\`) so you can always jump back to that exact snapshot.
+\`\`\`
+git tag v1.2.0
+git tag -a v1.2.0 -m "Release 1.2.0"   # annotated tag with metadata
+\`\`\``],
+
+["How do you squash multiple commits into one?",
+`\`\`\`
+git rebase -i HEAD~3
+\`\`\`
+In the editor, keep the first commit as \`pick\` and change the rest to \`squash\` (or \`s\`):
+\`\`\`
+pick a1b2c3 First commit
+squash d4e5f6 Second commit
+squash g7h8i9 Third commit
+\`\`\`
+Save and Git will combine them into one commit, then prompt you to write a combined commit message.`],
+
+["What are Git hooks? Give an example use case.",
+`Scripts stored in \`.git/hooks/\` that Git automatically triggers at specific points in the workflow — e.g., \`pre-commit\`, \`pre-push\`, \`post-merge\`.
+
+**Example:** A \`pre-commit\` hook that runs your unit tests or a linter before allowing the commit to go through — if the tests fail, the commit is blocked, catching issues before they ever enter history. Tools like Husky are commonly used to manage these in team projects.`]
+  ]
+},
+{
+  cat: "2. HTTP / REST Fundamentals",
+  items: [
+["Difference between 401 and 403?",
+`**401 Unauthorized** means the server doesn't know who you are — authentication is missing, invalid, or expired. The correct response to a 401 is usually to log in / refresh your token.
+
+**403 Forbidden** means the server DOES know who you are (you're authenticated), but you don't have permission to access this specific resource. No amount of re-logging-in will fix a 403 — it's a permissions issue, not an identity issue.
+
+This exact pair was flagged as a gap in your last CGI round — the mnemonic: 401 = "who are you?", 403 = "I know you, but no."`],
+
+["Difference between 404 and 410?",
+`**404 Not Found**: the resource doesn't exist at this URL — could be a typo, could have never existed, the server gives no further explanation.
+
+**410 Gone**: an explicit, intentional signal that the resource USED to exist here but has been permanently removed and won't come back — useful for SEO/caching, telling clients to stop trying.`],
+
+["Explain 200, 201, 204 — when is each returned?",
+`\`\`\`
+200 OK        -> request succeeded, response body returned (typical GET)
+201 Created   -> new resource successfully created (typical POST), often includes a Location header
+204 No Content -> request succeeded, but there's no body to return (typical DELETE or a PUT with no response payload)
+\`\`\`
+All three are "success" codes (2xx range) — the difference is purely about what content, if any, comes back.`],
+
+["Difference between 500 and 503?",
+`**500 Internal Server Error**: a generic catch-all for an unhandled exception or bug on the server side — something broke unexpectedly while processing the request.
+
+**503 Service Unavailable**: the server is intentionally or temporarily unable to handle the request — often due to overload, maintenance, or scaling issues. It implies the service should recover soon, sometimes with a \`Retry-After\` header telling the client when to try again.`],
+
+["What is idempotency? Which HTTP methods are idempotent?",
+`An operation is idempotent if calling it once has the same effect as calling it multiple times with identical input — no extra side effects on repeat calls.
+
+\`\`\`
+GET     -> idempotent (just reads, no side effects)
+PUT     -> idempotent (replacing with the same data repeatedly gives the same end state)
+DELETE  -> idempotent (deleting something already deleted still results in "it's gone")
+POST    -> NOT idempotent (each call can create a new resource, e.g. 3 POSTs = 3 new records)
+PATCH   -> generally NOT guaranteed idempotent (depends on implementation)
+\`\`\`
+This matters for automated retries — it's safe to blindly retry a failed GET/PUT/DELETE, but retrying a POST could create duplicate records.`],
+
+["Difference between PUT and PATCH?",
+`**PUT** replaces the ENTIRE resource with the payload you send — any fields you omit are typically wiped out/reset.
+
+**PATCH** applies a PARTIAL update — only the fields included in the payload are modified; everything else on the resource stays untouched.
+
+\`\`\`
+PUT /users/5    { "name": "Sai", "email": "sai@x.com" }   // full replacement
+PATCH /users/5  { "email": "new@x.com" }                   // only email changes
+\`\`\``],
+
+["Difference between POST and PUT?",
+`**POST** is used to CREATE a new resource — the server typically assigns the ID, and calling it repeatedly with the same payload creates multiple new resources (not idempotent).
+
+**PUT** is used to CREATE OR UPDATE a resource at a URI the client already knows (e.g., \`/users/5\`) — calling it repeatedly with the same payload results in the same end state each time (idempotent).`],
+
+["Difference between serialization and deserialization?",
+`**Serialization**: converting an in-memory object or data structure into a format suitable for storage or transmission — e.g., converting a Java \`User\` object into a JSON string to send over an API.
+
+**Deserialization**: the reverse process — taking that transmitted/stored format (JSON, XML) and reconstructing it back into a usable in-memory object.
+
+\`\`\`
+Java object  --serialize-->   {"name":"Sai","age":27}
+{"name":"Sai","age":27}  --deserialize-->  Java object
+\`\`\`
+In REST Assured, this happens automatically via POJOs when you use \`.as(User.class)\` to deserialize a response.`],
+
+["Difference between synchronous and asynchronous APIs?",
+`**Synchronous**: the caller sends a request and BLOCKS, waiting for the response before doing anything else — simple, but ties up resources while waiting.
+
+**Asynchronous**: the caller sends a request and continues other work immediately; the actual result arrives later — via a callback, a webhook, polling, or a message queue event.
+
+This is directly relevant to your DBS Kafka work: producer-consumer flows are inherently asynchronous, which is why your validation framework couldn't check results immediately and needed a polling + retry + timeout mechanism to handle eventual consistency.`],
+
+["What is a REST API vs SOAP API?",
+`**REST**: an architectural style (not a strict protocol) built over standard HTTP, using verbs like GET/POST/PUT/DELETE, typically exchanging lightweight JSON, and is stateless by design.
+
+**SOAP**: a strict, XML-based messaging protocol with a formal contract (WSDL), built-in standards for security (WS-Security) and transactions, more rigid and verbose — still common in older/legacy enterprise and banking systems, so it's worth knowing conceptually even if your current work is REST/Karate-based.`],
+
+["What are HTTP headers? Name a few common ones.",
+`Key-value metadata sent alongside the actual request/response body, describing how to interpret or process it.
+
+\`\`\`
+Content-Type: application/json     -> format of the body being sent
+Accept: application/json           -> format the client wants back
+Authorization: Bearer <token>      -> auth credentials
+Cache-Control: no-cache            -> caching behavior
+\`\`\``],
+
+["Difference between query parameters and path parameters?",
+`**Path parameters** are embedded directly in the URL structure and identify a specific resource:
+\`\`\`
+GET /users/123
+\`\`\`
+**Query parameters** come after a \`?\` and typically filter, sort, or paginate results — they don't identify a single resource, they modify the request:
+\`\`\`
+GET /users?status=active&page=2
+\`\`\``],
+
+["What is CORS?",
+`Cross-Origin Resource Sharing — a browser security mechanism that blocks a web page from making requests to a different domain/origin than the one that served the page, unless that server explicitly permits it via response headers like \`Access-Control-Allow-Origin\`.
+
+It exists to prevent malicious sites from silently making authenticated requests to other services on a user's behalf. As a tester, you'd see CORS errors in browser console logs, not typically in server-side API test tools like REST Assured/Postman, since those don't enforce CORS the way browsers do.`],
+
+["What's a JWT token, and how is it used in authentication?",
+`JSON Web Token — a compact, self-contained, signed token used to represent claims (e.g., user ID, roles, expiry time). It has three base64-encoded parts separated by dots: \`header.payload.signature\`.
+
+\`\`\`
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+\`\`\`
+The server verifies the signature (using a secret/public key) to trust the claims WITHOUT needing a database lookup on every request — this makes JWT-based auth stateless and scalable, which is why it's common in modern REST APIs.`],
+
+["What is API rate limiting, and how would you test for it?",
+`A mechanism restricting how many requests a client can make within a given time window, protecting the service from abuse or overload.
+
+**How to test it:** fire requests rapidly in a loop past the documented limit and verify the API correctly returns \`429 Too Many Requests\` once the threshold is crossed, that a \`Retry-After\` header (if present) is accurate, and that the limit correctly resets after the time window — this is a good candidate for a small JMeter or REST Assured loop test.`],
+
+["Difference between stateful and stateless communication?",
+`**Stateless**: each request contains ALL the information the server needs to process it — the server retains no memory of previous requests from that client. REST APIs are designed to be stateless (each call is self-contained, often via a token in the header).
+
+**Stateful**: the server retains context/session data between requests — e.g., a traditional web session using server-side session storage tied to a cookie.`],
+
+["What is the difference between 301 and 302 redirect codes?",
+`**301 Moved Permanently**: the resource has permanently relocated — browsers and search engines should update their stored references/bookmarks to the new URL.
+
+**302 Found** (temporary redirect): the resource is only TEMPORARILY at a different location — clients should keep using the original URL for future requests, since it may point back there later.`],
+
+["What is content negotiation in REST APIs?",
+`The process by which client and server agree on the format (and sometimes language) of the response, using headers rather than separate endpoints.
+
+\`\`\`
+Accept: application/json     -> client wants JSON back
+Accept: application/xml      -> client wants XML back
+\`\`\`
+This lets a single endpoint (e.g., \`/users/5\`) serve multiple formats depending on what the caller requests, instead of needing \`/users/5.json\` and \`/users/5.xml\` as separate routes.`]
+  ]
+},
+{
+  cat: "3. String / Array Coding",
+  items: [
+["Reverse a string without using built-in reverse functions.",
+`Two-pointer approach — swap characters from both ends moving inward until the pointers meet.
+\`\`\`java
+char[] arr = str.toCharArray();
+int left = 0, right = arr.length - 1;
+while (left < right) {
+    char temp = arr[left];
+    arr[left] = arr[right];
+    arr[right] = temp;
+    left++;
+    right--;
+}
+return new String(arr);
+\`\`\`
+Time: O(n), Space: O(n) for the char array (or O(1) if mutating in place on a char array you already own).`],
+
+["Check if a string is a palindrome.",
+`Compare characters from outer ends moving inward — if any pair mismatches, it's not a palindrome.
+\`\`\`java
+int left = 0, right = s.length() - 1;
+while (left < right) {
+    if (s.charAt(left) != s.charAt(right)) return false;
+    left++;
+    right--;
+}
+return true;
+\`\`\`
+For case-insensitive / ignoring spaces & punctuation (common follow-up), lowercase the string and strip non-alphanumeric characters first.`],
+
+["Check if two strings are anagrams of each other.",
+`Two common approaches:
+
+**1) Sort and compare** (simple, O(n log n)):
+\`\`\`java
+char[] a = s1.toCharArray(); Arrays.sort(a);
+char[] b = s2.toCharArray(); Arrays.sort(b);
+return Arrays.equals(a, b);
+\`\`\`
+**2) Frequency count** (faster, O(n)): use an int[26] array or HashMap to count character occurrences in both strings and compare the counts. Always check lengths are equal first as a quick short-circuit.`],
+
+["Find the first non-repeating character in a string.",
+`Use a LinkedHashMap to count frequency WHILE preserving insertion order, then scan for the first character with count 1.
+\`\`\`java
+Map<Character,Integer> freq = new LinkedHashMap<>();
+for (char c : s.toCharArray())
+    freq.put(c, freq.getOrDefault(c, 0) + 1);
+
+for (Map.Entry<Character,Integer> e : freq.entrySet())
+    if (e.getValue() == 1) return e.getKey();
+return null; // no non-repeating char found
+\`\`\``],
+
+["Count occurrences of each character in a string.",
+`\`\`\`java
+Map<Character,Integer> map = new HashMap<>();
+for (char c : s.toCharArray())
+    map.put(c, map.getOrDefault(c, 0) + 1);
+\`\`\`
+This is the building block for several other problems (anagram check, first non-repeating char, most-frequent-word).`],
+
+["Decompress a run-length encoded string like a2v12c5 (multi-digit counts).",
+`**This is the exact gap flagged from your last CGI round — the trap is treating counts as single digits.** You must keep consuming digits with a loop BEFORE treating them as the complete count.
+\`\`\`java
+StringBuilder result = new StringBuilder();
+int i = 0;
+while (i < s.length()) {
+    char letter = s.charAt(i);
+    i++;
+    StringBuilder numBuf = new StringBuilder();
+    while (i < s.length() && Character.isDigit(s.charAt(i))) {
+        numBuf.append(s.charAt(i));
+        i++;
+    }
+    int count = Integer.parseInt(numBuf.toString());
+    for (int j = 0; j < count; j++) result.append(letter);
+}
+return result.toString();
+\`\`\`
+For \`a2v12c5\`, this correctly reads "12" as one number for v, not "1" then stopping.`],
+
+["Remove duplicate characters from a string.",
+`Use a LinkedHashSet to eliminate duplicates while preserving the original order of first appearance.
+\`\`\`java
+Set<Character> seen = new LinkedHashSet<>();
+for (char c : s.toCharArray()) seen.add(c);
+StringBuilder result = new StringBuilder();
+for (char c : seen) result.append(c);
+\`\`\``],
+
+["Find duplicate elements in an array.",
+`\`\`\`java
+Set<Integer> seen = new HashSet<>();
+Set<Integer> duplicates = new HashSet<>();
+for (int n : arr) {
+    if (!seen.add(n)) duplicates.add(n); // add() returns false if already present
+}
+\`\`\`
+\`Set.add()\` conveniently returns \`false\` if the element was already present — a neat one-liner check instead of a separate \`contains()\` call.`],
+
+["Find the second largest number in an array.",
+`Single pass, tracking two variables:
+\`\`\`java
+int largest = Integer.MIN_VALUE, second = Integer.MIN_VALUE;
+for (int n : arr) {
+    if (n > largest) {
+        second = largest;
+        largest = n;
+    } else if (n > second && n != largest) {
+        second = n;
+    }
+}
+\`\`\`
+O(n) time, O(1) space — better than sorting the whole array (O(n log n)) just to grab the second element.`],
+
+["Find the missing number in an array of 1 to N.",
+`Use the arithmetic sum formula instead of sorting/searching.
+\`\`\`java
+int n = arr.length + 1; // since one number is missing
+int expectedSum = n * (n + 1) / 2;
+int actualSum = 0;
+for (int x : arr) actualSum += x;
+int missing = expectedSum - actualSum;
+\`\`\`
+O(n) time, O(1) space. (Alternative: XOR all numbers 1..n with all array elements — the result is the missing number, avoids overflow risk on very large arrays.)`],
+
+["Reverse an array in place.",
+`Same two-pointer swap pattern as string reversal:
+\`\`\`java
+int left = 0, right = arr.length - 1;
+while (left < right) {
+    int temp = arr[left];
+    arr[left] = arr[right];
+    arr[right] = temp;
+    left++; right--;
+}
+\`\`\``],
+
+["Find pairs in an array summing to a target value (two-sum).",
+`\`\`\`java
+Set<Integer> seen = new HashSet<>();
+for (int n : arr) {
+    int complement = target - n;
+    if (seen.contains(complement)) {
+        // pair found: (complement, n)
+    }
+    seen.add(n);
+}
+\`\`\`
+O(n) time using a HashSet, versus the naive O(n²) nested-loop brute force.`],
+
+["Rotate an array by k positions.",
+`The three-reversal trick achieves O(n) rotation with O(1) extra space:
+\`\`\`java
+reverse(arr, 0, arr.length - 1);      // reverse whole array
+reverse(arr, 0, k - 1);               // reverse first k elements
+reverse(arr, k, arr.length - 1);      // reverse remaining elements
+\`\`\`
+Example: [1,2,3,4,5] rotated by 2 → reverse all: [5,4,3,2,1] → reverse first 2: [4,5,3,2,1] → reverse rest: [4,5,1,2,3]. Result: [4,5,1,2,3] ✓ (correctly rotated right by 2).`],
+
+["Find the intersection of two arrays.",
+`\`\`\`java
+Set<Integer> set1 = new HashSet<>();
+for (int n : arr1) set1.add(n);
+
+Set<Integer> result = new HashSet<>();
+for (int n : arr2) {
+    if (set1.contains(n)) result.add(n);
+}
+\`\`\`
+Using a Set for the result also naturally de-duplicates any repeated matches.`],
+
+["Merge two sorted arrays.",
+`Two-pointer merge, similar to the merge step in merge sort:
+\`\`\`java
+int i = 0, j = 0, k = 0;
+int[] result = new int[arr1.length + arr2.length];
+while (i < arr1.length && j < arr2.length) {
+    result[k++] = (arr1[i] <= arr2[j]) ? arr1[i++] : arr2[j++];
+}
+while (i < arr1.length) result[k++] = arr1[i++];
+while (j < arr2.length) result[k++] = arr2[j++];
+\`\`\``],
+
+["Find the longest substring without repeating characters.",
+`Sliding window using a HashSet to track characters currently in the window.
+\`\`\`java
+Set<Character> window = new HashSet<>();
+int left = 0, maxLen = 0;
+for (int right = 0; right < s.length(); right++) {
+    while (window.contains(s.charAt(right))) {
+        window.remove(s.charAt(left));
+        left++;
+    }
+    window.add(s.charAt(right));
+    maxLen = Math.max(maxLen, right - left + 1);
+}
+\`\`\`
+O(n) time — each character is added and removed from the window at most once.`],
+
+["Check if one string is a rotation of another.",
+`Concatenate the first string with itself, then check if the second string appears as a substring — this only works if lengths are equal.
+\`\`\`java
+if (s1.length() != s2.length()) return false;
+String doubled = s1 + s1;
+return doubled.contains(s2);
+\`\`\`
+Example: s1="waterbottle", s2="erbottlewat" → "waterbottlewaterbottle" contains "erbottlewat" ✓`],
+
+["Count vowels/consonants in a string.",
+`\`\`\`java
+int vowels = 0, consonants = 0;
+String vowelSet = "aeiouAEIOU";
+for (char c : s.toCharArray()) {
+    if (Character.isLetter(c)) {
+        if (vowelSet.indexOf(c) != -1) vowels++;
+        else consonants++;
+    }
+}
+\`\`\``],
+
+["Find the frequency of the most repeated word in a sentence.",
+`\`\`\`java
+String[] words = sentence.toLowerCase().split("\\\\s+");
+Map<String,Integer> freq = new HashMap<>();
+for (String w : words) freq.put(w, freq.getOrDefault(w, 0) + 1);
+
+String mostFrequent = null;
+int maxCount = 0;
+for (Map.Entry<String,Integer> e : freq.entrySet()) {
+    if (e.getValue() > maxCount) {
+        maxCount = e.getValue();
+        mostFrequent = e.getKey();
+    }
+}
+\`\`\``],
+
+["Flatten a nested array (conceptual).",
+`Recursive approach: for each element, check if it's itself a collection — if so, recurse into it; if it's a plain value, add it directly to the result.
+\`\`\`java
+void flatten(List<Object> input, List<Object> result) {
+    for (Object item : input) {
+        if (item instanceof List) {
+            flatten((List<Object>) item, result);
+        } else {
+            result.add(item);
+        }
+    }
+}
+\`\`\`
+This is a classic case where recursion naturally mirrors the arbitrarily-nested structure of the input.`]
+  ]
+},
+{
+  cat: "4. Java Core / OOP",
+  items: [
+["What are the four pillars of OOP?",
+`**Encapsulation**: bundling data and the methods that operate on it into a single unit (class), restricting direct access via private fields + public getters/setters.
+
+**Abstraction**: exposing only essential features/behavior while hiding implementation complexity (e.g., an interface like \`List\` hides how \`ArrayList\` vs \`LinkedList\` actually store data).
+
+**Inheritance**: a class acquiring fields/methods from a parent class, enabling code reuse (e.g., \`class Dog extends Animal\`).
+
+**Polymorphism**: the same method call behaving differently depending on the actual object type — via overloading (compile-time) or overriding (runtime).`],
+
+["Difference between abstraction and encapsulation?",
+`They're often confused because both involve "hiding" something, but at different levels:
+
+**Abstraction** is about hiding complexity at the DESIGN level — showing only what a class does, not how (e.g., a \`Vehicle\` interface with a \`start()\` method, without exposing engine internals).
+
+**Encapsulation** is about hiding DATA at the IMPLEMENTATION level — protecting a class's internal state from direct outside access using access modifiers (private fields + public methods to control access).`],
+
+["Difference between method overloading and overriding?",
+`\`\`\`java
+// Overloading — same class, different parameter list, resolved at COMPILE time
+void print(int a) {}
+void print(String a) {}
+
+// Overriding — subclass redefines parent's method, SAME signature, resolved at RUNTIME
+class Animal { void sound() { System.out.println("..."); } }
+class Dog extends Animal { @Override void sound() { System.out.println("Bark"); } }
+\`\`\`
+Overloading = compile-time (static) polymorphism. Overriding = runtime (dynamic) polymorphism.`],
+
+["Difference between an interface and an abstract class?",
+`\`\`\`
+Interface:                          Abstract class:
+- all methods abstract by default   - can mix abstract + concrete methods
+  (default/static allowed Java 8+)
+- no instance fields (only          - can have instance fields/state
+  public static final constants)
+- supports multiple inheritance     - only single inheritance
+- no constructors                   - CAN have constructors
+\`\`\`
+Rule of thumb: use an interface to define a capability/contract ("can fly", "can swim"); use an abstract class when subclasses share common state and partial implementation ("all Animals have a name and a generic eat() method").`],
+
+["Can you have a constructor in an interface? In an abstract class?",
+`No — interfaces cannot have constructors, since they can't hold instance state and are never instantiated directly.
+
+Yes — abstract classes CAN have constructors, even though you can't instantiate the abstract class itself directly. The constructor runs when a concrete subclass is instantiated, via an implicit or explicit \`super()\` call, typically used to initialize shared fields.`],
+
+["What is polymorphism — compile-time vs runtime?",
+`**Compile-time (static) polymorphism** = method overloading. The compiler decides which method to call based on the method signature (number/type of arguments) at compile time.
+
+**Runtime (dynamic) polymorphism** = method overriding. The actual method executed is determined at runtime based on the real object type, not the reference type — this is what enables writing \`Animal a = new Dog(); a.sound();\` and getting "Bark" even though \`a\` is declared as \`Animal\`.`],
+
+["Difference between == and .equals()?",
+`\`==\` compares references for objects (i.e., do both variables point to the exact same memory location?) or actual values for primitives.
+
+\`.equals()\` compares logical/content equality — but ONLY if the class overrides it. By default (from Object), \`.equals()\` behaves just like \`==\`. \`String\` and wrapper classes like \`Integer\` override it to compare actual content/value.
+\`\`\`java
+String a = new String("test");
+String b = new String("test");
+a == b        // false (different objects in memory)
+a.equals(b)   // true (same content)
+\`\`\``],
+
+["Difference between String, StringBuilder, and StringBuffer?",
+`\`\`\`
+String        -> immutable; every modification creates a NEW object
+StringBuilder -> mutable; NOT thread-safe; faster for single-threaded string building
+StringBuffer  -> mutable; thread-safe (synchronized methods); slightly slower than StringBuilder
+\`\`\`
+In automation frameworks, use StringBuilder for building dynamic XPath/log strings in loops — using \`String +=\` in a loop creates a new object each iteration, which is wasteful.`],
+
+["Why is String immutable in Java?",
+`Several deliberate design reasons:
+1. **Security** — Strings are used for class names, file paths, network connections; if mutable, malicious code could alter a string after validation but before use.
+2. **Thread-safety** — immutable objects can be freely shared across threads without synchronization.
+3. **String pool caching** — Java can safely reuse identical string literals from the String pool (memory efficiency), which would be unsafe if strings could change after being cached.
+4. **Hashcode caching** — since content can't change, the hashcode can be computed once and cached, making Strings efficient as HashMap keys.`],
+
+["Difference between checked and unchecked exceptions?",
+`\`\`\`
+Checked exceptions   -> checked at COMPILE time; must be declared (throws) or caught
+                        e.g. IOException, SQLException
+Unchecked exceptions -> NOT checked at compile time; subclasses of RuntimeException
+                        e.g. NullPointerException, ArrayIndexOutOfBoundsException
+\`\`\`
+Checked exceptions represent recoverable conditions the caller should be forced to handle (e.g., a file might not exist). Unchecked exceptions typically represent programming bugs that shouldn't normally occur if the code is correct.`],
+
+["What is try-with-resources?",
+`A try statement that automatically closes any resource implementing \`AutoCloseable\` at the end of the block — even if an exception occurs — eliminating the need for an explicit \`finally\` block to close things manually.
+\`\`\`java
+try (FileReader fr = new FileReader("file.txt");
+     BufferedReader br = new BufferedReader(fr)) {
+    // use br
+} // both fr and br are auto-closed here, in reverse order
+\`\`\`
+Reduces boilerplate and prevents resource leaks (common with file handles, DB connections, WebDriver sessions in some patterns).`],
+
+["Difference between final, finally, and finalize?",
+`\`\`\`
+final     -> keyword: makes a variable constant, a method un-overridable,
+             or a class un-extendable (e.g., final class String)
+finally   -> block that ALWAYS executes after try-catch, used for cleanup
+             (e.g., closing a WebDriver session)
+finalize  -> a method the Garbage Collector may call before destroying an
+             object; deprecated since Java 9, rarely relied upon now
+\`\`\``],
+
+["What is a static method? Can it be overridden?",
+`A \`static\` method belongs to the class itself, not to any instance — it can be called without creating an object (e.g., \`Math.max(a,b)\`).
+
+It CANNOT be truly overridden. If a subclass defines a static method with the same signature, it "hides" the parent's version rather than overriding it — the method that runs is determined by the REFERENCE TYPE at compile time, not the actual object type (unlike instance method overriding, which is runtime-resolved).`],
+
+["Difference between ArrayList and LinkedList?",
+`\`\`\`
+ArrayList:  backed by a dynamic array
+            - fast random access: O(1) get(index)
+            - slower insert/delete in the middle: O(n) (elements must shift)
+
+LinkedList: backed by a doubly-linked list
+            - slower random access: O(n) (must traverse from head/tail)
+            - faster insert/delete once positioned: O(1)
+\`\`\`
+Use ArrayList when you mostly read/iterate; use LinkedList when you frequently insert/remove from the middle or ends (though in practice, ArrayList is used far more often in real-world code, including test frameworks).`],
+
+["Difference between HashMap, LinkedHashMap, and TreeMap?",
+`\`\`\`
+HashMap        -> no ordering guarantee, O(1) average get/put
+LinkedHashMap  -> maintains INSERTION order, slight overhead over HashMap
+TreeMap        -> keeps keys SORTED (natural order or custom Comparator),
+                  O(log n) get/put (backed by a Red-Black tree)
+\`\`\`
+Use TreeMap when you need sorted iteration (e.g., processing keys alphabetically); use LinkedHashMap when insertion order matters for output/logging predictability.`],
+
+["How does HashMap handle collisions internally?",
+`Each key's \`hashCode()\` determines which "bucket" it lands in. When two different keys hash to the SAME bucket (a collision), Java stores them as a linked list within that bucket. On lookup, it uses \`equals()\` to compare keys within that bucket to find the exact match.
+
+Since Java 8, if a single bucket's linked list grows beyond a threshold (8 entries), it's converted into a balanced red-black tree instead, improving worst-case lookup from O(n) to O(log n) for that bucket.`],
+
+["Difference between HashSet and TreeSet?",
+`\`\`\`
+HashSet -> no ordering guarantee, backed internally by a HashMap,
+           O(1) average add/contains
+TreeSet -> maintains SORTED order, backed by a TreeMap,
+           O(log n) add/contains
+\`\`\`
+Use TreeSet when you need elements to always come out in sorted order during iteration.`],
+
+["Difference between Comparable and Comparator?",
+`\`\`\`java
+// Comparable — defines a class's OWN natural/default ordering
+class Employee implements Comparable<Employee> {
+    public int compareTo(Employee other) {
+        return this.id - other.id;
+    }
+}
+
+// Comparator — defines an EXTERNAL, custom ordering, without touching the class
+Comparator<Employee> byName = (e1, e2) -> e1.getName().compareTo(e2.getName());
+Collections.sort(employees, byName);
+\`\`\`
+Comparable = one built-in natural order per class. Comparator = as many custom sort orders as you need, defined externally.`],
+
+["What are Java 8 Streams? Example filtering and collecting.",
+`A functional-style API for processing collections declaratively — filter, map, reduce, sort — instead of writing manual loops.
+\`\`\`java
+List<String> longNames = names.stream()
+    .filter(n -> n.length() > 5)
+    .map(String::toUpperCase)
+    .sorted()
+    .collect(Collectors.toList());
+\`\`\`
+Streams are lazy (nothing executes until a terminal operation like \`collect()\` or \`forEach()\` is called) and don't modify the original source collection.`],
+
+["What is a Lambda expression? Example.",
+`A concise, anonymous way to implement a functional interface (an interface with a single abstract method) without writing a full anonymous class.
+\`\`\`java
+// Before Java 8 (anonymous class)
+Runnable r1 = new Runnable() {
+    public void run() { System.out.println("Running"); }
+};
+
+// With a lambda
+Runnable r2 = () -> System.out.println("Running");
+
+list.forEach(item -> System.out.println(item));
+\`\`\``],
+
+["Singleton pattern — thread-safe implementation?",
+`Ensures only one instance of a class ever exists across the whole application (common for config objects, WebDriver managers, connection pools).
+\`\`\`java
+public class Singleton {
+    private static volatile Singleton instance;
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+\`\`\`
+This is "double-checked locking" — the outer null check avoids the cost of synchronization on every call once the instance exists; \`volatile\` prevents instruction reordering issues that could expose a half-constructed object to another thread.`],
+
+["Factory pattern — when used in a test framework?",
+`Creates objects without exposing the instantiation logic directly to the caller — the caller just asks for "a thing" based on a parameter, and the factory decides which concrete class to build.
+\`\`\`java
+public class DriverFactory {
+    public static WebDriver getDriver(String browser) {
+        switch (browser) {
+            case "chrome": return new ChromeDriver();
+            case "firefox": return new FirefoxDriver();
+            default: throw new IllegalArgumentException("Unsupported browser");
+        }
+    }
+}
+\`\`\`
+This decouples test code from browser-specific instantiation — tests just call \`DriverFactory.getDriver(config.browser)\` and don't care about the underlying class.`],
+
+["Builder pattern — where used (e.g., Page Object construction)?",
+`Constructs complex objects step-by-step via chained method calls, avoiding constructors with a huge number of parameters ("telescoping constructors").
+\`\`\`java
+// Fluent page object style
+loginPage.enterUsername("sai")
+         .enterPassword("pass123")
+         .clickLogin();
+
+// Building a complex API request body
+RequestPayload payload = new RequestPayload.Builder()
+    .setName("Sai")
+    .setRole("QA")
+    .build();
+\`\`\`
+Very common in test automation for fluent Page Object chains and for building complex REST Assured request bodies step by step.`],
+
+["What is dependency injection, conceptually?",
+`A design principle where a class's dependencies are supplied FROM OUTSIDE (by a constructor, setter, or framework) rather than the class creating them itself internally.
+\`\`\`java
+// Without DI — tightly coupled, hard to test
+class OrderService {
+    private PaymentGateway gateway = new StripeGateway();
+}
+
+// With DI — loosely coupled, easy to swap/mock in tests
+class OrderService {
+    private PaymentGateway gateway;
+    OrderService(PaymentGateway gateway) { this.gateway = gateway; }
+}
+\`\`\`
+This is why DI-friendly design makes unit testing easier — you can inject a mock \`PaymentGateway\` in tests instead of hitting a real payment service.`]
+  ]
+},
+{
+  cat: "5. Selenium WebDriver",
+  items: [
+["Difference between findElement and findElements?",
+`\`\`\`java
+WebElement el = driver.findElement(By.id("username"));
+// throws NoSuchElementException if nothing matches
+
+List<WebElement> els = driver.findElements(By.className("item"));
+// returns an EMPTY list if nothing matches — no exception
+\`\`\`
+Use \`findElements\` when you specifically want to check whether an element exists (checking \`.size() == 0\`) without triggering an exception.`],
+
+["Difference between implicit, explicit, and fluent wait?",
+`\`\`\`java
+// Implicit — applies GLOBALLY to every findElement call for the driver's lifetime
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+// Explicit — waits for a SPECIFIC condition on a SPECIFIC element
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("btn")));
+
+// Fluent — like explicit, but configurable polling frequency + exceptions to ignore
+Wait<WebDriver> fluentWait = new FluentWait<>(driver)
+    .withTimeout(Duration.ofSeconds(30))
+    .pollingEvery(Duration.ofSeconds(5))
+    .ignoring(NoSuchElementException.class);
+\`\`\`
+Mixing implicit and explicit waits in the same test is discouraged — it can cause unpredictable wait times due to interaction between the two.`],
+
+["What is StaleElementReferenceException, and how do you handle it?",
+`Thrown when a previously located WebElement reference is no longer attached to the current DOM — typically because the page was refreshed, or the element was removed/re-rendered by JavaScript after you found it but before you interacted with it.
+
+**Handling:** re-locate the element immediately before interacting with it rather than caching it too early, or wrap the interaction in a small retry loop:
+\`\`\`java
+for (int i = 0; i < 3; i++) {
+    try {
+        driver.findElement(By.id("btn")).click();
+        break;
+    } catch (StaleElementReferenceException e) {
+        // retry — element will be re-located on next loop
+    }
+}
+\`\`\``],
+
+["How do you handle dynamic elements/locators?",
+`Avoid hardcoding IDs/classes that regenerate on each page load (e.g., \`id="btn-98234"\`). Instead:
+\`\`\`
+//button[contains(@id,'btn-')]
+//div[starts-with(@class,'item-')]
+//span[text()='Submit']
+\`\`\`
+Combine with explicit waits (\`visibilityOfElementLocated\`) rather than relying purely on locator strategy, since dynamic elements often also load asynchronously.`],
+
+["Difference between XPath and CSS selectors — when to prefer one?",
+`\`\`\`
+XPath: can traverse UP (parent/ancestor) and DOWN the DOM,
+       supports text-based matching: //button[text()='Submit']
+CSS:   generally faster to evaluate, more readable,
+       CANNOT easily traverse upward to a parent
+\`\`\`
+Prefer CSS for simple attribute/class-based matching (faster, cleaner). Prefer XPath when you need to match by visible text or need to navigate to a parent/ancestor element from a child.`],
+
+["Types of XPath (absolute vs relative)?",
+`\`\`\`
+Absolute: /html/body/div[1]/div[2]/form/input
+          -> starts from the root; extremely brittle, breaks with ANY DOM change
+
+Relative: //input[@name='username']
+          -> starts anywhere using //; the industry-standard practice
+\`\`\`
+Always prefer relative XPath in real automation frameworks — absolute XPath is a common anti-pattern flagged in code reviews.`],
+
+["How do you switch between browser windows/tabs?",
+`\`\`\`java
+String originalWindow = driver.getWindowHandle();
+Set<String> allWindows = driver.getWindowHandles();
+
+for (String handle : allWindows) {
+    if (!handle.equals(originalWindow)) {
+        driver.switchTo().window(handle);
+        break;
+    }
+}
+// ... do work in new window ...
+driver.switchTo().window(originalWindow); // switch back
+\`\`\``],
+
+["How do you handle iframes in Selenium?",
+`\`\`\`java
+driver.switchTo().frame("frameNameOrId"); // or index, or a WebElement
+// interact with elements inside the iframe
+driver.switchTo().defaultContent(); // return to the main page
+\`\`\`
+Elements inside an iframe are NOT accessible until you explicitly switch into that frame's context — a common cause of "element not found" errors for testers unfamiliar with the page structure.`],
+
+["How do you handle a JavaScript alert/popup?",
+`\`\`\`java
+Alert alert = driver.switchTo().alert();
+alert.accept();           // click OK
+alert.dismiss();          // click Cancel
+String text = alert.getText();
+alert.sendKeys("input");  // for prompt() boxes that accept text input
+\`\`\`
+Native JS alerts block Selenium commands until dismissed — you must switch to the alert context before doing anything else.`],
+
+["What's the Page Object Model, and why use it?",
+`A design pattern where each web page (or component) is represented as a class — locators are fields, and user actions on that page are methods.
+\`\`\`java
+public class LoginPage {
+    By username = By.id("username");
+    By password = By.id("password");
+    By loginBtn = By.id("login");
+
+    public void login(String user, String pass) {
+        driver.findElement(username).sendKeys(user);
+        driver.findElement(password).sendKeys(pass);
+        driver.findElement(loginBtn).click();
+    }
+}
+\`\`\`
+**Why:** if the UI changes (say the login button's ID changes), you fix it in ONE place (the Page Object) instead of hunting through every test script that uses that locator.`],
+
+["Difference between Page Object Model and Page Factory?",
+`POM is the general PATTERN. Page Factory is a Selenium-provided UTILITY built on top of it, using annotations for cleaner locator declaration and lazy initialization.
+\`\`\`java
+public class LoginPage {
+    @FindBy(id = "username")
+    WebElement usernameField;
+
+    public LoginPage(WebDriver driver) {
+        PageFactory.initElements(driver, this);
+    }
+}
+\`\`\`
+Page Factory elements are located lazily — only when actually interacted with, not at object construction time — which can help reduce some StaleElement issues on dynamically loaded pages.`],
+
+["How do you take a screenshot on test failure?",
+`Implement TestNG's \`ITestListener\` and capture a screenshot inside \`onTestFailure()\`:
+\`\`\`java
+public void onTestFailure(ITestResult result) {
+    TakesScreenshot ts = (TakesScreenshot) driver;
+    File src = ts.getScreenshotAs(OutputType.FILE);
+    File dest = new File("screenshots/" + result.getName() + ".png");
+    FileUtils.copyFile(src, dest);
+}
+\`\`\`
+Register the listener via \`@Listeners(MyListener.class)\` on the test class or in \`testng.xml\`.`],
+
+["How do you perform drag-and-drop or mouse hover actions?",
+`Both use the \`Actions\` class:
+\`\`\`java
+Actions actions = new Actions(driver);
+
+// Drag and drop
+actions.dragAndDrop(sourceElement, targetElement).build().perform();
+
+// Hover
+actions.moveToElement(menuElement).perform();
+\`\`\`
+For drag-and-drop that doesn't work reliably with the built-in method (common with HTML5 drag events), you may need \`clickAndHold().moveToElement().release()\` with explicit pauses, or a JavaScriptExecutor-based workaround.`],
+
+["Difference between driver.close() and driver.quit()?",
+`\`\`\`
+driver.close() -> closes ONLY the current window/tab that has focus
+driver.quit()  -> closes ALL windows opened by this driver session
+                  AND ends the entire WebDriver session/browser process
+\`\`\`
+Best practice: always call \`quit()\` in an \`@AfterMethod\`/\`@AfterClass\` to properly clean up the browser process and avoid orphaned browser instances accumulating on CI agents.`],
+
+["How do you handle multiple browser sessions in parallel (ThreadLocal)?",
+`Wrap the WebDriver instance in a \`ThreadLocal\` so each parallel test thread gets its own isolated driver, preventing one thread's actions from interfering with another's.
+\`\`\`java
+public class DriverManager {
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+    public static void setDriver(WebDriver d) { driver.set(d); }
+    public static WebDriver getDriver() { return driver.get(); }
+    public static void unload() { driver.remove(); }
+}
+\`\`\`
+Pair this with TestNG's \`parallel="methods"\` (or "classes") and \`thread-count\` in \`testng.xml\` for true parallel execution.`],
+
+["What is headless browser testing?",
+`Running the browser engine without rendering a visible GUI window — the browser still executes JS, loads pages, and interacts with the DOM normally, just without a display.
+\`\`\`java
+ChromeOptions options = new ChromeOptions();
+options.addArguments("--headless=new");
+WebDriver driver = new ChromeDriver(options);
+\`\`\`
+Commonly used in CI/CD pipelines (Jenkins) where there's no display server available, and it's generally faster since no rendering/painting overhead is needed.`],
+
+["How do you upload a file using Selenium?",
+`If it's a standard \`<input type="file">\` element, you don't need to interact with the native OS file dialog at all — just send the absolute file path directly via \`sendKeys()\`:
+\`\`\`java
+driver.findElement(By.id("fileUpload")).sendKeys("/absolute/path/to/file.pdf");
+\`\`\`
+For non-standard upload widgets (custom JS-based drag-drop uploaders with no visible input), you may need the Robot class for OS-level keystrokes, or tools like AutoIT/Sikuli as a workaround, since Selenium can't interact with native OS dialogs directly.`]
+  ]
+},
+{
+  cat: "6. TestNG",
+  items: [
+["What is invocationCount, and how is it used?",
+`An attribute on \`@Test\` specifying how many times that single test method should run repeatedly in sequence.
+\`\`\`java
+@Test(invocationCount = 5)
+public void checkLoginStability() {
+    // runs 5 times back-to-back
+}
+\`\`\`
+Useful for flakiness detection (does this test pass consistently across repeated runs?) or simulating repeated user actions.`],
+
+["Difference between dependsOnMethods and dependsOnGroups?",
+`\`\`\`java
+@Test
+public void login() { ... }
+
+@Test(dependsOnMethods = "login")
+public void placeOrder() { ... } // runs only if login() passes
+
+@Test(dependsOnGroups = "smoke")
+public void fullRegression() { ... } // runs only after ALL "smoke" group tests pass
+\`\`\`
+\`dependsOnMethods\` ties to specific named method(s); \`dependsOnGroups\` ties to an entire group completing successfully first.`],
+
+["Difference between @BeforeMethod, @BeforeClass, @BeforeSuite?",
+`\`\`\`
+@BeforeSuite  -> runs ONCE before the entire suite (all classes), e.g. global setup
+@BeforeClass  -> runs ONCE before the first @Test method in that class
+@BeforeMethod -> runs before EVERY @Test method in that class
+\`\`\`
+Typical pattern: \`@BeforeSuite\` for environment config load, \`@BeforeClass\` for driver initialization, \`@BeforeMethod\` for navigating to a fresh starting page before each test.`],
+
+["How do you run tests in parallel using TestNG?",
+`Configure the \`<suite>\` tag in \`testng.xml\`:
+\`\`\`xml
+<suite name="Suite" parallel="methods" thread-count="4">
+    <test name="Test1">
+        <classes>
+            <class name="com.tests.LoginTest"/>
+        </classes>
+    </test>
+</suite>
+\`\`\`
+\`parallel\` can be "methods", "classes", "tests", or "instances". Must be paired with a ThreadLocal WebDriver setup to avoid multiple threads sharing (and corrupting) the same browser session.`],
+
+["What is a DataProvider, and how is it used for data-driven testing?",
+`Supplies a 2D array of parameter sets to a test method — the test runs once per row of data returned.
+\`\`\`java
+@DataProvider(name = "loginData")
+public Object[][] getData() {
+    return new Object[][] {
+        {"user1", "pass1"},
+        {"user2", "pass2"}
+    };
+}
+
+@Test(dataProvider = "loginData")
+public void login(String user, String pass) {
+    // runs twice, once per row
+}
+\`\`\``],
+
+["How do you retry failed tests automatically in TestNG?",
+`Implement \`IRetryAnalyzer\`:
+\`\`\`java
+public class RetryAnalyzer implements IRetryAnalyzer {
+    private int count = 0;
+    private static final int MAX_RETRY = 2;
+
+    public boolean retry(ITestResult result) {
+        if (count < MAX_RETRY) {
+            count++;
+            return true;
+        }
+        return false;
+    }
+}
+
+@Test(retryAnalyzer = RetryAnalyzer.class)
+public void flakyTest() { ... }
+\`\`\`
+To apply it globally without annotating every test, implement it via an \`IAnnotationTransformer\` listener instead.`],
+
+["What's the priority attribute used for?",
+`Controls the ORDER in which \`@Test\` methods within a class execute — lower numbers run first.
+\`\`\`java
+@Test(priority = 1)
+public void login() { ... }
+
+@Test(priority = 2)
+public void placeOrder() { ... }
+\`\`\`
+Default priority is 0. Methods sharing the same priority run in an unspecified/alphabetical order — for real dependencies (not just ordering preference), \`dependsOnMethods\` is more robust than relying on priority alone.`],
+
+["How do you group and selectively run test groups?",
+`\`\`\`java
+@Test(groups = {"smoke"})
+public void quickCheck() { ... }
+\`\`\`
+\`\`\`xml
+<suite name="Suite">
+    <test name="SmokeOnly">
+        <groups>
+            <run>
+                <include name="smoke"/>
+            </run>
+        </groups>
+        <classes><class name="com.tests.MyTests"/></classes>
+    </test>
+</suite>
+\`\`\`
+This lets you run just a "smoke" subset in CI on every commit, and reserve the full regression suite for nightly runs.`],
+
+["Difference between soft assertions and hard assertions?",
+`\`\`\`java
+// Hard assertion — stops execution immediately on first failure
+Assert.assertEquals(actual, expected);
+
+// Soft assertion — collects ALL failures, reports them together at the end
+SoftAssert softAssert = new SoftAssert();
+softAssert.assertEquals(name, "Sai");
+softAssert.assertEquals(age, 27);
+softAssert.assertAll(); // must be called explicitly to trigger any collected failures
+\`\`\`
+Use soft assertions when you want a full picture of everything wrong in one test run (e.g., validating multiple fields on a form), rather than stopping at the very first mismatch.`],
+
+["How do you generate and customize TestNG reports?",
+`TestNG auto-generates a default HTML/XML report under \`test-output/\` after every run. To customize, implement \`IReporter\` (generates a full custom report file) or \`ITestListener\` (hooks into individual test events like start/pass/fail) and register it via \`@Listeners\` or \`testng.xml\`.
+
+In practice, most teams integrate a dedicated reporting library like ExtentReports or Allure on top of TestNG listeners for richer, screenshot-embedded HTML reports rather than relying on TestNG's default output.`]
+  ]
+},
+{
+  cat: "7. API Testing / REST Assured",
+  items: [
+["How do you validate a JSON response schema in REST Assured?",
+`Use the JSON Schema Validator module alongside a predefined schema file:
+\`\`\`java
+given()
+  .when().get(url)
+  .then()
+    .body(matchesJsonSchemaInClasspath("user-schema.json"));
+\`\`\`
+Requires the \`json-schema-validator\` dependency. This validates STRUCTURE (types, required fields) rather than exact values — useful for contract-style checks on API responses.`],
+
+["How do you extract a value from a response and use it in a subsequent request?",
+`\`\`\`java
+Response response = given().when().post("/login").then().extract().response();
+String token = response.jsonPath().getString("data.token");
+
+given()
+    .header("Authorization", "Bearer " + token)
+    .when().get("/profile")
+    .then().statusCode(200);
+\`\`\`
+This is the standard chaining pattern for auth flows or any workflow where one call's output feeds the next call's input.`],
+
+["How do you set headers and query parameters in REST Assured?",
+`\`\`\`java
+given()
+    .header("Content-Type", "application/json")
+    .queryParam("status", "active")
+    .queryParam("page", 2)
+.when()
+    .get(url)
+.then()
+    .statusCode(200);
+\`\`\``],
+
+["How do you handle authentication (Basic, Bearer, OAuth) in API tests?",
+`\`\`\`java
+// Basic auth
+given().auth().preemptive().basic("user", "pass");
+
+// Bearer token
+given().header("Authorization", "Bearer " + token);
+
+// OAuth2
+given().auth().oauth2(accessToken);
+\`\`\`
+For OAuth2 flows requiring a token fetch first, a common pattern is a \`@BeforeSuite\`/\`@BeforeClass\` method that authenticates once and stores the token for reuse across the test class, rather than re-authenticating on every single test.`],
+
+["Difference between path parameters and query parameters in a request?",
+`\`\`\`java
+// Path parameter — part of the URL structure
+given().pathParam("id", 123)
+       .when().get("/users/{id}");
+
+// Query parameter — appended after '?'
+given().queryParam("page", 2)
+       .when().get("/users");
+\`\`\``],
+
+["How do you validate response time / performance thresholds in an API test?",
+`\`\`\`java
+given()
+    .when().get(url)
+    .then()
+        .time(lessThan(2000L)); // milliseconds
+\`\`\`
+Alternatively, capture manually for logging/reporting purposes:
+\`\`\`java
+long responseTime = response.getTime();
+\`\`\`
+This gives lightweight response-time assertions within functional tests — for real load/performance validation at scale, that's JMeter's job, not REST Assured's.`],
+
+["How would you test a Kafka event-driven API flow?",
+`Because the flow is asynchronous, you CANNOT validate immediately after triggering the producing action — the consumer side may not have processed the event yet (eventual consistency).
+
+**Pattern used at DBS:** trigger the action → then poll the downstream system (consumer output, DB table, or topic) on a fixed interval, with a maximum timeout, retrying until either the expected state appears or the timeout is hit.
+\`\`\`java
+boolean found = false;
+long deadline = System.currentTimeMillis() + timeoutMs;
+while (System.currentTimeMillis() < deadline) {
+    if (checkConsumerRecordExists()) {
+        found = true;
+        break;
+    }
+    Thread.sleep(pollIntervalMs);
+}
+Assert.assertTrue(found, "Event not consumed within timeout");
+\`\`\`
+This retry+timeout approach is exactly the kind of framework-level engineering decision worth walking an interviewer through — it shows you understand WHY naive immediate validation fails for async systems.`]
+  ]
+},
+{
+  cat: "8. SQL / Database",
+  items: [
+["Difference between INNER JOIN and LEFT JOIN?",
+`\`\`\`sql
+-- INNER JOIN: only rows with matches in BOTH tables
+SELECT a.name, b.order_id
+FROM customers a
+INNER JOIN orders b ON a.id = b.customer_id;
+
+-- LEFT JOIN: ALL rows from the left table, matched rows from the right (NULL if no match)
+SELECT a.name, b.order_id
+FROM customers a
+LEFT JOIN orders b ON a.id = b.customer_id;
+\`\`\`
+LEFT JOIN is useful for finding customers with NO orders at all — those rows show \`NULL\` for \`order_id\`.`],
+
+["What is a primary key vs a foreign key?",
+`**Primary key**: uniquely identifies each row in its own table — cannot be NULL, cannot have duplicates.
+
+**Foreign key**: a column in one table that references a primary key in another table, enforcing referential integrity (you can't insert an order for a customer_id that doesn't exist in the customers table).
+\`\`\`sql
+CREATE TABLE orders (
+    id INT PRIMARY KEY,
+    customer_id INT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+\`\`\``],
+
+["Write a query to find duplicate records in a table.",
+`\`\`\`sql
+SELECT email, COUNT(*) as cnt
+FROM users
+GROUP BY email
+HAVING COUNT(*) > 1;
+\`\`\`
+Groups rows by the column you suspect has duplicates, then filters (via HAVING, since it's a post-aggregation filter) to only groups appearing more than once.`],
+
+["Difference between WHERE and HAVING?",
+`\`\`\`sql
+-- WHERE filters rows BEFORE grouping
+SELECT department, COUNT(*) FROM employees
+WHERE salary > 50000
+GROUP BY department;
+
+-- HAVING filters groups AFTER aggregation
+SELECT department, COUNT(*) as cnt FROM employees
+GROUP BY department
+HAVING COUNT(*) > 10;
+\`\`\`
+You cannot use an aggregate function like \`COUNT()\` directly inside \`WHERE\` — that's exactly what \`HAVING\` exists for.`],
+
+["What is normalization? Name a couple of normal forms.",
+`The process of structuring a database to reduce data redundancy and improve integrity.
+\`\`\`
+1NF -> eliminate repeating groups; all column values are atomic (no comma-separated lists in one cell)
+2NF -> 1NF + no partial dependency (every non-key column depends on the WHOLE composite primary key, not just part of it)
+3NF -> 2NF + no transitive dependency (non-key columns depend ONLY on the key, not on other non-key columns)
+\`\`\``],
+
+["Difference between DELETE, TRUNCATE, and DROP?",
+`\`\`\`sql
+DELETE FROM users WHERE id = 5;   -- removes specific row(s), logged, rollback-able, keeps table structure
+TRUNCATE TABLE users;              -- removes ALL rows fast, minimal logging, resets identity, generally not rollback-able
+DROP TABLE users;                  -- removes the ENTIRE table structure AND its data permanently
+\`\`\``],
+
+["Find the second-highest salary from an employee table.",
+`\`\`\`sql
+SELECT MAX(salary) as second_highest
+FROM employee
+WHERE salary < (SELECT MAX(salary) FROM employee);
+\`\`\`
+An alternative using \`LIMIT\`/\`OFFSET\` (dialect-dependent):
+\`\`\`sql
+SELECT DISTINCT salary FROM employee
+ORDER BY salary DESC
+LIMIT 1 OFFSET 1;
+\`\`\``]
+  ]
+},
+{
+  cat: "9. General Testing Concepts",
+  items: [
+["Difference between smoke, sanity, and regression testing?",
+`**Smoke testing**: a quick, broad check that the critical/basic functionality works after a new build — "is this build stable enough to even test further?"
+
+**Sanity testing**: narrow and focused — verifies a specific bug fix or small feature works as expected, without deep exploration of surrounding areas.
+
+**Regression testing**: broader re-testing across the application to make sure recent code changes haven't broken previously working functionality.`],
+
+["Difference between black-box and white-box testing?",
+`**Black-box**: testing purely from the outside — inputs and expected outputs — with no knowledge of internal code structure. Most functional/UI/API test automation is black-box.
+
+**White-box**: testing WITH knowledge of internal code/logic — focused on code paths, branch coverage, and internal logic correctness. Typically done via unit tests by developers, using code coverage tools.`],
+
+["Difference between functional and non-functional testing?",
+`**Functional testing** verifies WHAT the system does — does this feature behave correctly according to requirements (e.g., login accepts valid credentials and rejects invalid ones).
+
+**Non-functional testing** verifies HOW WELL it does it — performance under load, security against attacks, usability, scalability, reliability over time. Same feature, different lens.`],
+
+["What's a test pyramid, and where does automation fit?",
+`A model illustrating the ideal proportion of test types by speed/cost:
+\`\`\`
+        /\\
+       /UI\\        <- few, slow, expensive, brittle (E2E/UI automation)
+      /----\\
+     / API  \\      <- moderate amount, faster, more stable
+    /--------\\
+   /   Unit   \\    <- many, fast, cheap, run on every commit
+  /------------\\
+\`\`\`
+Heavy investment should go into the base (unit) and middle (API/integration) layers for speed and stability; UI automation should stay lean at the top, reserved for critical end-to-end user journeys.`],
+
+["Difference between load testing and stress testing?",
+`**Load testing**: checks how the system behaves under expected/normal peak load — "can it handle what we expect on a busy day?"
+
+**Stress testing**: deliberately pushes the system BEYOND its normal capacity to find the breaking point and observe how it fails and recovers — "what happens when it's overwhelmed, and does it degrade gracefully or crash hard?"`],
+
+["Difference between STLC and SDLC?",
+`**SDLC** (Software Development Life Cycle): the entire process of building software — requirements, design, development, testing, deployment, maintenance.
+
+**STLC** (Software Testing Life Cycle): the testing-specific subset within SDLC — test planning, test case design, environment setup, test execution, defect reporting, and closure.`],
+
+["What is boundary value analysis and equivalence partitioning?",
+`**Boundary value analysis**: tests values right at the EDGES of valid/invalid ranges, since bugs commonly cluster there (e.g., for a field accepting 1–100: test 0, 1, 100, 101).
+
+**Equivalence partitioning**: divides input data into groups ("partitions") expected to be treated the same way by the system, then tests just ONE representative value per partition instead of every possible value — reduces redundant test cases while maintaining coverage.`],
+
+["What's a defect life cycle?",
+`\`\`\`
+New -> Assigned -> Open/In Progress -> Fixed -> Retest -> Verified/Closed
+                                                    |
+                                              (Reopened if fix fails retest)
+\`\`\`
+A defect can also branch to Rejected (not a real bug) or Deferred (valid, but postponed) at various points along the way.`],
+
+["How do you prioritize test cases with limited time before release?",
+`Focus effort where risk and impact are highest:
+1. Critical business-flow paths (e.g., login, checkout, core transactions)
+2. Areas with recent code changes
+3. Historically defect-prone modules
+4. Smoke/sanity coverage across the whole app before deep-diving anywhere
+
+Low-risk edge cases and rarely-used features get deprioritized when time is tight — this is a common interview scenario question testing risk-based thinking, not just technical recall.`],
+
+["Difference between severity and priority of a defect?",
+`**Severity**: the TECHNICAL impact of the bug on the system's functionality (e.g., app crash = high severity, regardless of how many users hit it).
+
+**Priority**: how URGENTLY it needs to be fixed from a BUSINESS perspective (e.g., a typo on the homepage might be low severity but high priority if it's highly visible to customers).
+
+Classic example: a spelling mistake in the company logo text — low severity (doesn't break functionality) but potentially high priority (brand reputation).`]
+  ]
+}
+];
+
+const catList = document.getElementById('catList');
+
+function render(filter=""){
+  catList.innerHTML = "";
+  const f = filter.trim().toLowerCase();
+  data.forEach((cat, ci) => {
+    const color = colors[ci % colors.length];
+    const filteredItems = cat.items.filter(([q,a]) =>
+      !f || q.toLowerCase().includes(f) || a.toLowerCase().includes(f)
+    );
+    if(f && filteredItems.length === 0) return;
+
+    const catDiv = document.createElement('div');
+    catDiv.className = 'cat';
+    catDiv.style.setProperty('--accent', color);
+
+    const header = document.createElement('div');
+    header.className = 'cat-header';
+    header.innerHTML = `<span>${cat.cat}</span><span class="count">${filteredItems.length} questions</span>`;
+
+    const body = document.createElement('div');
+    body.className = 'cat-body' + (f ? ' open' : '');
+    header.onclick = () => body.classList.toggle('open');
+
+    filteredItems.forEach(([q,a], qi) => {
+      const qa = document.createElement('div');
+      qa.className = 'qa';
+      const qDiv = document.createElement('div');
+      qDiv.className = 'q';
+      qDiv.innerHTML = `<span><span class="marker">Q${qi+1}.</span> ${q}</span><span class="toggle-icon">+</span>`;
+      const aDiv = document.createElement('div');
+      aDiv.className = 'a' + (f ? ' open' : '');
+      aDiv.innerHTML = fmt(a);
+      qDiv.onclick = () => {
+        aDiv.classList.toggle('open');
+        qDiv.querySelector('.toggle-icon').textContent = aDiv.classList.contains('open') ? '−' : '+';
+      };
+      qa.appendChild(qDiv);
+      qa.appendChild(aDiv);
+      body.appendChild(qa);
+    });
+
+    catDiv.appendChild(header);
+    catDiv.appendChild(body);
+    catList.appendChild(catDiv);
+  });
+}
+
+document.getElementById('search').addEventListener('input', (e) => render(e.target.value));
+
+function expandAll(){
+  document.querySelectorAll('.cat-body').forEach(b => b.classList.add('open'));
+  document.querySelectorAll('.a').forEach(a => a.classList.add('open'));
+  document.querySelectorAll('.toggle-icon').forEach(i => i.textContent = '−');
+}
+function collapseAll(){
+  document.querySelectorAll('.cat-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.a').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.toggle-icon').forEach(i => i.textContent = '+');
+}
+
+render();
+</script>
+</body>
+</html>

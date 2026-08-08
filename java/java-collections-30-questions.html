@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Top 30 Java Collections Questions</title>
+<style>
+  :root{
+    --bg:#0b0f14;
+    --card:#121821;
+    --border:#212a35;
+    --accent:#22d3ee;
+    --accent2:#a78bfa;
+    --text:#dbe4ee;
+    --muted:#8291a3;
+    --code-bg:#0a0e13;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(900px 400px at 10% -10%, #10202b 0%, transparent 60%),
+      radial-gradient(900px 400px at 100% 0%, #1a1230 0%, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+    line-height:1.55;
+  }
+  header{
+    padding:34px 20px 22px;
+    text-align:center;
+    border-bottom:1px solid var(--border);
+  }
+  header h1{
+    margin:0 0 6px;
+    font-size:1.6rem;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    font-weight:800;
+    letter-spacing:.3px;
+  }
+  header p{
+    margin:0;
+    color:var(--muted);
+    font-size:0.9rem;
+  }
+  .toolbar{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    padding:16px;
+    flex-wrap:wrap;
+  }
+  .toolbar input{
+    background:var(--card);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:0.85rem;
+    min-width:240px;
+    outline:none;
+  }
+  .toolbar input:focus{border-color:var(--accent);}
+  .toolbar button{
+    background:var(--card);
+    color:var(--accent);
+    border:1px solid var(--border);
+    padding:8px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    font-size:0.82rem;
+  }
+  .toolbar button:hover{border-color:var(--accent);}
+  main{
+    max-width:880px;
+    margin:0 auto;
+    padding:6px 16px 60px;
+  }
+  .q{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent);
+    border-radius:10px;
+    padding:16px 18px;
+    margin:14px 0;
+    transition:transform .15s, border-color .15s;
+  }
+  .q:hover{
+    transform:translateY(-1px);
+    border-left-color:var(--accent2);
+  }
+  .q h3{
+    margin:0 0 6px;
+    font-size:1rem;
+    color:#f1f5f9;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .q h3 .num{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#06131a;
+    font-size:0.72rem;
+    font-weight:800;
+    padding:2px 9px;
+    border-radius:20px;
+  }
+  .q p.exp{
+    margin:2px 0 10px;
+    color:var(--muted);
+    font-size:0.87rem;
+  }
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:12px 14px;
+    overflow-x:auto;
+    font-size:0.82rem;
+    margin:0;
+  }
+  code{
+    font-family:'Fira Code',Consolas,'Courier New',monospace;
+  }
+  .kw{color:#ff7b9c;}
+  .type{color:#60a5fa;}
+  .str{color:#a5e075;}
+  .com{color:#6b7785;font-style:italic;}
+  .num{color:#f0b16b;}
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.8rem;
+    padding:10px 20px 30px;
+  }
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📦 Top 30 Java Collections Questions</h1>
+  <p>SDET / Automation QA interview prep — List, Set, Map, Queue & Comparators</p>
+</header>
+
+<div class="toolbar">
+  <input id="search" type="text" placeholder="🔍 Search topic or number...">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})">Top ↑</button>
+</div>
+
+<main id="list">
+
+<div class="q"><h3><span class="num">1</span>ArrayList vs LinkedList — when to use which</h3>
+<p class="exp">ArrayList gives O(1) random access but O(n) inserts/removes in the middle. LinkedList gives O(1) insert/remove at the ends but O(n) access. Use ArrayList for frequent reads, LinkedList for frequent insert/delete.</p>
+<pre><code>List<Integer> arrList = new ArrayList<>();
+List<Integer> linkedList = new LinkedList<>();
+arrList.add(10);
+linkedList.addFirst(5);</code></pre></div>
+
+<div class="q"><h3><span class="num">2</span>Remove duplicates from a List</h3>
+<p class="exp">Wrap the list in a LinkedHashSet to drop duplicates while preserving insertion order.</p>
+<pre><code>static List<Integer> removeDuplicates(List<Integer> list) {
+    return new ArrayList<>(new LinkedHashSet<>(list));
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">3</span>Iterate and remove elements safely</h3>
+<p class="exp">Modifying a list while using a for-each loop throws ConcurrentModificationException. Use an Iterator's remove() instead.</p>
+<pre><code>Iterator<Integer> it = list.iterator();
+while (it.hasNext()) {
+    int n = it.next();
+    if (n % 2 == 0) it.remove();
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">4</span>Sort a List of custom objects by one field</h3>
+<p class="exp">Comparator.comparing extracts the field to compare on — no need to write a full Comparator class.</p>
+<pre><code>List<Employee> emps = getEmployees();
+emps.sort(Comparator.comparing(Employee::getName));</code></pre></div>
+
+<div class="q"><h3><span class="num">5</span>Sort by multiple fields</h3>
+<p class="exp">Chain thenComparing to break ties using a second field.</p>
+<pre><code>emps.sort(
+    Comparator.comparing(Employee::getDept)
+              .thenComparing(Employee::getSalary, Comparator.reverseOrder())
+);</code></pre></div>
+
+<div class="q"><h3><span class="num">6</span>HashMap vs TreeMap vs LinkedHashMap</h3>
+<p class="exp">HashMap gives no ordering guarantee, LinkedHashMap keeps insertion order, TreeMap keeps keys sorted. Pick based on whether order matters.</p>
+<pre><code>Map<String, Integer> hash = new HashMap<>();
+Map<String, Integer> linked = new LinkedHashMap<>();
+Map<String, Integer> tree = new TreeMap<>();</code></pre></div>
+
+<div class="q"><h3><span class="num">7</span>Iterate over a Map's entries</h3>
+<p class="exp">entrySet() avoids a second lookup per key, unlike calling map.get(key) inside a keySet() loop.</p>
+<pre><code>for (Map.Entry<String, Integer> e : map.entrySet()) {
+    System.out.println(e.getKey() + " = " + e.getValue());
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">8</span>Sort a HashMap by value</h3>
+<p class="exp">Convert the entrySet to a List, then sort with a Comparator on the value.</p>
+<pre><code>static List<Map.Entry<String,Integer>> sortByValue(Map<String,Integer> map) {
+    List<Map.Entry<String,Integer>> list = new ArrayList<>(map.entrySet());
+    list.sort(Map.Entry.comparingByValue());
+    return list;
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">9</span>Count word frequency using a Map</h3>
+<p class="exp">merge() increments the count if the key exists, or inserts it with a default if not.</p>
+<pre><code>static Map<String, Integer> wordFrequency(String[] words) {
+    Map<String, Integer> freq = new HashMap<>();
+    for (String w : words) freq.merge(w, 1, Integer::sum);
+    return freq;
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">10</span>Check if a key exists before accessing it</h3>
+<p class="exp">containsKey() avoids a NullPointerException from an unguarded get() call.</p>
+<pre><code>if (map.containsKey("status")) {
+    String status = map.get("status");
+}
+// or safer:
+String status = map.getOrDefault("status", "UNKNOWN");</code></pre></div>
+
+<div class="q"><h3><span class="num">11</span>Group elements using groupingBy</h3>
+<p class="exp">Streams' Collectors.groupingBy buckets elements by a classifier function into a Map.</p>
+<pre><code>Map<String, List<Employee>> byDept =
+    emps.stream().collect(Collectors.groupingBy(Employee::getDept));</code></pre></div>
+
+<div class="q"><h3><span class="num">12</span>Find duplicate elements in a List using Streams</h3>
+<p class="exp">Group by identity and keep only the keys whose group size is greater than 1.</p>
+<pre><code>Set<Integer> duplicates = list.stream()
+    .collect(Collectors.groupingBy(x -> x, Collectors.counting()))
+    .entrySet().stream()
+    .filter(e -> e.getValue() > 1)
+    .map(Map.Entry::getKey)
+    .collect(Collectors.toSet());</code></pre></div>
+
+<div class="q"><h3><span class="num">13</span>Convert a List to an array and back</h3>
+<p class="exp">toArray() needs a typed array argument to return the correct type; Arrays.asList() wraps an array as a fixed-size List.</p>
+<pre><code>List<String> list = Arrays.asList("a", "b", "c");
+String[] arr = list.toArray(new String[0]);
+List<String> backToList = new ArrayList<>(Arrays.asList(arr));</code></pre></div>
+
+<div class="q"><h3><span class="num">14</span>Find the intersection of two Lists</h3>
+<p class="exp">retainAll() keeps only elements present in both — mutate a copy so the originals stay untouched.</p>
+<pre><code>static List<Integer> intersection(List<Integer> a, List<Integer> b) {
+    List<Integer> result = new ArrayList<>(a);
+    result.retainAll(b);
+    return result;
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">15</span>Find the difference between two Lists</h3>
+<p class="exp">removeAll() strips out anything present in the second list.</p>
+<pre><code>static List<Integer> difference(List<Integer> a, List<Integer> b) {
+    List<Integer> result = new ArrayList<>(a);
+    result.removeAll(b);
+    return result;
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">16</span>Make a List immutable</h3>
+<p class="exp">List.of() and Collections.unmodifiableList() both block structural changes — the second wraps an existing list.</p>
+<pre><code>List<Integer> immutable = List.of(1, 2, 3);
+List<Integer> wrapped = Collections.unmodifiableList(new ArrayList<>(list));</code></pre></div>
+
+<div class="q"><h3><span class="num">17</span>Thread-safe collection options</h3>
+<p class="exp">Collections.synchronizedList wraps with a lock on every call; ConcurrentHashMap and CopyOnWriteArrayList use finer-grained concurrency and scale better under contention.</p>
+<pre><code>List<Integer> syncList = Collections.synchronizedList(new ArrayList<>());
+Map<String, Integer> concurrentMap = new ConcurrentHashMap<>();
+List<Integer> cowList = new CopyOnWriteArrayList<>();</code></pre></div>
+
+<div class="q"><h3><span class="num">18</span>Implement a custom Comparator class</h3>
+<p class="exp">Override compare() to define the ordering logic explicitly, useful when the logic is reused across multiple sorts.</p>
+<pre><code>class SalaryComparator implements Comparator<Employee> {
+    public int compare(Employee a, Employee b) {
+        return Double.compare(a.getSalary(), b.getSalary());
+    }
+}
+emps.sort(new SalaryComparator());</code></pre></div>
+
+<div class="q"><h3><span class="num">19</span>PriorityQueue basics — Min-Heap and Max-Heap</h3>
+<p class="exp">PriorityQueue is a min-heap by default; pass Collections.reverseOrder() to flip it into a max-heap.</p>
+<pre><code>Queue<Integer> minHeap = new PriorityQueue<>();
+Queue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+minHeap.add(5); minHeap.add(1); minHeap.add(3);
+System.out.println(minHeap.poll()); // 1</code></pre></div>
+
+<div class="q"><h3><span class="num">20</span>Implement a Stack using Deque</h3>
+<p class="exp">ArrayDeque is the recommended stack implementation — faster than the legacy Stack class.</p>
+<pre><code>Deque<Integer> stack = new ArrayDeque<>();
+stack.push(1);
+stack.push(2);
+System.out.println(stack.pop()); // 2</code></pre></div>
+
+<div class="q"><h3><span class="num">21</span>Implement a Queue using Deque</h3>
+<p class="exp">Deque works as a FIFO queue too — offer at the tail, poll from the head.</p>
+<pre><code>Deque<Integer> queue = new ArrayDeque<>();
+queue.offer(1);
+queue.offer(2);
+System.out.println(queue.poll()); // 1</code></pre></div>
+
+<div class="q"><h3><span class="num">22</span>Find the max/min element in a List</h3>
+<p class="exp">Collections.max/min take a Comparator, so they work directly on custom objects too.</p>
+<pre><code>int max = Collections.max(list);
+int min = Collections.min(list);
+Employee highestPaid = Collections.max(emps, Comparator.comparing(Employee::getSalary));</code></pre></div>
+
+<div class="q"><h3><span class="num">23</span>Convert a List of objects into a Map</h3>
+<p class="exp">Collectors.toMap needs a key function and a value function — watch out for duplicate keys, which throw by default.</p>
+<pre><code>Map<Integer, String> idToName = emps.stream()
+    .collect(Collectors.toMap(Employee::getId, Employee::getName));</code></pre></div>
+
+<div class="q"><h3><span class="num">24</span>Merge two Maps</h3>
+<p class="exp">putAll() overwrites shared keys with the second map's values; merge() lets you control conflict resolution.</p>
+<pre><code>Map<String, Integer> merged = new HashMap<>(map1);
+map2.forEach((k, v) -> merged.merge(k, v, Integer::sum));</code></pre></div>
+
+<div class="q"><h3><span class="num">25</span>Find the top N elements from a List</h3>
+<p class="exp">Sort in reverse order (or use a bounded min-heap) and take the first N.</p>
+<pre><code>List<Integer> topN = list.stream()
+    .sorted(Comparator.reverseOrder())
+    .limit(3)
+    .collect(Collectors.toList());</code></pre></div>
+
+<div class="q"><h3><span class="num">26</span>Partition a List into two groups</h3>
+<p class="exp">Collectors.partitioningBy splits into exactly two buckets based on a boolean predicate.</p>
+<pre><code>Map<Boolean, List<Integer>> partitioned = list.stream()
+    .collect(Collectors.partitioningBy(n -> n % 2 == 0));
+List<Integer> evens = partitioned.get(true);
+List<Integer> odds = partitioned.get(false);</code></pre></div>
+
+<div class="q"><h3><span class="num">27</span>Flatten a List of Lists</h3>
+<p class="exp">flatMap turns each inner list into a stream, then merges all of them into one.</p>
+<pre><code>List<List<Integer>> nested = getNestedList();
+List<Integer> flat = nested.stream()
+    .flatMap(List::stream)
+    .collect(Collectors.toList());</code></pre></div>
+
+<div class="q"><h3><span class="num">28</span>TreeSet — sorted unique elements</h3>
+<p class="exp">TreeSet keeps elements sorted automatically and rejects duplicates, backed by a Red-Black tree.</p>
+<pre><code>TreeSet<Integer> sortedSet = new TreeSet<>(List.of(5, 1, 4, 2));
+System.out.println(sortedSet.first()); // 1
+System.out.println(sortedSet.last());  // 5</code></pre></div>
+
+<div class="q"><h3><span class="num">29</span>Check if a Collection is empty safely</h3>
+<p class="exp">isEmpty() is clearer and slightly faster than checking size() == 0, and works even if the reference could be null with an extra check.</p>
+<pre><code>if (list == null || list.isEmpty()) {
+    System.out.println("No data");
+}</code></pre></div>
+
+<div class="q"><h3><span class="num">30</span>Deep copy vs shallow copy of a List</h3>
+<p class="exp">A `new ArrayList<>(list)` copies references only (shallow) — mutating an object inside affects both lists. A deep copy clones each element individually.</p>
+<pre><code>List<Employee> shallow = new ArrayList<>(originalList);
+List<Employee> deep = originalList.stream()
+    .map(Employee::new) // assumes a copy constructor
+    .collect(Collectors.toList());</code></pre></div>
+
+</main>
+
+<footer>Java Collections Practice Guide • 30/30 Questions • SDET Interview Prep</footer>
+
+<script>
+function highlight(code) {
+  const escape = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let str = escape(code);
+  const tokens = [];
+  const stash = (m, cls) => { tokens.push('<span class="'+cls+'">'+m+'</span>'); return '\u0000'+(tokens.length-1)+'\u0000'; };
+  str = str.replace(/\/\/[^\n]*/g, m => stash(m,'com'));
+  str = str.replace(/"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'/g, m => stash(m,'str'));
+  const keywords = ['static','void','int','long','double','boolean','char','if','else','for','while','return','new','true','false','null','break','continue','final','class','public','private','extends','implements','this'];
+  str = str.replace(new RegExp('\\b('+keywords.join('|')+')\\b','g'), '<span class="kw">$1</span>');
+  const types = ['String','Integer','Double','Character','List','ArrayList','LinkedList','Map','HashMap','LinkedHashMap','TreeMap','Set','HashSet','LinkedHashSet','TreeSet','Deque','ArrayDeque','Queue','PriorityQueue','Collections','Collectors','Comparator','Arrays','Stream','Employee'];
+  str = str.replace(new RegExp('\\b('+types.join('|')+')\\b','g'), '<span class="type">$1</span>');
+  str = str.replace(/\b\d+\b/g, '<span class="num">$&</span>');
+  str = str.replace(/\u0000(\d+)\u0000/g, (m,i) => tokens[i]);
+  return str;
+}
+document.querySelectorAll('pre code').forEach(el => {
+  el.innerHTML = highlight(el.textContent);
+});
+document.getElementById('search').addEventListener('input', function(e){
+  const term = e.target.value.toLowerCase();
+  document.querySelectorAll('#list .q').forEach(q => {
+    q.classList.toggle('hidden', !q.textContent.toLowerCase().includes(term));
+  });
+});
+</script>
+
+</body>
+</html>

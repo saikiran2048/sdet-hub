@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview Debrief :: May-June 2026</title>
+<style>
+  :root{
+    --bg:#0a0e14;
+    --surface:#10151c;
+    --surface-2:#141a23;
+    --border:#1f2937;
+    --text:#c9d1d9;
+    --muted:#7b8794;
+    --accent:#5fd97a;
+    --accent-dim:#3a8f52;
+    --amber:#e8b34a;
+    --red:#e8664a;
+    --code-bg:#060a0f;
+    --mono:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+    --sans:'IBM Plex Sans',-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  @font-face{}
+  .layout{display:flex;min-height:100vh;}
+
+  /* SIDEBAR */
+  nav.side{
+    width:260px;
+    flex-shrink:0;
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    padding:24px 0;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    padding:0 20px 20px 20px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:16px;
+  }
+  .brand .prompt{
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:12px;
+  }
+  .brand h1{
+    font-family:var(--mono);
+    font-size:16px;
+    margin:6px 0 2px 0;
+    color:var(--text);
+  }
+  .brand .sub{
+    font-size:11px;
+    color:var(--muted);
+  }
+  .navgroup{padding:0 8px;}
+  .navlabel{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:1px;
+    color:var(--muted);
+    padding:10px 12px 6px 12px;
+    text-transform:uppercase;
+  }
+  a.navitem{
+    display:flex;
+    gap:8px;
+    align-items:baseline;
+    padding:7px 12px;
+    border-radius:4px;
+    font-size:13px;
+    color:var(--text);
+    text-decoration:none;
+    font-family:var(--mono);
+  }
+  a.navitem:hover{background:var(--surface-2);}
+  a.navitem.active{background:var(--surface-2);color:var(--accent);}
+  a.navitem .qnum{color:var(--accent-dim);}
+  a.navitem.active .qnum{color:var(--accent);}
+
+  /* MAIN */
+  main{flex:1;padding:40px 48px;max-width:900px;}
+  header.hero{
+    margin-bottom:36px;
+    padding-bottom:24px;
+    border-bottom:1px solid var(--border);
+  }
+  header.hero .kicker{
+    font-family:var(--mono);
+    color:var(--accent);
+    font-size:12px;
+  }
+  header.hero h1{
+    font-size:28px;
+    margin:8px 0 8px 0;
+    letter-spacing:-0.3px;
+  }
+  header.hero p{color:var(--muted);font-size:14px;max-width:640px;}
+
+  section.q{
+    margin-bottom:56px;
+    scroll-margin-top:24px;
+  }
+  .qhead{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .qhead .tag{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--bg);
+    background:var(--accent);
+    padding:3px 8px;
+    border-radius:3px;
+    font-weight:600;
+  }
+  .qhead .tag.concept{background:var(--amber);}
+  .qhead .tag.code{background:var(--accent);}
+  .qhead h2{
+    font-size:18px;
+    margin:0;
+    font-weight:600;
+  }
+  .terminal-line{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:16px;
+  }
+  .terminal-line .p1{color:var(--accent);}
+  .terminal-line .p2{color:var(--amber);}
+
+  .answer p{margin:0 0 12px 0;font-size:14.5px;}
+  .answer ul{margin:0 0 14px 0;padding-left:20px;font-size:14.5px;}
+  .answer li{margin-bottom:5px;}
+  .answer strong{color:#fff;}
+
+  .callout{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent);
+    border-radius:6px;
+    padding:14px 16px;
+    margin:16px 0;
+    font-size:14px;
+  }
+  .callout.analogy{border-left-color:var(--amber);}
+  .callout .label{
+    font-family:var(--mono);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--amber);
+    margin-bottom:6px;
+    display:block;
+  }
+  .callout.analogy .label{color:var(--amber);}
+
+  .codeblock{
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    margin:14px 0;
+    overflow:hidden;
+  }
+  .codeblock .cb-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 14px;
+    background:var(--surface-2);
+    border-bottom:1px solid var(--border);
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+  }
+  .codeblock .cb-head .dots{display:flex;gap:5px;}
+  .codeblock .cb-head .dots span{width:8px;height:8px;border-radius:50%;background:#3a4351;display:inline-block;}
+  .copybtn{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:10.5px;
+    padding:3px 9px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+  .copybtn:hover{color:var(--accent);border-color:var(--accent-dim);}
+  pre{
+    margin:0;
+    padding:16px;
+    overflow-x:auto;
+    font-family:var(--mono);
+    font-size:12.5px;
+    line-height:1.55;
+    color:#d5dbe3;
+  }
+  .cmt{color:#6b7f8f;}
+  .kw{color:#e8b34a;}
+  .str{color:#8fd97a;}
+  .cls{color:#79c0ff;}
+
+  .io{
+    display:flex;
+    gap:12px;
+    font-family:var(--mono);
+    font-size:12.5px;
+    margin:12px 0;
+    flex-wrap:wrap;
+  }
+  .io div{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:8px 12px;
+  }
+  .io .lbl{color:var(--muted);margin-right:6px;}
+
+  .complexity{
+    display:flex;
+    gap:10px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:8px;
+  }
+  .complexity span{
+    background:var(--surface);
+    border:1px solid var(--border);
+    padding:3px 9px;
+    border-radius:4px;
+  }
+  .complexity b{color:var(--accent);}
+
+  footer{
+    padding:24px 48px 60px 48px;
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:11.5px;
+    border-top:1px solid var(--border);
+    max-width:900px;
+  }
+
+  @media(max-width:820px){
+    .layout{flex-direction:column;}
+    nav.side{width:100%;height:auto;position:relative;}
+    main{padding:24px;}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <nav class="side">
+    <div class="brand">
+      <div class="prompt">sai@sdet:~$</div>
+      <h1>interview_debrief</h1>
+      <div class="sub">May &ndash; June 2026 · 2 rounds</div>
+    </div>
+    <div class="navgroup">
+      <div class="navlabel">Coding / Hands-on</div>
+      <a class="navitem" href="#q1"><span class="qnum">01</span> REST API Test Program</a>
+      <a class="navitem" href="#q2"><span class="qnum">02</span> Multi-step Test Case Design</a>
+      <a class="navitem" href="#q3"><span class="qnum">03</span> Mocking External Dependencies</a>
+      <a class="navitem" href="#q4"><span class="qnum">04</span> Pairs Divisible by K</a>
+      <a class="navitem" href="#q5"><span class="qnum">05</span> Move Zeroes In-Place</a>
+      <a class="navitem" href="#q10"><span class="qnum">10</span> First Duplicates in Order</a>
+    </div>
+    <div class="navgroup">
+      <div class="navlabel">Process / Conceptual</div>
+      <a class="navitem" href="#q6"><span class="qnum">06</span> Handling Blockers</a>
+      <a class="navitem" href="#q7"><span class="qnum">07</span> New Project Test Strategy</a>
+      <a class="navitem" href="#q8"><span class="qnum">08</span> Shift-Left Approach</a>
+      <a class="navitem" href="#q9"><span class="qnum">09</span> Shift-Left: Bugs Faced</a>
+    </div>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="kicker">// interview readiness log</div>
+      <h1>10 Questions, Fully Worked</h1>
+      <p>Full Java implementations for the coding rounds, plus STAR-ready answers with analogies for the process questions &mdash; pulled from your May/June 2026 interview experiences.</p>
+    </header>
+
+    <!-- Q1 -->
+    <section class="q" id="q1">
+      <div class="qhead"><span class="tag code">CODE</span><h2>Q1. Write a program to test a RESTful API — auth, GET, POST, response validation</h2></div>
+      <div class="terminal-line"><span class="p1">$</span> <span class="p2">context</span> — REST Assured is the de-facto Java library for this. Interviewers want to see: base setup, auth handling (bearer token from a login call), a GET with validation, a POST with a request body, and assertions on status/headers/body/schema.</div>
+
+      <div class="answer">
+        <p><strong>Design:</strong> a reusable <code>BaseTest</code> that fetches an auth token once, and test methods that use it via <code>RequestSpecification</code>.</p>
+      </div>
+
+      <div class="codeblock">
+        <div class="cb-head"><div class="dots"><span></span><span></span><span></span></div><span>ApiTest.java</span><button class="copybtn" onclick="copyCode(this)">copy</button></div>
+        <pre><code>import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
+
+public class ApiTest {
+
+    private static String baseUrl = "https://api.example.com";
+    private static String authToken;
+
+    @BeforeClass
+    public void setup() {
+        RestAssured.baseURI = baseUrl;
+        authToken = fetchAuthToken();
+    }
+
+    // Handles authentication once, reused across all tests
+    private String fetchAuthToken() {
+        Response response = given()
+                .contentType("application/json")
+                .body("{ \"username\": \"tester\", \"password\": \"secret\" }")
+                .when()
+                .post("/auth/login")
+                .then()
+                .statusCode(200)
+                .extract().response();
+        return response.jsonPath().getString("token");
+    }
+
+    private RequestSpecification authenticatedRequest() {
+        return given()
+                .header("Authorization", "Bearer " + authToken)
+                .contentType("application/json");
+    }
+
+    @Test
+    public void testGetUserById() {
+        authenticatedRequest()
+                .when()
+                .get("/users/101")
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(101))
+                .body("email", notNullValue())
+                .body("status", equalTo("ACTIVE"))
+                .time(lessThan(2000L)); // response time SLA
+    }
+
+    @Test
+    public void testCreateUser() {
+        String requestBody = "{ \"name\": \"John Doe\", \"email\": \"john@example.com\" }";
+
+        authenticatedRequest()
+                .body(requestBody)
+                .when()
+                .post("/users")
+                .then()
+                .statusCode(201)
+                .header("Content-Type", containsString("application/json"))
+                .body("id", notNullValue())
+                .body("name", equalTo("John Doe"));
+    }
+
+    @Test
+    public void testUnauthorizedAccessIsRejected() {
+        given()
+                .contentType("application/json")
+                .when()
+                .get("/users/101")   // no auth header
+                .then()
+                .statusCode(401);
+    }
+}</code></pre>
+      </div>
+
+      <div class="callout">
+        <span class="label">talking points to say out loud</span>
+        <ul style="margin-bottom:0;">
+          <li>Auth token fetched once in <code>@BeforeClass</code>, not per test — avoids hammering the login endpoint.</li>
+          <li>Negative case included (no token → 401) — interviewers specifically look for this.</li>
+          <li>In a real framework, extract <code>baseUrl</code>/credentials to a config file per environment (dev/QA/staging), and add JSON schema validation with <code>matchesJsonSchemaInClasspath()</code>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Q2 -->
+    <section class="q" id="q2">
+      <div class="qhead"><span class="tag code">CODE</span><h2>Q2. Designing a multi-step test case where each step's output feeds the next</h2></div>
+      <div class="terminal-line"><span class="p1">$</span> <span class="p2">context</span> — Classic chained/dependent workflow: e.g. Create Order → Get Order ID → Make Payment → Verify Payment Status. Two things interviewers want: a way to carry state between steps, and correct failure handling so step 2 doesn't run garbage data if step 1 fails.</div>
+
+      <div class="answer">
+        <p><strong>Two common designs:</strong></p>
+        <ul>
+          <li><strong>TestNG <code>dependsOnMethods</code></strong> — simplest, chains methods in a class in sequence, skips downstream steps automatically if an upstream step fails.</li>
+          <li><strong>Shared "TestContext" object</strong> — cleaner for real frameworks; avoids tight coupling between test methods and works well with data-driven/parallel runs.</li>
+        </ul>
+      </div>
+
+      <div class="codeblock">
+        <div class="cb-head"><div class="dots"><span></span><span></span><span></span></div><span>OrderFlowTest.java</span><button class="copybtn" onclick="copyCode(this)">copy</button></div>
+        <pre><code>public class OrderFlowTest {
+
+    private String orderId;
+    private String paymentId;
+
+    @Test(priority = 1)
+    public void createOrder() {
+        Response response = given()
+                .body("{ \"item\": \"laptop\", \"qty\": 1 }")
+                .post("/orders");
+
+        response.then().statusCode(201);
+        orderId = response.jsonPath().getString("orderId");   // output feeds next step
+        Assert.assertNotNull(orderId, "Order ID must be generated");
+    }
+
+    @Test(priority = 2, dependsOnMethods = "createOrder")
+    public void makePayment() {
+        Response response = given()
+                .body("{ \"orderId\": \"" + orderId + "\", \"amount\": 999.00 }")
+                .post("/payments");
+
+        response.then().statusCode(200);
+        paymentId = response.jsonPath().getString("paymentId");
+        Assert.assertNotNull(paymentId);
+    }
+
+    @Test(priority = 3, dependsOnMethods = "makePayment")
+    public void verifyOrderStatus() {
+        given()
+                .get("/orders/" + orderId)
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("PAID"))
+                .body("paymentId", equalTo(paymentId));
+    }
+}</code></pre>
+      </div>
+
+      <div class="callout">
+        <span class="label">talking points to say out loud</span>
+        <ul style="margin-bottom:0;">
+          <li><code>dependsOnMethods</code> auto-skips (not fails) downstream steps if <code>createOrder</code> fails — reports it accurately instead of a confusing cascade of failures.</li>
+          <li>For a bigger framework, swap instance fields for a <strong>ThreadLocal TestContext</strong> class (holds orderId, paymentId, etc.) so the flow is thread-safe under parallel execution.</li>
+          <li>Mention this pattern maps directly to real BDD scenarios you've written — each Cucumber step passing data forward via a shared <code>Scenario Context</code>/World object.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Q3 -->
+    <section class="q" id="q3">
+      <div class="qhead"><span class="tag code">CODE</span><h2>Q3. Mocking external dependencies (e.g. a database) in a test</h2></div>
+      <div class="terminal-line"><span class="p1">$</span> <span class="p2">context</span> — Use Mockito to isolate the class under test from the real DB. Goal: test business logic in <code>UserService</code> without a live database — mock the <code>UserRepository</code> and stub its return value.</div>
+
+      <div class="codeblock">
+        <div class="cb-head"><div class="dots"><span></span><span></span><span></span></div><span>UserServiceTest.java</span><button class="copybtn" onclick="copyCode(this)">copy</button></div>
+        <pre><code>import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class UserServiceTest {
+
+    @Mock
+    private UserRepository userRepository;   // fake DB layer, no real DB hit
+
+    @InjectMocks
+    private UserService userService;          // class under test, mock injected automatically
+
+    @Test
+    public void shouldReturnActiveUser_whenUserExistsInDb() {
+        User fakeUser = new User(101, "John Doe", "ACTIVE");
+
+        // Stub: whenever the DB is asked for user 101, return the fake user
+        when(userRepository.findById(101)).thenReturn(Optional.of(fakeUser));
+
+        User result = userService.getActiveUser(101);
+
+        assertEquals("John Doe", result.getName());
+        verify(userRepository, times(1)).findById(101);  // confirms DB call happened exactly once
+    }
+
+    @Test
+    public void shouldThrowException_whenUserNotFound() {
+        when(userRepository.findById(999)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class,
+                () -> userService.getActiveUser(999));
+    }
+
+    @Test
+    public void shouldThrowException_whenDbTimesOut() {
+        // Simulating a DB failure without needing an actual DB outage
+        when(userRepository.findById(101)).thenThrow(new DataAccessException("Connection timeout"));
+
+        assertThrows(DataAccessException.class,
+                () -> userService.getActiveUser(101));
+    }
+}</code></pre>
+      </div>
+
+      <div class="callout">
+        <span class="label">talking points to say out loud</span>
+        <ul style="margin-bottom:0;">
+          <li><code>@Mock</code> creates a fake <code>UserRepository</code>; <code>@InjectMocks</code> wires it into <code>UserService</code> automatically — no Spring context needed, so the test runs in milliseconds.</li>
+          <li>Mocking lets you simulate <strong>failure scenarios</strong> (timeout, empty result) that are hard to reproduce reliably against a real DB.</li>
+          <li>Distinguish this from <strong>Testcontainers</strong>, which you'd use instead when you specifically want to test real SQL/DB interaction — mocking is for isolating business logic, Testcontainers is for integration-level DB testing.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Q4 -->
+    <section class="q" id="q4">
+      <div class="qhead"><span class="tag code">CODE</span><h2>Q4. Count pairs in an array whose sum is divisible by k</h2></div>
+      <div class="io">
+        <div><span class="lbl">Input</span>arr = [5, 9, 36, 74, 52, 31, 42], k = 3</div>
+        <div><span class="lbl">Output</span>7</div>
+      </div>
+      <div class="answer">
+        <p><strong>Key insight:</strong> two numbers' sum is divisible by <code>k</code> only if their remainders (mod k) add up to <code>k</code> (or both remainders are <code>0</code>). So instead of checking every pair (O(n²)), count how many elements fall in each remainder bucket, then combine buckets mathematically — O(n).</p>
+      </div>
+
+      <div class="codeblock">
+        <div class="cb-head"><div class="dots"><span></span><span></span><span></span></div><span>PairsDivisibleByK.java</span><button class="copybtn" onclick="copyCode(this)">copy</button></div>
+        <pre><code>public class PairsDivisibleByK {
+
+    public static int countPairs(int[] arr, int k) {
+        int[] remainderCount = new int[k];
+
+        // Step 1: bucket every element by its remainder mod k
+        for (int num : arr) {
+            remainderCount[num % k]++;
+        }
+
+        int pairCount = 0;
+
+        // Step 2: remainder 0 pairs with itself -> nC2
+        pairCount += (remainderCount[0] * (remainderCount[0] - 1)) / 2;
+
+        // Step 3: remainder r pairs with remainder (k - r)
+        int i = 1, j = k - 1;
+        while (i < j) {
+            pairCount += remainderCount[i] * remainderCount[j];
+            i++;
+            j--;
+        }
+
+        // Step 4: if k is even, the middle remainder (k/2) pairs with itself
+        if (k % 2 == 0) {
+            pairCount += (remainderCount[k / 2] * (remainderCount[k / 2] - 1)) / 2;
+        }
+
+        return pairCount;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {5, 9, 36, 74, 52, 31, 42};
+        System.out.println(countPairs(arr, 3)); // 7
+    }
+}</code></pre>
+      </div>
+      <div class="complexity">
+        <span>Time: <b>O(n + k)</b></span>
+        <span>Space: <b>O(k)</b></span>
+      </div>
+
+      <div class="callout">
+        <span class="label">talking points to say out loud</span>
+        <ul style="margin-bottom:0;">
+          <li>Walk through the trace for the given input: remainders mod 3 → 5%3=2, 9%3=0, 36%3=0, 74%3=2, 52%3=1, 31%3=1, 42%3=0. Buckets: {0:3, 1:2, 2:2}.</li>
+          <li>Remainder-0 pairs: C(3,2) = 3. Remainder(1,2) pairs: 2×2 = 4. Total = 7 ✅ matches expected output.</li>
+          <li>If asked for a brute-force fallback first: nested loop checking <code>(arr[i]+arr[j]) % k == 0</code>, O(n²) — mention it, then optimize to the bucket approach to show you can improve on your own first pass.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Q5 -->
+    <section class="q" id="q5">
+      <div class="qhead"><span class="tag code">CODE</span><h2>Q5. Move all zeroes to the end, in place, O(1) extra space</h2></div>
+      <div class="io">
+        <div><span class="lbl">Input</span>[0, 1, 0, 3, 12]</div>
+        <div><span class="lbl">Output</span>[1, 3, 12, 0, 0]</div>
+      </div>
+      <div class="answer">
+        <p><strong>Approach:</strong> two-pointer / "write pointer" technique. Walk through the array with a read pointer; whenever you find a non-zero, swap it into the next write position. Everything after the write pointer naturally ends up zero.</p>
+      </div>
+
+      <div class="codeblock">
+        <div class="cb-head"><div class="dots"><span></span><span></span><span></span></div><span>MoveZeroes.java</span><button class="copybtn" onclick="copyCode(this)">copy</button></div>
+        <pre><code>import java.util.Arrays;
+
+public class MoveZeroes {
+
+    public static void moveZeroes(int[] nums) {
+        int writeIndex = 0;
+
+        // Pass 1: shift all non-zero elements to the front, preserving order
+        for (int readIndex = 0; readIndex < nums.length; readIndex++) {
+            if (nums[readIndex] != 0) {
+                int temp = nums[writeIndex];
+                nums[writeIndex] = nums[readIndex];
+                nums[readIndex] = temp;
+                writeIndex++;
+            }
+        }
+        // Everything from writeIndex onward is already 0 (or gets overwritten to 0
+        // above via the swap) — no second pass needed since we swap instead of overwrite.
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {0, 1, 0, 3, 12};
+        moveZeroes(nums);
+        System.out.println(Arrays.toString(nums)); // [1, 3, 12, 0, 0]
+    }
+}</code></pre>
+      </div>
+      <div class="complexity">
+        <span>Time: <b>O(n)</b></span>
+        <span>Space: <b>O(1)</b></span>
+      </div>
+
+      <div class="callout">
+        <span class="label">talking points to say out loud</span>
+        <ul style="margin-bottom:0;">
+          <li>Using a <strong>swap</strong> instead of just overwriting with 0 means you don't need a second cleanup loop — the zero naturally gets carried backward into <code>readIndex</code>'s old spot.</li>
+          <li>Relative order of non-zero elements is preserved because both pointers only ever move forward.</li>
+          <li>Common follow-up: "what if you couldn't use swap?" → overwrite non-zeros as you go, track <code>writeIndex</code>, then fill everything from <code>writeIndex</code> to end with 0 in a second pass. Still O(n) time, O(1) space.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Q10 -->
+    <section class="q" id="q10">
+      <div class="qhead"><span class="tag code">CODE</span><h2>Q10. Return elements that appear at least twice, in the order they first became duplicates</h2></div>
+      <div class="io">
+        <div><span class="lbl">Input</span>[4, 3, 2, 7, 8, 2, 3, 1]</div>
+        <div><span class="lbl">Output</span>[2, 3]</div>
+      </div>
+      <div class="answer">
+        <p><strong>Approach:</strong> a <code>HashSet</code> to track "already seen" values, and a separate result list. The moment an element is seen for the <em>second</em> time, add it to the result — this naturally captures the order in which elements first became duplicates.</p>
+      </div>
+
+      <div class="codeblock">
+        <div class="cb-head"><div class="dots"><span></span><span></span><span></span></div><span>FirstDuplicatesInOrder.java</span><button class="copybtn" onclick="copyCode(this)">copy</button></div>
+        <pre><code>import java.util.*;
+
+public class FirstDuplicatesInOrder {
+
+    public static List<Integer> findDuplicatesInOrder(int[] nums) {
+        Set<Integer> seenOnce = new HashSet<>();
+        Set<Integer> alreadyFlagged = new HashSet<>(); // avoid re-adding on 3rd, 4th occurrence
+        List<Integer> result = new ArrayList<>();
+
+        for (int num : nums) {
+            if (!seenOnce.add(num)) {
+                // add() returns false if num was already in the set -> this is a repeat
+                if (alreadyFlagged.add(num)) {
+                    result.add(num); // first time we detect it's a duplicate
+                }
+            }
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {4, 3, 2, 7, 8, 2, 3, 1};
+        System.out.println(findDuplicatesInOrder(nums)); // [2, 3]
+    }
+}</code></pre>
+      </div>
+      <div class="complexity">
+        <span>Time: <b>O(n)</b></span>
+        <span>Space: <b>O(n)</b></span>
+      </div>
+
+      <div class="callout">
+        <span class="label">talking points to say out loud</span>
+        <ul style="margin-bottom:0;">
+          <li><code>Set.add()</code> returning a boolean is the trick that avoids a separate <code>contains()</code> check — one hash lookup instead of two.</li>
+          <li>The second set (<code>alreadyFlagged</code>) prevents duplicate entries in the result if a number appears 3+ times.</li>
+          <li>If asked for a <code>LinkedHashMap</code>-based alternative (counting occurrences, then filtering by insertion order) — mention it as a valid variant, but the two-set approach is cleaner and single-pass.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Q6 -->
+    <section class="q" id="q6">
+      <div class="qhead"><span class="tag concept">PROCESS</span><h2>Q6. How do you handle a blocker in testing, and what strategies help overcome it?</h2></div>
+      <div class="answer">
+        <p><strong>My approach, in order:</strong></p>
+        <ul>
+          <li><strong>Isolate and confirm</strong> — reproduce the blocker consistently before raising it, so it's not a flaky/false alarm (env issue, stale test data, wrong config).</li>
+          <li><strong>Classify it</strong> — is it an environment issue, a missing test data/API dependency, a genuine application defect, or an access/permission issue? Each needs a different owner.</li>
+          <li><strong>Communicate early</strong> — flag it in standup/Slack immediately with impact (which test cases/sprint goals are affected), not after sitting on it for a day.</li>
+          <li><strong>Unblock in parallel</strong> — while waiting on the actual fix, work around it: mock the dependency, stub the API response, or reorder my test execution to cover unaffected areas first, so I'm never fully idle.</li>
+          <li><strong>Track it formally</strong> — log it as a defect/blocker ticket with severity, so it's visible in the sprint board and doesn't silently slip.</li>
+        </ul>
+      </div>
+      <div class="callout analogy">
+        <span class="label">analogy</span>
+        A blocker in testing is like hitting a closed road on a delivery route. You don't just sit at the barrier — you confirm it's actually closed, radio it in immediately so dispatch knows, and reroute through side streets to keep delivering the packages you can, while the main road gets fixed in parallel.
+      </div>
+    </section>
+
+    <!-- Q7 -->
+    <section class="q" id="q7">
+      <div class="qhead"><span class="tag concept">PROCESS</span><h2>Q7. What strategy do you follow when starting a new project to ensure effective test coverage?</h2></div>
+      <div class="answer">
+        <ul>
+          <li><strong>Understand the domain and requirements first</strong> — read specs/user stories, talk to BA/dev, identify critical business flows vs. edge flows (in BFSI: payment processing, loan disbursal, reconciliation are always P0).</li>
+          <li><strong>Risk-based prioritization</strong> — map coverage effort to business risk and usage frequency, not just "test everything equally."</li>
+          <li><strong>Define the test pyramid for the project</strong> — heavy unit/API coverage at the base, focused UI/E2E coverage at the top for the critical user journeys only.</li>
+          <li><strong>Traceability matrix</strong> — map every requirement to at least one test case, so coverage gaps are visible, not assumed.</li>
+          <li><strong>Environment & data strategy</strong> — decide test data approach (synthetic vs. masked prod data) and environment stability early, since this blocks everything downstream.</li>
+          <li><strong>Automation-readiness assessment</strong> — decide what gets automated from day one vs. manually validated first (new/unstable features), and set up CI integration early rather than bolting it on later.</li>
+        </ul>
+      </div>
+      <div class="callout analogy">
+        <span class="label">analogy</span>
+        It's like building a house: you don't start painting walls (UI automation) before the foundation is poured and inspected (API/unit coverage, environment stability, requirement traceability). Skipping that order means expensive rework later.
+      </div>
+    </section>
+
+    <!-- Q8 -->
+    <section class="q" id="q8">
+      <div class="qhead"><span class="tag concept">PROCESS</span><h2>Q8. What is the shift-left approach, and a real scenario where it helped?</h2></div>
+      <div class="answer">
+        <p><strong>Definition:</strong> shift-left means moving testing activities earlier in the SDLC — involving QA at requirements/design stage instead of waiting for a "code-complete" build, so defects are caught before they're expensive to fix.</p>
+        <p><strong>Real scenario:</strong> On the GM Financial engagement, instead of waiting for the full UI build to test a loan servicing notification flow, I got involved at the API contract design stage — reviewing the request/response schema with the dev team, writing API-level automated tests (REST Assured) against the API spec/mocked service before the UI even existed, and flagging a data-type mismatch in the notification payload (date format inconsistency between service and consumer) two weeks before UI testing would have caught it.</p>
+      </div>
+      <div class="callout analogy">
+        <span class="label">analogy</span>
+        Shift-left is like getting a routine health checkup instead of waiting until you're in the ER. Catching a problem at a checkup (requirements/design review) costs you 20 minutes; catching the same problem in the ER (post-release production bug) costs days of surgery and recovery — same underlying issue, wildly different cost depending on when you catch it.
+      </div>
+    </section>
+
+    <!-- Q9 -->
+    <section class="q" id="q9">
+      <div class="qhead"><span class="tag concept">PROCESS</span><h2>Q9. Bugs encountered while implementing shift-left — how did you handle them?</h2></div>
+      <div class="answer">
+        <p>Shift-left introduces its own class of problems, since you're testing against things that aren't fully finished yet:</p>
+        <ul>
+          <li><strong>Mocked responses drifting from the real API</strong> — early API tests were written against a mocked/contract-first spec; once the real service was deployed, a field the mock always returned turned out to be optional in reality, and my assertions were too strict. Fixed by making the mock a shared, versioned contract (updated alongside the real API) instead of something I maintained independently.</li>
+          <li><strong>Flaky early-integration environments</strong> — testing against a service still under active development meant intermittent failures unrelated to real bugs. Handled by clearly separating "environment instability" from "test failure" in reporting, and retry-with-logging so genuine regressions weren't lost in the noise.</li>
+          <li><strong>False sense of coverage</strong> — early API-level green checks sometimes masked UI-layer integration issues (e.g. how the frontend actually consumed a date field). Addressed by keeping a thin but real E2E layer on top, specifically for the highest-risk user journeys, rather than assuming API-green meant feature-done.</li>
+        </ul>
+      </div>
+      <div class="callout analogy">
+        <span class="label">analogy</span>
+        It's like proofreading a book chapter-by-chapter as the author writes it, instead of waiting for the finished manuscript. You catch typos early — but you can also flag a plot hole based on an outline that changes before publication. The fix isn't to stop proofreading early; it's to keep syncing your notes against the latest draft instead of trusting your first read.
+      </div>
+    </section>
+
+    <footer>
+      // built from your May/June 2026 interview experiences · [[interview-prep]] tracker
+    </footer>
+  </main>
+</div>
+
+<script>
+function copyCode(btn){
+  const code = btn.closest('.codeblock').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    const original = btn.innerText;
+    btn.innerText = 'copied';
+    setTimeout(()=>{ btn.innerText = original; }, 1200);
+  });
+}
+
+// active nav highlight on scroll
+const sections = document.querySelectorAll('section.q');
+const navItems = document.querySelectorAll('a.navitem');
+const map = {};
+navItems.forEach(a => map[a.getAttribute('href').slice(1)] = a);
+
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      navItems.forEach(a=>a.classList.remove('active'));
+      const link = map[entry.target.id];
+      if(link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

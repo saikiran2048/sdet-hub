@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Infosys QA Automation Interview Guide (3–4 YOE)</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --border:#30363d;
+    --text:#e6edf3; --muted:#9da7b1; --accent:#58a6ff;
+    --green:#3fb950; --orange:#f0883e; --code-bg:#0a0e14;
+  }
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:'Segoe UI',Arial,sans-serif; line-height:1.6;
+    margin:0; padding:0 0 60px 0;
+  }
+  header{
+    background:linear-gradient(135deg,#1f6feb 0%,#0d1117 100%);
+    padding:36px 20px; text-align:center; border-bottom:1px solid var(--border);
+  }
+  header h1{margin:0 0 8px; font-size:1.7em;}
+  header p{margin:0; color:#d6e4ff; font-size:0.95em;}
+  .container{max-width:880px; margin:0 auto; padding:0 18px;}
+  nav{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    margin:24px 0; padding:16px 20px;
+  }
+  nav h3{margin-top:0; color:var(--accent);}
+  nav a{color:var(--text); text-decoration:none; display:inline-block; margin:3px 0;}
+  nav a:hover{color:var(--accent);}
+  nav ul{margin:0; padding-left:18px; columns:2; column-gap:24px;}
+  nav li{margin-bottom:4px; font-size:0.92em;}
+  .qa{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    margin:18px 0; padding:20px 22px; scroll-margin-top:20px;
+  }
+  .qnum{
+    display:inline-block; background:var(--accent); color:#06131f;
+    font-weight:700; border-radius:6px; padding:2px 10px; margin-right:8px;
+    font-size:0.85em;
+  }
+  .qa h2{font-size:1.12em; margin:0 0 12px; color:#fff;}
+  .qa h4{color:var(--orange); margin:14px 0 6px; font-size:0.97em;}
+  .qa p{margin:6px 0; color:var(--text);}
+  .qa ul, .qa ol{margin:6px 0 6px 22px; padding:0;}
+  .qa li{margin-bottom:4px;}
+  pre{
+    background:var(--code-bg); border:1px solid var(--border); border-radius:8px;
+    padding:14px; overflow-x:auto; font-size:0.85em; margin:10px 0;
+  }
+  code{
+    font-family:'Consolas','Monaco',monospace; color:#79c0ff;
+  }
+  pre code{color:#c9d1d9; display:block;}
+  .tag-bonus{
+    background:#3fb95022; color:var(--green); border:1px solid #3fb95055;
+    border-radius:6px; padding:1px 9px; font-size:0.78em; margin-left:8px;
+  }
+  .answer-box{
+    background:#0e1f14; border-left:3px solid var(--green); padding:10px 14px;
+    border-radius:0 6px 6px 0; margin:10px 0;
+  }
+  .star{
+    background:#1a1f2e; border-left:3px solid var(--accent); padding:10px 14px;
+    border-radius:0 6px 6px 0; margin:10px 0; font-size:0.93em;
+  }
+  table{width:100%; border-collapse:collapse; margin:10px 0; font-size:0.9em;}
+  th, td{border:1px solid var(--border); padding:8px 10px; text-align:left;}
+  th{background:#1c2128; color:var(--accent);}
+  tr:nth-child(even){background:#11151c;}
+  .section-divider{
+    text-align:center; color:var(--muted); margin:36px 0 18px;
+    font-size:0.85em; letter-spacing:2px; text-transform:uppercase;
+  }
+  .section-divider::before, .section-divider::after{
+    content:""; display:inline-block; width:60px; height:1px;
+    background:var(--border); vertical-align:middle; margin:0 10px;
+  }
+  footer{text-align:center; color:var(--muted); font-size:0.85em; margin-top:40px;}
+  .badge-row{display:flex; gap:8px; flex-wrap:wrap; margin:16px 0;}
+  .badge{background:#1c2128; border:1px solid var(--border); border-radius:20px; padding:5px 14px; font-size:0.8em; color:var(--muted);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Infosys QA Automation Interview Guide</h1>
+  <p>Real-time questions for SDET / Automation QA Engineer roles (3–4 YOE) — with detailed answers + bonus questions</p>
+</header>
+
+<div class="container">
+
+<div class="badge-row">
+  <span class="badge">Agile &amp; Process</span>
+  <span class="badge">Selenium WebDriver</span>
+  <span class="badge">API Testing</span>
+  <span class="badge">Java Coding</span>
+  <span class="badge">Production Support</span>
+  <span class="badge">Bonus: Framework &amp; CI/CD</span>
+</div>
+
+<nav>
+  <h3>Quick Navigation</h3>
+  <ul>
+    <li><a href="#q1">Q1. Self Intro</a></li>
+    <li><a href="#q2">Q2. Agile Ceremonies</a></li>
+    <li><a href="#q3">Q3. Product Backlog</a></li>
+    <li><a href="#q4">Q4. Story Point Estimation</a></li>
+    <li><a href="#q5">Q5. Tickets needing QA</a></li>
+    <li><a href="#q6">Q6. Regression Testing</a></li>
+    <li><a href="#q7">Q7. Test Mgmt Tools</a></li>
+    <li><a href="#q8">Q8. Selenium Exceptions</a></li>
+    <li><a href="#q9">Q9. StaleElementReference</a></li>
+    <li><a href="#q10">Q10. Wait Types</a></li>
+    <li><a href="#q11">Q11. Dynamic Elements</a></li>
+    <li><a href="#q12">Q12. Dropdowns w/o Select</a></li>
+    <li><a href="#q13">Q13. Multiple Windows</a></li>
+    <li><a href="#q15">Q15. Alerts/Popups</a></li>
+    <li><a href="#q16">Q16. findElement vs findElements</a></li>
+    <li><a href="#q17">Q17. API vs Web Service</a></li>
+    <li><a href="#q18">Q18. JWT vs Bearer Token</a></li>
+    <li><a href="#q19">Q19. API Validations</a></li>
+    <li><a href="#q20">Q20. Remove Duplicate Chars</a></li>
+    <li><a href="#q21">Q21. Pyramid Pattern</a></li>
+    <li><a href="#q22">Q22. Login Syntax</a></li>
+    <li><a href="#q23">Q23. Release-day Crunch</a></li>
+    <li><a href="#q24">Q24. Critical Defect Pre-Prod</a></li>
+    <li><a href="#q25">Q25. Production Issue Experience</a></li>
+    <li><a href="#q26">Q26. Bug Repro in Prod not QA</a></li>
+    <li><a href="#bonus">🎁 Bonus Questions</a></li>
+  </ul>
+</nav>
+
+<div class="section-divider">Agile & Process</div>
+
+<div class="qa" id="q1">
+<h2><span class="qnum">Q1</span>Self Introduction and explain your current project in brief</h2>
+<p>This is a structured-narrative question, not a recall question — interviewers are scoring clarity, seniority signaling, and relevance, not facts. Use a <strong>Present → Past → Strength → Direction</strong> structure in under 90 seconds.</p>
+<h4>Structure to follow</h4>
+<ol>
+<li><strong>Current role (Present):</strong> "I'm a Senior SDET / Automation QA Consultant with ~4 years of experience, currently engaged on a General Motors Financial (GMF) project at Deloitte, where I work on automating BFSI-style workflows."</li>
+<li><strong>Tech stack one-liner:</strong> "My core stack is Java, Selenium WebDriver, Cucumber BDD, TestNG, REST Assured, Maven, and Jenkins/Azure DevOps for CI/CD."</li>
+<li><strong>Project in brief (what the system does + your scope):</strong> Describe the domain (financial transactions, loan/account workflows, etc.) and your specific ownership — UI automation, API layer, or both. Mention scale signals: parallel execution, data-driven suites, number of test cases automated.</li>
+<li><strong>Differentiator (Past, brief):</strong> One sentence on prior BFSI experience — DBS Bank and USAA at TCS — to show domain depth across multiple banking clients.</li>
+<li><strong>Close with direction:</strong> "I'm looking to bring that automation and BFSI testing experience into a product/GCC environment like Infosys."</li>
+</ol>
+<div class="star">
+<strong>Tip:</strong> Keep the project description outcome-focused ("reduced regression cycle time by automating X% of the suite") rather than purely descriptive. Infosys panels for 3–4 YOE roles weight communication clarity heavily in this opening question — rambling here often colors the rest of the interview.
+</div>
+</div>
+
+<div class="qa" id="q2">
+<h2><span class="qnum">Q2</span>What Agile ceremonies are followed in your project?</h2>
+<p>Standard Scrum ceremonies most BFSI/enterprise projects (including GMF-style engagements) follow:</p>
+<table>
+<tr><th>Ceremony</th><th>Frequency</th><th>QA's role</th></tr>
+<tr><td>Sprint Planning</td><td>Start of sprint (every 2 weeks typically)</td><td>Estimate testing effort, flag testability concerns, commit to test stories</td></tr>
+<tr><td>Daily Stand-up / Scrum</td><td>Daily, ~15 min</td><td>Report test progress, blockers, defect status</td></tr>
+<tr><td>Backlog Grooming / Refinement</td><td>Mid-sprint</td><td>Clarify acceptance criteria, raise edge cases early</td></tr>
+<tr><td>Sprint Review / Demo</td><td>End of sprint</td><td>Demo tested features, confirm Definition of Done</td></tr>
+<tr><td>Sprint Retrospective</td><td>End of sprint</td><td>Discuss what went well/poorly in testing process</td></tr>
+</table>
+<div class="answer-box">Mention any ceremony specific to your project — e.g., "Three Amigos" sessions (Dev + QA + BA) before sprint planning, which are common in BDD/Cucumber-driven teams for refining Gherkin scenarios collaboratively.</div>
+</div>
+
+<div class="qa" id="q3">
+<h2><span class="qnum">Q3</span>What is a Product Backlog and who owns it?</h2>
+<p>A <strong>Product Backlog</strong> is a prioritized, living list of everything that might be needed in the product — features, enhancements, bug fixes, technical debt items, and non-functional requirements. It's never "complete"; it evolves as the product and market understanding evolve.</p>
+<h4>Key characteristics</h4>
+<ul>
+<li>Items are ordered by priority/value (highest value at top)</li>
+<li>Each item is typically a User Story with acceptance criteria</li>
+<li>Continuously refined ("groomed") throughout the project</li>
+</ul>
+<h4>Ownership</h4>
+<p>The <strong>Product Owner (PO)</strong> owns the Product Backlog. They are accountable for:</p>
+<ul>
+<li>Prioritizing items based on business value</li>
+<li>Writing/clarifying acceptance criteria</li>
+<li>Accepting or rejecting completed work against the Definition of Done</li>
+</ul>
+<div class="star">Note the distinction: <strong>Product Backlog</strong> (whole project, owned by PO) vs <strong>Sprint Backlog</strong> (subset committed for the current sprint, owned by the Dev Team).</div>
+</div>
+
+<div class="qa" id="q4">
+<h2><span class="qnum">Q4</span>During Sprint Planning, how do you estimate story points for a user story?</h2>
+<p>Story points measure <strong>relative effort/complexity</strong>, not hours. Most teams use <strong>Planning Poker</strong> with Fibonacci-like values (1, 2, 3, 5, 8, 13, 21).</p>
+<h4>Factors considered while estimating</h4>
+<ul>
+<li><strong>Complexity</strong> of the business logic involved</li>
+<li><strong>Effort</strong> — dev + test + automation effort combined</li>
+<li><strong>Uncertainty/Risk</strong> — unknowns, new integrations, third-party dependencies</li>
+<li><strong>Dependencies</strong> on other teams/APIs/data</li>
+<li><strong>Volume of test scenarios</strong> — for QA specifically: number of positive/negative/edge cases, cross-browser needs, API + UI + DB validation layers</li>
+</ul>
+<h4>Process</h4>
+<ol>
+<li>BA/PO reads out the story and acceptance criteria</li>
+<li>Team asks clarifying questions</li>
+<li>Each member privately picks a point value (poker card or tool like Jira/Planning Poker plugin)</li>
+<li>Values revealed simultaneously; if there's a big spread, discuss and re-vote</li>
+<li>Converge on consensus value</li>
+</ol>
+<div class="answer-box">As QA, you should explicitly call out testing complexity during estimation — e.g., a story needing new test data setup, mocking a third-party API, or DB validation should bump the points even if the dev change is small.</div>
+</div>
+
+<div class="qa" id="q5">
+<h2><span class="qnum">Q5</span>Do all tickets require QA intervention? Can you give some examples?</h2>
+<p><strong>No.</strong> Not every ticket needs QA testing — this shows you understand where QA effort adds value versus where it's wasted.</p>
+<h4>Tickets that typically DO need QA</h4>
+<ul>
+<li>New feature development (functional + regression impact)</li>
+<li>Bug fixes (verify fix + regression around it)</li>
+<li>UI/UX changes affecting user flows</li>
+<li>API contract changes (request/response schema, status codes)</li>
+<li>Configuration changes affecting business logic</li>
+</ul>
+<h4>Tickets that typically DON'T need QA (or need minimal QA)</h4>
+<ul>
+<li><strong>Pure documentation updates</strong> (README, code comments, wiki pages)</li>
+<li><strong>Internal code refactoring</strong> with no functional change (covered by existing automated regression + unit tests)</li>
+<li><strong>Logging/monitoring additions</strong> that don't change behavior</li>
+<li><strong>Infrastructure/DevOps tickets</strong> (e.g., Jenkins pipeline tweaks) — may need a sanity smoke run rather than full QA cycle</li>
+<li><strong>Dependency version bumps</strong> with no API surface change — typically validated by automated regression suite, not manual QA</li>
+</ul>
+<div class="star">Good answer pattern: "I assess tickets based on whether they touch user-facing behavior or business logic. If it's purely internal/non-functional, I rely on the automated regression suite passing rather than allocating manual QA cycles."</div>
+</div>
+
+<div class="qa" id="q6">
+<h2><span class="qnum">Q6</span>What is Regression Testing and why do we perform it?</h2>
+<p><strong>Regression Testing</strong> is the practice of re-running existing test cases on a modified build to confirm that recent code changes (new features, bug fixes, config changes) haven't broken existing functionality.</p>
+<h4>Why it's performed</h4>
+<ul>
+<li>Software changes are interconnected — fixing one module can unintentionally break another ("ripple effect")</li>
+<li>Ensures previously working features remain stable after every sprint/release</li>
+<li>Builds confidence for production deployment</li>
+<li>Critical in BFSI/financial systems where a regression bug can mean incorrect transaction processing</li>
+</ul>
+<h4>When it's run</h4>
+<ul>
+<li>After every bug fix</li>
+<li>After every new feature merge</li>
+<li>Before every release/deployment (full or targeted regression)</li>
+<li>Nightly/on every CI build as automated regression (most mature setups)</li>
+</ul>
+<div class="answer-box">Strong differentiator to mention: "We maintain an automated regression suite triggered via Jenkins/Azure DevOps pipelines on every merge to the main branch, which lets us catch regressions within minutes rather than waiting for a manual cycle."</div>
+</div>
+
+<div class="qa" id="q7">
+<h2><span class="qnum">Q7</span>Which test management and defect tracking tools are you using in your current project?</h2>
+<p>Answer with what you actually use — common combinations in BFSI/enterprise projects:</p>
+<table>
+<tr><th>Category</th><th>Common Tools</th></tr>
+<tr><td>Test Management</td><td>Jira (with Zephyr/Xray plugin), Azure Test Plans, qTest, TestRail</td>
+<tr><td>Defect Tracking</td><td>Jira, Azure DevOps Boards, Bugzilla, HP ALM/Quality Center</td></tr>
+<tr><td>CI/CD &amp; Reporting</td><td>Jenkins, Azure DevOps Pipelines, Extent Reports, Allure</td></tr>
+<tr><td>Version Control</td><td>Git, Azure Repos, GitHub</td></tr>
+</table>
+<div class="star">Since your stack includes Azure DevOps, you can confidently speak to using <strong>Azure Boards</strong> for ticket/defect tracking and <strong>Azure Test Plans</strong> for test case management, integrated with your Maven/TestNG automation runs and Extent Reports for result visibility.</div>
+</div>
+
+<div class="section-divider">Selenium WebDriver</div>
+
+<div class="qa" id="q8">
+<h2><span class="qnum">Q8</span>What are some Selenium exceptions you have encountered in your project?</h2>
+<table>
+<tr><th>Exception</th><th>When it occurs</th></tr>
+<tr><td><code>NoSuchElementException</code></td><td>Locator doesn't match any element in DOM (wrong locator or element not yet loaded)</td></tr>
+<tr><td><code>StaleElementReferenceException</code></td><td>Element reference is no longer attached to the DOM (page refreshed/re-rendered)</td></tr>
+<tr><td><code>ElementNotInteractableException</code></td><td>Element is present but not interactable (hidden, disabled, covered by another element)</td></tr>
+<tr><td><code>TimeoutException</code></td><td>Explicit/Fluent wait condition not met within the specified time</td></tr>
+<tr><td><code>WebDriverException</code></td><td>General driver-level issues — browser crash, driver-browser version mismatch</td></tr>
+<tr><td><code>NoSuchWindowException</code></td><td>Attempting to interact with a window/tab that's been closed</td></tr>
+<tr><td><code>NoAlertPresentException</code></td><td>Trying to switch to an alert when none exists</td></tr>
+<tr><td><code>InvalidSelectorException</code></td><td>Malformed XPath/CSS selector syntax</td></tr>
+<tr><td><code>SessionNotCreatedException</code></td><td>Driver version incompatible with installed browser version</td></tr>
+</table>
+</div>
+
+<div class="qa" id="q9">
+<h2><span class="qnum">Q9</span>What is StaleElementReferenceException and in what scenarios have you faced it?</h2>
+<p><strong>StaleElementReferenceException</strong> is thrown when a previously located WebElement is no longer attached to the DOM — Selenium holds a reference to an "old" version of the element that has since been replaced or removed.</p>
+<h4>Common scenarios that cause it</h4>
+<ul>
+<li><strong>Page refresh/navigation</strong> after the element was located but before it's used</li>
+<li><strong>AJAX re-rendering</strong> — a section of the page (e.g., a table or grid) refreshes its DOM nodes after a filter/sort action, invalidating earlier references</li>
+<li><strong>DOM manipulation via JavaScript</strong> — element removed and re-added, even with identical attributes, creates a new DOM node</li>
+<li><strong>SPA frameworks (React/Angular)</strong> re-rendering components on state change</li>
+</ul>
+<h4>How to handle/avoid it</h4>
+<ol>
+<li><strong>Re-locate the element</strong> right before interaction instead of caching it in a variable for long</li>
+<li>Wrap interaction in a <strong>try-catch with retry logic</strong>:</li>
+</ol>
+<pre><code>public void clickWithRetry(By locator, WebDriver driver) {
+    int attempts = 0;
+    while (attempts < 3) {
+        try {
+            driver.findElement(locator).click();
+            return;
+        } catch (StaleElementReferenceException e) {
+            attempts++;
+        }
+    }
+    throw new RuntimeException("Element remained stale after retries");
+}</code></pre>
+<p>3. Use <strong>ExpectedConditions.refreshed()</strong> combined with another condition in an explicit wait:</p>
+<pre><code>wait.until(ExpectedConditions.refreshed(
+    ExpectedConditions.elementToBeClickable(locator)));</code></pre>
+<div class="star">Real scenario to narrate: "In an account-transactions grid that re-renders after applying a date filter, I'd get StaleElementReferenceException if I located rows before the filter and tried clicking after. Fix was to re-locate the grid rows after the AJAX call completed, using an explicit wait on a 'loading spinner disappeared' condition."</div>
+</div>
+
+<div class="qa" id="q10">
+<h2><span class="qnum">Q10</span>Explain the difference between Implicit Wait, Explicit Wait, and Fluent Wait</h2>
+<table>
+<tr><th>Type</th><th>Scope</th><th>Behavior</th><th>Syntax</th></tr>
+<tr>
+<td><strong>Implicit Wait</strong></td>
+<td>Global — applies to <em>all</em> findElement calls for the WebDriver session</td>
+<td>Polls the DOM for a fixed max time before throwing NoSuchElementException</td>
+<td><code>driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));</code></td>
+</tr>
+<tr>
+<td><strong>Explicit Wait</strong></td>
+<td>Local — applied to a specific element/condition</td>
+<td>Waits until a specific <code>ExpectedCondition</code> is true, or times out</td>
+<td><code>WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));<br>wait.until(ExpectedConditions.visibilityOf(element));</code></td>
+</tr>
+<tr>
+<td><strong>Fluent Wait</strong></td>
+<td>Local — most configurable</td>
+<td>Like Explicit Wait but lets you set <strong>polling frequency</strong> and <strong>exceptions to ignore</strong> while polling</td>
+<td><code>Wait&lt;WebDriver&gt; fluentWait = new FluentWait&lt;&gt;(driver)<br>  .withTimeout(Duration.ofSeconds(20))<br>  .pollingEvery(Duration.ofSeconds(2))<br>  .ignoring(NoSuchElementException.class);</code></td>
+</tr>
+</table>
+<div class="star">
+<strong>Important caveat to mention:</strong> Never mix Implicit Wait with Explicit Wait in the same script — Selenium's documentation explicitly warns this causes unpredictable wait times (the implicit wait can interfere with explicit polling, sometimes summing delays). Best practice: use only Explicit/Fluent waits and keep implicit wait at 0.
+</div>
+</div>
+
+<div class="qa" id="q11">
+<h2><span class="qnum">Q11</span>How do you handle dynamic web elements in Selenium?</h2>
+<p>Dynamic elements are those whose attributes (id, class) change on every page load/session — common in modern web apps with auto-generated IDs.</p>
+<h4>Strategies</h4>
+<ol>
+<li><strong>Relative/Partial locators</strong> using XPath functions:
+<pre><code>// contains() for partially matching attribute values
+driver.findElement(By.xpath("//button[contains(@id,'submit')]"));
+
+// starts-with() when prefix is stable but suffix changes
+driver.findElement(By.xpath("//input[starts-with(@id,'user_')]"));</code></pre>
+</li>
+<li><strong>Text-based XPath</strong> when visible text is stable:
+<pre><code>driver.findElement(By.xpath("//a[text()='Submit Application']"));</code></pre>
+</li>
+<li><strong>Sibling/parent-child traversal</strong> using a stable nearby anchor element:
+<pre><code>driver.findElement(By.xpath("//label[text()='Email']/following-sibling::input"));</code></pre>
+</li>
+<li><strong>CSS attribute selectors</strong> as an alternative to XPath for performance:
+<pre><code>driver.findElement(By.cssSelector("input[id^='user_']"));</code></pre>
+</li>
+<li><strong>Combining multiple stable attributes</strong> (class + data-* attributes) rather than relying on a single volatile one</li>
+<li>For elements that appear/disappear dynamically (AJAX-loaded), always pair the locator strategy with an <strong>Explicit Wait</strong> on visibility/clickability rather than a static sleep</li>
+</ol>
+</div>
+
+<div class="qa" id="q12">
+<h2><span class="qnum">Q12</span>How do you handle dropdowns when the Select class cannot be used?</h2>
+<p>Selenium's <code>Select</code> class only works on native HTML <code>&lt;select&gt;</code> tags. Many modern UIs use custom dropdowns built with <code>&lt;div&gt;</code>/<code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code> (React-select, MUI, custom JS widgets) — Select class won't work there.</p>
+<h4>Approach for custom (non-native) dropdowns</h4>
+<ol>
+<li><strong>Click to open</strong> the dropdown trigger element</li>
+<li><strong>Wait</strong> for the options list to render (explicit wait on visibility)</li>
+<li><strong>Locate the desired option</strong> by visible text and click it</li>
+</ol>
+<pre><code>// Step 1: Click to open dropdown
+driver.findElement(By.id("customDropdownTrigger")).click();
+
+// Step 2: Wait for options panel
+WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("dropdown-options")));
+
+// Step 3: Click the matching option by text
+List<WebElement> options = driver.findElements(By.cssSelector(".dropdown-options li"));
+for (WebElement option : options) {
+    if (option.getText().equalsIgnoreCase("California")) {
+        option.click();
+        break;
+    }
+}</code></pre>
+<h4>Other techniques</h4>
+<ul>
+<li><strong>Keyboard navigation</strong> — for some widgets, sending arrow keys + Enter via <code>Actions</code> class works when click targeting is unreliable</li>
+<li><strong>JavaScriptExecutor</strong> as a last resort to directly set values, though this bypasses real user interaction and should be used sparingly</li>
+<li>For autocomplete-style dropdowns, type partial text into the input first to filter the list, then click the filtered result</li>
+</ul>
+</div>
+
+<div class="qa" id="q13">
+<h2><span class="qnum">Q13</span>I have multiple browser windows opened. How will you switch from one window to another?</h2>
+<p>Selenium identifies each window/tab by a unique <strong>window handle</strong> (a string ID). To switch, you capture the handles and use <code>driver.switchTo().window(handle)</code>.</p>
+<pre><code>// Store the original window handle
+String parentWindow = driver.getWindowHandle();
+
+// Action that opens a new window/tab (e.g., clicking a link with target="_blank")
+driver.findElement(By.id("openNewWindowLink")).click();
+
+// Get all window handles
+Set<String> allWindows = driver.getWindowHandles();
+
+// Switch to the new window
+for (String handle : allWindows) {
+    if (!handle.equals(parentWindow)) {
+        driver.switchTo().window(handle);
+        break;
+    }
+}
+
+// Perform actions on new window
+System.out.println("New window title: " + driver.getTitle());
+
+// Switch back to original window
+driver.switchTo().window(parentWindow);
+
+// To close the child window before switching back
+driver.close();
+driver.switchTo().window(parentWindow);</code></pre>
+<div class="star">Key point to mention: <code>getWindowHandles()</code> returns a <code>Set&lt;String&gt;</code> (unordered), so never assume index-based access; always iterate and compare against the stored parent handle, or use <code>Iterator</code>/convert to a List carefully if you need positional access.</div>
+</div>
+
+<div class="qa" id="q15">
+<h2><span class="qnum">Q15</span>How do you handle alerts and popups in Selenium?</h2>
+<p>Selenium handles native browser alerts (JavaScript <code>alert()</code>, <code>confirm()</code>, <code>prompt()</code>) using the <code>Alert</code> interface via <code>driver.switchTo().alert()</code>.</p>
+<pre><code>// Switch to the alert
+Alert alert = driver.switchTo().alert();
+
+// Get alert text
+String alertText = alert.getText();
+
+// Accept (OK) the alert
+alert.accept();
+
+// Dismiss (Cancel) the alert
+alert.dismiss();
+
+// For prompt() alerts that need text input
+alert.sendKeys("test input");
+alert.accept();</code></pre>
+<h4>Important distinctions</h4>
+<ul>
+<li><strong>Native JS alerts</strong> (covered above) — block Selenium until handled; trying to interact with the page before switching to/handling the alert throws <code>UnhandledAlertException</code></li>
+<li><strong>Modal popups built with HTML/CSS</strong> (Bootstrap modals, custom div overlays) are <strong>NOT</strong> true browser alerts — treat them as regular web elements (locate the close/OK button and click it normally)</li>
+<li><strong>Browser-level popups</strong> (file upload dialogs, print dialogs) — Selenium cannot interact with these natively since they're OS-level windows; typically handled via <code>Robot</code> class, AutoIT, or by setting the file path directly into a hidden <code>&lt;input type="file"&gt;</code> using <code>sendKeys()</code></li>
+</ul>
+<div class="star">Good practice: always wrap alert handling with an explicit wait — <code>wait.until(ExpectedConditions.alertIsPresent())</code> — before calling <code>switchTo().alert()</code>, since alerts can take a moment to render after the triggering action.</div>
+</div>
+
+<div class="qa" id="q16">
+<h2><span class="qnum">Q16</span>What is the difference between findElement() and findElements()?</h2>
+<table>
+<tr><th>Aspect</th><th><code>findElement()</code></th><th><code>findElements()</code></th></tr>
+<tr><td>Return type</td><td><code>WebElement</code> (single)</td><td><code>List&lt;WebElement&gt;</code></td></tr>
+<tr><td>If no match found</td><td>Throws <code>NoSuchElementException</code></td><td>Returns an <strong>empty list</strong> (no exception)</td></tr>
+<tr><td>If multiple matches</td><td>Returns the <strong>first</strong> matching element only</td><td>Returns <strong>all</strong> matching elements</td></tr>
+<tr><td>Typical use case</td><td>Targeting one specific, unique element</td><td>Validating counts, iterating over a collection (table rows, menu items, search results)</td></tr>
+</table>
+<pre><code>// findElement - single element
+WebElement loginBtn = driver.findElement(By.id("loginBtn"));
+
+// findElements - collection, safe existence check
+List<WebElement> errorMessages = driver.findElements(By.className("error-msg"));
+if (errorMessages.size() > 0) {
+    System.out.println("Validation error displayed: " + errorMessages.get(0).getText());
+} else {
+    System.out.println("No validation errors found");
+}</code></pre>
+<div class="star">Common interview follow-up: "How do you check if an element exists without throwing an exception?" — Answer: use <code>findElements()</code> and check <code>.size() == 0</code>, rather than wrapping <code>findElement()</code> in a try-catch (cleaner and avoids exception-driven control flow).</div>
+</div>
+
+<div class="section-divider">API Testing</div>
+
+<div class="qa" id="q17">
+<h2><span class="qnum">Q17</span>What is an API and how is it different from a Web Service?</h2>
+<p><strong>API (Application Programming Interface)</strong> is a broad contract/set of rules that allows two software components to communicate — it doesn't have to involve a network at all (e.g., a Java library's public methods are an API).</p>
+<p><strong>Web Service</strong> is a specific <em>type</em> of API that operates over a network, typically using standard web protocols (HTTP/HTTPS).</p>
+<table>
+<tr><th>Aspect</th><th>API</th><th>Web Service</th></tr>
+<tr><td>Scope</td><td>Broad — any interface between software components</td><td>Narrower — always network-based</td></tr>
+<tr><td>Network requirement</td><td>Not required (can be in-process, e.g., Java/C++ library API)</td><td>Always requires a network connection</td></tr>
+<tr><td>Protocols</td><td>Any — function calls, HTTP, RPC, etc.</td><td>Specific protocols — SOAP, REST, XML-RPC</td></tr>
+<tr><td>Data format</td><td>Any format</td><td>Typically XML (SOAP) or JSON (REST)</td></tr>
+<tr><td>Example</td><td>Java Collections API, REST Assured library API</td><td>A payment gateway's REST endpoint, a SOAP-based banking service</td></tr>
+</table>
+<div class="answer-box">Simple framing for the interview: "All web services are APIs, but not all APIs are web services. A web service strictly needs network communication; an API is the general contract for any inter-component communication."</div>
+</div>
+
+<div class="qa" id="q18">
+<h2><span class="qnum">Q18</span>What is a JWT Token and Bearer Token?</h2>
+<h4>JWT (JSON Web Token)</h4>
+<p>A JWT is a compact, self-contained, URL-safe token format used for authentication and information exchange. It consists of three Base64-encoded parts separated by dots:</p>
+<pre><code>header.payload.signature</code></pre>
+<ul>
+<li><strong>Header</strong> — algorithm used (e.g., HS256, RS256) and token type</li>
+<li><strong>Payload</strong> — claims (user ID, roles, expiry/<code>exp</code>, issued-at/<code>iat</code>, etc.)</li>
+<li><strong>Signature</strong> — verifies the token hasn't been tampered with, using a secret key or public/private key pair</li>
+</ul>
+<p>Because the payload is just Base64-encoded (not encrypted), it's <strong>readable but not editable</strong> without invalidating the signature.</p>
+<h4>Bearer Token</h4>
+<p>"Bearer" is an <strong>authentication scheme</strong> — it describes <em>how</em> a token is sent in the HTTP request, not the token's internal structure. Whoever "bears" (holds/possesses) the token is granted access, hence the name.</p>
+<pre><code>Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...</code></pre>
+<div class="star">Key relationship to articulate: "A JWT is commonly sent <em>as</em> a Bearer token in the Authorization header. JWT defines the token's format/content; Bearer defines the transport convention. You could technically send a non-JWT opaque token as a Bearer token too — they're related but distinct concepts."</div>
+<h4>In REST Assured</h4>
+<pre><code>given()
+    .header("Authorization", "Bearer " + accessToken)
+    .when()
+    .get("/api/accounts")
+    .then()
+    .statusCode(200);</code></pre>
+</div>
+
+<div class="qa" id="q19">
+<h2><span class="qnum">Q19</span>What validations do you perform while testing APIs?</h2>
+<h4>1. Status Code Validation</h4>
+<pre><code>response.then().statusCode(200);</code></pre>
+<p>Verify correct codes for each scenario: 200 (OK), 201 (Created), 400 (Bad Request), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 500 (Server Error).</p>
+
+<h4>2. Response Body / Schema Validation</h4>
+<ul>
+<li>Field presence, correct data types, correct values against expected business logic</li>
+<li>JSON Schema validation for contract adherence</li>
+</ul>
+<pre><code>response.then()
+    .body("accountId", notNullValue())
+    .body("balance", greaterThanOrEqualTo(0))
+    .body("status", equalTo("ACTIVE"));</code></pre>
+
+<h4>3. Response Headers Validation</h4>
+<pre><code>response.then().header("Content-Type", containsString("application/json"));</code></pre>
+
+<h4>4. Response Time / Performance</h4>
+<pre><code>response.then().time(lessThan(2000L));</code></pre>
+
+<h4>5. Negative / Edge Case Testing</h4>
+<ul>
+<li>Invalid/missing auth tokens, malformed payloads, boundary values, missing mandatory fields</li>
+<li>SQL injection / special character handling in inputs (security-adjacent validation)</li>
+</ul>
+
+<h4>6. Data Integrity / DB Cross-validation</h4>
+<p>Confirm the API's persisted effect by querying the database directly — especially relevant in BFSI projects where a transaction API call must reflect correctly in ledger/account tables.</p>
+
+<h4>7. Authentication &amp; Authorization Validation</h4>
+<ul>
+<li>Valid token → success; expired/invalid token → 401; valid token but insufficient role → 403</li>
+</ul>
+
+<h4>8. Idempotency &amp; Concurrency (for relevant endpoints)</h4>
+<p>For POST/PUT operations like payment initiation, verify repeated identical requests don't create duplicate transactions.</p>
+
+<h4>9. Contract Testing</h4>
+<p>Validate that the API still matches the agreed request/response contract — particularly important when multiple consumers depend on a shared service.</p>
+
+<div class="star">Strong closing line: "I typically structure these validations into a REST Assured framework with POJO-based request/response models, reusable specification builders for headers/auth, and chain DB validation via JDBC where the business outcome needs to be confirmed beyond just the API response."</div>
+</div>
+
+<div class="section-divider">Java Coding</div>
+
+<div class="qa" id="q20">
+<h2><span class="qnum">Q20</span>Write a Java program to remove duplicate characters from a String</h2>
+<h4>Approach 1: Using LinkedHashSet (preserves order, clean)</h4>
+<pre><code>import java.util.LinkedHashSet;
+
+public class RemoveDuplicates {
+    public static String removeDuplicates(String input) {
+        LinkedHashSet<Character> set = new LinkedHashSet<>();
+        for (char c : input.toCharArray()) {
+            set.add(c);
+        }
+        StringBuilder result = new StringBuilder();
+        for (char c : set) {
+            result.append(c);
+        }
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        String input = "programming";
+        System.out.println("Original: " + input);
+        System.out.println("Without duplicates: " + removeDuplicates(input));
+        // Output: progamin
+    }
+}</code></pre>
+
+<h4>Approach 2: Without using any built-in Set (manual logic — often asked as a follow-up)</h4>
+<pre><code>public class RemoveDuplicatesManual {
+    public static String removeDuplicates(String input) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char current = input.charAt(i);
+            if (result.indexOf(String.valueOf(current)) == -1) {
+                result.append(current);
+            }
+        }
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(removeDuplicates("automation")); // automin
+    }
+}</code></pre>
+<div class="star">Time complexity: Approach 1 is O(n) using HashSet's O(1) lookups. Approach 2 is O(n²) due to the <code>indexOf</code> scan inside the loop — mention this trade-off if asked about efficiency.</div>
+</div>
+
+<div class="qa" id="q21">
+<h2><span class="qnum">Q21</span>Write a Java program to print a pyramid star pattern</h2>
+<pre><code>public class PyramidPattern {
+    public static void main(String[] args) {
+        int rows = 5;
+
+        for (int i = 1; i <= rows; i++) {
+            // Print leading spaces
+            for (int j = 1; j <= rows - i; j++) {
+                System.out.print(" ");
+            }
+            // Print stars
+            for (int k = 1; k <= (2 * i - 1); k++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    }
+}
+
+/* Output for rows = 5:
+    *
+   ***
+  *****
+ *******
+*********
+*/</code></pre>
+<div class="star">Follow-up they may ask: "Print an inverted pyramid" — just reverse the outer loop (<code>for (int i = rows; i >= 1; i--)</code>) while keeping the same inner logic.</div>
+</div>
+
+<div class="qa" id="q22">
+<h2><span class="qnum">Q22</span>Write the syntax for Login Functionality</h2>
+<p>This is typically asked as a quick Selenium syntax check — locate fields, enter credentials, click submit, verify result.</p>
+<pre><code>public class LoginTest {
+    WebDriver driver;
+
+    @Test
+    public void testLogin() {
+        driver = new ChromeDriver();
+        driver.get("https://example.com/login");
+        driver.manage().window().maximize();
+
+        // Locate and enter username
+        WebElement username = driver.findElement(By.id("username"));
+        username.sendKeys("testuser@example.com");
+
+        // Locate and enter password
+        WebElement password = driver.findElement(By.id("password"));
+        password.sendKeys("Test@1234");
+
+        // Click login button
+        driver.findElement(By.id("loginBtn")).click();
+
+        // Verify successful login
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement dashboard = wait.until(
+            ExpectedConditions.visibilityOfElementLocated(By.id("dashboardHeader")));
+
+        Assert.assertTrue(dashboard.isDisplayed(), "Login failed - dashboard not visible");
+
+        driver.quit();
+    }
+}</code></pre>
+<h4>BDD / Cucumber style (since your stack includes Cucumber)</h4>
+<pre><code>// Step Definitions
+@Given("user is on the login page")
+public void userIsOnLoginPage() {
+    driver.get("https://example.com/login");
+}
+
+@When("user enters valid {string} and {string}")
+public void userEntersCredentials(String username, String password) {
+    driver.findElement(By.id("username")).sendKeys(username);
+    driver.findElement(By.id("password")).sendKeys(password);
+    driver.findElement(By.id("loginBtn")).click();
+}
+
+@Then("user should be redirected to the dashboard")
+public void verifyDashboard() {
+    Assert.assertTrue(driver.findElement(By.id("dashboardHeader")).isDisplayed());
+}</code></pre>
+</div>
+
+<div class="section-divider">Scenario-Based / Production Support</div>
+
+<div class="qa" id="q23">
+<h2><span class="qnum">Q23</span>Suppose a release is planned for tomorrow and you still have many tickets in your testing bucket. How will you manage the situation?</h2>
+<p>This is a prioritization-and-communication question — panels want to see risk-based thinking, not panic or silent overtime.</p>
+<h4>Step-by-step approach</h4>
+<ol>
+<li><strong>Immediately communicate the risk</strong> to the Scrum Master/PO/lead — don't wait till the last hour. Transparency early gives the team options.</li>
+<li><strong>Triage and prioritize by risk &amp; business impact:</strong>
+  <ul>
+    <li>Critical/high-business-value tickets get tested first</li>
+    <li>Low-risk, cosmetic, or low-usage feature tickets can be deferred</li>
+  </ul>
+</li>
+<li><strong>Leverage automation</strong> — run the existing automated regression suite in parallel with manual focus testing on new functionality, to cover ground faster.</li>
+<li><strong>Divide and conquer</strong> — if teammates are free, redistribute tickets based on domain familiarity.</li>
+<li><strong>Negotiate scope, not quality</strong> — propose deferring specific low-priority tickets to the next release/hotfix rather than rushing through testing and risking a production defect.</li>
+<li><strong>Document what was NOT tested</strong> — give the release/business team an explicit "known risk" list so the decision to ship is informed, not assumed.</li>
+</ol>
+<div class="star">Key phrase to use in the interview: "I'd rather flag a realistic risk early and negotiate scope than silently rush testing and let a defect slip into production — especially in a BFSI context where a missed validation could have financial impact."</div>
+</div>
+
+<div class="qa" id="q24">
+<h2><span class="qnum">Q24</span>What will be your approach if a critical defect is found just before Production deployment?</h2>
+<ol>
+<li><strong>Stop and assess severity/impact</strong> — is it a blocker (data corruption, security, financial miscalculation) or something with a workaround?</li>
+<li><strong>Immediately escalate</strong> to the release manager, tech lead, and PO — critical defects pre-deployment are a go/no-go decision, not a QA-alone decision.</li>
+<li><strong>Provide clear reproduction steps, logs, and impact analysis</strong> so the team can make a fast, informed call.</li>
+<li><strong>Evaluate options as a team:</strong>
+  <ul>
+    <li>Hotfix and retest if there's enough time before the deployment window</li>
+    <li>Roll back the specific feature/change causing the defect (feature flag off) while shipping the rest</li>
+    <li>Delay the entire release if the defect is severe enough and no safe workaround exists</li>
+  </ul>
+</li>
+<li><strong>Post-decision:</strong> If shipped with a known issue, ensure it's documented and monitored closely in production with a fast-follow fix planned.</li>
+</ol>
+<div class="answer-box">Emphasize judgment: "I don't unilaterally decide to block or allow a release — my job is to surface the defect with enough clarity and urgency that the right business/technical stakeholders can make that call quickly."</div>
+</div>
+
+<div class="qa" id="q25">
+<h2><span class="qnum">Q25</span>Have you ever faced a Production issue? What was your role in identifying or resolving it?</h2>
+<p>Answer this with a real (or realistic, structured) example from your background — your <strong>Post Production Validation (PPV)</strong> experience and Applause Award context are strong material here.</p>
+<h4>Structure (STAR format)</h4>
+<ul>
+<li><strong>Situation:</strong> Briefly describe the production environment and what went wrong (e.g., a data mismatch post-deployment, a Kafka pipeline lag, an API returning incorrect values for a specific edge case)</li>
+<li><strong>Task:</strong> Your specific responsibility — were you doing Post Production Validation sign-off, monitoring, or called in to investigate?</li>
+<li><strong>Action:</strong> How you isolated it — checked logs, compared QA vs Prod data/config, ran targeted API/DB queries, reproduced with prod-like data</li>
+<li><strong>Result:</strong> Outcome — root cause found (config diff, data volume difference, timing/race condition), fix deployed, validation confirmed</li>
+</ul>
+<div class="star">Since your background includes formal <strong>PPV ownership</strong> at GMF/Deloitte, you can speak directly to owning deployment sign-off — describing how you validate key transactions/flows immediately post-deployment before giving the "go" confirmation, which is exactly what this question is probing for.</div>
+</div>
+
+<div class="qa" id="q26">
+<h2><span class="qnum">Q26</span>A bug is reproducible in Production but not in QA. How will you investigate the issue?</h2>
+<p>This is a classic "environment parity" debugging question. Systematic investigation approach:</p>
+<h4>1. Compare environment configuration</h4>
+<ul>
+<li>Application config values (feature flags, environment variables, API endpoints)</li>
+<li>Database schema/version differences, stored procedure versions</li>
+<li>Third-party service versions or mocked vs real integrations in QA</li>
+</ul>
+<h4>2. Compare data</h4>
+<ul>
+<li>Production has real-world data volume, edge-case data, and legacy/historical records that QA's synthetic test data often doesn't replicate</li>
+<li>Check for data-specific triggers — special characters, null/empty fields, very large datasets causing pagination or performance issues</li>
+</ul>
+<h4>3. Check infrastructure differences</h4>
+<ul>
+<li>Load balancers, caching layers (Redis), CDN behavior present in Prod but not QA</li>
+<li>Network latency/timeouts that only manifest under production traffic load</li>
+</ul>
+<h4>4. Review logs and monitoring</h4>
+<ul>
+<li>Production logs (application logs, APM tools like Dynatrace/New Relic, Splunk) for the exact error/stack trace</li>
+<li>Correlate timestamp of the issue with any deployment, config change, or traffic spike</li>
+</ul>
+<h4>5. Attempt controlled reproduction</h4>
+<ul>
+<li>Try to replicate using a copy/subset of production-like data in a staging environment</li>
+<li>Check for concurrency/race conditions that only surface under real multi-user load (hard to simulate in QA with low parallel users)</li>
+</ul>
+<h4>6. Check recent changes</h4>
+<ul>
+<li>Was there a hotfix, config change, or infra change applied directly to Prod that wasn't reflected in QA?</li>
+</ul>
+<div class="star">Strong answer anchor: "Given my experience with mTLS/SSL-based service-to-service communication and Kafka pipeline validation, I'd specifically check certificate/keystore differences and message-queue timing differences between environments — these are common silent causes of 'works in QA, fails in Prod' issues in BFSI systems."</div>
+</div>
+
+<div class="section-divider">🎁 Bonus Questions</div>
+
+<div id="bonus"></div>
+
+<div class="qa">
+<h2><span class="qnum">B1</span>What is the difference between TestNG and JUnit?<span class="tag-bonus">Bonus</span></h2>
+<table>
+<tr><th>Feature</th><th>TestNG</th><th>JUnit</th></tr>
+<tr><td>Test configuration</td><td>Rich annotations: <code>@BeforeSuite</code>, <code>@BeforeTest</code>, <code>@BeforeClass</code>, <code>@BeforeMethod</code></td><td>Simpler: <code>@BeforeAll</code>, <code>@BeforeEach</code></td></tr>
+<tr><td>Parallel execution</td><td>Built-in, configurable via XML (<code>parallel="methods"</code>)</td><td>Supported but less mature, needs extensions</td></tr>
+<tr><td>Test grouping</td><td>Native <code>groups</code> attribute</td><td>Tags (JUnit 5)</td></tr>
+<tr><td>Data-driven testing</td><td>Native <code>@DataProvider</code></td><td>Needs <code>@ParameterizedTest</code> (JUnit 5)</td></tr>
+<tr><td>Dependency between tests</td><td><code>dependsOnMethods</code> attribute</td><td>Not natively supported</td></tr>
+<tr><td>XML-based suite config</td><td>Yes (testng.xml) — flexible suite/test/class control</td><td>No native equivalent</td></tr>
+</table>
+<p>Since your stack uses TestNG, emphasize its suite-level XML control and parallel execution capabilities as reasons it's preferred for enterprise-scale automation frameworks.</p>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B2</span>How do you design a Test Automation Framework from scratch?<span class="tag-bonus">Bonus</span></h2>
+<p>A strong senior-level answer references layered architecture:</p>
+<ol>
+<li><strong>Build management:</strong> Maven/Gradle for dependency management</li>
+<li><strong>Design pattern:</strong> Page Object Model (POM) with Page Factory for UI; separate request/response POJO layer for API</li>
+<li><strong>Driver management:</strong> ThreadLocal WebDriver instance for safe parallel execution</li>
+<li><strong>Test data layer:</strong> Externalized via Excel/JSON/DB (Apache POI/Jackson), avoid hardcoding</li>
+<li><strong>Configuration management:</strong> Environment-specific properties (QA/UAT/Prod) loaded dynamically</li>
+<li><strong>Reporting:</strong> Extent Reports/Allure for rich, screenshot-attached HTML reports</li>
+<li><strong>Logging:</strong> Log4j2 for structured, leveled logging</li>
+<li><strong>Retry &amp; reliability:</strong> <code>IRetryAnalyzer</code> for flaky test retries, <code>IAnnotationTransformer</code> to apply it globally</li>
+<li><strong>CI/CD integration:</strong> Jenkins/Azure Pipelines triggering suite runs on every merge, with Maven profiles for different test scopes (smoke/regression/full)</li>
+</ol>
+<div class="star">This maps directly to the 9-phase Selenium framework you've already built — walk through it phase by phase if asked to go deeper.</div>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B3</span>What is the Page Object Model and why use it?<span class="tag-bonus">Bonus</span></h2>
+<p><strong>Page Object Model (POM)</strong> is a design pattern where each web page (or significant component) is represented as a class, with locators as fields and user actions as methods.</p>
+<pre><code>public class LoginPage {
+    WebDriver driver;
+
+    @FindBy(id = "username")
+    WebElement usernameField;
+
+    @FindBy(id = "password")
+    WebElement passwordField;
+
+    @FindBy(id = "loginBtn")
+    WebElement loginButton;
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+    }
+
+    public void login(String user, String pass) {
+        usernameField.sendKeys(user);
+        passwordField.sendKeys(pass);
+        loginButton.click();
+    }
+}</code></pre>
+<h4>Benefits</h4>
+<ul>
+<li><strong>Maintainability:</strong> Locator changes only need updating in one place</li>
+<li><strong>Reusability:</strong> Page methods reused across multiple test classes</li>
+<li><strong>Readability:</strong> Test scripts read like business actions (<code>loginPage.login(user, pass)</code>) instead of raw Selenium calls</li>
+<li><strong>Separation of concerns:</strong> Test logic stays separate from UI interaction logic</li>
+</ul>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B4</span>What is the difference between Mocking and Stubbing in test automation?<span class="tag-bonus">Bonus</span></h2>
+<table>
+<tr><th>Aspect</th><th>Stub</th><th>Mock</th></tr>
+<tr><td>Purpose</td><td>Provides canned/predefined responses to isolate the system under test from real dependencies</td><td>Verifies <em>interactions</em> — that specific methods were called with expected arguments, how many times, etc.</td></tr>
+<tr><td>Focus</td><td>State-based testing (what data is returned)</td><td>Behavior-based testing (was the call made correctly)</td></tr>
+<tr><td>Example use</td><td>Stub a third-party payment gateway to always return "success" so you can test downstream logic</td><td>Mock verifying that an email-service method was called exactly once after order placement</td></tr>
+<tr><td>Common tools</td><td>WireMock, MockServer</td><td>Mockito, EasyMock</td></tr>
+</table>
+<p>Relevant to API testing: WireMock is commonly used to stub third-party/dependent APIs in lower environments where the real service isn't available or has rate limits — useful context given your Node.js/Express practice API work.</p>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B5</span>What is Shift-Left Testing?<span class="tag-bonus">Bonus</span></h2>
+<p><strong>Shift-Left Testing</strong> means moving testing activities earlier in the SDLC — "left" on the timeline — rather than testing only after development is complete.</p>
+<h4>Practical examples</h4>
+<ul>
+<li>QA participating in requirement/story refinement to catch ambiguous acceptance criteria before development starts</li>
+<li>Writing BDD/Gherkin scenarios collaboratively (Three Amigos) before coding begins, so acceptance criteria double as test cases</li>
+<li>Developers running unit + contract tests in CI before merging, catching defects before they reach the QA environment</li>
+<li>API contract testing early using mocked/stubbed services before the actual backend is ready</li>
+</ul>
+<div class="answer-box">Why it matters: defects caught earlier in the SDLC are exponentially cheaper to fix than those caught in QA or, worse, in Production — a well-known principle interviewers expect you to articulate with the cost-of-defect curve reasoning.</div>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B6</span>How do you integrate your automation suite with a CI/CD pipeline (Jenkins/Azure DevOps)?<span class="tag-bonus">Bonus</span></h2>
+<ol>
+<li><strong>Trigger:</strong> Pipeline triggers on code merge/PR to main branch, or on a schedule (nightly regression)</li>
+<li><strong>Build stage:</strong> Maven compiles the project, resolves dependencies</li>
+<li><strong>Test execution stage:</strong> Maven Surefire/Failsafe plugin runs TestNG suite via <code>testng.xml</code>, often parameterized by environment and test group (smoke/regression)</li>
+<li><strong>Parallel execution:</strong> Selenium Grid or cloud grid (BrowserStack/Sauce Labs) for cross-browser runs in CI to reduce execution time</li>
+<li><strong>Reporting stage:</strong> Extent Reports/Allure HTML report published as a pipeline artifact; results also pushed to Slack/Teams via webhook on failure</li>
+<li><strong>Quality gate:</strong> Pipeline fails the build if test pass rate falls below a threshold, blocking deployment to the next environment</li>
+</ol>
+<pre><code>// Sample Jenkinsfile snippet
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps { sh 'mvn clean compile' }
+        }
+        stage('Test') {
+            steps { sh 'mvn test -Dsurefire.suiteXmlFiles=testng-regression.xml' }
+        }
+        stage('Report') {
+            steps {
+                publishHTML(target: [
+                    reportDir: 'test-output/ExtentReport',
+                    reportFiles: 'index.html',
+                    reportName: 'Automation Report'
+                ])
+            }
+        }
+    }
+}</code></pre>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B7</span>What is the difference between Smoke Testing and Sanity Testing?<span class="tag-bonus">Bonus</span></h2>
+<table>
+<tr><th>Aspect</th><th>Smoke Testing</th><th>Sanity Testing</th></tr>
+<tr><td>When</td><td>Right after a new build is deployed</td><td>After minor changes/bug fixes, before deeper regression</td></tr>
+<tr><td>Scope</td><td>Broad but shallow — checks critical paths across the whole app work at all</td><td>Narrow but focused — checks a specific area/functionality works correctly after a change</td></tr>
+<tr><td>Goal</td><td>"Is the build stable enough to test further?"</td><td>"Did this specific fix work without breaking related logic?"</td></tr>
+<tr><td>Documentation</td><td>Usually scripted/automated, repeated every build</td><td>Often unscripted, ad-hoc</td></tr>
+</table>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B8</span>How do you handle test data management for automation, especially in BFSI/regulated environments?<span class="tag-bonus">Bonus</span></h2>
+<ul>
+<li><strong>Data masking/anonymization:</strong> Production-like data is scrubbed of PII (names, account numbers, SSNs) before use in lower environments — critical for regulatory compliance</li>
+<li><strong>Synthetic data generation:</strong> Tools/scripts to generate realistic but fake data matching production data shapes and edge cases</li>
+<li><strong>Data-driven frameworks:</strong> Externalize test data via Excel (Apache POI), JSON, or a dedicated test DB, with a "RunMode" flag (Y/N) to control which data sets execute</li>
+<li><strong>Test data refresh strategy:</strong> Scripted setup/teardown (via API or direct DB calls) before/after test runs to keep data state predictable and avoid test pollution between runs</li>
+<li><strong>Idempotent test design:</strong> Tests create their own data rather than depending on pre-existing static records that can drift over time</li>
+</ul>
+<div class="star">This connects directly to your JSON DataProvider + RunMode filtering work — strong example to cite if this comes up.</div>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B9</span>What is Flaky Test and how do you deal with it?<span class="tag-bonus">Bonus</span></h2>
+<p>A <strong>flaky test</strong> is one that produces inconsistent results (pass sometimes, fail other times) without any actual change in the code under test.</p>
+<h4>Common causes</h4>
+<ul>
+<li>Improper waits (static <code>Thread.sleep()</code> instead of dynamic waits)</li>
+<li>Test order dependency / shared mutable state between tests</li>
+<li>Environment instability (network latency, third-party service downtime)</li>
+<li>Race conditions in async operations (AJAX calls, message queues)</li>
+</ul>
+<h4>How to deal with it</h4>
+<ul>
+<li>Replace static sleeps with Explicit/Fluent waits tied to actual conditions</li>
+<li>Make tests independent and idempotent (each test sets up its own data)</li>
+<li>Implement a controlled retry mechanism (<code>IRetryAnalyzer</code> in TestNG) — but cap retries and report flaky tests separately rather than silently hiding them</li>
+<li>Quarantine chronically flaky tests into a separate suite for investigation rather than letting them block every pipeline run</li>
+<li>Track flakiness rate over time as a quality metric, not just pass/fail</li>
+</ul>
+</div>
+
+<div class="qa">
+<h2><span class="qnum">B10</span>What's the difference between Verify and Assert in automation testing?<span class="tag-bonus">Bonus</span></h2>
+<table>
+<tr><th>Aspect</th><th>Assert (Hard Assert)</th><th>Verify (Soft Assert)</th></tr>
+<tr><td>Behavior on failure</td><td>Immediately stops test execution</td><td>Logs the failure but continues executing remaining steps</td></tr>
+<tr><td>Use case</td><td>Critical checkpoints where continuing makes no sense (e.g., login failed → no point testing dashboard)</td><td>Multiple independent validations on the same page (e.g., checking 5 different field values) where you want to see all failures in one run</td></tr>
+<tr><td>TestNG example</td><td><code>Assert.assertEquals(actual, expected);</code></td><td><code>SoftAssert softAssert = new SoftAssert();<br>softAssert.assertEquals(actual, expected);<br>...<br>softAssert.assertAll();</code> (must call <code>assertAll()</code> at the end to trigger reported failures)</td></tr>
+</table>
+</div>
+
+</div>
+
+<footer>
+  Prepared as a structured prep guide — practice explaining answers aloud in 60–90 seconds each, especially Q1, Q23–Q26, since communication clarity is weighted heavily for senior SDET roles.
+</footer>
+
+</body>
+</html>

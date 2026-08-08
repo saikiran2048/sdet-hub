@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barclays QA Automation — Interview Prep</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --panel:#11161d;
+    --panel-2:#161c25;
+    --border:#212833;
+    --text:#dde3ea;
+    --text-dim:#8b95a3;
+    --accent:#5fd0a3;
+    --accent-2:#e8b04b;
+    --code-bg:#0a0e13;
+    --r1:#5fd0a3;
+    --r2:#5b9eed;
+    --r3:#e8927a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+    padding:0 0 80px 0;
+  }
+  .mono{font-family:'SF Mono',Consolas,'Courier New',monospace;}
+
+  header{
+    padding:48px 24px 32px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,#11161d,#0d1117);
+  }
+  .eyebrow{
+    font-family:'SF Mono',Consolas,monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    color:var(--accent);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  h1{
+    font-size:28px;
+    margin:0 0 8px;
+    font-weight:650;
+    color:#fff;
+    letter-spacing:-0.3px;
+  }
+  .sub{color:var(--text-dim);font-size:14.5px;max-width:640px;}
+
+  .wrap{max-width:880px;margin:0 auto;padding:0 20px;}
+
+  nav.rounds{
+    display:flex;gap:10px;
+    margin-top:24px;
+    flex-wrap:wrap;
+  }
+  nav.rounds a{
+    font-family:'SF Mono',Consolas,monospace;
+    font-size:12.5px;
+    color:var(--text-dim);
+    text-decoration:none;
+    border:1px solid var(--border);
+    padding:7px 12px;
+    border-radius:6px;
+    transition:.15s;
+  }
+  nav.rounds a:hover{border-color:var(--accent);color:var(--accent);}
+
+  .round-header{
+    margin:56px 0 24px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+  }
+  .round-header .tag{
+    font-family:'SF Mono',Consolas,monospace;
+    font-size:11px;
+    letter-spacing:1.5px;
+    padding:4px 9px;
+    border-radius:4px;
+    font-weight:600;
+  }
+  .round-header h2{font-size:19px;margin:0;color:#fff;font-weight:600;}
+  .r1 .tag{background:rgba(95,208,163,.12);color:var(--r1);}
+  .r2 .tag{background:rgba(91,158,237,.12);color:var(--r2);}
+  .r3 .tag{background:rgba(232,146,122,.12);color:var(--r3);}
+
+  details.q{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  details.q[open]{border-color:#2a3340;}
+  details.q summary{
+    list-style:none;
+    cursor:pointer;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:14.5px;
+    font-weight:550;
+    color:var(--text);
+  }
+  details.q summary::-webkit-details-marker{display:none;}
+  details.q summary .num{
+    font-family:'SF Mono',Consolas,monospace;
+    font-size:12px;
+    color:var(--text-dim);
+    min-width:22px;
+  }
+  details.q summary::after{
+    content:'＋';
+    margin-left:auto;
+    color:var(--text-dim);
+    font-size:16px;
+    transition:.2s;
+  }
+  details.q[open] summary::after{
+    content:'－';
+    color:var(--accent);
+  }
+  .qbody{
+    padding:4px 18px 18px 18px;
+    border-top:1px solid var(--border);
+    font-size:14px;
+    color:var(--text);
+  }
+  .qbody p{margin:10px 0;}
+  .qbody strong{color:#fff;}
+
+  .qbody table{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0;
+    font-size:13px;
+  }
+  .qbody th,.qbody td{
+    border:1px solid var(--border);
+    padding:8px 10px;
+    text-align:left;
+  }
+  .qbody th{
+    background:var(--panel-2);
+    color:var(--accent);
+    font-family:'SF Mono',Consolas,monospace;
+    font-size:11.5px;
+    letter-spacing:.5px;
+  }
+  .qbody td{color:var(--text-dim);}
+
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow-x:auto;
+    margin:12px 0;
+    font-size:12.8px;
+    line-height:1.55;
+  }
+  code{
+    font-family:'SF Mono',Consolas,'Courier New',monospace;
+  }
+  pre code{color:#cfd8e3;}
+  .c-kw{color:#e892b3;}
+  .c-type{color:#5b9eed;}
+  .c-str{color:#e8b04b;}
+  .c-cm{color:#5c6470;font-style:italic;}
+  .c-fn{color:#5fd0a3;}
+
+  .tip{
+    border-left:3px solid var(--accent);
+    background:rgba(95,208,163,.07);
+    padding:10px 14px;
+    border-radius:0 6px 6px 0;
+    font-size:13px;
+    margin:12px 0;
+    color:#bcd9cc;
+  }
+  .ctx{
+    border-left:3px solid var(--accent-2);
+    background:rgba(232,176,75,.07);
+    padding:10px 14px;
+    border-radius:0 6px 6px 0;
+    font-size:13px;
+    margin:12px 0;
+    color:#e0d2ad;
+  }
+
+  .toolbar{
+    max-width:880px;margin:24px auto 0;padding:0 20px;
+    display:flex;gap:10px;
+  }
+  .toolbar button{
+    font-family:'SF Mono',Consolas,monospace;
+    font-size:12px;
+    background:var(--panel);
+    color:var(--text-dim);
+    border:1px solid var(--border);
+    padding:7px 13px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .toolbar button:hover{color:var(--accent);border-color:var(--accent);}
+
+  footer{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:12px;
+    margin-top:60px;
+    font-family:'SF Mono',Consolas,monospace;
+  }
+
+  @media(max-width:600px){
+    header{padding:32px 16px 24px;}
+    h1{font-size:22px;}
+    .round-header h2{font-size:16px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">// interview_prep / barclays</div>
+    <h1>QA Automation Interview — Barclays</h1>
+    <div class="sub">Core Java &amp; Selenium → Framework &amp; Advanced Concepts → Managerial + HR. Tap any question to expand. Built for a 4-YOE Senior SDET profile (GMF / DBS / USAA background).</div>
+    <nav class="rounds">
+      <a href="#round1">Round 1 · Core Java &amp; Selenium</a>
+      <a href="#round2">Round 2 · Framework &amp; Advanced</a>
+      <a href="#round3">Round 3 · Managerial + HR</a>
+    </nav>
+  </div>
+</header>
+
+<div class="toolbar">
+  <button onclick="document.querySelectorAll('details').forEach(d=>d.open=true)">Expand all</button>
+  <button onclick="document.querySelectorAll('details').forEach(d=>d.open=false)">Collapse all</button>
+</div>
+
+<div class="wrap">
+
+<!-- ============ ROUND 1 ============ -->
+<div id="round1" class="round-header r1"><span class="tag">ROUND 1</span><h2>Core Java &amp; Selenium</h2></div>
+
+<details class="q" open>
+<summary><span class="num">01</span> findElement() vs findElements() — what's the difference?</summary>
+<div class="qbody">
+<p><strong>findElement()</strong> returns a single <code>WebElement</code> and throws <code>NoSuchElementException</code> if nothing matches. <strong>findElements()</strong> returns a <code>List&lt;WebElement&gt;</code> and returns an empty list instead of throwing — safer for presence checks.</p>
+<pre><code><span class="c-cm">// findElement — throws if not found</span>
+WebElement btn = driver.findElement(By.id(<span class="c-str">"submitBtn"</span>));
+
+<span class="c-cm">// findElements — safe presence check, never throws</span>
+List&lt;WebElement&gt; rows = driver.findElements(By.cssSelector(<span class="c-str">"table tbody tr"</span>));
+<span class="c-kw">boolean</span> isPresent = !driver.findElements(By.id(<span class="c-str">"errorBanner"</span>)).isEmpty();</code></pre>
+<div class="tip">Mention: findElements() is your go-to for conditional checks — avoids try/catch overhead from NoSuchElementException.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">02</span> How do you handle dynamic web elements in Selenium?</summary>
+<div class="qbody">
+<p>Use relative locators with <code>contains()</code> / <code>starts-with()</code>, anchor to a stable parent element, or build the locator with a runtime variable.</p>
+<pre><code><span class="c-cm">// Relative XPath — avoid absolute paths</span>
+driver.findElement(By.xpath(<span class="c-str">"//button[contains(text(),'Submit')]"</span>));
+driver.findElement(By.xpath(<span class="c-str">"//input[starts-with(@id,'txn_')]"</span>));
+
+<span class="c-cm">// CSS partial attribute match</span>
+driver.findElement(By.cssSelector(<span class="c-str">"input[id^='txn_']"</span>));
+
+<span class="c-cm">// Runtime-built locator</span>
+<span class="c-type">public</span> WebElement getTransactionRow(String txnId) {
+    <span class="c-kw">return</span> driver.findElement(
+        By.xpath(<span class="c-str">"//td[text()='"</span> + txnId + <span class="c-str">"']/ancestor::tr"</span>)
+    );
+}</code></pre>
+<div class="ctx">GMF context: confirmation reference numbers in DDC emails were dynamic — anchored locator using contains(@data-ref,'DDC') on the email preview panel stayed stable across environments.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">03</span> Explain the different types of waits in Selenium.</summary>
+<div class="qbody">
+<table>
+<tr><th>Wait type</th><th>Class</th><th>Behavior</th></tr>
+<tr><td>Implicit</td><td>driver.manage().timeouts()</td><td>Global; polls DOM on every findElement</td></tr>
+<tr><td>Explicit</td><td>WebDriverWait</td><td>Condition-based; scoped to one element</td></tr>
+<tr><td>Fluent</td><td>FluentWait</td><td>Explicit + custom poll interval + ignored exceptions</td></tr>
+<tr><td>Hard sleep</td><td>Thread.sleep</td><td>Never use in production code</td></tr>
+</table>
+<pre><code><span class="c-cm">// Explicit — preferred default</span>
+WebDriverWait wait = <span class="c-kw">new</span> WebDriverWait(driver, Duration.ofSeconds(<span class="c-str">15</span>));
+WebElement el = wait.until(ExpectedConditions.elementToBeClickable(By.id(<span class="c-str">"confirmBtn"</span>)));
+
+<span class="c-cm">// Fluent — for async/polling-heavy scenarios</span>
+FluentWait&lt;WebDriver&gt; fluentWait = <span class="c-kw">new</span> FluentWait&lt;&gt;(driver)
+    .withTimeout(Duration.ofSeconds(<span class="c-str">30</span>))
+    .pollingEvery(Duration.ofSeconds(<span class="c-str">2</span>))
+    .ignoring(StaleElementReferenceException.<span class="c-kw">class</span>);
+
+WebElement result = fluentWait.until(d -&gt;
+    d.findElement(By.cssSelector(<span class="c-str">".transaction-status.completed"</span>)));</code></pre>
+<div class="tip">Never mix implicit + explicit waits — causes unpredictable timeouts from conflicting internal polling.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">04</span> XPath vs CSS Selector — when do you use each?</summary>
+<div class="qbody">
+<table>
+<tr><th>Dimension</th><th>XPath</th><th>CSS Selector</th></tr>
+<tr><td>Direction</td><td>Bidirectional (can go to parent)</td><td>Forward only</td></tr>
+<tr><td>Speed</td><td>Slightly slower</td><td>Faster — native browser engine</td></tr>
+<tr><td>Text match</td><td>Yes — text(), contains()</td><td>No native text matching</td></tr>
+</table>
+<pre><code><span class="c-cm">// CSS — default choice, fast and clean</span>
+By.cssSelector(<span class="c-str">"div.account-summary &gt; table &gt; tbody &gt; tr:nth-child(2)"</span>);
+
+<span class="c-cm">// XPath — needed for text match or upward traversal</span>
+By.xpath(<span class="c-str">"//label[text()='Account Number']/following-sibling::input"</span>);
+By.xpath(<span class="c-str">"//td[text()='DDC']/ancestor::tr/td[3]"</span>);</code></pre>
+<div class="tip">Rule of thumb: default to CSS. Reach for XPath only for text matching or parent traversal.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">05</span> How do you handle multiple windows/tabs in Selenium?</summary>
+<div class="qbody">
+<pre><code>String parentWindow = driver.getWindowHandle();
+
+<span class="c-cm">// Reusable utility — wait for new window, then switch</span>
+<span class="c-type">public</span> <span class="c-kw">void</span> switchToNewWindow(String parentHandle) {
+    <span class="c-kw">new</span> WebDriverWait(driver, Duration.ofSeconds(<span class="c-str">10</span>))
+        .until(d -&gt; d.getWindowHandles().size() &gt; <span class="c-str">1</span>);
+    driver.getWindowHandles().stream()
+        .filter(h -&gt; !h.equals(parentHandle))
+        .findFirst()
+        .ifPresent(h -&gt; driver.switchTo().window(h));
+}
+
+<span class="c-cm">// ... actions on new window ...</span>
+driver.close();
+driver.switchTo().window(parentWindow);</code></pre>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">06</span> How do you design a Page Object Model (POM) framework?</summary>
+<div class="qbody">
+<p>Separate page structure (locators + actions) from test logic. One page class per page, common utilities in a BasePage.</p>
+<pre><code><span class="c-cm">// BasePage.java</span>
+<span class="c-kw">public class</span> <span class="c-type">BasePage</span> {
+    <span class="c-kw">protected</span> WebDriver driver;
+    <span class="c-kw">protected</span> WebDriverWait wait;
+
+    <span class="c-fn">BasePage</span>(WebDriver driver) {
+        <span class="c-kw">this</span>.driver = driver;
+        <span class="c-kw">this</span>.wait = <span class="c-kw">new</span> WebDriverWait(driver, Duration.ofSeconds(<span class="c-str">15</span>));
+        PageFactory.initElements(driver, <span class="c-kw">this</span>);
+    }
+}
+
+<span class="c-cm">// PaymentPage.java — fluent return for chaining</span>
+<span class="c-kw">public class</span> <span class="c-type">PaymentPage</span> <span class="c-kw">extends</span> BasePage {
+    <span class="c-type">@FindBy</span>(id = <span class="c-str">"paymentAmount"</span>) <span class="c-kw">private</span> WebElement amountField;
+    <span class="c-type">@FindBy</span>(css = <span class="c-str">"button[data-action='submit-payment']"</span>) <span class="c-kw">private</span> WebElement submitBtn;
+
+    <span class="c-kw">public</span> ConfirmationPage <span class="c-fn">submitPayment</span>() {
+        wait.until(ExpectedConditions.elementToBeClickable(submitBtn)).click();
+        <span class="c-kw">return new</span> ConfirmationPage(driver);
+    }
+}</code></pre>
+<div class="tip">Mention the folder structure: pages/ · utils/ (DriverFactory, ConfigReader) · test/base · resources/config + testdata.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">07</span> Use of final, static, and this keywords in Java?</summary>
+<div class="qbody">
+<pre><code><span class="c-cm">// final — constant, cannot be reassigned</span>
+<span class="c-kw">public static final</span> String BASE_URL = <span class="c-str">"https://gmf.com"</span>;
+
+<span class="c-cm">// static — belongs to the class, not the instance</span>
+<span class="c-kw">public class</span> <span class="c-type">DriverFactory</span> {
+    <span class="c-kw">private static</span> ThreadLocal&lt;WebDriver&gt; driverThread = <span class="c-kw">new</span> ThreadLocal&lt;&gt;();
+    <span class="c-kw">public static</span> WebDriver <span class="c-fn">getDriver</span>() { <span class="c-kw">return</span> driverThread.get(); }
+}
+
+<span class="c-cm">// this — refers to current instance, disambiguates fields from params</span>
+<span class="c-kw">public</span> <span class="c-fn">PaymentPage</span>(WebDriver driver) {
+    <span class="c-kw">this</span>.driver = driver; <span class="c-cm">// this.driver = field, driver = param</span>
+}</code></pre>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">08</span> Collection Framework — where have you used HashMap or ArrayList?</summary>
+<div class="qbody">
+<pre><code><span class="c-cm">// ArrayList — ordered, allows duplicates: comparing dropdown options</span>
+List&lt;String&gt; actualOptions = <span class="c-kw">new</span> ArrayList&lt;&gt;();
+driver.findElements(By.cssSelector(<span class="c-str">"select#loanType option"</span>))
+      .forEach(el -&gt; actualOptions.add(el.getText()));
+
+<span class="c-cm">// HashMap — key-value test data store</span>
+Map&lt;String, String&gt; paymentData = <span class="c-kw">new</span> HashMap&lt;&gt;();
+paymentData.put(<span class="c-str">"accountNumber"</span>, <span class="c-str">"ACC123456"</span>);
+paymentData.put(<span class="c-str">"amount"</span>, <span class="c-str">"500.00"</span>);</code></pre>
+<div class="ctx">Real usage: LinkedHashMap to preserve assertion order for DDC email fields (account number, due date, amount) — keeps failure messages traceable in sequence.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">09</span> How do you handle exceptions in Selenium scripts?</summary>
+<div class="qbody">
+<pre><code><span class="c-cm">// StaleElementReferenceException — retry pattern</span>
+<span class="c-kw">public</span> WebElement <span class="c-fn">getStaleProofElement</span>(By locator) {
+    <span class="c-kw">int</span> retries = <span class="c-str">3</span>;
+    <span class="c-kw">while</span> (retries-- &gt; <span class="c-str">0</span>) {
+        <span class="c-kw">try</span> { <span class="c-kw">return</span> driver.findElement(locator); }
+        <span class="c-kw">catch</span> (StaleElementReferenceException e) { <span class="c-cm">/* retry */</span> }
+    }
+    <span class="c-kw">throw new</span> RuntimeException(<span class="c-str">"Element still stale: "</span> + locator);
+}
+
+<span class="c-cm">// ElementClickInterceptedException — JS click fallback</span>
+<span class="c-kw">public void</span> <span class="c-fn">safeClick</span>(WebElement element) {
+    <span class="c-kw">try</span> { element.click(); }
+    <span class="c-kw">catch</span> (ElementClickInterceptedException e) {
+        ((JavascriptExecutor) driver).executeScript(<span class="c-str">"arguments[0].click();"</span>, element);
+    }
+}</code></pre>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">10</span> Your approach to data-driven testing using TestNG or Excel?</summary>
+<div class="qbody">
+<pre><code><span class="c-type">@DataProvider</span>(name = <span class="c-str">"paymentData"</span>)
+<span class="c-kw">public</span> Object[][] <span class="c-fn">getPaymentData</span>() <span class="c-kw">throws</span> IOException {
+    <span class="c-kw">return</span> ExcelUtils.readData(<span class="c-str">"testdata/payments.xlsx"</span>, <span class="c-str">"Sheet1"</span>);
+}
+
+<span class="c-type">@Test</span>(dataProvider = <span class="c-str">"paymentData"</span>)
+<span class="c-kw">public void</span> <span class="c-fn">testPaymentSubmission</span>(String acct, String amount, String expected) {
+    paymentPage.enterAccountNumber(acct);
+    paymentPage.enterAmount(amount);
+    Assert.assertEquals(paymentPage.submitPayment().getStatus(), expected);
+}</code></pre>
+<div class="tip">Use Apache POI for Excel reads — return Object[][] sized to (rows-1) × cols, skipping the header row.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">11</span> ⭐ extra — How would you automate OTP-based login flows?</summary>
+<div class="qbody">
+<p>This comes up often in BFSI interviews because OTP breaks pure UI automation. Three real approaches, in order of preference:</p>
+<ol style="color:var(--text);font-size:14px;padding-left:18px;">
+<li><strong>Test environment bypass:</strong> request a static/whitelisted OTP for QA environments (e.g. <code>123456</code> always valid in UAT) — agreed with dev team. Most common in practice.</li>
+<li><strong>API-level OTP retrieval:</strong> if OTP is emailed/SMS'd, pull it via a test mailbox API (Mailosaur, Gmail API) or an internal SMS gateway test endpoint.</li>
+<li><strong>DB lookup:</strong> if OTP is stored temporarily in a DB/cache (Redis), query it directly post-trigger using JDBC/Jedis client in the test.</li>
+</ol>
+<pre><code><span class="c-cm">// Pattern: trigger OTP, then fetch via Redis before it expires</span>
+String otp = redisClient.get(<span class="c-str">"otp:"</span> + mobileNumber);
+loginPage.enterOtp(otp);</code></pre>
+<div class="ctx">Mention: never hardcode production OTP bypass logic — always environment-gated, never compiled into the prod build path.</div>
+</div>
+</details>
+
+<!-- ============ ROUND 2 ============ -->
+<div id="round2" class="round-header r2"><span class="tag">ROUND 2</span><h2>Framework &amp; Advanced Concepts</h2></div>
+
+<details class="q" open>
+<summary><span class="num">01</span> Walk me through your automation framework architecture.</summary>
+<div class="qbody">
+<p>Hybrid BDD + POM framework: Java 11 · TestNG + Cucumber 7 · Selenium WebDriver 4 · REST Assured · Extent Reports 5 · Jenkins + Azure DevOps · Maven with env profiles · ThreadLocal parallel execution · Apache POI / Jackson · HikariCP for DB validation.</p>
+<pre><code>Feature Files / TestNG XML
+        ↓
+Step Definitions / Test Classes
+        ↓
+Page Objects / API Service Classes
+        ↓
+DriverFactory / REST Assured RequestSpec
+        ↓
+Utilities: Config, Excel, DB, Reports
+        ↓
+Application Under Test</code></pre>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">02</span> How do you manage test data and environment configurations?</summary>
+<div class="qbody">
+<pre><code><span class="c-cm">// config-uat.properties</span>
+base.url=https://uat.gmf.com
+api.base.url=https://api.uat.gmf.com
+implicit.wait=10
+
+<span class="c-cm">// ConfigReader — env selected via -Denv=uat at runtime</span>
+<span class="c-kw">static</span> {
+    String env = System.getProperty(<span class="c-str">"env"</span>, <span class="c-str">"uat"</span>);
+    props.load(<span class="c-kw">new</span> FileInputStream(<span class="c-str">"config/config-"</span> + env + <span class="c-str">".properties"</span>));
+}</code></pre>
+<p>Static reference data → Excel. API payloads → JSON files. Secrets → Jenkins credentials / Azure Key Vault, never in source. Runtime-generated data → ThreadLocal across steps.</p>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">03</span> Best practices to make automation scripts more maintainable?</summary>
+<div class="qbody">
+<ul style="color:var(--text);font-size:14px;padding-left:18px;">
+<li>Single responsibility — one page class per page</li>
+<li>No hardcoded waits, ever</li>
+<li>Externalize all test data</li>
+<li>Descriptive method names (<code>clickSubmitPaymentButton()</code> not <code>clickButton2()</code>)</li>
+<li>Retry only for flaky infra, never to mask real failures</li>
+<li>Centralized ThreadLocal driver management</li>
+<li>Assertions always carry a failure message with context</li>
+<li>Log every meaningful step</li>
+</ul>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">04</span> How do you handle failed test cases in Jenkins / CI-CD pipelines?</summary>
+<div class="qbody">
+<pre><code><span class="c-cm">// Jenkinsfile (declarative)</span>
+pipeline {
+    agent any
+    stages {
+        stage(<span class="c-str">'Test'</span>) { steps { sh <span class="c-str">'mvn test -Psuite=regression -Denv=uat'</span> } }
+    }
+    post {
+        always {
+            publishHTML([reportDir: <span class="c-str">'target/extent-reports'</span>, reportFiles: <span class="c-str">'ExtentReport.html'</span>])
+            junit <span class="c-str">'target/surefire-reports/*.xml'</span>
+        }
+        failure {
+            emailext(subject: <span class="c-str">"Build FAILED #${env.BUILD_NUMBER}"</span>, to: <span class="c-str">'qa-team@company.com'</span>)
+        }
+    }
+}</code></pre>
+<p>Screenshots auto-captured on failure via <code>ITestListener</code>. Failures triaged into: infra issue / application defect / script bug.</p>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">05</span> What's your strategy for flaky test handling?</summary>
+<div class="qbody">
+<table>
+<tr><th>Cause</th><th>Fix</th></tr>
+<tr><td>Timing issue</td><td>FluentWait instead of Thread.sleep</td></tr>
+<tr><td>Stale element</td><td>Retry wrapper on StaleElementReferenceException</td></tr>
+<tr><td>Test order dependency</td><td>Isolate state per test in @BeforeMethod</td></tr>
+<tr><td>Shared data conflict</td><td>Thread-safe, per-thread test data seeding</td></tr>
+<tr><td>Env instability</td><td>Health-check API call before suite starts</td></tr>
+</table>
+<div class="tip">Flakiness is never "just how it is" — every flaky test gets a JIRA ticket and root-cause investigation.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">06</span> How do you decide which test cases to automate?</summary>
+<div class="qbody">
+<p><strong>Automate:</strong> high-frequency regression/smoke, stable business rules, data-driven combinations, cross-browser checks, API contract validation.</p>
+<p><strong>Don't automate:</strong> exploratory/usability testing, one-time tests, CAPTCHA/biometric/OTP flows without a bypass, pixel-level visual diffs (use Applitools/Percy instead).</p>
+<div class="tip">Framework: ROI = frequency × effort to automate × risk of failure. High-frequency + low-effort + high-risk goes first.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">07</span> Explain your Git branching strategy / version control workflow.</summary>
+<div class="qbody">
+<pre><code>main (production-stable)
+├── develop (integration)
+│   ├── feature/GMF-1234-ddc-email-validation
+│   └── bugfix/GMF-1500-stale-element-fix
+└── release/v2.3</code></pre>
+<pre><code>git checkout -b feature/GMF-1234-ddc-email-tests
+git rebase develop   <span class="c-cm"># keep branch current before PR</span>
+git stash / git stash pop</code></pre>
+<p>Branch from develop → commit with ticket ref → PR + peer review → merge to develop → CI runs on every merge → release → main after QA sign-off.</p>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">08</span> How do you integrate API testing into your automation framework?</summary>
+<div class="qbody">
+<pre><code><span class="c-type">@BeforeClass</span>
+<span class="c-kw">public static void</span> <span class="c-fn">setupApiSpec</span>() {
+    requestSpec = <span class="c-kw">new</span> RequestSpecBuilder()
+        .setBaseUri(ConfigReader.get(<span class="c-str">"api.base.url"</span>))
+        .addHeader(<span class="c-str">"Authorization"</span>, <span class="c-str">"Bearer "</span> + TokenManager.getToken())
+        .build();
+}
+
+<span class="c-type">@Test</span>
+<span class="c-kw">public void</span> <span class="c-fn">verifyDDCConfirmationPayload</span>() {
+    Response response = given().spec(requestSpec).body(payload)
+        .when().post(<span class="c-str">"/api/v1/payments/ddc"</span>)
+        .then().statusCode(<span class="c-str">200</span>).body(<span class="c-str">"status"</span>, equalTo(<span class="c-str">"CONFIRMED"</span>))
+        .extract().response();
+
+    <span class="c-cm">// cross-layer: validate DB record matches API response</span>
+    String dbStatus = DbUtils.queryPaymentStatus(response.jsonPath().getString(<span class="c-str">"transactionId"</span>));
+    Assert.assertEquals(dbStatus, <span class="c-str">"CONFIRMED"</span>);
+}</code></pre>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">09</span> Common challenges you faced in automation, and how you resolved them?</summary>
+<div class="qbody">
+<table>
+<tr><th>Challenge</th><th>Resolution</th></tr>
+<tr><td>Locators changing every deployment</td><td>Agreed on stable data-testid attributes with dev team</td></tr>
+<tr><td>SSL errors in lower environments</td><td>setRelaxedHTTPSValidation() + ChromeOptions flag</td></tr>
+<tr><td>Parallel test data collisions</td><td>ThreadLocal data seeding, per-thread accounts</td></tr>
+<tr><td>Heavy regression timing out in Jenkins</td><td>Split into smoke (15 min) + full regression (45 min)</td></tr>
+<tr><td>Flaky async payment status UI</td><td>FluentWait polling on data-status attribute change</td></tr>
+</table>
+<div class="ctx">DBS Bank: Kafka consumer lag caused assertions to fire before DB updated — fixed with a 500ms-interval poll over 20s waiting for the downstream record to reflect the consumed message.</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">10</span> Have you worked with parallel execution or cross-browser testing tools?</summary>
+<div class="qbody">
+<pre><code><span class="c-cm">// ThreadLocal DriverFactory — thread-safe across parallel TestNG threads</span>
+<span class="c-kw">private static final</span> ThreadLocal&lt;WebDriver&gt; driverThread = <span class="c-kw">new</span> ThreadLocal&lt;&gt;();
+
+<span class="c-kw">public static void</span> <span class="c-fn">quitDriver</span>() {
+    driverThread.get().quit();
+    driverThread.remove(); <span class="c-cm">// critical — prevents memory leak</span>
+}</code></pre>
+<pre><code>&lt;suite name=<span class="c-str">"GMF-Regression"</span> parallel=<span class="c-str">"methods"</span> thread-count=<span class="c-str">"4"</span>&gt;
+    &lt;test name=<span class="c-str">"ChromeTests"</span>&gt;...&lt;/test&gt;
+    &lt;test name=<span class="c-str">"FirefoxTests"</span>&gt;...&lt;/test&gt;
+&lt;/suite&gt;</code></pre>
+<p>For scale, Selenium Grid 4; evaluating BrowserStack as a cloud grid option.</p>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">11</span> ⭐ extra — How do you test for security in your automation suite (SSL, mTLS, auth)?</summary>
+<div class="qbody">
+<p>Security testing folded into the same framework rather than a separate tool — this is a strong differentiator at 4 YOE, mention it explicitly.</p>
+<pre><code><span class="c-cm">// mTLS — loading client cert from a JKS keystore for REST Assured</span>
+RestAssured.keystore(<span class="c-str">"client-cert.jks"</span>, <span class="c-str">"keystorePassword"</span>);
+
+given()
+    .relaxedHTTPSValidation()
+    .when().get(<span class="c-str">"/secure-endpoint"</span>)
+    .then().statusCode(<span class="c-str">200</span>);</code></pre>
+<ul style="color:var(--text);font-size:14px;padding-left:18px;">
+<li>Validated mTLS handshakes using JKS / PKCS12 keystores between services</li>
+<li>Negative tests: expired cert, wrong cert, missing auth header → expect 401/403</li>
+<li>Token expiry / refresh flow validation in TokenManager singleton</li>
+<li>Verified TLS version enforcement in lower environments (no TLS 1.0/1.1 fallback)</li>
+</ul>
+</div>
+</details>
+
+<!-- ============ ROUND 3 ============ -->
+<div id="round3" class="round-header r3"><span class="tag">ROUND 3</span><h2>Managerial + HR</h2></div>
+
+<details class="q" open>
+<summary><span class="num">01</span> Tell me about a time you identified a critical bug through automation.</summary>
+<div class="qbody">
+<p><strong>GMF DDC email validation:</strong> an automated API contract test flagged that the <code>dueDate</code> field in DDC confirmation emails returned the <em>old</em> due date when the change happened within 24 hours of billing cycle close. UI showed the correct date (separate read API) but email service pulled a stale cached record.</p>
+<p>This would have meant customers receiving compliance-violating confirmation emails — a CFPB/TILA concern. Caught in UAT before production. Fix: cache invalidation trigger on the due-date-change event handler.</p>
+<div class="tip">Land this with: "that single bug justified the entire email automation suite investment."</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">02</span> How do you ensure test coverage and quality metrics?</summary>
+<div class="qbody">
+<ul style="color:var(--text);font-size:14px;padding-left:18px;">
+<li>Requirement coverage — % of stories with ≥1 automated test (Azure DevOps test plans)</li>
+<li>Code coverage — JaCoCo, target &gt;80% on business-critical modules</li>
+<li>Automation ratio — automated / total regression cases, target &gt;75%</li>
+<li>Defect detection rate — bugs caught by automation vs found in prod</li>
+<li>Flaky test rate — target &lt;2% of suite</li>
+</ul>
+<p>Traceability matrix links test cases to requirements; metrics reviewed with BA/dev lead at sprint end.</p>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">03</span> Describe a challenging situation with developers or deadlines.</summary>
+<div class="qbody">
+<p>Dev team changed 6 page locators the day before regression, with no heads-up. Instead of escalating as a blocker, updated the affected page objects that evening and added a <strong>locator health-check script</strong> that validates all critical locators at suite startup.</p>
+<p>Followed up with a locator stability agreement — structural DOM changes affecting <code>data-testid</code> attributes now require 3 days' QA notice, added to the team's Definition of Done.</p>
+<div class="tip">Close with: "automation is a shared responsibility — turned a crisis into a process improvement."</div>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">04</span> Why do you want to join Barclays?</summary>
+<div class="qbody">
+<p>Barclays sits at the intersection of two areas built up over this career — BFSI domain engineering and enterprise-scale automation. GMF and DBS Bank experience (payment systems, CFPB/TILA compliance testing, event-driven architecture validation) maps directly onto Barclays' regulatory-sensitive, high-stakes systems.</p>
+<p>Barclays' investment in engineering maturity — shift-left testing, CI/CD culture, AI-augmented QA — aligns with where this career is headed. The GCC model in Hyderabad offers global-scale systems work with product-company-grade career growth.</p>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">05</span> Where do you see yourself in the next 2-3 years?</summary>
+<div class="qbody">
+<p>Senior SDET / QA Tech Lead — owning test architecture for a product line, not just executing within it.</p>
+<ul style="color:var(--text);font-size:14px;padding-left:18px;">
+<li>AWS Certified Cloud Practitioner — within 3 months</li>
+<li>ISTQB CT-AI certification — to contribute to AI/ML model quality validation</li>
+<li>Building GenAI-augmented testing tooling — test generation, intelligent maintenance, anomaly detection</li>
+</ul>
+<p>Longer-term: <strong>AI Quality Architect</strong> — bridging traditional test engineering with AI/ML quality challenges in BFSI.</p>
+</div>
+</details>
+
+<details class="q">
+<summary><span class="num">06</span> ⭐ extra — How do you handle disagreement with a manager about release readiness / sign-off?</summary>
+<div class="qbody">
+<p>This tests whether you can hold a quality line under pressure without becoming combative — a direct read on seniority.</p>
+<p><strong>Approach:</strong> separate facts from opinion. Bring data, not a gut feeling — defect severity, open P1/P2 count, automation pass rate, risk areas with zero coverage. Frame it as a risk decision for the business to make, not a QA veto.</p>
+<p><strong>Example framing:</strong> "Here's the current state — 2 open P2 defects in the payment confirmation flow, regression pass rate at 94%, and the DDC email module has no automated coverage yet. I'm not blocking the release, but I want the risk documented and a rollback plan in place if we proceed."</p>
+<div class="tip">Key point to make out loud: "I make the risk visible and let the business own the decision — quality isn't about saying no, it's about making sure no one signs off blind."</div>
+</div>
+</details>
+
+</div>
+
+<footer>Barclays · QA Automation Interview Prep — generated for personal use</footer>
+
+</body>
+</html>

@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright Interview Study Questions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;
+    --panel:#11151d;
+    --panel-2:#161b25;
+    --border:#232a38;
+    --text:#dfe4ee;
+    --muted:#7c8798;
+    --pass:#4fd68c;
+    --pass-dim:#1c3327;
+    --amber:#f0b429;
+    --amber-dim:#3a2f13;
+    --violet:#9d8cf5;
+    --violet-dim:#241f3d;
+    --red:#f16a6a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(157,140,245,0.08), transparent 60%),
+      radial-gradient(1000px 500px at -10% 10%, rgba(79,214,140,0.06), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  code, .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ===== Top bar (console header) ===== */
+  header{
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg, #0d1118, #0a0d12);
+    padding:22px 28px 18px;
+    position:relative;
+  }
+  .mini-bar{
+    display:none;
+    position:sticky; top:0; z-index:30;
+    background:rgba(10,13,18,0.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);
+    padding:10px 16px;
+    align-items:center; gap:10px;
+  }
+  .mini-bar.show{display:flex;}
+  .mini-bar input{
+    flex:1; background:var(--panel-2); border:1px solid var(--border); border-radius:8px;
+    padding:8px 12px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12.5px; outline:none;
+  }
+  .mini-bar .mini-stat{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted); white-space:nowrap;
+  }
+  .mini-bar .mini-stat b{color:var(--pass);}
+  .console-bar{
+    display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  }
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot.r{background:var(--red);} .dot.y{background:var(--amber);} .dot.g{background:var(--pass);}
+  .console-title{
+    margin-left:10px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--muted);
+    letter-spacing:0.02em;
+  }
+  h1{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:800;
+    font-size:clamp(22px, 3.4vw, 34px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  h1 .accent{color:var(--pass);}
+  .subtitle{color:var(--muted); font-size:14px; margin:0 0 18px; max-width:760px; line-height:1.5;}
+
+  .stats-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;}
+  .stat-chip{
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    padding:8px 14px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);
+    display:flex; align-items:center; gap:8px;
+  }
+  .stat-chip b{color:var(--text); font-size:14px;}
+  .stat-chip.pass-count b{color:var(--pass);}
+
+  .controls{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+  #search{
+    flex:1; min-width:220px;
+    background:var(--panel-2); border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px;
+    outline:none;
+  }
+  #search::placeholder{color:#4c5567;}
+  #search:focus{border-color:var(--violet);}
+  .tabs{display:flex; gap:6px; flex-wrap:wrap;}
+  .tab-btn{
+    background:var(--panel); border:1px solid var(--border); color:var(--muted);
+    padding:8px 13px; border-radius:7px; font-size:12.5px; cursor:pointer;
+    font-family:'JetBrains Mono',monospace; transition:all .15s ease;
+  }
+  .tab-btn:hover{border-color:var(--violet); color:var(--text);}
+  .tab-btn.active{background:var(--violet-dim); border-color:var(--violet); color:#c9bffb;}
+
+  /* ===== Main ===== */
+  main{max-width:920px; margin:0 auto; padding:26px 20px 80px;}
+  .promo{
+    background:linear-gradient(135deg, var(--panel-2), var(--panel));
+    border:1px solid var(--border); border-left:3px solid var(--amber);
+    border-radius:10px; padding:14px 18px; margin-bottom:26px;
+    font-size:13.5px; color:var(--muted); line-height:1.6;
+  }
+  .promo b{color:var(--amber);}
+
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    margin-bottom:14px; overflow:hidden; transition:border-color .15s ease;
+  }
+  .card.done{border-color:var(--pass);}
+  .card-head{
+    display:flex; align-items:flex-start; gap:12px; padding:16px 18px; cursor:pointer;
+  }
+  .check{
+    flex:0 0 auto; width:22px; height:22px; border-radius:6px; border:1.5px solid var(--border);
+    display:flex; align-items:center; justify-content:center; margin-top:2px;
+    font-size:13px; color:transparent; cursor:pointer; transition:all .15s ease;
+  }
+  .check:hover{border-color:var(--pass);}
+  .check.checked{background:var(--pass-dim); border-color:var(--pass); color:var(--pass);}
+  .q-num{
+    font-family:'JetBrains Mono',monospace; color:var(--muted); font-size:12px; margin-top:3px; flex:0 0 auto; width:26px;
+  }
+  .q-main{flex:1; min-width:0;}
+  .q-title{font-size:15px; font-weight:600; line-height:1.45;}
+  .q-meta{display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;}
+  .badge{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; padding:3px 8px; border-radius:5px;
+    border:1px solid var(--border); color:var(--muted);
+  }
+  .badge.cat{color:#9db3d9; border-color:#2a3a55; background:#101a2b;}
+  .badge.bonus{color:var(--amber); border-color:var(--amber-dim); background:var(--amber-dim);}
+  .chev{
+    flex:0 0 auto; color:var(--muted); font-size:13px; margin-top:4px; transition:transform .2s ease;
+  }
+  .card.open .chev{transform:rotate(90deg); color:var(--violet);}
+
+  .card-body{
+    max-height:0; overflow:hidden; transition:max-height .25s ease;
+    border-top:1px solid transparent;
+  }
+  .card.open .card-body{border-top:1px solid var(--border);}
+  .card-body-inner{padding:16px 18px 20px 60px;}
+
+  .section-label{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--violet);
+    text-transform:uppercase; letter-spacing:0.08em; margin:14px 0 6px;
+  }
+  .section-label:first-child{margin-top:0;}
+  ul.points{margin:0; padding-left:18px;}
+  ul.points li{margin-bottom:6px; font-size:14px; line-height:1.55; color:#c7cddb;}
+  .detail-text{font-size:14px; line-height:1.65; color:#c7cddb; margin:0;}
+
+  pre.code{
+    background:#0c0f15; border:1px solid var(--border); border-radius:8px;
+    padding:14px 16px; overflow-x:auto; font-size:12.5px; line-height:1.6;
+    color:#d3d9e6; margin:0;
+  }
+  pre.code .kw{color:#c586c0;}
+  pre.code .str{color:#ce9178;}
+  pre.code .cm{color:#6a7385;}
+  pre.code .fn{color:#dcdcaa;}
+  pre.code .tp{color:#4ec9b0;}
+
+  .analogy-toggle{
+    display:inline-flex; align-items:center; gap:6px; margin-top:12px;
+    background:var(--violet-dim); border:1px solid #3a2f66; color:#c9bffb;
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; padding:6px 11px;
+    border-radius:20px; cursor:pointer; user-select:none;
+  }
+  .analogy-toggle:hover{background:#2a2350;}
+  .analogy-box{
+    display:none; margin-top:10px; padding:12px 14px; border-radius:8px;
+    background:#151030; border:1px dashed #43376f; font-size:13.5px; line-height:1.6; color:#d4cdf5;
+  }
+  .analogy-box.show{display:block;}
+
+  footer{
+    text-align:center; color:var(--muted); font-size:12px; padding:30px 20px 50px;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .empty-state{text-align:center; color:var(--muted); padding:60px 20px; font-family:'JetBrains Mono',monospace; font-size:13px;}
+
+  @media (max-width:600px){
+    .card-body-inner{padding-left:18px;}
+    header{padding:16px 16px 14px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="console-bar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="console-title">~/sdet-prep/playwright-interview-questions.spec.ts</span>
+  </div>
+  <h1>Playwright<span class="accent">.</span>Interview<span class="accent">()</span></h1>
+  <p class="subtitle">41 questions — the 21 core questions you listed, fully expanded, plus 20 bonus questions covering locators, waits, tracing, visual testing, and TypeScript fundamentals. Tap a question to expand it, check it off once you can answer it cold.</p>
+
+  <div class="stats-row">
+    <div class="stat-chip">total <b id="statTotal">41</b></div>
+    <div class="stat-chip pass-count">reviewed <b id="statDone">0</b></div>
+    <div class="stat-chip">remaining <b id="statLeft">41</b></div>
+  </div>
+
+  <div class="controls">
+    <input id="search" type="text" placeholder="filter by keyword — e.g. 'fixture', 'mock', 'generics'...">
+  </div>
+  <div class="tabs" id="tabs"></div>
+</header>
+
+<div class="mini-bar" id="miniBar">
+  <input id="searchMini" type="text" placeholder="filter...">
+  <span class="mini-stat"><b id="statDoneMini">0</b>/<span id="statTotalMini">41</span></span>
+</div>
+
+<main>
+  <div class="promo">
+    <b>Before your next interview:</b> these questions come up repeatedly across SDET/Playwright screens. Reviewing this list, and actually rebuilding the patterns below in a working repo, is exactly the kind of hands-on prep the <b>SDET Master Class</b> project work is built around — this guide pairs well with implementing it live rather than just reading it.
+  </div>
+  <div id="list"></div>
+  <div class="empty-state" id="emptyState" style="display:none;">No questions match that filter.</div>
+</main>
+
+<footer>41/41 loaded · progress is kept only for this session (not saved on reload)</footer>
+
+<script>
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// crude TS syntax highlighter — good enough for these snippets
+function hl(code){
+  const escaped = esc(code);
+  // single-pass tokenizer — avoids later rules re-matching quotes/text
+  // that earlier rules already inserted as HTML.
+  const pattern = /(\/\/[^\n]*)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*")|\b(import|export|const|let|async|await|function|class|interface|type|extends|implements|new|return|from|as|public|private|readonly|test|expect|if|else|for|of|try|catch|throw|void|Promise)\b|\b(page|request|context|browser|test|expect)\.(\w+)|(:\s*)(string|number|boolean|any|unknown|void|Promise&lt;\w+&gt;|T)\b/g;
+
+  return escaped.replace(pattern, (match, comment, str, kw, obj, prop, colon, type) => {
+    if(comment !== undefined) return '<span class="cm">'+comment+'</span>';
+    if(str !== undefined) return '<span class="str">'+str+'</span>';
+    if(kw !== undefined) return '<span class="kw">'+kw+'</span>';
+    if(obj !== undefined) return obj+'.<span class="fn">'+prop+'</span>';
+    if(type !== undefined) return colon+'<span class="tp">'+type+'</span>';
+    return match;
+  });
+}
+
+const CATS = {
+  framework: "Framework & POM",
+  api: "API & Postman",
+  cicd: "CI/CD, Data & Security",
+  ts: "TypeScript & Core Concepts",
+  strategy: "Execution, Tooling & Strategy"
+};
+
+const Q = [
+{cat:'framework', bonus:false, q:"Can you walk me through your automation framework?",
+ points:[
+  "High-level architecture: layered design — tests, page/service objects, fixtures, config, reporting.",
+  "Folder structure: /tests, /pages (or /pom), /fixtures, /utils, /config, /test-data, /reports.",
+  "POM keeps locators and page actions out of test files; utilities hold reusable helpers (date formatting, data generation, API helpers).",
+  "Fixtures inject setup (logged-in page, API context, test data) so tests stay declarative.",
+  "Reporting via HTML reporter + Allure; logging via a small wrapper around console/pino; retries configured per project in playwright.config.ts.",
+  "Execution flow: config loads env → fixtures set up state → test runs against POM → assertions → teardown/cleanup → report generated."
+ ],
+ detail:"Give this as a narrative, not a list: start from 'when a test runs' and walk forward. Mention that the framework separates <i>what</i> a test verifies (assertions, business flow) from <i>how</i> it's done (locators, API calls), so a UI change only touches the page object, not every test. End with scalability — parallel workers, sharding, and how new modules (e.g. a new page or API service) plug in without touching existing tests.",
+ code:`// playwright.config.ts (trimmed)
+export default defineConfig({
+  testDir: './tests',
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 4 : undefined,
+  reporter: [['html'], ['allure-playwright']],
+  use: {
+    baseURL: process.env.BASE_URL,
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+  },
+});`,
+ analogy:null},
+
+{cat:'framework', bonus:false, q:"Where are you implementing business logic in your framework? Is it inside the test or framework layer?",
+ points:[
+  "Tests stay readable — they describe intent (\"login and place an order\"), not implementation steps.",
+  "Reusable multi-step logic (login flow, checkout flow, data setup) lives in page/service classes or helper functions.",
+  "No business rules (discount calculation, validation rules) hardcoded inside test methods.",
+  "Tests focus almost entirely on calling helpers and asserting outcomes."
+ ],
+ detail:"The rule of thumb: if you'd copy-paste a block of steps into a second test, it belongs in the framework layer, not the test. Test files should read almost like a spec document. This also means when the business rule changes, you edit one service class instead of every test that touches it.",
+ code:`// tests/checkout.spec.ts — business logic lives in checkoutService, not here
+test('applies loyalty discount at checkout', async ({ page }) => {
+  const checkout = new CheckoutService(page);
+  await checkout.addItemToCart('SKU-101');
+  const total = await checkout.completeCheckout({ loyaltyTier: 'gold' });
+  expect(total).toBe(89.10);
+});`,
+ analogy:null},
+
+{cat:'framework', bonus:false, q:"Have you used Playwright Step functionality?",
+ points:[
+  "test.step() groups related actions under one named block.",
+  "Improves the HTML/trace report — each step collapses into a readable line instead of a wall of actions.",
+  "Simplifies debugging — you can see exactly which step failed at a glance.",
+  "Step names should describe intent (\"Login as admin\"), not mechanics (\"click button\")."
+ ],
+ detail:"Steps don't change test behaviour, they change observability. On a long end-to-end test, steps let you scan the report and immediately see 'Login passed, Add to cart passed, Apply coupon failed' instead of digging through 40 raw actions.",
+ code:`test('end-to-end order flow', async ({ page }) => {
+  await test.step('Login as returning customer', async () => {
+    await page.goto('/login');
+    await page.getByLabel('Email').fill('user@test.com');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+  });
+
+  await test.step('Add item to cart and checkout', async () => {
+    await page.getByTestId('product-101').click();
+    await page.getByRole('button', { name: 'Checkout' }).click();
+  });
+});`,
+ analogy:null},
+
+{cat:'api', bonus:false, q:"How have you performed API testing using Playwright?",
+ points:[
+  "APIRequestContext (request fixture) sends GET/POST/PUT/DELETE without spinning up a browser.",
+  "Validate both status code and response body/schema.",
+  "Reuse auth tokens by setting them once in extraHTTPHeaders or storageState.",
+  "Chain API calls with UI tests — e.g. create test data via API, then verify it in the UI.",
+  "Store reusable request logic in a small API client class instead of repeating fetch calls."
+ ],
+ detail:"Playwright ships a full HTTP client (APIRequestContext) that's independent of the browser, so pure API tests run fast with no page overhead. The real value shows up in hybrid tests — seed data through the API (fast, reliable) and only use the UI for the part you're actually testing.",
+ code:`test('order appears after API creation', async ({ page, request }) => {
+  const res = await request.post('/api/orders', {
+    data: { sku: 'SKU-101', qty: 2 },
+    headers: { Authorization: \`Bearer \${process.env.API_TOKEN}\` },
+  });
+  expect(res.status()).toBe(201);
+  const order = await res.json();
+
+  await page.goto(\`/orders/\${order.id}\`);
+  await expect(page.getByText('SKU-101')).toBeVisible();
+});`,
+ analogy:null},
+
+{cat:'cicd', bonus:false, q:"Where are you storing credentials in the pipeline?",
+ points:[
+  "Never hardcoded in source or config files.",
+  "Stored in the CI/CD secret manager (GitHub Actions Secrets, Jenkins Credentials, Azure Key Vault).",
+  "Injected as environment variables at runtime.",
+  "Different secrets per environment (dev/QA/staging) via separate secret scopes.",
+  "CI automatically masks secret values in logs."
+ ],
+ detail:"Locally, secrets sit in a git-ignored .env file loaded by dotenv. In CI, they're injected by the platform's secret store and referenced as \${{ secrets.API_TOKEN }} — the raw value never appears in a diff, a log line, or a report artifact.",
+ code:`// GitHub Actions
+- name: Run tests
+  env:
+    API_TOKEN: \${{ secrets.API_TOKEN }}
+    BASE_URL: \${{ secrets.QA_BASE_URL }}
+  run: npx playwright test`,
+ analogy:null},
+
+{cat:'api', bonus:false, q:"Can you explain how you used API mocking in your framework?",
+ points:[
+  "Mock unstable or unavailable third-party services so tests don't fail on someone else's downtime.",
+  "Use page.route() to intercept network calls.",
+  "Return custom fulfilled responses to control the exact payload the UI receives.",
+  "Test edge cases that are hard to trigger for real (empty state, 500 error, slow response).",
+  "Reduces flakiness caused by backend dependency."
+ ],
+ detail:"Route interception sits between the browser and the network. You can let real requests through, modify them, or fully fake the response — which is how you reliably test an error banner or an empty-state screen without needing the backend to actually be broken.",
+ code:`test('shows error banner when payment API fails', async ({ page }) => {
+  await page.route('**/api/payments', route =>
+    route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Payment gateway timeout' }),
+    })
+  );
+  await page.goto('/checkout');
+  await page.getByRole('button', { name: 'Pay now' }).click();
+  await expect(page.getByText('Payment gateway timeout')).toBeVisible();
+});`,
+ analogy:null},
+
+{cat:'cicd', bonus:false, q:"What strategy are you following for test data cleanup?",
+ points:[
+  "Dedicated cleanup/teardown API endpoints (or DB scripts) remove data created during the test.",
+  "Cleanup runs in an afterEach/afterAll hook so it happens even if the test fails.",
+  "Use unique, generated test data (timestamps, UUIDs) so tests never collide.",
+  "Environment can be reset entirely for scheduled full regression runs.",
+  "Each test is self-contained and doesn't depend on leftover data from another test."
+ ],
+ detail:"The goal is that any test can run in any order, any number of times, without polluting the environment or breaking a different test. Generated unique identifiers avoid collisions, and teardown hooks guarantee cleanup runs even on failure — not just on the happy path.",
+ code:`let createdOrderId: string;
+
+test.afterEach(async ({ request }) => {
+  if (createdOrderId) {
+    await request.delete(\`/api/orders/\${createdOrderId}\`);
+  }
+});
+
+test('creates and verifies an order', async ({ request }) => {
+  const res = await request.post('/api/orders', { data: { sku: \`SKU-\${Date.now()}\` } });
+  createdOrderId = (await res.json()).id;
+  expect(res.status()).toBe(201);
+});`,
+ analogy:null},
+
+{cat:'strategy', bonus:false, q:"How do you perform end-to-end or integration testing?",
+ points:[
+  "Combine UI and API in a single flow to validate the complete business journey.",
+  "Prepare setup data via API calls (fast) rather than clicking through the UI.",
+  "Verify persistence indirectly — through API responses or UI state, since tests usually don't touch the DB directly.",
+  "Run against staging/UAT, which mirrors production configuration.",
+  "Focus assertions on the actual business outcome, not intermediate steps."
+ ],
+ detail:"An integration test proves that multiple layers work together correctly — for example, an order placed through the UI actually triggers the right API call, gets persisted, and is reflected back correctly. The API is used to set up state quickly; the UI is reserved for exercising the flow under test.",
+ code:null, analogy:null},
+
+{cat:'api', bonus:false, q:"How are you using Postman for API testing, and have you integrated it with CI/CD?",
+ points:[
+  "Collections organize requests by feature/module; environments hold base URLs and tokens per stage.",
+  "Assertions written in the Tests tab using pm.test() and pm.expect().",
+  "Collections run headlessly via Newman for CI execution.",
+  "Integrated into Jenkins/GitHub Actions as a pipeline stage after deployment.",
+  "Newman generates HTML/JUnit reports consumed by the CI dashboard."
+ ],
+ detail:"Postman is typically the exploratory/contract-testing layer — quick manual verification and documentation — while Newman turns the same collection into an automated CI gate, so the same requests you validated manually become a repeatable pipeline check.",
+ code:`# CI stage
+newman run collection.json \\
+  -e qa-environment.json \\
+  --reporters cli,junit \\
+  --reporter-junit-export results/newman-report.xml`,
+ analogy:null},
+
+{cat:'api', bonus:false, q:"What additional features of Postman have you used?",
+ points:[
+  "Pre-request scripts — generate dynamic tokens, timestamps, or signatures before a request fires.",
+  "Collection variables — share values across requests within one collection.",
+  "Environment variables — swap dev/QA/staging config without editing requests.",
+  "Authorization helpers — OAuth2, Bearer token, Basic auth handled natively.",
+  "Mock servers and Monitors — simulate an API before it exists, and schedule periodic health checks."
+ ],
+ detail:"Pre-request scripts are the most interview-relevant one to elaborate on: they let you compute a value (like an HMAC signature or a fresh timestamp) in JavaScript right before the request is sent, then store it as a variable the request body references.",
+ code:null, analogy:null},
+
+{cat:'api', bonus:false, q:"How do you define environment variables in Postman?",
+ points:[
+  "Separate environment files per stage (dev.postman_environment.json, qa..., staging...).",
+  "Variable hierarchy: global → collection → environment → local (local wins).",
+  "Switching environments in the dropdown swaps every {{baseUrl}} reference instantly.",
+  "Hardcoding avoided entirely — every environment-specific value is a variable.",
+  "Secret-type variables (tokens) marked 'secret' so they're hidden in the UI and exports."
+ ],
+ detail:"Understanding the variable scope hierarchy is the detail interviewers probe for — knowing that a locally-set variable overrides the same-named environment variable, which overrides the same-named global variable, shows you've actually debugged a Postman collection, not just used the happy path.",
+ code:null, analogy:null},
+
+{cat:'strategy', bonus:false, q:"How do you manage role-based access testing?",
+ points:[
+  "Maintain separate test accounts per role (admin, manager, viewer).",
+  "A reusable login helper accepts a role and logs in as that user.",
+  "Validate that each role sees/can-do exactly what it should.",
+  "Negative scenarios: verify a lower-privilege role is blocked from restricted actions/pages.",
+  "Data-driven — the same test spec runs across a list of roles with expected outcomes per role."
+ ],
+ detail:"The strongest answer here is the negative case: don't just prove an admin can access the admin panel — prove a regular user gets a 403 or is redirected when they try. That's usually the gap in weaker RBAC test suites.",
+ code:`const roles = [
+  { role: 'admin', canDelete: true },
+  { role: 'viewer', canDelete: false },
+];
+
+for (const { role, canDelete } of roles) {
+  test(\`\${role} delete-button visibility\`, async ({ page }) => {
+    await loginAs(page, role);
+    await page.goto('/users');
+    const deleteBtn = page.getByRole('button', { name: 'Delete user' });
+    if (canDelete) await expect(deleteBtn).toBeVisible();
+    else await expect(deleteBtn).toBeHidden();
+  });
+}`,
+ analogy:null},
+
+{cat:'ts', bonus:false, q:"Difference between Interface and Type in TypeScript?",
+ points:[
+  "interface defines the shape/contract of an object; it's the classic OOP-style contract.",
+  "type is more flexible — it can also represent unions, intersections, and primitives, not just objects.",
+  "Interfaces support declaration merging — two interface blocks with the same name combine automatically.",
+  "type cannot be reopened/merged the same way once declared.",
+  "General guidance: use interface for object shapes (especially public API/class contracts), use type when you need unions, intersections, or mapped types."
+ ],
+ detail:"They overlap heavily in day-to-day use, so interviewers are usually checking whether you know the edge cases: union types (type Status = 'pass' | 'fail') can only be done with type, and declaration merging can only be done with interface.",
+ code:`interface User {
+  id: string;
+  name: string;
+}
+interface User {           // merges automatically with the block above
+  email: string;
+}
+
+type Status = 'pass' | 'fail' | 'skipped';   // union — only possible with 'type'
+type AdminUser = User & { role: 'admin' };   // intersection`,
+ analogy:"Think of interface as a job description that HR can keep adding requirements to over time (merging) and everyone hired must match it. type is more like a spec sheet — great for describing exact shapes, unions of choices ('red' | 'blue'), and combinations, but once written it's fixed and can't be reopened."},
+
+{cat:'ts', bonus:false, q:"Difference between Fixtures and Hooks?",
+ points:[
+  "Fixtures provide reusable, composable setup/teardown that a test explicitly declares as a dependency (e.g. { page, request }).",
+  "Hooks (beforeEach/afterEach/beforeAll/afterAll) run automatically around every test in a file or project — the test doesn't opt in explicitly.",
+  "Fixtures are lazily instantiated only when a test actually uses them, and can depend on other fixtures.",
+  "Hooks are simpler but more implicit — harder to know exactly what state a test has going in just from reading the test.",
+  "Prefer fixtures for anything a test needs as a resource (authenticated page, API client); use hooks for cross-cutting cleanup or logging that applies to everything."
+ ],
+ detail:"Fixtures are Playwright's dependency-injection mechanism — a test asking for { authedPage } gets exactly that resource built and torn down for it, and only if it's actually used. Hooks are more like middleware that wraps every test in a file regardless of what that specific test needs.",
+ code:`// custom fixture
+export const test = base.extend<{ authedPage: Page }>({
+  authedPage: async ({ page }, use) => {
+    await page.goto('/login');
+    await page.getByLabel('Email').fill('user@test.com');
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await use(page);   // test runs here
+    // teardown after test finishes
+  },
+});
+
+test('sees dashboard', async ({ authedPage }) => {
+  await expect(authedPage.getByText('Dashboard')).toBeVisible();
+});`,
+ analogy:"A hook is like a building's fire alarm system — it runs for every room automatically whether that room needs it or not. A fixture is like room service you explicitly order — you ask for exactly the setup you need (a made bed, a stocked minibar), it's prepared just for you, and it's cleared away after you check out."},
+
+{cat:'strategy', bonus:false, q:"Advantages of Playwright over Selenium?",
+ points:[
+  "Auto-waiting — Playwright waits for elements to be actionable before interacting, reducing explicit waits.",
+  "Built-in parallelism and test isolation via browser contexts (like incognito windows) instead of full browser restarts.",
+  "Multiple browser engines (Chromium, Firefox, WebKit) from one API, including mobile emulation.",
+  "Native network interception/mocking without a proxy tool.",
+  "Faster and more stable execution overall, with better debugging tools (trace viewer, codegen, inspector) out of the box."
+ ],
+ detail:"The strongest technical point to lead with is auto-waiting plus browser contexts: Selenium needs a fresh WebDriver session (slow) for isolation, while Playwright spins up a lightweight browser context in milliseconds, which is a big part of why Playwright suites run faster in parallel.",
+ code:null, analogy:null},
+
+{cat:'strategy', bonus:false, q:"How do you reduce regression execution time?",
+ points:[
+  "Parallel execution across multiple workers.",
+  "Sharding the suite across multiple CI machines.",
+  "API-based setup instead of UI-based setup wherever possible.",
+  "Remove or quarantine flaky tests instead of letting them slow/retry the whole run.",
+  "Run a fast smoke suite first as a gate before the full regression runs."
+ ],
+ detail:"This is usually a layered answer: first cut real work (API setup instead of UI clicks), then parallelize what's left (workers + sharding), and use tiered execution (smoke → regression → full nightly) so most pipeline runs don't pay the cost of the entire suite every time.",
+ code:null, analogy:null},
+
+{cat:'strategy', bonus:false, q:"What is Playwright Sharding?",
+ points:[
+  "Splits the total test suite across multiple machines/processes (--shard=1/4, 2/4, etc.).",
+  "Each shard runs a subset of the total tests, cutting wall-clock time roughly by the number of shards.",
+  "Reports from each shard are merged into one combined report afterward.",
+  "Ideal for CI where you can spin up multiple parallel jobs/runners.",
+  "Different from --workers, which parallelizes within a single machine; sharding parallelizes across machines."
+ ],
+ detail:"Workers parallelize tests within one process on one machine; sharding takes it a level higher and splits the whole suite across separate machines/CI jobs, each running its own set of workers. Combined, a suite of 400 tests across 4 shards × 4 workers can finish in roughly 1/16th the serial time.",
+ code:`# CI matrix — 4 parallel jobs
+npx playwright test --shard=1/4
+npx playwright test --shard=2/4
+npx playwright test --shard=3/4
+npx playwright test --shard=4/4
+
+# merge blob reports afterward
+npx playwright merge-reports --reporter=html ./all-blob-reports`,
+ analogy:null},
+
+{cat:'ts', bonus:false, q:"How do you handle asynchronous operations?",
+ points:[
+  "Every Playwright action returns a Promise — always use async/await, never mix in .then() chains inconsistently.",
+  "Avoid fixed waits (page.waitForTimeout) — rely on Playwright's built-in auto-waiting instead.",
+  "Use explicit waiters (waitForResponse, waitForSelector, waitForLoadState) for conditions auto-wait doesn't cover.",
+  "Handle promises correctly with try/catch around awaited calls that can fail.",
+  "Avoid unhandled promise rejections by always awaiting or explicitly catching async calls."
+ ],
+ detail:"The interview trap here is fixed waits — page.waitForTimeout(3000) is a smell because it's either too short (flaky) or too long (slow). The right instinct is to wait for a specific condition: a response, a selector state, or a network idle event.",
+ code:`test('waits for the right condition, not a fixed delay', async ({ page }) => {
+  const [response] = await Promise.all([
+    page.waitForResponse(res => res.url().includes('/api/orders') && res.status() === 200),
+    page.getByRole('button', { name: 'Place order' }).click(),
+  ]);
+  expect(response.ok()).toBeTruthy();
+});`,
+ analogy:null},
+
+{cat:'ts', bonus:false, q:"What are Generics?",
+ points:[
+  "Generics let you write a function/class once and reuse it with different types, while keeping type safety.",
+  "Common in framework utilities — e.g. a generic API-response wrapper, a generic retry helper.",
+  "Reduce code duplication versus writing a near-identical function per type.",
+  "Improve IntelliSense/autocomplete because the return type is inferred from the input type.",
+  "Increase maintainability — one generic helper instead of many type-specific copies."
+ ],
+ detail:"Generics answer the question 'what type will this be used with?' without committing to one type up front. In a test framework, this shows up most in API helper functions where the response shape differs per endpoint but the fetch/parse logic is identical.",
+ code:`async function getJson<T>(request: APIRequestContext, url: string): Promise<T> {
+  const res = await request.get(url);
+  return res.json() as Promise<T>;
+}
+
+interface Order { id: string; total: number; }
+
+const order = await getJson<Order>(request, '/api/orders/1');
+console.log(order.total);   // typed as number, autocompletes correctly`,
+ analogy:"A generic is like an empty shipping container — the container (the function) works the same way no matter what's inside, but you label it on the way out (<T>) so whoever opens it knows exactly what to expect, instead of it always being labeled 'contents: unknown'."},
+
+{cat:'cicd', bonus:false, q:"Explain CI/CD jobs you trigger.",
+ points:[
+  "Build — install dependencies, compile TypeScript, lint.",
+  "Unit tests — fast, isolated tests run first as an early gate.",
+  "Automation tests — Playwright suite (smoke on every PR, full regression on merge/nightly).",
+  "Reports — publish HTML/Allure report as a pipeline artifact.",
+  "Deployment notifications — Slack/Teams/email summary of pass/fail with a link to the report."
+ ],
+ detail:"Frame this as a pipeline sequence with gates: each stage only runs if the previous one passes, so a broken build never even reaches expensive UI test execution. Mention that smoke tests gate PRs while full regression typically runs post-merge or nightly to keep PR feedback fast.",
+ code:`# .github/workflows/ci.yml (trimmed)
+jobs:
+  build:      { runs-on: ubuntu-latest, steps: [...] }
+  unit-tests: { needs: build, steps: [...] }
+  e2e-smoke:  { needs: unit-tests, steps: [...] }
+  notify:     { needs: e2e-smoke, if: always(), steps: [...] }`,
+ analogy:null},
+
+{cat:'strategy', bonus:false, q:"How are you using AI tools daily?",
+ points:[
+  "Generating boilerplate code (page objects, fixture scaffolding, config files).",
+  "Debugging — pasting a stack trace or flaky failure to get a faster root-cause hypothesis.",
+  "Drafting test cases from a requirement/user story before refining them manually.",
+  "Refactoring — cleaning up repeated locator logic into reusable helpers.",
+  "Writing documentation, PR descriptions, and quick automation scripts."
+ ],
+ detail:"Be specific and honest rather than generic — name a concrete recent example (e.g. 'used it to scaffold a new fixture pattern, then reviewed and adjusted it manually') so it reads as a real workflow rather than a buzzword answer.",
+ code:null, analogy:null},
+
+/* ================= BONUS 20 ================= */
+{cat:'strategy', bonus:true, q:"What is auto-waiting in Playwright and how does it work internally?",
+ points:[
+  "Before every action, Playwright runs a series of actionability checks: attached, visible, stable, receives events, enabled.",
+  "It retries these checks until they pass or a timeout is hit — no manual sleep needed.",
+  "Applies to actions like click/fill/check, not to arbitrary custom conditions (use explicit waits for those).",
+  "Distinct from assertions — expect() has its own built-in retrying/polling mechanism too."
+ ],
+ detail:"Auto-waiting is why most Playwright tests don't need explicit waits at all: an action simply won't fire until the element is genuinely ready to receive it, which eliminates the classic 'element not interactable' flakiness common in Selenium.",
+ code:null, analogy:null},
+
+{cat:'strategy', bonus:true, q:"Difference between page.click() and locator.click()?",
+ points:[
+  "page.click(selector) resolves the element once at call time — the element must already exist and be actionable immediately.",
+  "locator.click() (via page.locator() or page.getByRole()) is lazy — it re-queries the DOM at the moment of the action and retries.",
+  "Locators are the modern, recommended API; page.click() with a raw selector is the legacy approach.",
+  "Locators handle re-renders/re-mounts gracefully since they don't hold a stale element handle."
+ ],
+ detail:"Locators are a description of how to find an element, resolved fresh every time an action runs — so if the DOM re-renders between when you write the code and when the action executes, the locator still finds the right element instead of throwing a stale-element error.",
+ code:`// legacy — resolves immediately, can go stale
+await page.click('#submit');
+
+// recommended — lazy, re-queried on each action
+const submitBtn = page.getByRole('button', { name: 'Submit' });
+await submitBtn.click();`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"What are Playwright locators and why are they preferred over selectors?",
+ points:[
+  "A locator is a chainable, lazily-evaluated reference to an element (or set of elements).",
+  "Role-based locators (getByRole, getByLabel, getByText) mirror how a real user/assistive tech finds elements.",
+  "More resilient to DOM/markup changes than brittle CSS/XPath selectors.",
+  "Support built-in auto-waiting, retrying, and strictness (throws if a locator matches more than one element unexpectedly)."
+ ],
+ detail:"Locators shift the framework toward accessibility-first selection — getByRole('button', { name: 'Submit' }) is both more stable across refactors and doubles as a lightweight accessibility check, since it only works if the element is properly exposed to the accessibility tree.",
+ code:`const emailField = page.getByLabel('Email');
+const submit = page.getByRole('button', { name: /submit/i });`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"How do you handle iframes in Playwright?",
+ points:[
+  "Use page.frameLocator(selector) to scope into an iframe.",
+  "All subsequent locator calls are chained off the frameLocator, not the page.",
+  "Playwright handles nested iframes the same way — chain another frameLocator inside.",
+  "No manual frame-switching/back-switching needed, unlike Selenium's switchTo().frame()."
+ ],
+ detail:"frameLocator returns a scoped locator context, so you never have to explicitly 'enter' or 'exit' a frame the way you do in Selenium — you just chain locator calls off it, and Playwright resolves them inside that frame automatically.",
+ code:`const frame = page.frameLocator('#payment-iframe');
+await frame.getByLabel('Card number').fill('4111111111111111');`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"How do you handle multiple tabs/windows/popups?",
+ points:[
+  "Listen for the 'popup' or new page event on the browser context.",
+  "Use Promise.all to wait for both the triggering click and the new page/tab simultaneously.",
+  "Each tab is its own Page object within the same BrowserContext, sharing cookies/session.",
+  "Assert/act on the new page object directly once captured."
+ ],
+ detail:"The key pattern is capturing the new tab via the context's 'page' event fired at the same moment you trigger the action that opens it — waiting for both concurrently avoids a race condition where the popup opens before you start listening.",
+ code:`const [newPage] = await Promise.all([
+  context.waitForEvent('page'),
+  page.getByRole('link', { name: 'Open in new tab' }).click(),
+]);
+await newPage.waitForLoadState();
+await expect(newPage.getByText('Welcome')).toBeVisible();`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"What is the Playwright Trace Viewer and how do you use it?",
+ points:[
+  "Records a full timeline of a test run — DOM snapshots, network requests, console logs, screenshots per action.",
+  "Enabled via trace: 'retain-on-failure' (or 'on') in playwright.config.ts.",
+  "Opened with npx playwright show-trace trace.zip, or the online trace.playwright.dev viewer.",
+  "Lets you step through the test action-by-action and see exactly what the page looked like at each step.",
+  "Invaluable for debugging CI-only failures you can't reproduce locally."
+ ],
+ detail:"Traces are the single biggest time-saver for CI-only flakiness — instead of guessing what a headless browser did on a build agent you can't access, you open the trace and literally watch the DOM state, network calls, and console at the exact moment of failure.",
+ code:`use: { trace: 'retain-on-failure' },
+
+// after a CI failure:
+npx playwright show-trace test-results/.../trace.zip`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"How do you handle file uploads and downloads?",
+ points:[
+  "Uploads: locator.setInputFiles(path) sets a file directly on an <input type=file>, no OS file-picker dialog needed.",
+  "Downloads: listen for the 'download' event, then save or inspect the downloaded file via download.path()/download.saveAs().",
+  "Both work headlessly without any OS-level automation."
+ ],
+ detail:"Because Playwright drives the browser at the protocol level, it can set files on an input or intercept a download event directly — no need for AutoIT/Robot-class OS automation the way older Selenium setups sometimes required.",
+ code:`// upload
+await page.getByLabel('Upload resume').setInputFiles('fixtures/resume.pdf');
+
+// download
+const [download] = await Promise.all([
+  page.waitForEvent('download'),
+  page.getByRole('button', { name: 'Export CSV' }).click(),
+]);
+await download.saveAs('downloads/export.csv');`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"What is visual regression testing in Playwright?",
+ points:[
+  "expect(page).toHaveScreenshot() compares a captured screenshot against a stored baseline.",
+  "Fails if pixel differences exceed a configured threshold.",
+  "Baselines are versioned per OS/browser since rendering differs across platforms.",
+  "Useful for catching unintended CSS/layout regressions that functional assertions wouldn't catch.",
+  "Should be used selectively (key pages/components) — over-using it makes the suite brittle to intentional UI changes."
+ ],
+ detail:"Visual testing complements, not replaces, functional assertions — it catches the class of bugs where everything is 'technically' present and clickable but visually broken (overlapping elements, wrong colors, broken CSS), which functional locator-based assertions can miss entirely.",
+ code:`test('pricing page visual snapshot', async ({ page }) => {
+  await page.goto('/pricing');
+  await expect(page).toHaveScreenshot('pricing.png', { maxDiffPixelRatio: 0.01 });
+});`,
+ analogy:null},
+
+{cat:'cicd', bonus:true, q:"How do you integrate Playwright with Docker?",
+ points:[
+  "Use Microsoft's official mcr.microsoft.com/playwright image, which ships with all browsers and OS dependencies pre-installed.",
+  "Keeps CI environments consistent regardless of the host machine/runner.",
+  "Avoids the 'works on my machine' problem caused by missing system libraries for headless browsers.",
+  "Can be combined with docker-compose to spin up the app under test and the test runner together."
+ ],
+ detail:"The official image pins browser binaries to a version that matches a specific Playwright npm version, so mismatched browser/library versions (a common source of CI-only failures) simply can't happen.",
+ code:`FROM mcr.microsoft.com/playwright:v1.46.0-jammy
+WORKDIR /app
+COPY . .
+RUN npm ci
+CMD ["npx", "playwright", "test"]`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"What's the difference between expect() soft assertions and hard assertions?",
+ points:[
+  "A regular expect() throws immediately on failure, stopping the test at that line.",
+  "expect.soft() records the failure but lets the test keep running, collecting all failures by the end.",
+  "Soft assertions are useful when you want a full picture of a page's problems in one run instead of fixing one failure at a time.",
+  "The test is still marked failed overall if any soft assertion failed."
+ ],
+ detail:"Soft assertions trade fail-fast behaviour for completeness — useful on a page with many independent checks (e.g. verifying 10 fields are populated correctly) where you'd rather see all 10 results in one report than re-run 10 times fixing one at a time.",
+ code:`test('profile page fields', async ({ page }) => {
+  await page.goto('/profile');
+  await expect.soft(page.getByTestId('name')).toHaveText('Sai');
+  await expect.soft(page.getByTestId('email')).toHaveText('sai@test.com');
+  // both checks run and report even if the first one fails
+});`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"How do you reuse an authenticated session (storageState)?",
+ points:[
+  "Log in once in a setup project/step, then save cookies + localStorage via context.storageState({ path }).",
+  "Subsequent tests load that saved state instead of logging in through the UI every time.",
+  "Massively cuts execution time across a suite where most tests need to be logged in.",
+  "Configured per-project in playwright.config.ts via storageState, often paired with a dependency on a 'setup' project."
+ ],
+ detail:"This is one of the highest-impact Playwright patterns for suite speed — logging in through the UI for every single test is slow and adds an unnecessary point of failure; authenticating once and reusing the session state removes both problems.",
+ code:`// auth.setup.ts
+setup('authenticate', async ({ page }) => {
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('user@test.com');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.context().storageState({ path: 'playwright/.auth/user.json' });
+});
+
+// playwright.config.ts
+projects: [
+  { name: 'setup', testMatch: /auth\\.setup\\.ts/ },
+  { name: 'chromium', use: { storageState: 'playwright/.auth/user.json' }, dependencies: ['setup'] },
+]`,
+ analogy:null},
+
+{cat:'framework', bonus:true, q:"How do you implement the Page Object Model in Playwright with TypeScript?",
+ points:[
+  "Each page/component gets a class holding its locators and the actions available on it.",
+  "Locators are defined once as readonly properties in the constructor.",
+  "Page methods return meaningful results or chain to the next page object where relevant.",
+  "Tests instantiate the page object and call its methods — no raw locators inside test files."
+ ],
+ detail:"A clean POM class exposes intent-based methods (login(), addToCart()) rather than exposing raw locators to the test — the test shouldn't need to know whether 'add to cart' is a button, a link, or an icon, only that the action exists.",
+ code:`class LoginPage {
+  readonly emailInput: Locator;
+  readonly submitButton: Locator;
+
+  constructor(private page: Page) {
+    this.emailInput = page.getByLabel('Email');
+    this.submitButton = page.getByRole('button', { name: 'Sign in' });
+  }
+
+  async login(email: string): Promise<void> {
+    await this.emailInput.fill(email);
+    await this.submitButton.click();
+  }
+}`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"How do you deal with flaky tests?",
+ points:[
+  "First isolate the cause — timing/race condition, test-data collision, environment instability, or a genuine bug.",
+  "Replace fixed waits with proper condition-based waits (waitForResponse, expect polling).",
+  "Ensure tests are independent — no shared mutable state or execution-order dependency.",
+  "Use trace viewer on CI failures to see exactly what happened rather than guessing.",
+  "Quarantine chronically flaky tests (separate tag/project) rather than letting them block the whole pipeline while you fix the root cause.",
+  "Track flaky-test rate as a metric, not just pass/fail — a test that passes 90% of the time is still broken."
+ ],
+ detail:"Interviewers want to hear a process, not 'I just add retries.' Retries mask symptoms; the actual fix is almost always a timing assumption, shared state, or environment issue found via the trace, not just re-running until it passes.",
+ code:null, analogy:null},
+
+{cat:'ts', bonus:true, q:"What is the difference between browser and browser context in Playwright?",
+ points:[
+  "A Browser is one launched browser process (Chromium/Firefox/WebKit).",
+  "A BrowserContext is an isolated session within that browser — like a separate incognito profile, with its own cookies, storage, and cache.",
+  "Multiple contexts can run in parallel from a single browser instance, giving test isolation without the overhead of launching a new browser each time.",
+  "A Page lives inside a context; a context can hold multiple pages/tabs."
+ ],
+ detail:"This is the mechanism behind Playwright's fast parallelism: instead of Selenium's pattern of a full new WebDriver/browser session per test, Playwright launches the browser once and creates lightweight isolated contexts per test — much cheaper, but still fully isolated.",
+ code:`const browser = await chromium.launch();
+const context1 = await browser.newContext();  // isolated session A
+const context2 = await browser.newContext();  // isolated session B — no shared cookies with A`,
+ analogy:"One Browser is like one physical laptop; each BrowserContext is a separate user profile on that same laptop — different bookmarks, cookies, and login sessions, but sharing the same underlying hardware, so spinning up a new 'profile' is far cheaper than buying a new laptop for every test."},
+
+{cat:'strategy', bonus:true, q:"How do you run cross-browser tests in Playwright?",
+ points:[
+  "Define multiple projects in playwright.config.ts, one per browser (chromium, firefox, webkit).",
+  "The same test files run against each project automatically — no duplicated test code.",
+  "Can also define device-emulation projects (mobile viewport, touch, user agent) using built-in device descriptors.",
+  "CI can run all projects in parallel as a matrix."
+ ],
+ detail:"Cross-browser coverage is a config concern, not a test-writing concern — you write the test once, and the projects array is what determines which engines it runs against, keeping the test suite itself browser-agnostic.",
+ code:`projects: [
+  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+  { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+  { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+  { name: 'mobile-safari', use: { ...devices['iPhone 13'] } },
+]`,
+ analogy:null},
+
+{cat:'strategy', bonus:true, q:"What are Playwright's built-in reporters, and how do you generate custom HTML/Allure reports?",
+ points:[
+  "Built-in reporters: list (console), dot, line, html, json, junit.",
+  "html reporter produces an interactive report with traces/screenshots per test, served locally.",
+  "Allure integrated via the allure-playwright reporter package, useful for enterprise dashboards and historical trend tracking.",
+  "Multiple reporters can run simultaneously (e.g. html for local debugging + junit for CI test-result ingestion)."
+ ],
+ detail:"junit is usually the one CI platforms consume to show pass/fail counts in their own UI, while html/Allure are for humans debugging a failure — most real pipelines run more than one reporter at once for these different audiences.",
+ code:`reporter: [
+  ['html', { open: 'never' }],
+  ['junit', { outputFile: 'results/junit.xml' }],
+  ['allure-playwright'],
+],`,
+ analogy:null},
+
+{cat:'framework', bonus:true, q:"How do you handle dynamic waits for network calls (waitForResponse/waitForRequest)?",
+ points:[
+  "waitForResponse(urlOrPredicate) pauses until a matching network response arrives.",
+  "waitForRequest works the same way but matches on the outgoing request instead.",
+  "Should be started with Promise.all alongside the action that triggers the call, to avoid a race condition.",
+  "Predicate functions allow matching on URL pattern, method, and status together for precision."
+ ],
+ detail:"The common mistake is awaiting the click first and then calling waitForResponse — by then the response may have already come and gone. Starting both promises together with Promise.all guarantees the listener is attached before the triggering action fires.",
+ code:`const [response] = await Promise.all([
+  page.waitForResponse(res => res.url().includes('/api/search') && res.status() === 200),
+  page.getByPlaceholder('Search').fill('playwright'),
+]);`,
+ analogy:null},
+
+{cat:'ts', bonus:true, q:"Explain TypeScript's async/await error handling with try/catch in tests.",
+ points:[
+  "await pauses execution until a Promise resolves or rejects; a rejection inside an awaited call throws synchronously at that line.",
+  "Wrap risky awaited calls in try/catch to handle expected failures gracefully (e.g. an API call that may legitimately 404).",
+  "Avoid swallowing errors silently — always rethrow or assert on the caught error, don't just log and move on.",
+  "For expected-to-fail assertions, prefer Playwright's expect(...).rejects matcher over a manual try/catch where possible."
+ ],
+ detail:"In tests specifically, be deliberate about when to catch versus when to let a failure propagate — swallowing a real failure inside a try/catch can turn a legitimate bug into a silently-passing test, which is worse than no error handling at all.",
+ code:`test('gracefully handles a 404 lookup', async ({ request }) => {
+  try {
+    const res = await request.get('/api/orders/does-not-exist');
+    expect(res.status()).toBe(404);
+  } catch (err) {
+    throw new Error(\`Unexpected failure calling orders API: \${err}\`);
+  }
+});`,
+ analogy:null},
+
+{cat:'ts', bonus:true, q:"What's the difference between any and unknown in TypeScript?",
+ points:[
+  "any completely disables type checking — you can call any method or access any property with no compiler error, even if wrong.",
+  "unknown also accepts any value, but the compiler forces you to narrow/check the type before using it.",
+  "unknown is the type-safe alternative — commonly used for values from external sources (parsed JSON, API responses) whose shape isn't known yet.",
+  "Overusing any defeats the purpose of using TypeScript at all."
+ ],
+ detail:"any says 'trust me, don't check this' — unknown says 'I don't know what this is yet, so prove it before you use it.' In a test framework, API response bodies are a classic place unknown is the right choice until you validate/cast the shape.",
+ code:`async function parseResponse(res: APIResponse): Promise<unknown> {
+  return res.json();
+}
+
+const data = await parseResponse(res);
+// data.total;              // ❌ compiler error — must narrow first
+if (typeof data === 'object' && data !== null && 'total' in data) {
+  console.log((data as { total: number }).total);   // ✅ safe after narrowing
+}`,
+ analogy:null},
+
+{cat:'framework', bonus:true, q:"How do you structure a test suite for parallel-safe execution (test isolation)?",
+ points:[
+  "Each test creates its own data — never rely on data another test created.",
+  "No shared mutable state (module-level variables) between test files that could run concurrently.",
+  "Use fresh browser contexts per test (Playwright does this by default) so cookies/storage never leak across tests.",
+  "Avoid hardcoded resources (a single shared 'test user' account) that two parallel tests might mutate at once.",
+  "Serial-only tests (that must run in order) are explicitly marked with test.describe.serial() rather than assumed."
+ ],
+ detail:"Parallel-safety essentially means: could this test pass if it were the only one running, and could it also pass if 50 copies of the whole suite ran at the exact same time against the same environment? If the answer to either is no, there's a hidden dependency to fix.",
+ code:`test.describe.configure({ mode: 'parallel' });
+
+test('order A', async ({ request }) => {
+  const sku = \`SKU-\${crypto.randomUUID()}\`;   // unique per run — no collision
+  await request.post('/api/orders', { data: { sku } });
+});`,
+ analogy:null},
+];
+
+/* ============ render ============ */
+const listEl = document.getElementById('list');
+const tabsEl = document.getElementById('tabs');
+const emptyState = document.getElementById('emptyState');
+const state = { activeCat: 'all', query: '', done: new Set() };
+
+function buildTabs(){
+  const cats = [['all','All']].concat(Object.entries(CATS));
+  tabsEl.innerHTML = cats.map(([key,label]) =>
+    `<button class="tab-btn ${key==='all'?'active':''}" data-cat="${key}">${label}</button>`
+  ).join('');
+  tabsEl.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.activeCat = btn.dataset.cat;
+      tabsEl.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    });
+  });
+}
+
+function matches(item, idx){
+  if(state.activeCat!=='all' && item.cat!==state.activeCat) return false;
+  if(state.query){
+    const hay = (item.q + ' ' + item.points.join(' ') + ' ' + (item.detail||'')).toLowerCase();
+    if(!hay.includes(state.query.toLowerCase())) return false;
+  }
+  return true;
+}
+
+function render(){
+  const filtered = Q.map((item,i)=>({item,i})).filter(({item})=>matches(item));
+  emptyState.style.display = filtered.length ? 'none' : 'block';
+
+  listEl.innerHTML = filtered.map(({item,i})=>{
+    const isDone = state.done.has(i);
+    return `
+    <div class="card ${isDone?'done':''}" data-idx="${i}">
+      <div class="card-head" data-toggle="${i}">
+        <div class="check ${isDone?'checked':''}" data-check="${i}">✓</div>
+        <div class="q-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="q-main">
+          <div class="q-title">${esc(item.q)}</div>
+          <div class="q-meta">
+            <span class="badge cat">${CATS[item.cat]}</span>
+            ${item.bonus ? '<span class="badge bonus">bonus</span>' : ''}
+          </div>
+        </div>
+        <div class="chev">▸</div>
+      </div>
+      <div class="card-body">
+        <div class="card-body-inner">
+          <div class="section-label">Key points</div>
+          <ul class="points">${item.points.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>
+          ${item.detail ? `<div class="section-label">In your own words</div><p class="detail-text">${item.detail}</p>` : ''}
+          ${item.code ? `<div class="section-label">Example</div><pre class="code">${hl(item.code)}</pre>` : ''}
+          ${item.analogy ? `
+            <div class="analogy-toggle" data-analogy="${i}">💡 show analogy</div>
+            <div class="analogy-box" id="analogy-${i}">${esc(item.analogy)}</div>
+          ` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  listEl.querySelectorAll('[data-toggle]').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-check]')) return;
+      const card = el.closest('.card');
+      card.classList.toggle('open');
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = card.classList.contains('open') ? body.scrollHeight+'px' : '0px';
+    });
+  });
+
+  listEl.querySelectorAll('[data-check]').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const idx = parseInt(el.dataset.check);
+      if(state.done.has(idx)) state.done.delete(idx); else state.done.add(idx);
+      updateStats();
+      render();
+      // re-open the card we just interacted with
+      const card = listEl.querySelector(`.card[data-idx="${idx}"]`);
+      if(card){ card.classList.add('open'); const b=card.querySelector('.card-body'); b.style.maxHeight = b.scrollHeight+'px'; }
+    });
+  });
+
+  listEl.querySelectorAll('[data-analogy]').forEach(el=>{
+    el.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const idx = el.dataset.analogy;
+      const box = document.getElementById('analogy-'+idx);
+      box.classList.toggle('show');
+      el.textContent = box.classList.contains('show') ? '💡 hide analogy' : '💡 show analogy';
+      const card = el.closest('.card');
+      const body = card.querySelector('.card-body');
+      body.style.maxHeight = body.scrollHeight+'px';
+    });
+  });
+}
+
+function updateStats(){
+  document.getElementById('statTotal').textContent = Q.length;
+  document.getElementById('statDone').textContent = state.done.size;
+  document.getElementById('statLeft').textContent = Q.length - state.done.size;
+  document.getElementById('statTotalMini').textContent = Q.length;
+  document.getElementById('statDoneMini').textContent = state.done.size;
+}
+
+const searchMain = document.getElementById('search');
+const searchMini = document.getElementById('searchMini');
+searchMain.addEventListener('input', (e)=>{
+  state.query = e.target.value;
+  searchMini.value = e.target.value;
+  render();
+});
+searchMini.addEventListener('input', (e)=>{
+  state.query = e.target.value;
+  searchMain.value = e.target.value;
+  render();
+});
+
+const headerEl = document.querySelector('header');
+const miniBar = document.getElementById('miniBar');
+window.addEventListener('scroll', ()=>{
+  const past = window.scrollY > headerEl.offsetHeight - 40;
+  miniBar.classList.toggle('show', past);
+}, { passive:true });
+
+buildTabs();
+updateStats();
+render();
+</script>
+</body>
+</html>

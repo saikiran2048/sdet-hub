@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shell for SDETs — A Terminal Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0e12;
+    --bg-panel: #0f151b;
+    --bg-raised: #141c24;
+    --amber: #ffb000;
+    --amber-dim: #b8790a;
+    --cyan: #5fd4d6;
+    --text: #d8dee4;
+    --text-dim: #7b8794;
+    --line: #223040;
+    --green-ok: #6bcf8e;
+    --red-warn: #e8695f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Mono', monospace;
+    line-height:1.6;
+  }
+  .crt-overlay{
+    pointer-events:none;
+    position:fixed; inset:0;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.012) 0px,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+    z-index:999;
+  }
+  code, pre, .mono-cmd{font-family:'JetBrains Mono', monospace;}
+
+  /* ===== Layout ===== */
+  .app{display:flex; min-height:100vh;}
+  nav.sidebar{
+    width:250px; flex-shrink:0;
+    background:var(--bg-panel);
+    border-right:1px solid var(--line);
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    padding:20px 0 40px;
+  }
+  nav.sidebar .brand{
+    padding:0 20px 18px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:12px;
+  }
+  nav.sidebar .brand .dot{color:var(--green-ok);}
+  nav.sidebar .brand h1{
+    font-size:14px; margin:8px 0 2px; color:var(--amber); letter-spacing:0.5px;
+  }
+  nav.sidebar .brand p{font-size:11px; color:var(--text-dim); margin:0;}
+  nav.sidebar a{
+    display:flex; align-items:center; gap:8px;
+    padding:8px 20px; font-size:12.5px; color:var(--text-dim);
+    text-decoration:none; border-left:2px solid transparent;
+    transition:all .15s ease;
+  }
+  nav.sidebar a:hover, nav.sidebar a.active{
+    color:var(--amber); background:rgba(255,176,0,0.06); border-left-color:var(--amber);
+  }
+  nav.sidebar a .idx{color:var(--cyan); font-size:11px; width:22px; flex-shrink:0;}
+
+  main{flex:1; min-width:0;}
+
+  /* ===== Hero / terminal ===== */
+  .hero{
+    padding:60px 48px 40px;
+    border-bottom:1px solid var(--line);
+    background:radial-gradient(ellipse at top left, rgba(255,176,0,0.05), transparent 60%);
+  }
+  .hero h1{
+    font-size:30px; margin:0 0 6px; color:#fff; letter-spacing:0.3px;
+  }
+  .hero .sub{color:var(--text-dim); font-size:13.5px; margin:0 0 26px; max-width:640px;}
+  .terminal{
+    background:#05080a;
+    border:1px solid var(--line);
+    border-radius:6px;
+    max-width:720px;
+    box-shadow: 0 0 0 1px rgba(255,176,0,0.05), 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+  .terminal .bar{
+    display:flex; align-items:center; gap:6px;
+    padding:9px 12px; border-bottom:1px solid var(--line);
+    background:var(--bg-panel); border-radius:6px 6px 0 0;
+    flex-wrap:nowrap; min-width:0;
+  }
+  .terminal .bar span{width:10px; height:10px; border-radius:50%; display:inline-block; flex-shrink:0;}
+  .terminal .bar .r{background:#e8695f;} .terminal .bar .y{background:#e8c15f;} .terminal .bar .g{background:#6bcf8e;}
+  .terminal .bar .title{
+    margin-left:8px; font-size:11px; color:var(--text-dim);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
+  }
+  .terminal .body{padding:16px 18px; font-size:13px; min-height:150px;}
+  .terminal .line{white-space:pre-wrap; margin:0 0 8px; line-height:1.7;}
+  .terminal .prompt{color:var(--green-ok);}
+  .terminal .path{color:var(--cyan);}
+  .terminal .cmdtext{color:#fff;}
+  .terminal .out{color:var(--text-dim);}
+  .cursor{display:inline-block; width:7px; height:14px; background:var(--amber); vertical-align:middle; animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* ===== Sections ===== */
+  section.topic{padding:42px 48px; border-bottom:1px solid var(--line);}
+  section.topic h2{
+    font-size:12px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--amber-dim); margin:0 0 4px; display:flex; align-items:center; gap:10px;
+  }
+  section.topic h2 .n{color:var(--cyan);}
+  section.topic h3.analogy-title{
+    font-size:22px; color:#fff; margin:2px 0 14px; font-weight:600;
+  }
+  .analogy{
+    background:var(--bg-raised); border-left:3px solid var(--cyan);
+    padding:12px 16px; font-size:13px; color:var(--text); border-radius:0 4px 4px 0;
+    margin-bottom:22px; max-width:760px;
+  }
+  .analogy b{color:var(--cyan);}
+
+  .cmd-grid{display:flex; flex-direction:column; gap:14px;}
+  .cmd-card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:6px;
+    overflow:hidden;
+  }
+  .cmd-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 16px; cursor:pointer; user-select:none;
+  }
+  .cmd-head:hover{background:rgba(255,176,0,0.03);}
+  .cmd-head .left{display:flex; align-items:center; gap:12px;}
+  .cmd-name{color:var(--amber); font-size:14.5px; font-weight:700;}
+  .cmd-desc{color:var(--text-dim); font-size:12.5px;}
+  .chev{color:var(--text-dim); transition:transform .2s ease; font-size:11px;}
+  .cmd-card.open .chev{transform:rotate(90deg); color:var(--amber);}
+  .cmd-body{
+    max-height:0; overflow:hidden; transition:max-height .25s ease;
+    border-top:1px solid transparent;
+  }
+  .cmd-card.open .cmd-body{max-height:600px; border-top:1px solid var(--line);}
+  .cmd-body-inner{padding:14px 16px 16px;}
+  .example{
+    background:#05080a; border:1px solid var(--line); border-radius:4px;
+    padding:10px 14px; font-size:12.5px; margin:8px 0; overflow-x:auto;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  .example .p{color:var(--green-ok);} .example .c{color:#fff;}
+  .example .o{color:var(--text-dim); display:block; margin-top:3px;}
+  .sdet-note{
+    display:flex; gap:8px; align-items:flex-start;
+    margin-top:10px; padding:9px 12px; background:rgba(95,212,214,0.06);
+    border-left:2px solid var(--cyan); border-radius:0 4px 4px 0; font-size:12px; color:var(--text);
+  }
+  .sdet-note b{color:var(--cyan); flex-shrink:0;}
+
+  /* ===== Practice section ===== */
+  .practice-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+    gap:14px; max-width:1000px;
+  }
+  .practice-card{
+    background:var(--bg-panel); border:1px solid var(--line); border-radius:6px;
+    padding:16px; transition:border-color .15s ease;
+  }
+  .practice-card:hover{border-color:var(--amber-dim);}
+  .practice-card .tag{
+    font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--cyan); margin-bottom:6px; display:block;
+  }
+  .practice-card h4{margin:0 0 6px; color:#fff; font-size:14px;}
+  .practice-card p{margin:0; font-size:12px; color:var(--text-dim);}
+  .practice-card a{color:var(--amber); font-size:11.5px; text-decoration:none; display:inline-block; margin-top:8px;}
+  .practice-card a:hover{text-decoration:underline;}
+
+  .roadmap{
+    max-width:760px; display:flex; flex-direction:column; gap:0;
+  }
+  .roadmap .week{
+    display:flex; gap:16px; padding:14px 0; border-bottom:1px solid var(--line);
+  }
+  .roadmap .week:last-child{border-bottom:none;}
+  .roadmap .wk-label{
+    color:var(--amber); font-size:12px; font-weight:700; width:64px; flex-shrink:0; padding-top:2px;
+  }
+  .roadmap .wk-content h4{margin:0 0 4px; font-size:13.5px; color:#fff;}
+  .roadmap .wk-content p{margin:0; font-size:12px; color:var(--text-dim);}
+
+  footer{padding:30px 48px 60px; color:var(--text-dim); font-size:11.5px;}
+
+  @media(max-width:820px){
+    .app{flex-direction:column;}
+    nav.sidebar{width:100%; height:auto; position:relative; overflow-x:auto; white-space:nowrap; display:flex; padding:12px 0;}
+    nav.sidebar .brand{display:none;}
+    nav.sidebar a{padding:8px 14px; border-left:none; border-bottom:2px solid transparent;}
+    nav.sidebar a:hover, nav.sidebar a.active{border-left:none; border-bottom-color:var(--amber);}
+    .hero, section.topic{padding:28px 20px;}
+  }
+</style>
+</head>
+<body>
+<div class="crt-overlay"></div>
+<div class="app">
+
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="dot">●</span> <span style="color:var(--text-dim); font-size:11px;">session active</span>
+      <h1>SHELL://FIELD-GUIDE</h1>
+      <p>built for an SDET, from zero</p>
+    </div>
+    <a href="#navigation"><span class="idx">01</span>Navigation</a>
+    <a href="#files"><span class="idx">02</span>Files &amp; Dirs</a>
+    <a href="#viewing"><span class="idx">03</span>Viewing Content</a>
+    <a href="#permissions"><span class="idx">04</span>Permissions</a>
+    <a href="#textproc"><span class="idx">05</span>Text Processing</a>
+    <a href="#pipes"><span class="idx">06</span>Pipes &amp; Redirection</a>
+    <a href="#processes"><span class="idx">07</span>Processes</a>
+    <a href="#env"><span class="idx">08</span>Environment &amp; PATH</a>
+    <a href="#network"><span class="idx">09</span>Networking</a>
+    <a href="#scripting"><span class="idx">10</span>Shell Scripting</a>
+    <a href="#sdet"><span class="idx">11</span>SDET Cheatsheet</a>
+    <a href="#practice"><span class="idx">12</span>Where to Practice</a>
+    <a href="#roadmap"><span class="idx">13</span>4-Week Roadmap</a>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <h1>Shell for SDETs</h1>
+      <p class="sub">Every command below is explained with a plain analogy first, then the real syntax, then a working example — and where it actually shows up in test automation, CI pipelines, and log debugging.</p>
+      <div class="terminal">
+        <div class="bar"><span class="r"></span><span class="y"></span><span class="g"></span><span class="title">sai@ubuntu: ~/test-automation</span></div>
+        <div class="body" id="typeTerm"></div>
+      </div>
+    </div>
+
+    <!-- 01 NAVIGATION -->
+    <section class="topic" id="navigation">
+      <h2><span class="n">01</span> Navigation</h2>
+      <h3 class="analogy-title">The filesystem is a building, and you're standing somewhere in it</h3>
+      <div class="analogy">Think of the filesystem like an office building. <b>/</b> is the ground floor lobby. Every folder is a room, and rooms have rooms inside them (subfolders). At any moment you're standing in exactly one room — <b>pwd</b> asks "which room am I in?", <b>ls</b> asks "what's in this room?", and <b>cd</b> is you physically walking to another room.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">pwd</span><span class="cmd-desc">— print working directory</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Tells you the full path of the room you're standing in right now.</p>
+            <div class="example"><span class="p">$</span> <span class="c">pwd</span><span class="o">/home/sai/test-automation</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">ls</span><span class="cmd-desc">— list directory contents</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><b>ls -l</b> gives long format (permissions, size, date). <b>ls -a</b> shows hidden files (dotfiles like <code>.env</code>). <b>ls -lh</b> makes sizes human-readable (KB/MB instead of raw bytes).</p>
+            <div class="example"><span class="p">$</span> <span class="c">ls -la</span><span class="o">drwxr-xr-x  5 sai sai  4096 Jul 18 09:02 .
+-rw-r--r--  1 sai sai   210 Jul 18 09:01 .env
+-rw-r--r--  1 sai sai  1822 Jul 17 22:41 testng.xml
+drwxr-xr-x  3 sai sai  4096 Jul 17 22:40 src</span></div>
+            <div class="sdet-note"><b>SDET use:</b> checking if a config or report file actually got generated after a test run, or spotting a hidden <code>.env</code> holding test credentials.</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">cd</span><span class="cmd-desc">— change directory</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>cd ..</code> = go up one room. <code>cd ~</code> or <code>cd</code> alone = go home. <code>cd -</code> = go back to the previous room you were in (very handy).</p>
+            <div class="example"><span class="p">$</span> <span class="c">cd src/test/resources</span>
+<span class="p">$</span> <span class="c">cd -</span><span class="o">/home/sai/test-automation</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">tree</span><span class="cmd-desc">— show folder structure as a tree</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Not installed by default (<code>sudo apt install tree</code>). Gives you the whole building's floor plan at once instead of room by room.</p>
+            <div class="example"><span class="p">$</span> <span class="c">tree -L 2</span><span class="o">.
+├── src
+│   ├── main
+│   └── test
+└── testng.xml</span></div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 02 FILES & DIRS -->
+    <section class="topic" id="files">
+      <h2><span class="n">02</span> Files &amp; Directories</h2>
+      <h3 class="analogy-title">Creating, copying, moving, and deleting rooms and paperwork</h3>
+      <div class="analogy">If files are documents and folders are rooms: <b>mkdir</b> builds a new room, <b>touch</b> creates a blank sheet of paper, <b>cp</b> photocopies a document, <b>mv</b> physically relocates it (or renames the label on it), and <b>rm</b> shreds it — there's no recycle bin, so it's permanent.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">mkdir</span><span class="cmd-desc">— make directory</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>-p</code> builds nested folders in one go, creating parents that don't exist yet.</p>
+            <div class="example"><span class="p">$</span> <span class="c">mkdir -p reports/2026/july</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">touch</span><span class="cmd-desc">— create an empty file / update timestamp</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">touch execution.log</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">cp</span><span class="cmd-desc">— copy</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>-r</code> is required to copy a whole folder (recursive) — copying a room means copying everything inside it too.</p>
+            <div class="example"><span class="p">$</span> <span class="c">cp config.properties config.properties.bak</span>
+<span class="p">$</span> <span class="c">cp -r target/surefire-reports/ ~/backup-reports/</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">mv</span><span class="cmd-desc">— move or rename</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>There's no separate "rename" command in Linux — moving a file to the same folder with a different name IS renaming it.</p>
+            <div class="example"><span class="p">$</span> <span class="c">mv old_testsuite.xml regression_suite.xml</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">rm</span><span class="cmd-desc">— remove (permanent!)</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>-r</code> for folders, <code>-f</code> to force without asking. <code>rm -rf</code> is powerful and dangerous — always double check your <code>pwd</code> before running it.</p>
+            <div class="example"><span class="p">$</span> <span class="c">rm old_screenshot.png</span>
+<span class="p">$</span> <span class="c">rm -rf target/</span> <span class="o"># wipes the whole build output folder</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">find</span><span class="cmd-desc">— locate files by name, type, or age</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">find . -name "*.log"</span>
+<span class="p">$</span> <span class="c">find . -mtime -1 -name "*.xml"</span> <span class="o"># files changed in last 1 day</span></div>
+            <div class="sdet-note"><b>SDET use:</b> hunting down which of hundreds of test result files got generated in the last run, or finding leftover temp screenshots from failed Selenium tests.</div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 03 VIEWING CONTENT -->
+    <section class="topic" id="viewing">
+      <h2><span class="n">03</span> Viewing File Content</h2>
+      <h3 class="analogy-title">Reading a document without opening it in an editor</h3>
+      <div class="analogy">Imagine a huge printed log — you almost never want to unroll the whole scroll. <b>cat</b> dumps it all at once, <b>less</b> lets you scroll through it page by page, and <b>tail</b>/<b>head</b> just show you the last or first few lines, like peeking at the end or the start of a receipt.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">cat</span><span class="cmd-desc">— print whole file to screen</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">cat pom.xml</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">less</span><span class="cmd-desc">— scrollable pager</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Arrow keys to scroll, <code>/searchterm</code> to search inside, <code>q</code> to quit. Use this instead of <code>cat</code> for big files.</p>
+            <div class="example"><span class="p">$</span> <span class="c">less execution.log</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">head / tail</span><span class="cmd-desc">— first / last N lines</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>tail -f</code> is the big one — it "follows" a file live, printing new lines as they're written. This is how you watch a test run as it happens.</p>
+            <div class="example"><span class="p">$</span> <span class="c">tail -n 50 execution.log</span>
+<span class="p">$</span> <span class="c">tail -f jenkins-build.log</span> <span class="o"># live-tails the file, Ctrl+C to stop</span></div>
+            <div class="sdet-note"><b>SDET use:</b> <code>tail -f</code> a Jenkins console log or an app server log while your regression suite runs, to catch failures the moment they happen instead of waiting for the whole run to finish.</div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 04 PERMISSIONS -->
+    <section class="topic" id="permissions">
+      <h2><span class="n">04</span> Permissions</h2>
+      <h3 class="analogy-title">Who's allowed to read, write, or run a file — like a badge access system</h3>
+      <div class="analogy">Every file has three badge levels: the <b>owner</b>, the <b>group</b>, and <b>everyone else</b>. For each, there are three permissions: <b>r</b>ead it, <b>w</b>rite/edit it, e<b>x</b>ecute it (run it as a program). <code>-rwxr-xr--</code> reads left to right: owner can do all three, group can read+execute, others can only read.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">chmod</span><span class="cmd-desc">— change permissions</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Numbers: r=4, w=2, x=1 — add them up per badge level. <code>755</code> = owner full (7), group read+execute (5), others read+execute (5).</p>
+            <div class="example"><span class="p">$</span> <span class="c">chmod +x run_tests.sh</span> <span class="o"># make a script runnable</span>
+<span class="p">$</span> <span class="c">chmod 755 deploy.sh</span></div>
+            <div class="sdet-note"><b>SDET use:</b> the classic "Permission denied" error when trying to run a shell script in a CI pipeline — 9 times out of 10 it just needs <code>chmod +x</code>.</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">chown</span><span class="cmd-desc">— change file owner</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">sudo chown sai:sai config.yaml</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">sudo</span><span class="cmd-desc">— run a command as admin</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Short for "superuser do" — like using a manager's master key for one action only.</p>
+            <div class="example"><span class="p">$</span> <span class="c">sudo apt update</span></div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 05 TEXT PROCESSING -->
+    <section class="topic" id="textproc">
+      <h2><span class="n">05</span> Text Processing</h2>
+      <h3 class="analogy-title">This is where the shell becomes a search-and-filter machine for logs</h3>
+      <div class="analogy">If a log file is a giant spreadsheet of raw text, <b>grep</b> is Ctrl+F, <b>cut</b> and <b>awk</b> pull out specific columns, <b>sort</b> and <b>uniq</b> are Excel's "sort" and "remove duplicates," and <b>wc</b> just counts rows. This is the toolkit you'll use most as an SDET, hands down.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">grep</span><span class="cmd-desc">— search text by pattern</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>-i</code> ignore case, <code>-n</code> show line numbers, <code>-r</code> search recursively through folders, <code>-v</code> invert (show lines that DON'T match), <code>-c</code> just count matches.</p>
+            <div class="example"><span class="p">$</span> <span class="c">grep -in "error" execution.log</span><span class="o">142:[ERROR] Element not found: #login-btn
+310:[ERROR] Timeout waiting for response</span>
+<span class="p">$</span> <span class="c">grep -r "FAILED" target/surefire-reports/</span></div>
+            <div class="sdet-note"><b>SDET use:</b> the single most-used command in this whole guide. Grepping "FAILED", "Exception", or "ERROR" out of a huge automation log in seconds instead of scrolling manually.</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">sed</span><span class="cmd-desc">— find and replace text (stream editor)</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">sed 's/staging/production/g' config.properties</span></div>
+            <div class="sdet-note"><b>SDET use:</b> swapping environment URLs in a config file before pointing a test run at a different environment.</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">awk</span><span class="cmd-desc">— column-based text processing</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Think of it as picking a specific column out of space/comma-separated text. <code>$1</code> = column 1, <code>$2</code> = column 2, etc.</p>
+            <div class="example"><span class="p">$</span> <span class="c">awk '{print $1, $4}' access.log</span> <span class="o"># prints columns 1 and 4</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">cut</span><span class="cmd-desc">— extract columns from delimited text</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">cut -d',' -f2 users.csv</span> <span class="o"># field 2 from a CSV</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">sort / uniq</span><span class="cmd-desc">— sort lines / remove duplicates</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>uniq</code> only removes duplicates that are adjacent — that's why you almost always sort first.</p>
+            <div class="example"><span class="p">$</span> <span class="c">sort error_codes.txt | uniq -c | sort -rn</span><span class="o">  47 500
+  12 404
+   3 401</span></div>
+            <div class="sdet-note"><b>SDET use:</b> that exact one-liner above is a quick way to see which error code showed up most across thousands of failed API test logs.</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">wc</span><span class="cmd-desc">— word/line/byte count</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">wc -l execution.log</span><span class="o">2140 execution.log</span></div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 06 PIPES -->
+    <section class="topic" id="pipes">
+      <h2><span class="n">06</span> Pipes &amp; Redirection</h2>
+      <h3 class="analogy-title">This is the real superpower — chaining commands like an assembly line</h3>
+      <div class="analogy">A pipe <code>|</code> takes the output of one command and feeds it as input to the next — like handing a stack of papers from one desk to the next, each person doing one small job. Redirection (<code>&gt;</code> and <code>&gt;&gt;</code>) instead sends output into a file rather than the screen — <code>&gt;</code> overwrites the page, <code>&gt;&gt;</code> appends to the bottom of it.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">| (pipe)</span><span class="cmd-desc">— chain command output into the next command</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">cat execution.log | grep "ERROR" | wc -l</span><span class="o">7</span>
+<span class="o"># "print the file, filter for ERROR lines, count them" — 3 tools, 1 line</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">&gt; and &gt;&gt;</span><span class="cmd-desc">— redirect output to a file</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">mvn test &gt; results.log</span> <span class="o"># overwrite results.log</span>
+<span class="p">$</span> <span class="c">echo "run complete" &gt;&gt; results.log</span> <span class="o"># append a line</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">2&gt;&amp;1</span><span class="cmd-desc">— redirect errors along with normal output</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Every command has two output streams: normal output (stdout, stream 1) and errors (stderr, stream 2). This merges stderr into stdout so both land in the same file.</p>
+            <div class="example"><span class="p">$</span> <span class="c">mvn test &gt; results.log 2&gt;&amp;1</span></div>
+            <div class="sdet-note"><b>SDET use:</b> capturing a Jenkins shell step's full output — including stack traces — into one log file for debugging a broken build.</div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 07 PROCESSES -->
+    <section class="topic" id="processes">
+      <h2><span class="n">07</span> Processes</h2>
+      <h3 class="analogy-title">Every running program is a worker on the floor with an ID badge</h3>
+      <div class="analogy"><b>ps</b> and <b>top</b> are the manager's clipboard listing who's currently working and how hard. Every process has a PID (a badge number). <b>kill</b> sends that worker home — politely by default, forcibly with <code>-9</code>.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">ps</span><span class="cmd-desc">— snapshot of running processes</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">ps aux | grep java</span><span class="o">sai  4821  12.0  3.2  java -jar selenium-server.jar</span></div>
+            <div class="sdet-note"><b>SDET use:</b> checking whether a hung Selenium Grid node or chromedriver process is still eating CPU after a test run "finished."</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">top / htop</span><span class="cmd-desc">— live process monitor</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>htop</code> is the nicer, colorized version (installed separately). <code>q</code> to quit.</p>
+            <div class="example"><span class="p">$</span> <span class="c">top</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">kill</span><span class="cmd-desc">— stop a process by PID</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">kill 4821</span> <span class="o"># asks it nicely to stop</span>
+<span class="p">$</span> <span class="c">kill -9 4821</span> <span class="o"># forces it to stop immediately</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">&amp;, jobs, nohup</span><span class="cmd-desc">— background and detach processes</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>&amp;</code> at the end runs a command in the background so your terminal stays free. <code>nohup</code> keeps it running even after you log out — useful on a remote test server.</p>
+            <div class="example"><span class="p">$</span> <span class="c">nohup ./run_regression.sh &amp;</span></div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 08 ENV -->
+    <section class="topic" id="env">
+      <h2><span class="n">08</span> Environment Variables &amp; PATH</h2>
+      <h3 class="analogy-title">Sticky notes the shell can read at any time, from anywhere</h3>
+      <div class="analogy">An environment variable is a labeled sticky note pinned to your session — <code>$JAVA_HOME</code>, <code>$PATH</code>. <code>$PATH</code> specifically is a list of folders the shell checks, in order, whenever you type a command name — like a list of storage rooms it searches through to find the tool you asked for.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">export</span><span class="cmd-desc">— set an environment variable</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">export JAVA_HOME=/usr/lib/jvm/java-17</span>
+<span class="p">$</span> <span class="c">echo $JAVA_HOME</span><span class="o">/usr/lib/jvm/java-17</span></div>
+            <div class="sdet-note"><b>SDET use:</b> a Jenkins job failing with "JAVA_HOME not set" — a classic environment variable issue you'll debug constantly running Maven/TestNG suites.</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">echo $PATH</span><span class="cmd-desc">— see where the shell looks for commands</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">echo $PATH</span><span class="o">/usr/local/bin:/usr/bin:/bin:/home/sai/bin</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">env / printenv</span><span class="cmd-desc">— list all environment variables</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">env | grep -i java</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">which</span><span class="cmd-desc">— show which file a command actually runs</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">which mvn</span><span class="o">/usr/bin/mvn</span></div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 09 NETWORK -->
+    <section class="topic" id="network">
+      <h2><span class="n">09</span> Networking Basics</h2>
+      <h3 class="analogy-title">Talking to servers the way your test framework does under the hood</h3>
+      <div class="analogy">If a URL is an address, <b>ping</b> just checks "is anyone home," <b>curl</b> actually knocks and asks for something (like your API test client does), and <b>ssh</b> is walking into someone else's building using your keys.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">ping</span><span class="cmd-desc">— check if a host is reachable</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">ping -c 4 api.example.com</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">curl</span><span class="cmd-desc">— make HTTP requests from the terminal</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">curl -i https://api.example.com/health</span><span class="o">HTTP/1.1 200 OK</span>
+<span class="p">$</span> <span class="c">curl -X POST -H "Content-Type: application/json" -d '{"id":1}' https://api.example.com/orders</span></div>
+            <div class="sdet-note"><b>SDET use:</b> sanity-checking an API endpoint from the terminal before writing a Rest Assured test for it — or debugging why a test is failing when Postman "works fine."</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">ssh / scp</span><span class="cmd-desc">— remote login / secure copy</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">ssh sai@10.20.30.40</span>
+<span class="p">$</span> <span class="c">scp report.html sai@10.20.30.40:/home/sai/reports/</span></div>
+            <div class="sdet-note"><b>SDET use:</b> logging into a remote CI agent or Selenium Grid node to check why a job hung, or pulling test result files off a build server.</div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">netstat / ss</span><span class="cmd-desc">— see open ports and connections</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">ss -tulnp | grep 8080</span></div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 10 SCRIPTING -->
+    <section class="topic" id="scripting">
+      <h2><span class="n">10</span> Shell Scripting Basics</h2>
+      <h3 class="analogy-title">Same logic as Java, just looser syntax and no compiler</h3>
+      <div class="analogy">Since you already think in Java: a shell script is like a class with one big <code>main()</code> and nothing else — no types, no semicolons needed, and everything is technically a string until proven otherwise. <code>if</code>, loops, and functions all exist, just with different punctuation.</div>
+
+      <div class="cmd-grid">
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">Variables</span><span class="cmd-desc">— no type declaration, no spaces around =</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="o">#!/bin/bash</span>
+<span class="c">ENV="staging"
+echo "Running against $ENV"</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">if / else</span><span class="cmd-desc">— conditionals</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Java equivalent: <code>if (result.equals("FAILED")) { ... } else { ... }</code></p>
+            <div class="example"><span class="c">if [ "$RESULT" == "FAILED" ]; then
+    echo "Test failed, sending alert"
+else
+    echo "Test passed"
+fi</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">for loop</span><span class="cmd-desc">— iterate over items</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p>Java equivalent: <code>for (String env : envs) { ... }</code></p>
+            <div class="example"><span class="c">for env in dev staging prod; do
+    echo "Deploying to $env"
+done</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">Functions</span><span class="cmd-desc">— reusable blocks</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="c">run_suite() {
+    mvn test -Dsuite=$1
+}
+run_suite regression.xml</span></div>
+          </div></div></div>
+
+        <div class="cmd-card"><div class="cmd-head"><div class="left"><span class="cmd-name">$? and exit codes</span><span class="cmd-desc">— did the last command succeed?</span></div><span class="chev">▶</span></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <p><code>0</code> means success, anything else means failure — this is exactly how Jenkins decides if a pipeline stage passed or failed.</p>
+            <div class="example"><span class="p">$</span> <span class="c">mvn test</span>
+<span class="p">$</span> <span class="c">echo $?</span><span class="o">1   # non-zero = something failed</span></div>
+            <div class="sdet-note"><b>SDET use:</b> Jenkins marks a pipeline "failed" purely based on the exit code of the last shell step — this is the mechanic behind every red build.</div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 11 SDET CHEATSHEET -->
+    <section class="topic" id="sdet">
+      <h2><span class="n">11</span> SDET Cheatsheet</h2>
+      <h3 class="analogy-title">One-liners you'll actually reach for on the job</h3>
+      <div class="cmd-grid">
+        <div class="cmd-card open"><div class="cmd-head"><div class="left"><span class="cmd-name">Count failed tests in a log</span></div></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">grep -c "FAILED" execution.log</span></div>
+          </div></div></div>
+        <div class="cmd-card open"><div class="cmd-head"><div class="left"><span class="cmd-name">Watch a Jenkins log live while a build runs</span></div></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">tail -f /var/jenkins_home/jobs/regression/builds/lastBuild/log</span></div>
+          </div></div></div>
+        <div class="cmd-card open"><div class="cmd-head"><div class="left"><span class="cmd-name">Find test classes that reference a specific keyword</span></div></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">grep -rl "LoginTest" src/test/java/</span></div>
+          </div></div></div>
+        <div class="cmd-card open"><div class="cmd-head"><div class="left"><span class="cmd-name">Kill a stuck chromedriver / Selenium process</span></div></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">ps aux | grep chromedriver | awk '{print $2}' | xargs kill -9</span></div>
+          </div></div></div>
+        <div class="cmd-card open"><div class="cmd-head"><div class="left"><span class="cmd-name">Check disk space before a build fails mysteriously</span></div></div>
+          <div class="cmd-body"><div class="cmd-body-inner">
+            <div class="example"><span class="p">$</span> <span class="c">df -h</span></div>
+          </div></div></div>
+      </div>
+    </section>
+
+    <!-- 12 PRACTICE -->
+    <section class="topic" id="practice">
+      <h2><span class="n">12</span> Where to Practice</h2>
+      <h3 class="analogy-title">Reading this won't build muscle memory — typing will</h3>
+      <div class="practice-grid">
+        <div class="practice-card">
+          <span class="tag">Best first stop</span>
+          <h4>Linux Journey</h4>
+          <p>Free, structured, browser-based lessons that go from absolute basics to permissions and scripting, with a real practice terminal built in.</p>
+          <a href="https://linuxjourney.com" target="_blank">linuxjourney.com →</a>
+        </div>
+        <div class="practice-card">
+          <span class="tag">Game-style</span>
+          <h4>OverTheWire — Bandit</h4>
+          <p>A wargame where each level is an SSH login puzzle you solve using real shell commands. Genuinely fun and it sticks.</p>
+          <a href="https://overthewire.org/wargames/bandit/" target="_blank">overthewire.org/bandit →</a>
+        </div>
+        <div class="practice-card">
+          <span class="tag">Command quiz</span>
+          <h4>cmdchallenge.com</h4>
+          <p>Bite-sized challenges — "print the 3rd column of this file" — solved directly in a browser terminal. Great for text-processing reps.</p>
+          <a href="https://cmdchallenge.com" target="_blank">cmdchallenge.com →</a>
+        </div>
+        <div class="practice-card">
+          <span class="tag">Reference while learning</span>
+          <h4>explainshell.com</h4>
+          <p>Paste any command and it visually breaks down every flag and pipe stage. Use this every time you see an unfamiliar one-liner.</p>
+          <a href="https://explainshell.com" target="_blank">explainshell.com →</a>
+        </div>
+        <div class="practice-card">
+          <span class="tag">Real environment</span>
+          <h4>WSL2 or a free VM</h4>
+          <p>Since you're on Windows day-to-day, installing WSL2 (Ubuntu) gives you a real, persistent Linux shell to practice in daily — closest thing to how you'll use it at work.</p>
+          <a href="https://learn.microsoft.com/windows/wsl/install" target="_blank">WSL install docs →</a>
+        </div>
+        <div class="practice-card">
+          <span class="tag">Directly relevant</span>
+          <h4>A local Jenkins + Docker sandbox</h4>
+          <p>Spin up Jenkins in Docker on your own machine and write real shell build steps for a sample Java/Selenium project — this is the fastest way to connect commands to your actual job.</p>
+          <a href="https://www.jenkins.io/doc/book/installing/docker/" target="_blank">Jenkins Docker setup →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 ROADMAP -->
+    <section class="topic" id="roadmap" style="border-bottom:none;">
+      <h2><span class="n">13</span> Suggested 4-Week Roadmap</h2>
+      <h3 class="analogy-title">Little and often beats a single long binge</h3>
+      <div class="roadmap">
+        <div class="week">
+          <div class="wk-label">WEEK 1</div>
+          <div class="wk-content"><h4>Navigation, Files, Permissions</h4><p>Do Linux Journey's "Grasshopper" unit end to end. Set up WSL2 or a VM and just live in the terminal — even for small things like making folders for your test projects.</p></div>
+        </div>
+        <div class="week">
+          <div class="wk-label">WEEK 2</div>
+          <div class="wk-content"><h4>Text Processing + Pipes</h4><p>Grab any real log file (export one from a past test run) and practice grep, sort, uniq, wc, and piping them together. Start OverTheWire Bandit levels 1–10.</p></div>
+        </div>
+        <div class="week">
+          <div class="wk-label">WEEK 3</div>
+          <div class="wk-content"><h4>Processes, Environment, Networking</h4><p>Practice ps/kill/curl against a public test API (e.g. reqres.in). Set environment variables and reference them in a script. Continue Bandit levels 10–20.</p></div>
+        </div>
+        <div class="week">
+          <div class="wk-label">WEEK 4</div>
+          <div class="wk-content"><h4>Shell Scripting + Jenkins Tie-in</h4><p>Write a small .sh script that runs a Maven test suite, checks the exit code, and greps the log for failures. Wire it into a local Jenkins Docker job as a build step.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>Field guide compiled for hands-on SDET practice — bookmark and revisit sections as they come up on the job.</footer>
+  </main>
+</div>
+
+<script>
+  // Accordion behavior
+  document.querySelectorAll('.cmd-head').forEach(head => {
+    head.addEventListener('click', () => {
+      const card = head.closest('.cmd-card');
+      card.classList.toggle('open');
+    });
+  });
+
+  // Sidebar active state on scroll
+  const links = document.querySelectorAll('nav.sidebar a');
+  const sections = Array.from(links).map(l => document.querySelector(l.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    sections.forEach((sec, i) => {
+      if(sec && sec.getBoundingClientRect().top < 140) idx = i;
+    });
+    links.forEach(l => l.classList.remove('active'));
+    if(links[idx]) links[idx].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+
+  // Typewriter hero terminal
+  const termLines = [
+    {p:"sai@ubuntu", path:"~/test-automation", cmd:"pwd", out:"/home/sai/test-automation"},
+    {p:"sai@ubuntu", path:"~/test-automation", cmd:"ls -la | grep .xml", out:"-rw-r--r--  1 sai sai  1822 Jul 17 22:41 testng.xml"},
+    {p:"sai@ubuntu", path:"~/test-automation", cmd:"grep -c FAILED execution.log", out:"3"},
+    {p:"sai@ubuntu", path:"~/test-automation", cmd:"", out:""}
+  ];
+  const termEl = document.getElementById('typeTerm');
+  let li = 0;
+  function typeLine(){
+    if(li >= termLines.length){ return; }
+    const {p, path, cmd, out} = termLines[li];
+    const lineDiv = document.createElement('div');
+    lineDiv.className = 'line';
+    const promptSpan = document.createElement('span');
+    promptSpan.innerHTML = `<span class="prompt">${p}</span>:<span class="path">${path}</span>$ `;
+    lineDiv.appendChild(promptSpan);
+    const cmdSpan = document.createElement('span');
+    cmdSpan.className = 'cmdtext';
+    lineDiv.appendChild(cmdSpan);
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    lineDiv.appendChild(cursor);
+    termEl.appendChild(lineDiv);
+
+    let ci = 0;
+    function typeChar(){
+      if(ci < cmd.length){
+        cmdSpan.textContent += cmd[ci];
+        ci++;
+        setTimeout(typeChar, 35 + Math.random()*40);
+      } else {
+        cursor.remove();
+        if(out){
+          const outDiv = document.createElement('div');
+          outDiv.className = 'line out';
+          outDiv.textContent = out;
+          termEl.appendChild(outDiv);
+        }
+        li++;
+        setTimeout(typeLine, 500);
+      }
+    }
+    setTimeout(typeChar, 300);
+  }
+  typeLine();
+</script>
+</body>
+</html>

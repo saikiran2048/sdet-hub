@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Testing Interview Questions — SDET Guide</title>
+<style>
+  :root{
+    --bg:#0f1320;
+    --card:#161b2e;
+    --accent:#5eead4;
+    --accent2:#818cf8;
+    --text:#e6e9f2;
+    --muted:#9aa3b8;
+    --code-bg:#0b0e1a;
+    --border:#262c45;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+  }
+  header{
+    padding:48px 24px 32px;
+    text-align:center;
+    background:linear-gradient(135deg,#1a1f38,#10142a);
+    border-bottom:1px solid var(--border);
+  }
+  header h1{
+    margin:0 0 10px;
+    font-size:1.9rem;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    color:var(--muted);
+    max-width:680px;
+    margin:0 auto;
+    font-size:0.98rem;
+  }
+  .container{
+    max-width:880px;
+    margin:0 auto;
+    padding:32px 20px 80px;
+  }
+  .toc{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px 24px;
+    margin-bottom:36px;
+  }
+  .toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  .toc ol{
+    columns:2;
+    column-gap:24px;
+    padding-left:20px;
+    margin:0;
+    font-size:0.92rem;
+  }
+  .toc li{margin-bottom:6px;}
+  .toc a{color:var(--text);text-decoration:none;}
+  .toc a:hover{color:var(--accent);text-decoration:underline;}
+  section.qa{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:24px 28px;
+    margin-bottom:22px;
+    scroll-margin-top:20px;
+  }
+  section.qa h3{
+    margin-top:0;
+    font-size:1.15rem;
+    color:var(--accent2);
+    display:flex;
+    gap:10px;
+    align-items:baseline;
+  }
+  .qnum{
+    background:var(--accent2);
+    color:#0f1320;
+    font-weight:700;
+    font-size:0.8rem;
+    border-radius:6px;
+    padding:2px 8px;
+    flex-shrink:0;
+  }
+  section.qa p{margin:10px 0;}
+  ul{margin:8px 0;padding-left:22px;}
+  li{margin-bottom:6px;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:14px 0;
+    font-size:0.92rem;
+  }
+  th,td{
+    border:1px solid var(--border);
+    padding:9px 12px;
+    text-align:left;
+  }
+  th{background:#1c2238;color:var(--accent);}
+  tr:nth-child(even){background:#13182a;}
+  code{
+    background:var(--code-bg);
+    color:var(--accent);
+    padding:2px 6px;
+    border-radius:4px;
+    font-size:0.9em;
+    font-family:Consolas, 'Courier New', monospace;
+  }
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow-x:auto;
+    font-size:0.85rem;
+    font-family:Consolas, 'Courier New', monospace;
+    color:#cdd6f4;
+  }
+  .tip{
+    border-left:3px solid var(--accent);
+    background:#11203a;
+    padding:10px 14px;
+    border-radius:0 8px 8px 0;
+    margin:14px 0;
+    font-size:0.92rem;
+    color:#cfe9ff;
+  }
+  .tip b{color:var(--accent);}
+  .bonus-banner{
+    text-align:center;
+    margin:48px 0 24px;
+    padding:14px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#1e2a4a,#251e4a);
+    border:1px solid var(--border);
+    font-weight:600;
+    color:var(--accent2);
+  }
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.85rem;
+    padding:30px 20px 50px;
+  }
+  @media (max-width:600px){
+    .toc ol{columns:1;}
+    section.qa{padding:18px 18px;}
+    header h1{font-size:1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚀 API Testing Interview Questions</h1>
+  <p>A detailed reference guide for QA Automation Engineers &amp; SDETs — covering REST/SOAP fundamentals, HTTP semantics, security, validation strategy, and scenario-based interview answers using Java + REST Assured.</p>
+</header>
+
+<div class="container">
+
+  <div class="toc">
+    <h2>📑 Contents</h2>
+    <ol>
+      <li><a href="#q1">What is an API?</a></li>
+      <li><a href="#q2">REST vs SOAP</a></li>
+      <li><a href="#q3">HTTP Methods</a></li>
+      <li><a href="#q4">PUT vs PATCH</a></li>
+      <li><a href="#q5">HTTP Status Codes</a></li>
+      <li><a href="#q6">What is JSON?</a></li>
+      <li><a href="#q7">Request vs Response Payload</a></li>
+      <li><a href="#q8">Headers in API Requests</a></li>
+      <li><a href="#q9">Authentication</a></li>
+      <li><a href="#q10">Authorization</a></li>
+      <li><a href="#q11">JWT Token</a></li>
+      <li><a href="#q12">OAuth 2.0</a></li>
+      <li><a href="#q13">Idempotency</a></li>
+      <li><a href="#q14">HTTP vs HTTPS</a></li>
+      <li><a href="#q15">API Test Validations</a></li>
+      <li><a href="#q16">API Versioning</a></li>
+      <li><a href="#q17">Rate Limiting</a></li>
+      <li><a href="#q18">401 vs 403</a></li>
+      <li><a href="#q19">Query vs Path vs Body Params</a></li>
+      <li><a href="#q20">Testing a Login API</a></li>
+      <li><a href="#b1">Bonus: Payment API</a></li>
+      <li><a href="#b2">Bonus: Duplicate Orders</a></li>
+      <li><a href="#b3">Bonus: Token Expiration</a></li>
+      <li><a href="#b4">Bonus: High Load</a></li>
+      <li><a href="#b5">Bonus: API↔DB Consistency</a></li>
+    </ol>
+  </div>
+
+  <section class="qa" id="q1">
+    <h3><span class="qnum">Q1</span> What is an API?</h3>
+    <p>An <b>API (Application Programming Interface)</b> is a contract that allows two software systems to communicate with each other without knowing each other's internal implementation. It defines the rules: what requests can be sent, what data format is expected, and what response will be returned.</p>
+    <p>Example: A test automation framework calling <code>GET /users/101</code> doesn't need to know how the backend stores user data in the database — it just needs to know the endpoint, the expected request format, and the response structure.</p>
+    <div class="tip"><b>Interview angle:</b> Be ready to explain APIs as the "waiter" analogy — the client (customer) doesn't talk to the kitchen (server/database) directly; the API (waiter) carries the request and brings back the response.</div>
+  </section>
+
+  <section class="qa" id="q2">
+    <h3><span class="qnum">Q2</span> Difference between REST and SOAP APIs</h3>
+    <table>
+      <tr><th>Aspect</th><th>REST</th><th>SOAP</th></tr>
+      <tr><td>Protocol/Style</td><td>Architectural style (not a protocol)</td><td>Strict protocol (W3C standard)</td></tr>
+      <tr><td>Data Format</td><td>JSON, XML, plain text</td><td>XML only</td></tr>
+      <tr><td>Transport</td><td>Mostly HTTP/HTTPS</td><td>HTTP, SMTP, TCP, etc.</td></tr>
+      <tr><td>Statefulness</td><td>Stateless by design</td><td>Can be stateful or stateless</td></tr>
+      <tr><td>Performance</td><td>Lightweight, faster</td><td>Heavier due to XML envelope</td></tr>
+      <tr><td>Security</td><td>Relies on HTTPS/OAuth</td><td>Built-in WS-Security</td></tr>
+      <tr><td>Use Case</td><td>Web/mobile apps, microservices</td><td>Banking, legacy enterprise systems</td></tr>
+    </table>
+    <p>In your GMF/banking experience, you'd typically see SOAP in older legacy integration layers and REST for newer microservices — worth mentioning if asked about real exposure to both.</p>
+  </section>
+
+  <section class="qa" id="q3">
+    <h3><span class="qnum">Q3</span> What are HTTP Methods?</h3>
+    <table>
+      <tr><th>Method</th><th>Purpose</th><th>Idempotent?</th><th>Has Body?</th></tr>
+      <tr><td><code>GET</code></td><td>Retrieve a resource</td><td>Yes</td><td>No</td></tr>
+      <tr><td><code>POST</code></td><td>Create a new resource</td><td>No</td><td>Yes</td></tr>
+      <tr><td><code>PUT</code></td><td>Replace/update entire resource</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><code>PATCH</code></td><td>Partially update a resource</td><td>No (typically)</td><td>Yes</td></tr>
+      <tr><td><code>DELETE</code></td><td>Remove a resource</td><td>Yes</td><td>Usually no</td></tr>
+    </table>
+  </section>
+
+  <section class="qa" id="q4">
+    <h3><span class="qnum">Q4</span> Difference between PUT and PATCH</h3>
+    <ul>
+      <li><b>PUT</b> replaces the <i>entire</i> resource. If you omit a field, it may be wiped out or reset to default.</li>
+      <li><b>PATCH</b> updates only the specified field(s); the rest of the resource remains untouched.</li>
+    </ul>
+    <pre>PUT /users/101
+{ "name": "Sai", "email": "sai@test.com" }   // entire object sent
+
+PATCH /users/101
+{ "email": "sai.new@test.com" }              // only the changed field</pre>
+    <div class="tip"><b>Test design tip:</b> A common bug class is a PUT endpoint that's incorrectly implemented as a PATCH (or vice versa) — always test PUT with a partial payload to confirm whether omitted fields get nulled out.</div>
+  </section>
+
+  <section class="qa" id="q5">
+    <h3><span class="qnum">Q5</span> What are HTTP Status Codes?</h3>
+    <p>Status codes are 3-digit codes returned by the server indicating the result of a request. They fall into 5 classes:</p>
+    <table>
+      <tr><th>Range</th><th>Category</th><th>Common Codes</th></tr>
+      <tr><td>1xx</td><td>Informational</td><td>100 Continue</td></tr>
+      <tr><td>2xx</td><td>Success</td><td>200 OK, 201 Created, 204 No Content</td></tr>
+      <tr><td>3xx</td><td>Redirection</td><td>301 Moved Permanently, 304 Not Modified</td></tr>
+      <tr><td>4xx</td><td>Client Error</td><td>400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict</td></tr>
+      <tr><td>5xx</td><td>Server Error</td><td>500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable</td></tr>
+    </table>
+  </section>
+
+  <section class="qa" id="q6">
+    <h3><span class="qnum">Q6</span> What is JSON?</h3>
+    <p><b>JSON (JavaScript Object Notation)</b> is a lightweight, human-readable, text-based data format used to exchange data between client and server. It's built on key-value pairs and supports nested objects/arrays — making it the default format for most REST APIs.</p>
+    <pre>{
+  "userId": 101,
+  "name": "Sai",
+  "roles": ["admin", "tester"],
+  "active": true
+}</pre>
+    <p>In REST Assured, JSON responses are typically parsed using <code>JsonPath</code> or deserialized into POJOs for assertions.</p>
+  </section>
+
+  <section class="qa" id="q7">
+    <h3><span class="qnum">Q7</span> Difference between Request Payload and Response Payload</h3>
+    <ul>
+      <li><b>Request Payload (Body):</b> The data the client <i>sends</i> to the server — typically used with POST, PUT, PATCH. Example: login credentials, new order details.</li>
+      <li><b>Response Payload (Body):</b> The data the server <i>sends back</i> to the client after processing the request — e.g., the created resource, an error message, or a token.</li>
+    </ul>
+    <pre>// Request Payload
+{ "username": "sai", "password": "Pass@123" }
+
+// Response Payload
+{ "token": "eyJhbGciOi...", "expiresIn": 3600 }</pre>
+  </section>
+
+  <section class="qa" id="q8">
+    <h3><span class="qnum">Q8</span> What are Headers in an API Request?</h3>
+    <p>Headers carry metadata about the request/response — separate from the actual body data. Common headers include:</p>
+    <ul>
+      <li><code>Content-Type</code> — format of the body (e.g., <code>application/json</code>)</li>
+      <li><code>Authorization</code> — credentials/tokens (e.g., <code>Bearer &lt;token&gt;</code>)</li>
+      <li><code>Accept</code> — format the client expects in response</li>
+      <li><code>Cache-Control</code> — caching directives</li>
+      <li><code>User-Agent</code>, <code>X-Request-Id</code>, custom correlation IDs for tracing</li>
+    </ul>
+    <pre>given()
+  .header("Content-Type", "application/json")
+  .header("Authorization", "Bearer " + token)
+.when()
+  .get("/api/orders")
+.then()
+  .statusCode(200);</pre>
+  </section>
+
+  <section class="qa" id="q9">
+    <h3><span class="qnum">Q9</span> What is Authentication?</h3>
+    <p><b>Authentication</b> answers <i>"Who are you?"</i> — it verifies the identity of the user/system making the request. Common mechanisms: Basic Auth, API Keys, JWT tokens, OAuth 2.0, mTLS (client certificates).</p>
+    <p>Given your mTLS/SSL security testing background, you can add: "I've validated authentication at the transport layer too — using JKS/PKCS12 keystores for mutual TLS handshake testing, not just application-layer tokens."</p>
+  </section>
+
+  <section class="qa" id="q10">
+    <h3><span class="qnum">Q10</span> What is Authorization?</h3>
+    <p><b>Authorization</b> answers <i>"What are you allowed to do?"</i> — once identity is confirmed, authorization determines what resources/actions that identity can access (roles, scopes, permissions).</p>
+    <div class="tip"><b>Quick distinction:</b> Authentication happens first (login), authorization happens after (access control). A 401 means authentication failed; a 403 means authentication succeeded but authorization failed.</div>
+  </section>
+
+  <section class="qa" id="q11">
+    <h3><span class="qnum">Q11</span> What is a JWT Token and how does it work?</h3>
+    <p><b>JWT (JSON Web Token)</b> is a compact, self-contained token used for authentication/authorization. It has 3 base64-encoded parts separated by dots:</p>
+    <pre>HEADER.PAYLOAD.SIGNATURE
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYWkiLCJyb2xlIjoiYWRtaW4ifQ.4f8a...</pre>
+    <ul>
+      <li><b>Header:</b> algorithm + token type (e.g., HS256)</li>
+      <li><b>Payload:</b> claims — user id, role, expiry (<code>exp</code>), issued-at (<code>iat</code>)</li>
+      <li><b>Signature:</b> verifies the token wasn't tampered with</li>
+    </ul>
+    <p><b>Flow:</b> Client logs in → server issues a signed JWT → client sends it in the <code>Authorization: Bearer &lt;token&gt;</code> header on every subsequent request → server validates the signature and expiry before granting access. JWTs are stateless — the server doesn't need to store session data.</p>
+  </section>
+
+  <section class="qa" id="q12">
+    <h3><span class="qnum">Q12</span> What is OAuth 2.0?</h3>
+    <p><b>OAuth 2.0</b> is an authorization framework that lets a third-party application access a user's resources without exposing their credentials. It uses tokens (often JWT) instead of passwords for API access.</p>
+    <p>Common grant types:</p>
+    <ul>
+      <li><b>Authorization Code</b> — used in web apps (user redirected to login, app gets a code, exchanges it for a token)</li>
+      <li><b>Client Credentials</b> — machine-to-machine (no user involved) — most common in API test automation</li>
+      <li><b>Password Grant</b> — legacy, direct username/password exchange for token (now discouraged)</li>
+      <li><b>Refresh Token</b> — used to get a new access token without re-authenticating</li>
+    </ul>
+    <p>In test automation, a typical pattern (similar to a <code>TokenManager</code> singleton you may have built) is to fetch a token once via Client Credentials grant and reuse it across the test suite until it expires.</p>
+  </section>
+
+  <section class="qa" id="q13">
+    <h3><span class="qnum">Q13</span> What is Idempotency in APIs?</h3>
+    <p>An operation is <b>idempotent</b> if calling it multiple times with the same input produces the same result as calling it once — without unintended side effects.</p>
+    <ul>
+      <li><code>GET</code>, <code>PUT</code>, <code>DELETE</code> — idempotent by design</li>
+      <li><code>POST</code> — generally NOT idempotent (calling it twice creates two resources)</li>
+    </ul>
+    <p>Example: <code>PUT /accounts/101/balance {"balance": 5000}</code> called 5 times always results in balance = 5000. But <code>POST /orders</code> called twice creates two separate orders — a critical test scenario (see duplicate order bonus question below).</p>
+  </section>
+
+  <section class="qa" id="q14">
+    <h3><span class="qnum">Q14</span> Difference between HTTP and HTTPS</h3>
+    <table>
+      <tr><th>Aspect</th><th>HTTP</th><th>HTTPS</th></tr>
+      <tr><td>Security</td><td>Plain text, unencrypted</td><td>Encrypted via TLS/SSL</td></tr>
+      <tr><td>Port</td><td>80</td><td>443</td></tr>
+      <tr><td>Data integrity</td><td>Vulnerable to MITM attacks</td><td>Protected via certificate validation</td></tr>
+      <tr><td>Use case</td><td>Non-sensitive/legacy systems</td><td>Standard for all production APIs today</td></tr>
+    </table>
+    <p>Given your mTLS testing background, you can mention validating not just one-way TLS (server cert) but mutual TLS where both client and server present certificates — relevant for high-security banking/financial APIs.</p>
+  </section>
+
+  <section class="qa" id="q15">
+    <h3><span class="qnum">Q15</span> What validations should be performed in API Testing?</h3>
+    <ul>
+      <li><b>Status Code Validation</b> — correct code for the scenario (200, 201, 400, 404, etc.)</li>
+      <li><b>Response Body Validation</b> — field values, data types, nested objects/arrays match expectations</li>
+      <li><b>Schema Validation</b> — response structure conforms to a JSON Schema/contract (catches breaking changes)</li>
+      <li><b>Header Validation</b> — Content-Type, caching headers, security headers (e.g., <code>X-Content-Type-Options</code>)</li>
+      <li><b>Response Time Validation</b> — SLA checks (e.g., response under 2 seconds)</li>
+      <li><b>Database Validation</b> — confirm the API's side effects are correctly persisted (e.g., after a POST, query the DB via JDBC to confirm the row exists with correct values)</li>
+      <li><b>Security Validation</b> — auth/authz checks, SQL injection, broken object-level authorization (BOLA), sensitive data exposure</li>
+    </ul>
+    <pre>given().header("Authorization", "Bearer " + token)
+.when().get("/api/orders/5001")
+.then()
+  .statusCode(200)
+  .time(lessThan(2000L))
+  .contentType(ContentType.JSON)
+  .body(matchesJsonSchemaInClasspath("order-schema.json"))
+  .body("orderId", equalTo(5001))
+  .body("status", equalTo("CONFIRMED"));</pre>
+  </section>
+
+  <section class="qa" id="q16">
+    <h3><span class="qnum">Q16</span> What is API Versioning?</h3>
+    <p>Versioning allows APIs to evolve without breaking existing clients. Common strategies:</p>
+    <ul>
+      <li><b>URI Versioning:</b> <code>/api/v1/orders</code>, <code>/api/v2/orders</code></li>
+      <li><b>Query Parameter:</b> <code>/api/orders?version=2</code></li>
+      <li><b>Header Versioning:</b> <code>Accept: application/vnd.company.v2+json</code></li>
+    </ul>
+    <p>Test consideration: when a new version rolls out, regression tests must confirm the old version still behaves correctly (backward compatibility) until clients migrate.</p>
+  </section>
+
+  <section class="qa" id="q17">
+    <h3><span class="qnum">Q17</span> What is Rate Limiting?</h3>
+    <p><b>Rate limiting</b> restricts how many requests a client can make in a given time window, protecting the API from abuse/overload. When exceeded, the server typically returns <code>429 Too Many Requests</code>.</p>
+    <p>Common headers returned: <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code>, <code>Retry-After</code>. As a tester, you'd verify the limit is enforced correctly, the correct status code/headers are returned, and the limit resets after the window expires — tools like JMeter are useful here to simulate burst traffic.</p>
+  </section>
+
+  <section class="qa" id="q18">
+    <h3><span class="qnum">Q18</span> What is 401 vs 403 Error?</h3>
+    <table>
+      <tr><th></th><th>401 Unauthorized</th><th>403 Forbidden</th></tr>
+      <tr><td>Meaning</td><td>Authentication failed/missing</td><td>Authenticated, but not authorized</td></tr>
+      <tr><td>Example</td><td>No token, expired token, invalid credentials</td><td>Valid token, but user role lacks permission for this resource</td></tr>
+      <tr><td>Fix</td><td>Log in again / provide valid credentials</td><td>Request access / use an account with correct role</td></tr>
+    </table>
+  </section>
+
+  <section class="qa" id="q19">
+    <h3><span class="qnum">Q19</span> Difference between Query Parameters, Path Parameters, and Request Body</h3>
+    <table>
+      <tr><th>Type</th><th>Used for</th><th>Example</th></tr>
+      <tr><td>Path Parameter</td><td>Identifying a specific resource</td><td><code>/users/{id}</code> → <code>/users/101</code></td></tr>
+      <tr><td>Query Parameter</td><td>Filtering, sorting, pagination (optional)</td><td><code>/users?status=active&amp;page=2</code></td></tr>
+      <tr><td>Request Body</td><td>Sending complex/structured data (create/update)</td><td><code>POST /users</code> with JSON body</td></tr>
+    </table>
+    <pre>given()
+  .pathParam("id", 101)
+  .queryParam("includeOrders", true)
+.when()
+  .get("/users/{id}")
+.then()
+  .statusCode(200);</pre>
+  </section>
+
+  <section class="qa" id="q20">
+    <h3><span class="qnum">Q20</span> How would you test a Login API?</h3>
+    <p><b>Positive scenarios:</b></p>
+    <ul>
+      <li>Valid username + valid password → 200 OK, valid token returned</li>
+      <li>Token contains correct claims (role, expiry) — decode and validate JWT</li>
+      <li>Response time within SLA</li>
+    </ul>
+    <p><b>Negative scenarios:</b></p>
+    <ul>
+      <li>Invalid password → 401, no token leaked in response</li>
+      <li>Non-existent username → 401 (not 404 — to avoid leaking which usernames exist)</li>
+      <li>Empty/missing fields → 400 Bad Request with clear validation message</li>
+      <li>SQL injection attempt in username/password fields → properly sanitized, no 500 error</li>
+      <li>Locked/disabled account → appropriate error code and message</li>
+      <li>Case sensitivity checks on username/email</li>
+    </ul>
+    <p><b>Security/edge cases:</b></p>
+    <ul>
+      <li>Brute-force protection (account lockout after N failed attempts)</li>
+      <li>Token not exposed in URL or logs</li>
+      <li>Password never returned in any response payload</li>
+      <li>Re-login while an old token is still valid (session handling behavior)</li>
+    </ul>
+    <p><b>DB-level validation:</b> confirm successful login updates a <code>last_login_timestamp</code> or audit log entry where applicable.</p>
+  </section>
+
+  <div class="bonus-banner">💡 Bonus Scenario-Based Questions</div>
+
+  <section class="qa" id="b1">
+    <h3><span class="qnum">B1</span> How would you test a Payment API?</h3>
+    <ul>
+      <li><b>Functional:</b> successful payment with valid card/account, correct amount deducted, correct currency handling, decimal/rounding precision</li>
+      <li><b>Negative:</b> insufficient funds, expired card, invalid CVV, invalid currency code, negative/zero amount</li>
+      <li><b>Idempotency:</b> retrying the same payment request (e.g., due to network timeout) with an idempotency key should NOT charge twice</li>
+      <li><b>Security:</b> PCI-DSS considerations — card numbers should never appear in logs/responses in plain text (masked, e.g., <code>**** **** **** 1234</code>)</li>
+      <li><b>Integration:</b> validate webhook/callback handling for async payment confirmation (e.g., payment gateway calling back after processing)</li>
+      <li><b>DB validation:</b> transaction record created with correct status (PENDING → SUCCESS/FAILED), ledger/balance updated correctly, no orphaned/partial transactions</li>
+      <li><b>Failure/rollback:</b> if the payment gateway times out mid-transaction, confirm the system doesn't leave the order in an inconsistent state</li>
+    </ul>
+  </section>
+
+  <section class="qa" id="b2">
+    <h3><span class="qnum">B2</span> How would you validate duplicate order creation?</h3>
+    <ul>
+      <li>Send the same <code>POST /orders</code> request twice in quick succession (simulating double-click or retry) and confirm only one order is created if an idempotency key is used</li>
+      <li>Verify the API supports an <code>Idempotency-Key</code> header — same key + same payload should return the original response (often <code>200</code> with the existing resource) rather than creating a duplicate</li>
+      <li>Check DB-level constraints — e.g., a unique constraint on (userId + orderReference) to prevent duplicates at the data layer as a safety net</li>
+      <li>Test concurrent/parallel requests (using JMeter or multi-threaded REST Assured calls) to confirm race conditions don't bypass the duplicate check</li>
+      <li>Confirm appropriate response on duplicate detection — typically <code>409 Conflict</code> with a clear error message</li>
+    </ul>
+  </section>
+
+  <section class="qa" id="b3">
+    <h3><span class="qnum">B3</span> How would you test token expiration?</h3>
+    <ul>
+      <li>Generate a token with a short expiry (e.g., <code>exp</code> set to a few seconds) and confirm requests succeed before expiry and fail with <code>401</code> after</li>
+      <li>Confirm the error response clearly indicates "token expired" (not a generic 401, ideally — useful for debugging and good API design)</li>
+      <li>Validate refresh token flow — expired access token + valid refresh token should issue a new access token without requiring full re-login</li>
+      <li>Test using an expired refresh token too — should be rejected and force re-authentication</li>
+      <li>Boundary testing: request sent exactly at the expiry timestamp (clock-skew tolerance checks)</li>
+      <li>Confirm token is invalidated server-side on logout (if using a blocklist/revocation strategy) and can't be reused</li>
+    </ul>
+    <pre>// Pseudocode pattern using a TokenManager singleton
+String expiredToken = tokenManager.getExpiredToken();
+given().header("Authorization", "Bearer " + expiredToken)
+.when().get("/api/orders")
+.then().statusCode(401)
+       .body("error", containsString("expired"));</pre>
+  </section>
+
+  <section class="qa" id="b4">
+    <h3><span class="qnum">B4</span> How would you test APIs under high load?</h3>
+    <ul>
+      <li><b>Load testing:</b> simulate expected concurrent users (e.g., via JMeter) and measure response time, throughput, and error rate under normal peak conditions</li>
+      <li><b>Stress testing:</b> push beyond expected load to find the breaking point and confirm graceful degradation (not crashes or data corruption)</li>
+      <li><b>Spike testing:</b> sudden burst of traffic (e.g., flash sale scenario) to validate auto-scaling and rate-limiting behavior</li>
+      <li><b>Soak/endurance testing:</b> sustained load over a long duration to catch memory leaks or connection pool exhaustion</li>
+      <li><b>Monitoring during tests:</b> correlate JMeter results with Grafana dashboards (API latency, error rate) and Kibana logs to pinpoint bottlenecks</li>
+      <li><b>Validation points:</b> response times stay within SLA, no increase in 5xx errors, DB connection pool doesn't exhaust, no data integrity issues from concurrent writes</li>
+    </ul>
+  </section>
+
+  <section class="qa" id="b5">
+    <h3><span class="qnum">B5</span> How would you validate data consistency between API and Database?</h3>
+    <ul>
+      <li>After a <code>POST</code>/<code>PUT</code> API call, query the database directly (via JDBC — Oracle/PostgreSQL/MariaDB) to confirm the persisted row matches the request payload exactly</li>
+      <li>Validate data type and format consistency (e.g., API returns a formatted date string; DB stores a timestamp — confirm correct mapping)</li>
+      <li>For async/event-driven flows (e.g., Kafka-based pipelines), validate eventual consistency — poll the DB or downstream system with a timeout/retry mechanism rather than asserting immediately</li>
+      <li>Validate cache-DB consistency where Redis is used — confirm cache is correctly invalidated/refreshed on updates, and reads reflect the latest DB state (cache-first read patterns with TTL)</li>
+      <li>Validate soft-deletes/audit columns (e.g., <code>updated_at</code>, <code>is_deleted</code>) are correctly set after relevant API operations</li>
+      <li>Use a combination of REST Assured response assertions + JDBC queries in the same test to assert both layers in one flow</li>
+    </ul>
+    <pre>// Example pattern
+Response response = given().body(orderPayload)
+  .post("/api/orders");
+response.then().statusCode(201);
+
+int orderId = response.jsonPath().getInt("orderId");
+
+// DB-side validation
+String query = "SELECT status, amount FROM orders WHERE id = ?";
+ResultSet rs = dbUtil.executeQuery(query, orderId);
+assertEquals("CONFIRMED", rs.getString("status"));
+assertEquals(orderPayload.getAmount(), rs.getBigDecimal("amount"));</pre>
+  </section>
+
+</div>
+
+<footer>
+  Built for interview prep • Java + REST Assured + TestNG context • Understanding the "why" beats memorizing the "what"
+</footer>
+
+</body>
+</html>

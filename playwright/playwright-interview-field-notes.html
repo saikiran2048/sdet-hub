@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright &amp; SDET Interview Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<style>
+:root{
+  --bg:#0b0e14;
+  --bg-raised:#11151d;
+  --panel:#141922;
+  --panel-2:#0e1219;
+  --border:#232a36;
+  --border-soft:#1b212c;
+  --text:#dbe1ea;
+  --text-dim:#8b93a3;
+  --text-faint:#5c6577;
+  --accent:#5fd0c0;
+  --accent-dim:#3a8f83;
+  --amber:#e3ad4f;
+  --amber-dim:#8a6a2f;
+  --r1:#5fd0c0;
+  --r2:#e3ad4f;
+  --r3:#c98bf0;
+  --radius:10px;
+  --mono:'JetBrains Mono', ui-monospace, monospace;
+  --sans:'Inter', -apple-system, sans-serif;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(95,208,192,0.25);color:#fff;}
+
+a{color:var(--accent);text-decoration:none;}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:16px;
+  padding:14px 24px;
+  background:rgba(11,14,20,0.9);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border-soft);
+}
+.topbar .brand{
+  display:flex;flex-direction:column;gap:2px;margin-right:auto;
+}
+.topbar .brand .tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:0.14em;
+  color:var(--accent);text-transform:uppercase;
+}
+.topbar .brand h1{
+  font-size:15px;margin:0;font-weight:700;color:var(--text);
+  font-family:var(--mono);
+}
+.menu-toggle{
+  display:none;
+  background:var(--panel);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:8px 10px;cursor:pointer;
+}
+
+.search-wrap{
+  position:relative;width:260px;
+}
+.search-wrap input{
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:13px;
+  padding:8px 12px 8px 32px;
+  border-radius:8px;
+  outline:none;
+  transition:border-color .15s;
+}
+.search-wrap input:focus{border-color:var(--accent-dim);}
+.search-wrap svg{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  color:var(--text-faint);
+}
+
+.tabs{display:flex;gap:6px;}
+.tab{
+  font-family:var(--mono);font-size:12px;font-weight:600;
+  background:transparent;border:1px solid var(--border);
+  color:var(--text-dim);padding:7px 13px;border-radius:20px;
+  cursor:pointer;transition:all .15s;
+}
+.tab:hover{border-color:var(--accent-dim);color:var(--text);}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#0b0e14;}
+
+.progress-pill{
+  font-family:var(--mono);font-size:12px;color:var(--text-dim);
+  border:1px solid var(--border);border-radius:20px;padding:6px 12px;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.progress-pill .bar{
+  width:60px;height:5px;border-radius:3px;background:var(--border);overflow:hidden;
+}
+.progress-pill .bar-fill{
+  height:100%;background:var(--accent);width:0%;transition:width .25s;
+}
+
+/* ---------- Layout ---------- */
+.layout{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  max-width:1320px;
+  margin:0 auto;
+}
+.sidebar{
+  position:sticky;top:57px;
+  height:calc(100vh - 57px);
+  overflow-y:auto;
+  padding:22px 14px 60px;
+  border-right:1px solid var(--border-soft);
+}
+.sidebar::-webkit-scrollbar{width:6px;}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+.nav-group{margin-bottom:22px;}
+.nav-group-title{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-faint);
+  padding:0 10px 8px;
+}
+.nav-link{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:12.5px;color:var(--text-dim);
+  padding:6px 10px;border-radius:7px;
+  line-height:1.4;
+  transition:background .12s,color .12s;
+}
+.nav-link:hover{background:var(--panel);color:var(--text);}
+.nav-link.active{background:var(--panel-2);color:var(--accent);}
+.nav-num{
+  font-family:var(--mono);color:var(--text-faint);flex-shrink:0;
+  min-width:14px;
+}
+
+.content{padding:28px 32px 100px;min-width:0;}
+
+.hero{
+  padding:6px 0 30px;
+  border-bottom:1px solid var(--border-soft);
+  margin-bottom:30px;
+}
+.hero .eyebrow{
+  font-family:var(--mono);font-size:11px;color:var(--accent);
+  letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;
+}
+.hero h1{
+  font-size:clamp(24px,3vw,34px);
+  margin:0 0 10px;
+  font-weight:800;
+  letter-spacing:-0.01em;
+}
+.hero p{color:var(--text-dim);max-width:640px;margin:0;font-size:14.5px;}
+.hero .stats{display:flex;gap:22px;margin-top:20px;flex-wrap:wrap;}
+.hero .stat{font-family:var(--mono);}
+.hero .stat b{display:block;font-size:20px;color:var(--text);}
+.hero .stat span{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;}
+
+/* ---------- Round sections ---------- */
+.round{margin-bottom:52px;scroll-margin-top:70px;}
+.round-head{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:20px;
+}
+.round-badge{
+  font-family:var(--mono);font-size:11px;font-weight:700;
+  padding:5px 11px;border-radius:6px;letter-spacing:.05em;
+  background:var(--panel);border:1px solid var(--border);color:var(--text-dim);
+}
+#r1 .round-badge{color:var(--r1);border-color:var(--accent-dim);}
+#r2 .round-badge{color:var(--r2);border-color:var(--amber-dim);}
+#r3 .round-badge{color:var(--r3);border-color:#5c3f74;}
+.round-head h2{margin:0;font-size:19px;font-weight:700;}
+.round-meta{margin:2px 0 0;color:var(--text-faint);font-size:12.5px;font-family:var(--mono);}
+
+.qa-list{display:flex;flex-direction:column;gap:10px;}
+
+.qa{
+  background:var(--panel);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius);
+  overflow:hidden;
+  scroll-margin-top:70px;
+  transition:border-color .15s;
+}
+.qa.reviewed-item{border-color:var(--accent-dim);}
+
+.qa-head{
+  width:100%;
+  display:flex;align-items:center;gap:14px;
+  background:none;border:none;cursor:pointer;
+  padding:15px 18px;
+  text-align:left;
+  color:var(--text);
+  font-family:var(--sans);
+}
+.qa-num{
+  font-family:var(--mono);font-size:12px;color:var(--text-faint);
+  border:1px solid var(--border);
+  width:26px;height:26px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+#r1 .qa-num{color:var(--r1);}
+#r2 .qa-num{color:var(--r2);}
+#r3 .qa-num{color:var(--r3);}
+.qa-title{flex:1;font-size:14.5px;font-weight:600;}
+.qa-controls{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.reviewed{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:10.5px;color:var(--text-faint);
+  text-transform:uppercase;letter-spacing:.04em;cursor:pointer;
+}
+.reviewed input{accent-color:var(--accent);cursor:pointer;}
+.chev{color:var(--text-faint);transition:transform .2s;}
+.qa-head[aria-expanded="false"] .chev{transform:rotate(-90deg);}
+
+.qa-body{
+  padding:0 18px 20px 58px;
+  font-size:14px;
+  color:var(--text-dim);
+}
+.qa-body p{margin:0 0 12px;}
+.qa-body ul,.qa-body ol{margin:0 0 14px;padding-left:20px;}
+.qa-body li{margin-bottom:6px;}
+.qa-body strong{color:var(--text);font-weight:600;}
+.qa-body code{
+  font-family:var(--mono);font-size:0.87em;
+  background:var(--panel-2);border:1px solid var(--border-soft);
+  padding:1px 5px;border-radius:4px;color:var(--accent);
+}
+
+.note{
+  background:var(--panel-2);
+  border-left:2px solid var(--amber);
+  border-radius:6px;
+  padding:12px 14px;
+  margin:14px 0;
+}
+.note-label{
+  display:block;font-family:var(--mono);font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--amber);
+  margin-bottom:6px;
+}
+.note p{margin:0;color:var(--text-dim);font-size:13.5px;}
+
+.table-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--border-soft);border-radius:8px;}
+table{border-collapse:collapse;width:100%;font-size:13px;}
+th{
+  text-align:left;background:var(--panel-2);color:var(--text-faint);
+  font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;
+  padding:10px 14px;border-bottom:1px solid var(--border-soft);
+}
+td{padding:10px 14px;border-bottom:1px solid var(--border-soft);color:var(--text-dim);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+
+.code-block{
+  margin:14px 0;
+  border-radius:8px;
+  overflow:hidden;
+  border:1px solid var(--border-soft);
+}
+.code-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#0d1117;
+  padding:7px 12px;
+  border-bottom:1px solid var(--border-soft);
+}
+.code-lang{
+  font-family:var(--mono);font-size:10.5px;color:var(--text-faint);
+  text-transform:uppercase;letter-spacing:.06em;
+}
+.copy-btn{
+  font-family:var(--mono);font-size:10.5px;
+  background:transparent;border:1px solid var(--border);color:var(--text-dim);
+  padding:3px 9px;border-radius:5px;cursor:pointer;transition:all .15s;
+}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent-dim);}
+.copy-btn.copied{color:var(--accent);border-color:var(--accent);}
+.code-block pre{margin:0;padding:14px 16px;overflow-x:auto;}
+.code-block code{font-family:var(--mono);font-size:12.5px;line-height:1.6;background:transparent!important;}
+
+footer{
+  text-align:center;color:var(--text-faint);font-size:12px;
+  font-family:var(--mono);padding:30px 0 10px;
+}
+
+.qa.hidden,.round.hidden{display:none;}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{
+    position:fixed;left:0;top:57px;bottom:0;width:270px;
+    background:var(--bg-raised);z-index:40;
+    transform:translateX(-100%);transition:transform .2s;
+    box-shadow:20px 0 40px rgba(0,0,0,0.4);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .menu-toggle{display:block;}
+  .search-wrap{width:150px;}
+  .qa-body{padding-left:18px;}
+  .topbar{padding:12px 16px;gap:10px;}
+  .tabs{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Toggle navigation">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <div class="brand">
+    <span class="tag">field notes // sdet</span>
+    <h1>Playwright Interview Prep</h1>
+  </div>
+  <div class="tabs" id="roundTabs">
+    <button class="tab active" data-round="all" type="button">All</button>
+    <button class="tab" data-round="r1" type="button">Round 1</button><button class="tab" data-round="r2" type="button">Round 2</button><button class="tab" data-round="r3" type="button">Round 3</button>
+  </div>
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Filter questions&hellip;">
+  </div>
+  <div class="progress-pill">
+    <span id="progressLabel">0 / 24 reviewed</span>
+    <div class="bar"><div class="bar-fill" id="progressBar"></div></div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    
+<div class="nav-group">
+  <div class="nav-group-title">Round 1 &middot; Playwright Technical</div>
+  <a href="#r1q1" class="nav-link" data-round="r1"><span class="nav-num">1</span>Introduction / Tell me about yourself</a><a href="#r1q2" class="nav-link" data-round="r1"><span class="nav-num">2</span>How do you capture network requests &amp; responses in Playwright?</a><a href="#r1q3" class="nav-link" data-round="r1"><span class="nav-num">3</span>How can you mock API responses using Playwright?</a><a href="#r1q4" class="nav-link" data-round="r1"><span class="nav-num">4</span>How do you take screenshots &amp; videos in Playwright?</a><a href="#r1q5" class="nav-link" data-round="r1"><span class="nav-num">5</span>How do you handle authentication in Playwright? (Basic / Token / OAuth)</a><a href="#r1q6" class="nav-link" data-round="r1"><span class="nav-num">6</span>How do you configure retries/test retries in Playwright?</a>
+</div>
+<div class="nav-group">
+  <div class="nav-group-title">Round 2 &middot; Advanced Playwright</div>
+  <a href="#r2q1" class="nav-link" data-round="r2"><span class="nav-num">1</span>What strategies do you use to debug flaky Playwright tests?</a><a href="#r2q2" class="nav-link" data-round="r2"><span class="nav-num">2</span>How do you optimize test execution speed?</a><a href="#r2q3" class="nav-link" data-round="r2"><span class="nav-num">3</span>How do you handle dynamic elements?</a><a href="#r2q4" class="nav-link" data-round="r2"><span class="nav-num">4</span>locator() vs page.$() — what's the difference?</a><a href="#r2q5" class="nav-link" data-round="r2"><span class="nav-num">5</span>How do you use Trace Viewer for debugging?</a><a href="#r2q6" class="nav-link" data-round="r2"><span class="nav-num">6</span>Share a scenario where Playwright is better than Selenium</a><a href="#r2q7" class="nav-link" data-round="r2"><span class="nav-num">7</span>How do you implement Page Object Model (POM) in Playwright?</a><a href="#r2q8" class="nav-link" data-round="r2"><span class="nav-num">8</span>How do you manage test data?</a><a href="#r2q9" class="nav-link" data-round="r2"><span class="nav-num">9</span>Explain Playwright's parallel execution capabilities</a><a href="#r2q10" class="nav-link" data-round="r2"><span class="nav-num">10</span>Difference between Browser, BrowserContext &amp; Page?</a><a href="#r2q11" class="nav-link" data-round="r2"><span class="nav-num">11</span>How do you launch browsers in headless vs headed mode?</a><a href="#r2q12" class="nav-link" data-round="r2"><span class="nav-num">12</span>What are Playwright Fixtures and why are they useful?</a><a href="#r2q13" class="nav-link" data-round="r2"><span class="nav-num">13</span>How do you handle: Dropdowns / Frames &amp; iFrames / Alerts &amp; Dialogs?</a><a href="#r2q14" class="nav-link" data-round="r2"><span class="nav-num">14</span>How does Playwright handle waits differently from Selenium?</a>
+</div>
+<div class="nav-group">
+  <div class="nav-group-title">Round 3 &middot; Java Coding + Managerial</div>
+  <a href="#r3q1" class="nav-link" data-round="r3"><span class="nav-num">1</span>Count and print the number of vowels and consonants in your name</a><a href="#r3q2" class="nav-link" data-round="r3"><span class="nav-num">2</span>Find unique &amp; duplicate characters in your name WITHOUT using Collections</a><a href="#r3q3" class="nav-link" data-round="r3"><span class="nav-num">3</span>Find the Longest Substring (without repeating characters) in a given String</a><a href="#r3q4" class="nav-link" data-round="r3"><span class="nav-num">4</span>Managerial: The deadline is near. How would you distribute tasks among your teammates?</a>
+</div>
+  </nav>
+
+  <main class="content">
+    <div class="hero">
+      <div class="eyebrow">3 rounds &middot; coding + managerial</div>
+      <h1>Playwright Automation Interview &mdash; Field Notes</h1>
+      <p>Rounds 1&ndash;2 answered in Playwright JS/TS (network mocking, debugging, framework design). Round 3 in Java (coding + managerial). Click any question to expand, check off what you've reviewed, or filter by round.</p>
+      <div class="stats">
+        <div class="stat"><b>6</b><span>Round 1</span></div>
+        <div class="stat"><b>14</b><span>Round 2</span></div>
+        <div class="stat"><b>4</b><span>Round 3</span></div>
+        <div class="stat"><b>24</b><span>Total questions</span></div>
+      </div>
+    </div>
+
+    
+<section class="round" id="r1" data-round="r1">
+  <div class="round-head">
+    <span class="round-badge">Round 1</span>
+    <div>
+      <h2>Playwright Technical</h2>
+      <p class="round-meta">20–30 min · JS/TS</p>
+    </div>
+  </div>
+  <div class="qa-list">
+    
+<article class="qa" id="r1q1" data-round="r1" data-search="introduction / tell me about yourself this is a positioning question, not a biography dump. structure it as: &lt;strong&gt;current role &amp;rarr; domain depth &amp;rarr; core tech stack &amp;rarr; one differentiator &amp;rarr; why you're a fit for this role.&lt;/strong&gt; a tight framework for an sdet:">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r1q1-body">
+    <span class="qa-num">1</span>
+    <span class="qa-title">Introduction / Tell me about yourself</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r1q1">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r1q1-body">
+    <p>This is a positioning question, not a biography dump. Structure it as: <strong>current role &rarr; domain depth &rarr; core tech stack &rarr; one differentiator &rarr; why you're a fit for this role.</strong></p><p>A tight framework for an SDET:</p><ul><li><strong>Who you are now</strong>: role, years of experience, domain (e.g., BFSI).</li><li><strong>What you actually do</strong>: UI + API + DB automation, framework ownership, CI/CD integration &mdash; not just "I write test cases."</li><li><strong>One standout</strong>: a scale number, a framework you built, or a problem you solved (flaky tests reduced by X%, migrated Selenium &rarr; Playwright, built a reconciliation validator).</li><li><strong>Close with intent</strong>: why this role/company, tying your Playwright strength to what they're hiring for.</li></ul><div class="note"><span class="note-label">Timing</span><p>Keep it to 60&ndash;90 seconds. Interviewers use this to decide <em>which</em> follow-up questions to ask, so don't bury your strongest project &mdash; lead with it.</p></div>
+  </div>
+</article>
+<article class="qa" id="r1q2" data-round="r1" data-search="how do you capture network requests &amp;amp; responses in playwright? playwright exposes the browser's network layer directly through the &lt;code&gt;page&lt;/code&gt; object &amp;mdash; no proxy or third-party library needed (unlike selenium, which requires browsermob proxy or devtools protocol hacks). &lt;strong&gt;a) listening to all requests/responses (passive capture)&lt;/strong&gt; &lt;strong&gt;b) waiting for a specific request/response (synchronous capture)&lt;/strong&gt;">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r1q2-body">
+    <span class="qa-num">2</span>
+    <span class="qa-title">How do you capture network requests &amp; responses in Playwright?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r1q2">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r1q2-body">
+    <p>Playwright exposes the browser's network layer directly through the <code>page</code> object &mdash; no proxy or third-party library needed (unlike Selenium, which requires BrowserMob Proxy or DevTools Protocol hacks).</p><p><strong>a) Listening to all requests/responses (passive capture)</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">page.on('request', request =&gt; {
+  console.log('&gt;&gt;', request.method(), request.url());
+});
+
+page.on('response', response =&gt; {
+  console.log('&lt;&lt;', response.status(), response.url());
+});
+
+await page.goto('https://example.com');</code></pre></div><p><strong>b) Waiting for a specific request/response (synchronous capture)</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">const [response] = await Promise.all([
+  page.waitForResponse(resp =&gt; resp.url().includes('/api/orders') &amp;&amp; resp.status() === 200),
+  page.click('#submit-order'),
+]);
+
+const body = await response.json();
+console.log('Order API response:', body);</code></pre></div><div class="note"><span class="note-label">Why this matters</span><p><code>waitForResponse</code>/<code>waitForRequest</code> are also a <em>synchronization</em> mechanism &mdash; you can assert the UI only after the underlying API call actually completes, which eliminates a large class of flaky waits that Selenium can't solve natively.</p></div><div class="note"><span class="note-label">Trade-off</span><p>Passive listeners (<code>page.on('response', ...)</code>) are good for logging/debugging entire flows (e.g., attaching all network logs to a test report on failure), while <code>waitForResponse</code> is for precise, single-call assertions.</p></div>
+  </div>
+</article>
+<article class="qa" id="r1q3" data-round="r1" data-search="how can you mock api responses using playwright? playwright can intercept and fulfill network calls via &lt;code&gt;page.route()&lt;/code&gt;, letting you test the ui in isolation from the backend &amp;mdash; useful for edge cases, error states, or backend not yet built. &lt;strong&gt;modifying a real response (not fully replacing it):&lt;/strong&gt; &lt;strong&gt;simulating failures/timeouts:&lt;/strong&gt;">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r1q3-body">
+    <span class="qa-num">3</span>
+    <span class="qa-title">How can you mock API responses using Playwright?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r1q3">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r1q3-body">
+    <p>Playwright can intercept and fulfill network calls via <code>page.route()</code>, letting you test the UI in isolation from the backend &mdash; useful for edge cases, error states, or backend not yet built.</p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">await page.route('**/api/orders', route =&gt; {
+  route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ orderId: 1234, status: 'CONFIRMED' }),
+  });
+});
+
+await page.goto('https://example.com/orders');</code></pre></div><p><strong>Modifying a real response (not fully replacing it):</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">await page.route('**/api/orders', async route =&gt; {
+  const response = await route.fetch();
+  const body = (await response.text()).replace('"status":"PENDING"', '"status":"FAILED"');
+  await route.fulfill({ response, body });
+});</code></pre></div><p><strong>Simulating failures/timeouts:</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">await page.route('**/api/orders', route =&gt; route.abort('failed')); // network error
+// or
+await page.route('**/api/orders', route =&gt;
+  route.fulfill({ status: 500, body: JSON.stringify({ error: 'Internal Server Error' }) })
+);</code></pre></div><div class="note"><span class="note-label">Interview angle</span><p>Distinguish <strong>contract-level mocking</strong> (fast, deterministic, good for negative/edge-case UI testing) from <strong>true E2E</strong> (validates the real integration). State explicitly that you use mocking to <em>supplement</em>, not replace, real API/E2E coverage.</p></div>
+  </div>
+</article>
+<article class="qa" id="r1q4" data-round="r1" data-search="how do you take screenshots &amp;amp; videos in playwright? &lt;strong&gt;screenshots &amp;mdash; three levels:&lt;/strong&gt; &lt;strong&gt;video recording &amp;mdash; configured at context/project level:&lt;/strong&gt;">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r1q4-body">
+    <span class="qa-num">4</span>
+    <span class="qa-title">How do you take screenshots &amp; videos in Playwright?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r1q4">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r1q4-body">
+    <p><strong>Screenshots &mdash; three levels:</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// Full page
+await page.screenshot({ path: 'full-page.png', fullPage: true });
+
+// Specific element
+await page.locator('#summary-panel').screenshot({ path: 'panel.png' });
+
+// On-failure only — Playwright Test does this natively via config
+// playwright.config.ts
+export default defineConfig({
+  use: { screenshot: 'only-on-failure' },
+});</code></pre></div><p><strong>Video recording &mdash; configured at context/project level:</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// playwright.config.ts
+export default defineConfig({
+  use: { video: 'retain-on-failure' },
+});
+
+// or manually per context
+const context = await browser.newContext({
+  recordVideo: { dir: 'videos/', size: { width: 1280, height: 720 } },
+});</code></pre></div><div class="note"><span class="note-label">Gotcha</span><p>Video is finalized only when the context closes &mdash; so <code>await context.close()</code> must be called for the file to be written and playable.</p></div><div class="note"><span class="note-label">Interview angle</span><p>Talk about <em>cost</em> &mdash; video recording adds overhead and disk usage, so a mature framework typically only enables it conditionally (<code>retain-on-failure</code>, or on CI retry, not for every local run).</p></div>
+  </div>
+</article>
+<article class="qa" id="r1q5" data-round="r1" data-search="how do you handle authentication in playwright? (basic / token / oauth) &lt;strong&gt;&amp;rarr; basic auth&lt;/strong&gt; &lt;strong&gt;&amp;rarr; token-based authentication&lt;/strong&gt; &amp;mdash; two common patterns: 1. set an authorization header on every request: 2. programmatic login once, reuse storage state (most efficient pattern, and playwright's recommended approach): in &lt;code&gt;playwright.config.ts&lt;/code&gt;, this is usually wired up via a &lt;code&gt;setup&lt;/code&gt; project + &lt;code&gt;storagestate&lt;/code&gt; in &lt;code&gt;use&lt;/code&gt;, so every test project depends on auth being established once. &lt;strong&gt;&amp;rarr; oauth&lt;/strong&gt;">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r1q5-body">
+    <span class="qa-num">5</span>
+    <span class="qa-title">How do you handle authentication in Playwright? (Basic / Token / OAuth)</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r1q5">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r1q5-body">
+    <p><strong>&rarr; Basic Auth</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">const context = await browser.newContext({
+  httpCredentials: { username: 'user', password: 'pass' },
+});</code></pre></div><p><strong>&rarr; Token-based Authentication</strong> &mdash; two common patterns:</p><p>1. Set an Authorization header on every request:</p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">await context.setExtraHTTPHeaders({ Authorization: `Bearer ${token}` });</code></pre></div><p>2. Programmatic login once, reuse storage state (most efficient pattern, and Playwright's recommended approach):</p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// One-time login — typically done in a global setup project
+const page = await context.newPage();
+await page.goto('https://app.example.com/login');
+await page.fill('#username', 'user');
+await page.fill('#password', 'pass');
+await page.click('#login-btn');
+await page.waitForURL('**/dashboard');
+await context.storageState({ path: 'auth.json' });
+
+// Reuse across all subsequent tests — skips UI login entirely
+const context2 = await browser.newContext({ storageState: 'auth.json' });</code></pre></div><p>In <code>playwright.config.ts</code>, this is usually wired up via a <code>setup</code> project + <code>storageState</code> in <code>use</code>, so every test project depends on auth being established once.</p><p><strong>&rarr; OAuth</strong></p><ul><li><strong>Avoid automating the actual OAuth UI</strong> where possible &mdash; it's brittle, rate-limited, and sometimes blocked by bot detection (Google actively blocks headless automated logins).</li><li>Preferred: get a valid session token via the <strong>API directly</strong> (call the auth provider's token endpoint) and inject it into <code>localStorage</code>/cookies/storage state before navigating.</li><li>If UI automation of the OAuth flow is unavoidable, isolate it into a one-time <strong>global setup</strong> step + storage-state reuse, rather than repeating login per test.</li></ul><div class="note"><span class="note-label">Framework-design point</span><p>Storage-state reuse is the single biggest lever for both speed <em>and</em> stability &mdash; it removes login as a per-test dependency and point of flakiness.</p></div>
+  </div>
+</article>
+<article class="qa" id="r1q6" data-round="r1" data-search="how do you configure retries/test retries in playwright? unlike java (where retries need testng's &lt;code&gt;iretryanalyzer&lt;/code&gt;), &lt;strong&gt;retries are a native, first-class feature of the playwright test runner&lt;/strong&gt;: or scoped per-test/per-describe block: retried tests are automatically tagged in the html report, and you can trigger tracing/video/screenshots &lt;strong&gt;only on retry&lt;/strong&gt; (&lt;code&gt;trace: 'on-first-retry'&lt;/code&gt;) &amp;mdash; so you get full forensic debugging data without paying that cost on every green run.">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r1q6-body">
+    <span class="qa-num">6</span>
+    <span class="qa-title">How do you configure retries/test retries in Playwright?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r1q6">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r1q6-body">
+    <p>Unlike Java (where retries need TestNG's <code>IRetryAnalyzer</code>), <strong>retries are a native, first-class feature of the Playwright Test runner</strong>:</p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// playwright.config.ts
+export default defineConfig({
+  retries: process.env.CI ? 2 : 0, // retry only in CI, not locally
+});</code></pre></div><p>Or scoped per-test/per-describe block:</p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">test.describe.configure({ retries: 1 });</code></pre></div><p>Retried tests are automatically tagged in the HTML report, and you can trigger tracing/video/screenshots <strong>only on retry</strong> (<code>trace: 'on-first-retry'</code>) &mdash; so you get full forensic debugging data without paying that cost on every green run.</p><div class="note"><span class="note-label">Important trade-off to raise unprompted</span><p>Retries mask flakiness rather than fix it. “I use retries as a <em>safety net for environment-level flakiness</em> (network blips, CI resource contention), not as a substitute for fixing real synchronization issues in the test. I keep local retries at 0 so flaky tests fail loudly in dev, and I track CI retry counts in reporting so silently-flaky tests get flagged, not hidden.” This is a senior-level distinction interviewers specifically listen for.</p></div>
+  </div>
+</article>
+  </div>
+</section>
+<section class="round" id="r2" data-round="r2">
+  <div class="round-head">
+    <span class="round-badge">Round 2</span>
+    <div>
+      <h2>Advanced Playwright</h2>
+      <p class="round-meta">30–45 min · JS/TS</p>
+    </div>
+  </div>
+  <div class="qa-list">
+    
+<article class="qa" id="r2q1" data-round="r2" data-search="what strategies do you use to debug flaky playwright tests? structure your answer as a &lt;strong&gt;triage funnel&lt;/strong&gt;, not a list of tools:">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q1-body">
+    <span class="qa-num">1</span>
+    <span class="qa-title">What strategies do you use to debug flaky Playwright tests?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q1">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q1-body">
+    <p>Structure your answer as a <strong>triage funnel</strong>, not a list of tools:</p><ol><li><strong>Reproduce locally first</strong> &mdash; run headed with <code>--debug</code> or slow-mo to see if it's a genuine timing issue vs. environment-specific.</li><li><strong>Trace Viewer</strong> &mdash; the single most powerful tool; replays DOM snapshots, network, console logs, and actions frame-by-frame for the exact failing run.</li><li><strong>Check for anti-patterns</strong>: hard-coded <code>waitForTimeout()</code>, assertions racing against async UI updates, shared mutable state between parallel tests, test-order dependency.</li><li><strong>Isolate the failure category</strong>: network timing &rarr; use <code>waitForResponse</code>/<code>waitForLoadState</code>; animation/re-render race &rarr; rely on auto-waiting locators; environment-only flakiness (CI but not local) &rarr; check resource contention or headless rendering differences.</li><li><strong>Quarantine + track</strong>, don't silently retry &mdash; flag flaky tests (e.g., via <code>test.fixme()</code> or a flaky-tests dashboard) so they get real fixes, not permanent retry band-aids.</li></ol>
+  </div>
+</article>
+<article class="qa" id="r2q2" data-round="r2" data-search="how do you optimize test execution speed? ">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q2-body">
+    <span class="qa-num">2</span>
+    <span class="qa-title">How do you optimize test execution speed?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q2">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q2-body">
+    <ul><li><strong>Parallelization</strong>: Playwright Test parallelizes by default across <code>workers</code>; tune <code>workers</code> in <code>playwright.config.ts</code> to match CI runner resources.</li><li><strong>Storage-state reuse</strong> to skip UI login &mdash; often the single biggest win.</li><li><strong>API-first setup/teardown</strong>: create test data via API calls instead of UI flows; only use the UI for the actual behavior under test.</li><li><strong>Avoid <code>waitForTimeout()</code></strong> &mdash; replace with condition-based waits and web-first assertions (<code>expect(locator).toBeVisible()</code>) that poll instead of sleeping.</li><li><strong>Selective execution</strong>: tag-based test runs (<code>@smoke</code>, <code>@regression</code> via <code>grep</code>) so CI doesn't always run the full suite.</li><li><strong>Sharding</strong> (<code>--shard=1/4</code>) to split one suite across multiple CI machines.</li><li><strong>Headless in CI</strong>, headed only for local debugging.</li></ul>
+  </div>
+</article>
+<article class="qa" id="r2q3" data-round="r2" data-search="how do you handle dynamic elements? “dynamic” usually means one of: delayed rendering, changing dom order, or non-deterministic attributes (auto-generated ids). handle each differently:">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q3-body">
+    <span class="qa-num">3</span>
+    <span class="qa-title">How do you handle dynamic elements?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q3">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q3-body">
+    <p>“Dynamic” usually means one of: delayed rendering, changing DOM order, or non-deterministic attributes (auto-generated IDs). Handle each differently:</p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// Delayed rendering — Playwright's locators auto-wait, no explicit wait needed
+await page.getByText('John Doe').click();
+
+// Non-deterministic ID — anchor on stable attributes instead
+await page.getByTestId('order-row').filter({ hasText: 'Order #1234' }).click();
+
+// Element that appears after an async action
+await page.locator('#confirmation-banner').waitFor({ state: 'visible' });
+
+// List where order/count changes
+const items = await page.locator('.list-item').allTextContents();</code></pre></div><div class="note"><span class="note-label">Key point</span><p>Favor <code>data-testid</code>/role-based locators (<code>getByRole</code>, <code>getByTestId</code>) over CSS classes/auto-generated IDs &mdash; this is both a dynamic-element <em>and</em> a maintainability answer.</p></div>
+  </div>
+</article>
+<article class="qa" id="r2q4" data-round="r2" data-search="locator() vs page.$() — what's the difference? this is a core conceptual question &amp;mdash; get it precise:">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q4-body">
+    <span class="qa-num">4</span>
+    <span class="qa-title">locator() vs page.$() — what's the difference?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q4">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q4-body">
+    <p>This is a core conceptual question &mdash; get it precise:</p><div class="table-wrap"><table><thead><tr><th></th><th>page.locator()</th><th>page.$() (querySelector)</th></tr></thead><tbody><tr><td>Type</td><td>A <strong>lazy, re-evaluating reference</strong> to elements matching a selector</td><td>An <strong>immediate snapshot handle</strong> (<code>ElementHandle</code>) to the element at call-time</td></tr><tr><td>Auto-wait</td><td>Yes &mdash; re-queries the DOM and waits for actionability before every action</td><td>No &mdash; resolves once, immediately; if the element isn't there yet, returns <code>null</code></td></tr><tr><td>Stale references</td><td>Never goes stale &mdash; re-locates on every interaction</td><td>Can go stale if the DOM re-renders after the handle was captured</td></tr><tr><td>Recommended usage</td><td>Preferred, modern API for virtually all interactions</td><td>Legacy/low-level; Playwright's docs deprecate this in favor of locators</td></tr></tbody></table></div><div class="note"><span class="note-label">Lead with this</span><p>“<code>locator()</code> is a strategy, not a handle &mdash; it re-finds the element every time and waits for it to be actionable, which is why Playwright recommends it over <code>page.$()</code>/<code>ElementHandle</code>, which is a single point-in-time reference that can go stale.”</p></div>
+  </div>
+</article>
+<article class="qa" id="r2q5" data-round="r2" data-search="how do you use trace viewer for debugging? &lt;strong&gt;enabling traces &amp;mdash; config-driven (typical):&lt;/strong&gt; &lt;strong&gt;or manually, mid-test:&lt;/strong&gt; &lt;strong&gt;what you get:&lt;/strong&gt; a timeline you can scrub through showing, for each action &amp;mdash; a dom snapshot before/after, the network calls in flight, console logs, and exact locator resolution. open it with &lt;code&gt;npx playwright show-trace trace.zip&lt;/code&gt; or the online trace viewer.">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q5-body">
+    <span class="qa-num">5</span>
+    <span class="qa-title">How do you use Trace Viewer for debugging?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q5">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q5-body">
+    <p><strong>Enabling traces &mdash; config-driven (typical):</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// playwright.config.ts
+export default defineConfig({
+  use: { trace: 'on-first-retry' }, // only capture on retry, not every green run
+});</code></pre></div><p><strong>Or manually, mid-test:</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
+// ... run test steps ...
+await context.tracing.stop({ path: 'trace.zip' });</code></pre></div><p><strong>What you get:</strong> a timeline you can scrub through showing, for each action &mdash; a DOM snapshot before/after, the network calls in flight, console logs, and exact locator resolution. Open it with <code>npx playwright show-trace trace.zip</code> or the online trace viewer.</p><div class="note"><span class="note-label">Why it beats traditional debugging</span><p>Instead of adding <code>console.log</code>s and re-running, you get a full forensic replay of a single CI run &mdash; including the exact DOM state at the moment of failure &mdash; without needing to reproduce the issue.</p></div>
+  </div>
+</article>
+<article class="qa" id="r2q6" data-round="r2" data-search="share a scenario where playwright is better than selenium give a concrete, specific scenario rather than a generic feature list: also worth mentioning as breadth (not the main story): built-in parallelism via &lt;code&gt;browsercontext&lt;/code&gt; isolation (no selenium grid needed), native network interception, multi-tab/multi-origin support, and web-first assertions (&lt;code&gt;expect(locator).tohavetext(...)&lt;/code&gt;) that auto-retry instead of failing on the first check.">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q6-body">
+    <span class="qa-num">6</span>
+    <span class="qa-title">Share a scenario where Playwright is better than Selenium</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q6">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q6-body">
+    <p>Give a concrete, specific scenario rather than a generic feature list:</p><div class="note"><span class="note-label">Sample story</span><p>“On a banking UI with an async, multi-step payment confirmation (submit &rarr; backend processing &rarr; websocket push &rarr; UI update), Selenium required explicit <code>WebDriverWait</code> chains and still had intermittent flakiness because it has no native visibility into network state. In Playwright, I used <code>page.waitForResponse()</code> to synchronize directly on the confirmation API call completing, and Playwright's auto-waiting locators eliminated the need for manual <code>ExpectedConditions</code>. Trace Viewer then let me pinpoint the one race condition that remained &mdash; something that would've taken hours of log-diffing in Selenium's Grid setup.”</p></div><p>Also worth mentioning as breadth (not the main story): built-in parallelism via <code>BrowserContext</code> isolation (no Selenium Grid needed), native network interception, multi-tab/multi-origin support, and web-first assertions (<code>expect(locator).toHaveText(...)</code>) that auto-retry instead of failing on the first check.</p>
+  </div>
+</article>
+<article class="qa" id="r2q7" data-round="r2" data-search="how do you implement page object model (pom) in playwright? &lt;strong&gt;design choices worth stating explicitly:&lt;/strong&gt;">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q7-body">
+    <span class="qa-num">7</span>
+    <span class="qa-title">How do you implement Page Object Model (POM) in Playwright?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q7">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q7-body">
+    <div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">import { Page, Locator } from '@playwright/test';
+
+export class LoginPage {
+  private readonly page: Page;
+  private readonly usernameInput: Locator;
+  private readonly passwordInput: Locator;
+  private readonly loginButton: Locator;
+  private readonly errorMessage: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.usernameInput = page.locator('#username');
+    this.passwordInput = page.locator('#password');
+    this.loginButton = page.locator('#login-btn');
+    this.errorMessage = page.locator('#error-msg');
+  }
+
+  async login(username: string, password: string): Promise&lt;DashboardPage&gt; {
+    await this.usernameInput.fill(username);
+    await this.passwordInput.fill(password);
+    await this.loginButton.click();
+    return new DashboardPage(this.page);
+  }
+
+  async getErrorMessage(): Promise&lt;string&gt; {
+    return this.errorMessage.textContent() ?? '';
+  }
+}</code></pre></div><p><strong>Design choices worth stating explicitly:</strong></p><ul><li><strong>Locators as fields, initialized in the constructor</strong> (not re-queried as strings scattered across test methods) &mdash; one place to update if the UI changes.</li><li><strong>Methods return the next Page Object</strong> (<code>login()</code> returns <code>DashboardPage</code>) &mdash; this “fluent navigation” pattern makes test flows read like user journeys and catches wrong-navigation bugs at compile time (with TypeScript).</li><li><strong>No assertions inside Page Objects</strong> &mdash; assertions belong in the test layer; Page Objects only expose actions and raw data, keeping them reusable across positive and negative test cases.</li><li>Layer further with a <strong>Component Object</strong> pattern for repeated UI fragments (nav bar, modal, data table), and combine POM with <strong>fixtures</strong> (Q12) so tests receive ready-to-use page objects instead of constructing them inline.</li></ul>
+  </div>
+</article>
+<article class="qa" id="r2q8" data-round="r2" data-search="how do you manage test data? ">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q8-body">
+    <span class="qa-num">8</span>
+    <span class="qa-title">How do you manage test data?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q8">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q8-body">
+    <ul><li><strong>API-driven setup/teardown</strong>: create/delete test entities via backend API calls (using Playwright's built-in <code>request</code> context &mdash; no separate HTTP client needed).</li><li><strong>Test data factories/builders</strong> (TS): typed builder functions generating valid-by-default objects with overridable fields, avoiding giant static JSON fixtures that drift out of sync with schema changes.</li><li><strong>Environment isolation</strong>: unique data per test run (UUID-suffixed usernames/emails) to avoid collisions in parallel/sharded runs.</li><li><strong>External data sources</strong>: DB seeding scripts for larger datasets, JSON/CSV for parameterized tests.</li><li><strong>Cleanup discipline</strong>: teardown via fixture <code>use()</code> + cleanup-after pattern, or <code>test.afterEach</code>, so failed runs don't leave orphaned data.</li></ul>
+  </div>
+</article>
+<article class="qa" id="r2q9" data-round="r2" data-search="explain playwright's parallel execution capabilities playwright parallelizes at two levels:">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q9-body">
+    <span class="qa-num">9</span>
+    <span class="qa-title">Explain Playwright's parallel execution capabilities</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q9">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q9-body">
+    <p>Playwright parallelizes at two levels:</p><ol><li><strong>Browser/Context level</strong>: each <code>BrowserContext</code> is a fully isolated “incognito” session (separate cookies, storage, cache) within the <em>same</em> browser process &mdash; much cheaper than spinning up a new browser instance, and no shared state between tests.</li><li><strong>Worker/process level</strong>: Playwright Test spins up multiple <strong>workers</strong> (independent Node.js processes, each with its own browser instance), controlled by the <code>workers</code> config option &mdash; tests in different files run fully in parallel by default.</li></ol><div class="note"><span class="note-label">Practical framework note</span><p>Because contexts are isolated but cheap, Playwright Test's default pattern is <em>one browser instance per worker</em>, with a <em>fresh <code>BrowserContext</code> + <code>page</code> per test</em> (via the built-in <code>page</code> fixture). Add <strong>sharding</strong> (<code>--shard</code>) on top to split the worker pool across multiple CI machines for even larger suites.</p></div>
+  </div>
+</article>
+<article class="qa" id="r2q10" data-round="r2" data-search="difference between browser, browsercontext &amp;amp; page? ">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q10-body">
+    <span class="qa-num">10</span>
+    <span class="qa-title">Difference between Browser, BrowserContext &amp; Page?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q10">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q10-body">
+    <div class="table-wrap"><table><thead><tr><th>Level</th><th>Analogy</th><th>Scope</th></tr></thead><tbody><tr><td>Browser</td><td>The installed browser application itself</td><td>One instance can spawn many contexts; expensive to create, so typically created once per worker</td></tr><tr><td>BrowserContext</td><td>An incognito window</td><td>Isolated cookies, storage, cache, permissions per context &mdash; this is your <strong>test isolation boundary</strong></td></tr><tr><td>Page</td><td>A single tab within that window</td><td>A context can have multiple pages (tabs); most tests use one page per context, but multi-tab scenarios use multiple</td></tr></tbody></table></div><div class="note"><span class="note-label">Close with</span><p>“I treat <code>BrowserContext</code> as my unit of test isolation &mdash; one fresh context per test guarantees no cookie/storage leakage between tests, without paying the cost of relaunching the whole browser. Playwright Test's built-in <code>page</code> fixture already gives you this for free per test.”</p></div>
+  </div>
+</article>
+<article class="qa" id="r2q11" data-round="r2" data-search="how do you launch browsers in headless vs headed mode? headless is faster and ci-friendly; headed (often combined with &lt;code&gt;slowmo&lt;/code&gt;) is for local visual debugging, and &lt;code&gt;test.only&lt;/code&gt; + &lt;code&gt;--headed --debug&lt;/code&gt; together is the typical local-debug workflow. toggling via an environment variable/config flag (rather than hardcoding) means the same test suite runs correctly in both local dev and pipeline without code changes.">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q11-body">
+    <span class="qa-num">11</span>
+    <span class="qa-title">How do you launch browsers in headless vs headed mode?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q11">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q11-body">
+    <div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// playwright.config.ts
+export default defineConfig({
+  use: {
+    headless: !!process.env.CI, // headless in CI, headed locally
+  },
+});
+
+// or programmatically
+const browser = await chromium.launch({ headless: false, slowMo: 50 });</code></pre></div><p>Headless is faster and CI-friendly; headed (often combined with <code>slowMo</code>) is for local visual debugging, and <code>test.only</code> + <code>--headed --debug</code> together is the typical local-debug workflow. Toggling via an environment variable/config flag (rather than hardcoding) means the same test suite runs correctly in both local dev and pipeline without code changes.</p>
+  </div>
+</article>
+<article class="qa" id="r2q12" data-round="r2" data-search="what are playwright fixtures and why are they useful? fixtures are playwright test's built-in &lt;strong&gt;dependency injection + setup/teardown mechanism&lt;/strong&gt; &amp;mdash; they provide pre-configured objects (an authenticated &lt;code&gt;page&lt;/code&gt;, a seeded api client, a page object) to a test automatically, and clean them up after, without every test repeating boilerplate setup code. &lt;strong&gt;why they matter, beyond just “less boilerplate”:&lt;/strong&gt;">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q12-body">
+    <span class="qa-num">12</span>
+    <span class="qa-title">What are Playwright Fixtures and why are they useful?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q12">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q12-body">
+    <p>Fixtures are Playwright Test's built-in <strong>dependency injection + setup/teardown mechanism</strong> &mdash; they provide pre-configured objects (an authenticated <code>page</code>, a seeded API client, a Page Object) to a test automatically, and clean them up after, without every test repeating boilerplate setup code.</p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">import { test as base, expect } from '@playwright/test';
+import { LoginPage } from './pages/LoginPage';
+
+type MyFixtures = {
+  loginPage: LoginPage;
+  authenticatedPage: import('@playwright/test').Page;
+};
+
+export const test = base.extend&lt;MyFixtures&gt;({
+  loginPage: async ({ page }, use) =&gt; {
+    const loginPage = new LoginPage(page);
+    await use(loginPage);
+  },
+
+  authenticatedPage: async ({ browser }, use) =&gt; {
+    const context = await browser.newContext({ storageState: 'auth.json' });
+    const page = await context.newPage();
+    await use(page);          // test runs here
+    await context.close();    // teardown, runs automatically after
+  },
+});
+
+export { expect };</code></pre></div><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// in a test file
+import { test, expect } from './fixtures';
+
+test('dashboard shows welcome message', async ({ authenticatedPage }) =&gt; {
+  await authenticatedPage.goto('/dashboard');
+  await expect(authenticatedPage.getByText('Welcome')).toBeVisible();
+});</code></pre></div><p><strong>Why they matter, beyond just “less boilerplate”:</strong></p><ul><li><strong>Composable</strong>: fixtures can depend on other fixtures (<code>authenticatedPage</code> could itself use an <code>apiClient</code> fixture to seed data first).</li><li><strong>Automatic teardown</strong>: the code after <code>await use(...)</code> always runs, even on test failure &mdash; a safer cleanup guarantee than manually remembering <code>afterEach</code>.</li><li><strong>Worker-scoped vs test-scoped</strong>: fixtures can be scoped to run once per worker (an expensive DB connection) or fresh per test (a clean page) via <code>{ scope: 'worker' }</code>.</li></ul><div class="note"><span class="note-label">Interview signal to give proactively</span><p>Contrast this with Java, where this exact effect has to be hand-built via TestNG/JUnit lifecycle annotations and a base test class &mdash; native fixtures are one of the concrete advantages of the JS/TS runner over Playwright's Java bindings.</p></div>
+  </div>
+</article>
+<article class="qa" id="r2q13" data-round="r2" data-search="how do you handle: dropdowns / frames &amp;amp; iframes / alerts &amp;amp; dialogs? &lt;strong&gt;dropdowns:&lt;/strong&gt; &lt;strong&gt;frames/iframes:&lt;/strong&gt; &lt;code&gt;framelocator()&lt;/code&gt; is preferred over the older &lt;code&gt;page.frame({ name })&lt;/code&gt; lookup because it auto-waits for the iframe itself to be attached, avoiding a race where the iframe hasn't loaded yet. &lt;strong&gt;alerts/dialog boxes:&lt;/strong&gt;">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q13-body">
+    <span class="qa-num">13</span>
+    <span class="qa-title">How do you handle: Dropdowns / Frames &amp; iFrames / Alerts &amp; Dialogs?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q13">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q13-body">
+    <p><strong>Dropdowns:</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">// Native &lt;select&gt;
+await page.selectOption('#country', 'IN');
+
+// Custom (div-based) dropdown — click to open, then click the option
+await page.click('#custom-dropdown-trigger');
+await page.getByRole('option', { name: 'India' }).click();</code></pre></div><p><strong>Frames/iFrames:</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">const frame = page.frameLocator('#payment-iframe');
+await frame.locator('#card-number').fill('4111111111111111');</code></pre></div><p><code>frameLocator()</code> is preferred over the older <code>page.frame({ name })</code> lookup because it auto-waits for the iframe itself to be attached, avoiding a race where the iframe hasn't loaded yet.</p><p><strong>Alerts/Dialog boxes:</strong></p><div class="code-block"><div class="code-bar"><span class="code-lang">typescript</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-typescript">page.on('dialog', async dialog =&gt; {
+  console.log('Dialog message:', dialog.message());
+  await dialog.accept(); // or dialog.dismiss();
+});
+await page.click('#delete-btn'); // triggers the confirm() dialog</code></pre></div><div class="note"><span class="note-label">Important nuance</span><p>The listener must be registered <strong>before</strong> the action that triggers the dialog, since Playwright auto-dismisses unhandled dialogs by default &mdash; unlike Selenium, where you switch to <code>driver.switchTo().alert()</code> reactively after the fact.</p></div>
+  </div>
+</article>
+<article class="qa" id="r2q14" data-round="r2" data-search="how does playwright handle waits differently from selenium? this is the conceptual capstone question &amp;mdash; answer it as a philosophy difference, not a feature list:">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r2q14-body">
+    <span class="qa-num">14</span>
+    <span class="qa-title">How does Playwright handle waits differently from Selenium?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r2q14">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r2q14-body">
+    <p>This is the conceptual capstone question &mdash; answer it as a philosophy difference, not a feature list:</p><ul><li><strong>Selenium</strong>: waits are largely the test author's responsibility. You explicitly wrap actions in <code>WebDriverWait</code> + <code>ExpectedConditions</code> (visibility, clickability, presence), or fall back to implicit waits/<code>sleep()</code>, which is a common flakiness source.</li><li><strong>Playwright</strong>: <strong>auto-waiting is built into every actionability check.</strong> Before any action (<code>click</code>, <code>fill</code>, <code>check</code>, etc.), Playwright automatically waits for the element to be attached, visible, stable (not animating), enabled, and receiving events (not obscured) &mdash; all before executing, with a single configurable timeout.</li><li>Playwright further extends this with <strong>web-first assertions</strong> (<code>await expect(locator).toBeVisible()</code>) that auto-retry until the condition is true or times out, plus <strong>network-aware waiting</strong> (<code>waitForResponse</code>, <code>waitForLoadState</code>) covering scenarios Selenium can't natively observe without third-party tooling.</li></ul><div class="note"><span class="note-label">Practical implication to close with</span><p>“This is why well-written Playwright suites rarely need explicit waits at all &mdash; <code>waitForTimeout()</code> in a Playwright codebase is usually a sign the locator strategy or an async dependency hasn't been properly identified, not a limitation of the tool.”</p></div>
+  </div>
+</article>
+  </div>
+</section>
+<section class="round" id="r3" data-round="r3">
+  <div class="round-head">
+    <span class="round-badge">Round 3</span>
+    <div>
+      <h2>Java Coding + Managerial</h2>
+      <p class="round-meta">Java · Coding & behavioural</p>
+    </div>
+  </div>
+  <div class="qa-list">
+    
+<article class="qa" id="r3q1" data-round="r3" data-search="count and print the number of vowels and consonants in your name ">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r3q1-body">
+    <span class="qa-num">1</span>
+    <span class="qa-title">Count and print the number of vowels and consonants in your name</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r3q1">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r3q1-body">
+    <div class="code-block"><div class="code-bar"><span class="code-lang">java</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-java">public class VowelConsonantCounter {
+    public static void main(String[] args) {
+        String name = "Saikiran"; // example
+        int vowels = 0, consonants = 0;
+
+        for (char ch : name.toLowerCase().toCharArray()) {
+            if (ch &lt; 'a' || ch &gt; 'z') continue; // skip non-letters
+            if ("aeiou".indexOf(ch) != -1) {
+                vowels++;
+            } else {
+                consonants++;
+            }
+        }
+
+        System.out.println("Vowels: " + vowels);
+        System.out.println("Consonants: " + consonants);
+    }
+}</code></pre></div><div class="note"><span class="note-label">Talking points if pressed to extend it</span><p>Handling mixed case, skipping spaces/hyphens (<code>toLowerCase()</code> + a letter check handles both), and Big-O &mdash; this is O(n) time, O(1) extra space, since we only scan the string once with fixed counters.</p></div>
+  </div>
+</article>
+<article class="qa" id="r3q2" data-round="r3" data-search="find unique &amp;amp; duplicate characters in your name without using collections the constraint (“without collections”) is testing whether you understand what a &lt;code&gt;hashmap&lt;/code&gt;/&lt;code&gt;set&lt;/code&gt; is actually doing under the hood &amp;mdash; so replicate that with a &lt;strong&gt;fixed-size array as a frequency table&lt;/strong&gt; (since names are ascii/lowercase letters, a 26-slot array works as a manual hash map).">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r3q2-body">
+    <span class="qa-num">2</span>
+    <span class="qa-title">Find unique &amp; duplicate characters in your name WITHOUT using Collections</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r3q2">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r3q2-body">
+    <p>The constraint (“without Collections”) is testing whether you understand what a <code>HashMap</code>/<code>Set</code> is actually doing under the hood &mdash; so replicate that with a <strong>fixed-size array as a frequency table</strong> (since names are ASCII/lowercase letters, a 26-slot array works as a manual hash map).</p><div class="code-block"><div class="code-bar"><span class="code-lang">java</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-java">public class UniqueDuplicateChars {
+    public static void main(String[] args) {
+        String name = "saikiran";
+        int[] freq = new int[26]; // manual frequency table, replaces a HashMap
+
+        for (char ch : name.toCharArray()) {
+            freq[ch - 'a']++;
+        }
+
+        System.out.print("Unique characters: ");
+        for (int i = 0; i &lt; 26; i++) {
+            if (freq[i] == 1) System.out.print((char) (i + 'a') + " ");
+        }
+
+        System.out.print("\nDuplicate characters: ");
+        for (int i = 0; i &lt; 26; i++) {
+            if (freq[i] &gt; 1) System.out.print((char) (i + 'a') + " ");
+        }
+    }
+}</code></pre></div><div class="note"><span class="note-label">Say this explicitly</span><p>“This is O(n) time and O(1) space, since the frequency array is fixed at 26 slots regardless of input size &mdash; I'm replacing the HashMap with a manual array-based hash, which is the standard technique when Collections are off the table.”</p></div>
+  </div>
+</article>
+<article class="qa" id="r3q3" data-round="r3" data-search="find the longest substring (without repeating characters) in a given string this is the classic &lt;strong&gt;sliding window&lt;/strong&gt; problem &amp;mdash; almost certainly what “longest substring” means unless they clarify otherwise (if ambiguous in the actual interview, ask: “longest substring &lt;em&gt;without repeating characters&lt;/em&gt;, or longest &lt;em&gt;common&lt;/em&gt; substring between two strings?” &amp;mdash; they're different problems).">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r3q3-body">
+    <span class="qa-num">3</span>
+    <span class="qa-title">Find the Longest Substring (without repeating characters) in a given String</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r3q3">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r3q3-body">
+    <p>This is the classic <strong>sliding window</strong> problem &mdash; almost certainly what “Longest Substring” means unless they clarify otherwise (if ambiguous in the actual interview, ask: “longest substring <em>without repeating characters</em>, or longest <em>common</em> substring between two strings?” &mdash; they're different problems).</p><div class="code-block"><div class="code-bar"><span class="code-lang">java</span><button class="copy-btn" type="button" aria-label="Copy code">copy</button></div><pre><code class="language-java">import java.util.Arrays;
+
+public class LongestSubstring {
+    public static void main(String[] args) {
+        String input = "abcabcbbde";
+        System.out.println("Longest substring: " + longestUniqueSubstring(input));
+    }
+
+    public static String longestUniqueSubstring(String s) {
+        int[] lastIndex = new int[128]; // ASCII frequency/index table, no Collections needed
+        Arrays.fill(lastIndex, -1);
+
+        int start = 0, maxLen = 0, maxStart = 0;
+
+        for (int end = 0; end &lt; s.length(); end++) {
+            char ch = s.charAt(end);
+            if (lastIndex[ch] &gt;= start) {
+                start = lastIndex[ch] + 1; // shrink window past the repeat
+            }
+            lastIndex[ch] = end;
+
+            if (end - start + 1 &gt; maxLen) {
+                maxLen = end - start + 1;
+                maxStart = start;
+            }
+        }
+        return s.substring(maxStart, maxStart + maxLen);
+    }
+}</code></pre></div><div class="note"><span class="note-label">Complexity to state proactively</span><p>O(n) time &mdash; each character is visited by <code>end</code> once, and <code>start</code> only moves forward, never backward, so it's a single pass overall (not O(n²) despite the nested-looking logic). O(1) extra space (fixed 128-size array).</p></div>
+  </div>
+</article>
+<article class="qa" id="r3q4" data-round="r3" data-search="managerial: the deadline is near. how would you distribute tasks among your teammates? structure this as a &lt;strong&gt;process&lt;/strong&gt;, not a vague “i'd talk to my team” answer &amp;mdash; interviewers are checking for decision-making under pressure:">
+  <button class="qa-head" type="button" aria-expanded="true" data-target="r3q4-body">
+    <span class="qa-num">4</span>
+    <span class="qa-title">Managerial: The deadline is near. How would you distribute tasks among your teammates?</span>
+    <span class="qa-controls">
+      <label class="reviewed" onclick="event.stopPropagation()">
+        <input type="checkbox" class="reviewed-toggle" data-qid="r3q4">
+        <span>reviewed</span>
+      </label>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </span>
+  </button>
+  <div class="qa-body" id="r3q4-body">
+    <p>Structure this as a <strong>process</strong>, not a vague “I'd talk to my team” answer &mdash; interviewers are checking for decision-making under pressure:</p><ol><li><strong>Triage first</strong>: list remaining work and classify by risk/impact &mdash; what's blocking release vs. nice-to-have, what's high-risk vs. low-risk.</li><li><strong>Match to skill, not just availability</strong>: assign the highest-risk/most complex pieces to the most experienced person on that area, and split parallelizable work broadly.</li><li><strong>Make dependencies explicit</strong>: identify what can run in parallel vs. what's sequentially blocked (e.g., API tests can't start until an endpoint is deployed).</li><li><strong>Communicate scope trade-offs upward early</strong>: if the deadline genuinely can't absorb all planned scope, flag it to the lead/manager immediately with options (cut scope, extend timeline, add hands).</li><li><strong>Check in short-cycle, not just at the end</strong>: quick daily syncs to catch a teammate stuck early enough to redistribute work.</li><li><strong>Protect quality on the critical path</strong>: flag a scope cut on low-risk items rather than ship untested high-risk functionality.</li></ol><div class="note"><span class="note-label">Close with a concrete anecdote if you have one</span><p>A real deadline crunch, how you split UI/API/DB validation work across the team, what you flagged upward &mdash; a real example lands far better than the abstract framework alone.</p></div>
+  </div>
+</article>
+  </div>
+</section>
+
+    <footer>generated field notes &middot; review checkmarks reset on reload</footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<script>
+if (window.hljs) { hljs.highlightAll(); }
+
+// ---- Accordion toggle ----
+document.querySelectorAll('.qa-head').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    const body = document.getElementById(btn.dataset.target);
+    body.style.display = expanded ? 'none' : 'block';
+  });
+});
+
+// ---- Reviewed checkboxes + progress ----
+const totalQ = 24;
+const reviewedSet = new Set();
+function updateProgress() {
+  document.getElementById('progressLabel').textContent = reviewedSet.size + ' / ' + totalQ + ' reviewed';
+  document.getElementById('progressBar').style.width = (reviewedSet.size / totalQ * 100) + '%';
+}
+document.querySelectorAll('.reviewed-toggle').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const qa = cb.closest('.qa');
+    if (cb.checked) { reviewedSet.add(cb.dataset.qid); qa.classList.add('reviewed-item'); }
+    else { reviewedSet.delete(cb.dataset.qid); qa.classList.remove('reviewed-item'); }
+    updateProgress();
+  });
+});
+
+// ---- Round tab filter ----
+document.getElementById('roundTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab');
+  if (!btn) return;
+  document.querySelectorAll('#roundTabs .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const round = btn.dataset.round;
+  document.querySelectorAll('.round').forEach(sec => {
+    sec.classList.toggle('hidden', round !== 'all' && sec.dataset.round !== round);
+  });
+  document.querySelectorAll('.nav-group').forEach(g => {
+    const groupRound = g.querySelector('.nav-link')?.dataset.round;
+    g.style.display = (round === 'all' || groupRound === round) ? 'block' : 'none';
+  });
+});
+
+// ---- Search filter ----
+document.getElementById('searchInput').addEventListener('input', e => {
+  const term = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('.qa').forEach(qa => {
+    const match = !term || qa.dataset.search.includes(term);
+    qa.classList.toggle('hidden', !match);
+    if (term && match) {
+      qa.querySelector('.qa-head').setAttribute('aria-expanded', 'true');
+      qa.querySelector('.qa-body').style.display = 'block';
+    }
+  });
+  document.querySelectorAll('.round').forEach(sec => {
+    const anyVisible = [...sec.querySelectorAll('.qa')].some(qa => !qa.classList.contains('hidden'));
+    sec.classList.toggle('hidden', !anyVisible);
+  });
+});
+
+// ---- Sidebar scrollspy ----
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    const id = entry.target.id;
+    const link = document.querySelector('.nav-link[href="#' + id + '"]');
+    if (!link) return;
+    if (entry.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+document.querySelectorAll('.qa').forEach(qa => observer.observe(qa));
+
+// ---- Mobile sidebar toggle ----
+const sidebar = document.getElementById('sidebar');
+document.getElementById('menuToggle').addEventListener('click', () => sidebar.classList.toggle('open'));
+document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => sidebar.classList.remove('open')));
+
+// ---- Copy code buttons ----
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const code = btn.closest('.code-block').querySelector('code').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+    });
+  });
+});
+</script>
+</body>
+</html>

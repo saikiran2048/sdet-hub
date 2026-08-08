@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ValueLabs SDET Interview — Q&A Reference</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --bg-panel:#11161d;
+    --bg-code:#0a0e13;
+    --border:#1f2733;
+    --text:#c9d1d9;
+    --text-dim:#7d8794;
+    --accent:#5fd3a3;
+    --accent-soft:#5fd3a322;
+    --q-num:#e8a33d;
+    --blue:#6fa8dc;
+    --pink:#e389c4;
+    --string:#c3e88d;
+    --key:#f29e74;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+    font-size:15px;
+  }
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+    padding:32px 20px 80px;
+  }
+  header{
+    border-bottom:1px solid var(--border);
+    padding-bottom:20px;
+    margin-bottom:28px;
+  }
+  .eyebrow{
+    color:var(--accent);
+    font-family:"SF Mono",Consolas,"Courier New",monospace;
+    font-size:12.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  h1{
+    font-size:26px;
+    margin:8px 0 6px;
+    color:#fff;
+    font-weight:650;
+  }
+  .meta{
+    color:var(--text-dim);
+    font-size:13.5px;
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-top:6px;
+  }
+  .meta span{font-family:"SF Mono",Consolas,monospace;}
+  .meta b{color:var(--text);}
+
+  nav.toc{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-bottom:32px;
+  }
+  nav.toc summary{
+    cursor:pointer;
+    color:var(--accent);
+    font-weight:600;
+    font-size:13.5px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .toc-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:4px 14px;
+    margin-top:14px;
+    font-size:13.5px;
+  }
+  .toc-grid a{
+    color:var(--text-dim);
+    text-decoration:none;
+    padding:3px 0;
+    display:block;
+  }
+  .toc-grid a:hover{color:var(--accent);}
+  .toc-grid a b{color:var(--q-num); font-family:"SF Mono",Consolas,monospace; margin-right:4px;}
+
+  section.qa{
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--bg-panel);
+    margin-bottom:18px;
+    overflow:hidden;
+  }
+  .q-head{
+    padding:16px 20px 14px;
+    border-bottom:1px solid var(--border);
+  }
+  .q-num{
+    color:var(--q-num);
+    font-family:"SF Mono",Consolas,monospace;
+    font-size:12.5px;
+    font-weight:700;
+  }
+  .q-title{
+    color:#fff;
+    font-size:16px;
+    font-weight:600;
+    margin-top:3px;
+  }
+  .a-body{
+    padding:16px 20px 20px;
+  }
+  .a-body p{margin:0 0 12px;}
+  .a-body ul, .a-body ol{margin:0 0 12px; padding-left:22px;}
+  .a-body li{margin-bottom:5px;}
+  .a-body strong{color:#fff;}
+
+  table.cmp{
+    width:100%;
+    border-collapse:collapse;
+    margin:4px 0 14px;
+    font-size:13.8px;
+  }
+  table.cmp th, table.cmp td{
+    border:1px solid var(--border);
+    padding:8px 10px;
+    text-align:left;
+  }
+  table.cmp th{
+    background:#161c25;
+    color:var(--accent);
+    font-weight:600;
+  }
+  table.cmp tr:nth-child(even) td{background:#0e131a;}
+
+  pre{
+    background:var(--bg-code);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 16px;
+    overflow-x:auto;
+    font-size:13px;
+    margin:4px 0 14px;
+    position:relative;
+  }
+  pre code{
+    font-family:"SF Mono",Consolas,"Courier New",monospace;
+    color:var(--text);
+    white-space:pre;
+  }
+  .lang-tag{
+    position:absolute;
+    top:8px;
+    right:12px;
+    font-size:10.5px;
+    color:var(--text-dim);
+    font-family:"SF Mono",Consolas,monospace;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+  /* minimal syntax accents */
+  .kw{color:var(--blue);}
+  .str{color:var(--string);}
+  .com{color:var(--text-dim); font-style:italic;}
+  .ann{color:var(--pink);}
+  .typ{color:var(--key);}
+
+  .flow{
+    background:var(--bg-code);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 18px;
+    font-family:"SF Mono",Consolas,monospace;
+    font-size:13px;
+    margin:4px 0 14px;
+    color:var(--accent);
+    line-height:1.9;
+    white-space:pre;
+    overflow-x:auto;
+  }
+
+  .note{
+    border-left:3px solid var(--accent);
+    background:var(--accent-soft);
+    padding:10px 14px;
+    border-radius:0 6px 6px 0;
+    font-size:13.8px;
+    margin:4px 0 14px;
+    color:var(--text);
+  }
+  .note b{color:var(--accent);}
+
+  .back-top{
+    display:inline-block;
+    margin-top:6px;
+    font-size:12px;
+    color:var(--text-dim);
+    text-decoration:none;
+  }
+  .back-top:hover{color:var(--accent);}
+
+  footer{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:12.5px;
+    margin-top:40px;
+    font-family:"SF Mono",Consolas,monospace;
+  }
+
+  @media print{
+    body{background:#fff; color:#111;}
+    section.qa{background:#fff; border-color:#ddd;}
+    pre, .flow{background:#f6f8fa; color:#111; border-color:#ddd;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">SDET / Automation QA &middot; Interview Prep</div>
+    <h1>ValueLabs — SDET Interview Q&A</h1>
+    <div class="meta">
+      <span><b>Level:</b> 4.5–6 yrs</span>
+      <span><b>Scheduled:</b> 30 min</span>
+      <span><b>Actual:</b> 48 min</span>
+      <span><b>Questions:</b> 34</span>
+    </div>
+  </header>
+
+  <details class="toc" open>
+    <summary>Jump to a question</summary>
+    <div class="toc-grid">
+      <a href="#q1"><b>01</b>Introduce yourself</a>
+      <a href="#q2"><b>02</b>Automation framework components</a>
+      <a href="#q3"><b>03</b>Page Object Model</a>
+      <a href="#q4"><b>04</b>Parallel execution in Cucumber</a>
+      <a href="#q5"><b>05</b>Cucumber Runner file</a>
+      <a href="#q6"><b>06</b>Singleton pattern</a>
+      <a href="#q7"><b>07</b>POM pros &amp; cons</a>
+      <a href="#q8"><b>08</b>Selenium Grid</a>
+      <a href="#q9"><b>09</b>WebDriver statement explained</a>
+      <a href="#q11"><b>11</b>Maven lifecycle</a>
+      <a href="#q12"><b>12</b>Re-running failed tests</a>
+      <a href="#q13"><b>13</b>Generating reports</a>
+      <a href="#q14"><b>14</b>Customizing reports</a>
+      <a href="#q15"><b>15</b>Types of waits</a>
+      <a href="#q16"><b>16</b>Explicit wait code</a>
+      <a href="#q17"><b>17</b>Drag and drop code</a>
+      <a href="#q18"><b>18</b>Switching windows</a>
+      <a href="#q19"><b>19</b>Why Set for window handles</a>
+      <a href="#q20"><b>20</b>Screenshot code</a>
+      <a href="#q21"><b>21</b>Scenario vs Scenario Outline</a>
+      <a href="#q22"><b>22</b>Passing test data</a>
+      <a href="#q23"><b>23</b>Test case prioritization</a>
+      <a href="#q24"><b>24</b>Repeating one test case</a>
+      <a href="#q25"><b>25</b>TestNG annotations</a>
+      <a href="#q26"><b>26</b>Annotation hierarchy</a>
+      <a href="#q27"><b>27</b>Defect life cycle</a>
+      <a href="#q28"><b>28</b>Agile vs Waterfall</a>
+      <a href="#q29"><b>29</b>201 vs 204</a>
+      <a href="#q30"><b>30</b>401 vs 403</a>
+      <a href="#q31"><b>31</b>API request components</a>
+      <a href="#q32"><b>32</b>Query vs Path params</a>
+      <a href="#q33"><b>33</b>Resolving Git conflicts</a>
+      <a href="#q34"><b>34</b>git pull vs format-patch</a>
+      <a href="#q35"><b>35</b>Jenkins in automation</a>
+    </div>
+  </details>
+
+  <!-- Q1 -->
+  <section class="qa" id="q1">
+    <div class="q-head"><div class="q-num">Q01</div><div class="q-title">Please introduce yourself</div></div>
+    <div class="a-body">
+      <p>Structure: <strong>total experience → current role → core stack → one standout achievement → why you're looking.</strong> Keep it 60–90 seconds. Don't recite your resume — hit scope and one proof point.</p>
+      <div class="note"><b>Sample answer:</b> "I'm a Senior SDET with 4+ years of experience in test automation, currently working on the General Motors Financial engagement. My core stack is Java, Selenium WebDriver, Cucumber BDD, TestNG, and REST Assured, with CI/CD experience in Jenkins and Azure DevOps. I've built frameworks from scratch — hybrid design with Maven, ThreadLocal WebDriver for parallel execution, data-driven testing via POI/Jackson, and custom retry logic. Beyond UI, I've worked on API testing, DB validation across Oracle and PostgreSQL, and some Kafka/Redis pipeline validation plus SSL/TLS testing. Previously I worked on two BFSI engagements — DBS Bank and USAA Bank. I'm now looking for a role with more ownership in framework architecture and growth into API/cloud-native testing."</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q2 -->
+  <section class="qa" id="q2">
+    <div class="q-head"><div class="q-num">Q02</div><div class="q-title">Explain your Automation Framework — all components</div></div>
+    <div class="a-body">
+      <p>Walk through it layer by layer:</p>
+      <ul>
+        <li><strong>Build tool</strong> — Maven: dependency management, plugin execution, lifecycle phases</li>
+        <li><strong>Driver management</strong> — WebDriverManager + <code>DriverFactory</code> using <code>ThreadLocal&lt;WebDriver&gt;</code> for parallel safety</li>
+        <li><strong>Config management</strong> — <code>ConfigReader</code> reading <code>.properties</code>/YAML (URLs, timeouts, environment)</li>
+        <li><strong>Page Object Model</strong> — one class per page, <code>@FindBy</code> locators, chainable methods</li>
+        <li><strong>Test layer</strong> — TestNG / Cucumber step definitions calling page object methods</li>
+        <li><strong>Data layer</strong> — Excel (Apache POI) or JSON (Jackson) via a <code>DataProviderUtil</code></li>
+        <li><strong>Reporting</strong> — Extent Reports / Allure with listeners for screenshots on failure</li>
+        <li><strong>Logging</strong> — Log4j2</li>
+        <li><strong>Retry mechanism</strong> — custom <code>IRetryAnalyzer</code></li>
+        <li><strong>API layer</strong> — REST Assured with Request/ResponseSpecification builders + POJOs</li>
+        <li><strong>DB layer</strong> — JDBC + HikariCP connection pooling</li>
+        <li><strong>CI/CD</strong> — Jenkins pipeline (checkout → build → test → publish reports → notify)</li>
+      </ul>
+      <div class="note"><b>Close strong:</b> "I built this incrementally — core Selenium+TestNG+Maven first, then layered in reporting, config, data-driven capability, retry logic, REST Assured, JDBC, and finally Jenkins CI/CD." Shows engineering maturity, not just tool-listing.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q3 -->
+  <section class="qa" id="q3">
+    <div class="q-head"><div class="q-num">Q03</div><div class="q-title">What is a Page Object Model?</div></div>
+    <div class="a-body">
+      <p>A design pattern where each web page (or major component) is represented as a class containing:</p>
+      <ul>
+        <li><strong>Locators</strong> — as <code>@FindBy</code>-annotated <code>WebElement</code> fields</li>
+        <li><strong>Methods</strong> — representing user actions (<code>login()</code>, <code>clickSubmit()</code>)</li>
+      </ul>
+      <p>Tests call these methods instead of touching locators directly, separating <strong>test logic</strong> from <strong>page structure</strong>. A locator change only needs updating in one place.</p>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q4 -->
+  <section class="qa" id="q4">
+    <div class="q-head"><div class="q-num">Q04</div><div class="q-title">How do you run test cases in parallel in Cucumber?</div></div>
+    <div class="a-body">
+      <p><strong>A. TestNG-based runner with parallel data provider:</strong></p>
+      <pre><span class="lang-tag">java</span><code><span class="ann">@CucumberOptions</span>(features = <span class="str">"src/test/resources/features"</span>, glue = <span class="str">"stepdefinitions"</span>)
+<span class="kw">public class</span> TestRunner <span class="kw">extends</span> AbstractTestNGCucumberTests {
+    <span class="ann">@Override</span>
+    <span class="ann">@DataProvider</span>(parallel = <span class="kw">true</span>)
+    <span class="kw">public</span> Object[][] scenarios() {
+        <span class="kw">return super</span>.scenarios();
+    }
+}</code></pre>
+      <p>And in <code>testng.xml</code>:</p>
+      <pre><span class="lang-tag">xml</span><code>&lt;suite name=<span class="str">"Suite"</span> parallel=<span class="str">"methods"</span> thread-count=<span class="str">"4"</span>&gt;</code></pre>
+      <p><strong>B. Cucumber-JVM Parallel Plugin</strong> — generates multiple runner classes at build time, each running a subset of features, executed in parallel via Surefire's <code>forkCount</code>/<code>threadCount</code>.</p>
+      <div class="note"><b>Critical:</b> Either way, you need <code>ThreadLocal&lt;WebDriver&gt;</code> so each thread gets its own driver instance — otherwise threads collide on the same browser session.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q5 -->
+  <section class="qa" id="q5">
+    <div class="q-head"><div class="q-num">Q05</div><div class="q-title">Explain the contents of the Cucumber Runner File</div></div>
+    <div class="a-body">
+      <pre><span class="lang-tag">java</span><code><span class="ann">@RunWith</span>(Cucumber.<span class="kw">class</span>)
+<span class="ann">@CucumberOptions</span>(
+    features = <span class="str">"src/test/resources/features"</span>,
+    glue = {<span class="str">"stepdefinitions"</span>, <span class="str">"hooks"</span>},
+    plugin = {<span class="str">"pretty"</span>, <span class="str">"html:target/cucumber-reports.html"</span>,
+              <span class="str">"json:target/cucumber.json"</span>,
+              <span class="str">"com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"</span>},
+    tags = <span class="str">"@smoke and not @wip"</span>,
+    monochrome = <span class="kw">true</span>,
+    dryRun = <span class="kw">false</span>
+)
+<span class="kw">public class</span> TestRunner {}</code></pre>
+      <ul>
+        <li><strong>features</strong> — path to <code>.feature</code> files</li>
+        <li><strong>glue</strong> — packages containing step definitions and hooks</li>
+        <li><strong>plugin</strong> — report formatters (console, HTML, JSON, Extent)</li>
+        <li><strong>tags</strong> — filter which scenarios run</li>
+        <li><strong>monochrome</strong> — readable console output</li>
+        <li><strong>dryRun</strong> — validates step definitions exist without executing</li>
+      </ul>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q6 -->
+  <section class="qa" id="q6">
+    <div class="q-head"><div class="q-num">Q06</div><div class="q-title">What is a Singleton Design Pattern?</div></div>
+    <div class="a-body">
+      <p>Ensures a class has <strong>only one instance</strong> for the entire JVM/application lifecycle, with a global access point.</p>
+      <pre><span class="lang-tag">java</span><code><span class="kw">public class</span> TokenManager {
+    <span class="kw">private static</span> TokenManager instance;
+    <span class="kw">private</span> String authToken;
+
+    <span class="kw">private</span> TokenManager() {} <span class="com">// private constructor</span>
+
+    <span class="kw">public static synchronized</span> TokenManager getInstance() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) {
+            instance = <span class="kw">new</span> TokenManager();
+        }
+        <span class="kw">return</span> instance;
+    }
+
+    <span class="kw">public</span> String getToken() { <span class="kw">return</span> authToken; }
+    <span class="kw">public void</span> setToken(String token) { <span class="kw">this</span>.authToken = token; }
+}</code></pre>
+      <p>Common SDET use cases: <code>TokenManager</code> (avoid regenerating auth tokens per API call), <code>ConfigManager</code>, sometimes <code>DriverFactory</code> in non-parallel contexts.</p>
+      <div class="note"><b>Watch for follow-up:</b> <code>synchronized</code> matters if multiple threads might initialize simultaneously — mention double-checked locking or an <code>enum</code>-based singleton as the thread-safe alternative.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q7 -->
+  <section class="qa" id="q7">
+    <div class="q-head"><div class="q-num">Q07</div><div class="q-title">Advantages and disadvantages of Page Object Model</div></div>
+    <div class="a-body">
+      <table class="cmp">
+        <tr><th>Advantages</th><th>Disadvantages</th></tr>
+        <tr><td>Separates test logic from locators — better maintainability</td><td>More boilerplate / initial setup time</td></tr>
+        <tr><td>Locator changes updated in one place only</td><td>Can lead to many classes for large applications</td></tr>
+        <tr><td>Code reusability across test cases</td><td>Without PageFactory/base class design, repetitive driver/wait code creeps in</td></tr>
+        <tr><td>Improved readability</td><td>Doesn't handle dynamic/complex pages well alone — often paired with component or Fluent patterns</td></tr>
+      </table>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q8 -->
+  <section class="qa" id="q8">
+    <div class="q-head"><div class="q-num">Q08</div><div class="q-title">What is Selenium Grid?</div></div>
+    <div class="a-body">
+      <p>Lets you run tests on <strong>different machines, browsers, and OS combinations</strong> in parallel, distributed across nodes via a hub.</p>
+      <ul>
+        <li><strong>Hub</strong> — receives test requests and routes to nodes matching desired capabilities</li>
+        <li><strong>Node</strong> — machine that actually runs the browser/test</li>
+        <li><strong>Grid 4 architecture</strong> — Router, Distributor, Session Map, Node; supports Docker-based node registration</li>
+      </ul>
+      <p>Purpose: reduce execution time and enable cross-browser/cross-platform coverage.</p>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q9 -->
+  <section class="qa" id="q9">
+    <div class="q-head"><div class="q-num">Q09</div><div class="q-title">Explain the WebDriver create statement line</div></div>
+    <div class="a-body">
+      <pre><span class="lang-tag">java</span><code>WebDriver driver = <span class="kw">new</span> ChromeDriver();</code></pre>
+      <ul>
+        <li><code>WebDriver</code> — the interface (reference type) — gives browser-agnostic code</li>
+        <li><code>ChromeDriver</code> — implementation class for Chrome (object type)</li>
+        <li>This is <strong>polymorphism</strong> — code to the interface so <code>ChromeDriver</code> swaps for <code>FirefoxDriver</code>/<code>EdgeDriver</code> without changing the rest of the code</li>
+        <li>Internally, <code>ChromeDriver</code> extends <code>RemoteWebDriver</code>, starts a <code>chromedriver.exe</code> process, and talks to the browser via the <strong>W3C WebDriver protocol</strong> (HTTP commands)</li>
+      </ul>
+      <pre><span class="lang-tag">java</span><code><span class="com">// with WebDriverManager, run before the line above:</span>
+WebDriverManager.chromedriver().setup();</code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q11 -->
+  <section class="qa" id="q11">
+    <div class="q-head"><div class="q-num">Q11</div><div class="q-title">Explain the Maven Lifecycle</div></div>
+    <div class="a-body">
+      <p>Three built-in lifecycles; the <strong>default</strong> lifecycle phases, in order:</p>
+      <div class="flow">validate   → project structure is correct
+compile    → compiles source code
+test       → runs unit tests (Surefire plugin)
+package    → packages compiled code (JAR/WAR)
+verify     → runs integration checks
+install    → installs package into local .m2 repo
+deploy     → copies package to remote repo</div>
+      <p>Each phase runs all previous phases first. <code>mvn install</code> runs validate→compile→test→package→verify→install in sequence.</p>
+      <div class="note">For automation runs you typically use <code>mvn clean test</code> — <code>clean</code> belongs to the separate <strong>clean</strong> lifecycle and wipes <code>target/</code> first.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q12 -->
+  <section class="qa" id="q12">
+    <div class="q-head"><div class="q-num">Q12</div><div class="q-title">How do you run the failed test cases?</div></div>
+    <div class="a-body">
+      <p><strong>TestNG</strong> auto-generates <code>test-output/testng-failed.xml</code> after a run, listing only failed methods/classes:</p>
+      <pre><span class="lang-tag">bash</span><code>mvn test -DsuiteXmlFile=test-output/testng-failed.xml</code></pre>
+      <p><strong>Cucumber</strong> — use the rerun plugin in <code>@CucumberOptions</code>:</p>
+      <pre><span class="lang-tag">java</span><code>plugin = {<span class="str">"rerun:target/rerun.txt"</span>}</code></pre>
+      <p>This writes failed scenario file:line references to <code>rerun.txt</code>; re-run with:</p>
+      <pre><span class="lang-tag">java</span><code><span class="ann">@CucumberOptions</span>(features = <span class="str">"@target/rerun.txt"</span>, ...)</code></pre>
+      <div class="note">Combine with <code>IRetryAnalyzer</code> to auto-retry flaky failures within the same run instead of needing a manual re-run pass.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q13 -->
+  <section class="qa" id="q13">
+    <div class="q-head"><div class="q-num">Q13</div><div class="q-title">How do you generate Reports in Selenium?</div></div>
+    <div class="a-body">
+      <ul>
+        <li><strong>TestNG default reports</strong> — auto HTML/XML in <code>test-output/</code> (basic, not very readable)</li>
+        <li><strong>Extent Reports</strong> — most common: <code>ExtentSparkReporter</code> + <code>ExtentReports</code> + <code>ExtentTest</code>, log steps/status/screenshots via a TestNG <code>ITestListener</code> or Cucumber adapter</li>
+        <li><strong>Allure Reports</strong> — annotation-driven (<code>@Step</code>, <code>@Attachment</code>), rich HTML dashboards, integrates well with Jenkins</li>
+        <li><strong>Cucumber reports</strong> — <code>cucumber-html-reports</code> from the <code>cucumber.json</code> output, or Masterthought reports</li>
+      </ul>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q14 -->
+  <section class="qa" id="q14">
+    <div class="q-head"><div class="q-num">Q14</div><div class="q-title">How do you customise reports after test execution?</div></div>
+    <div class="a-body">
+      <ul>
+        <li>Add custom <strong>categories/status colors</strong> via <code>ExtentColorTheme</code> config</li>
+        <li>Attach <strong>screenshots on failure</strong> via a TestNG <code>ITestListener</code>'s <code>onTestFailure()</code>:</li>
+      </ul>
+      <pre><span class="lang-tag">java</span><code>test.addScreenCaptureFromPath(path);</code></pre>
+      <ul>
+        <li>Add <strong>environment info</strong> (browser, OS, build number):</li>
+      </ul>
+      <pre><span class="lang-tag">java</span><code>extent.setSystemInfo(<span class="str">"Browser"</span>, <span class="str">"Chrome"</span>);</code></pre>
+      <ul>
+        <li>Add custom logs mid-test: <code>test.log(Status.INFO, "Step description")</code></li>
+        <li>Cucumber: use <code>Scenario.attach()</code> to embed screenshots directly into the HTML report at the failed step</li>
+        <li>Categorize by tags (<code>@smoke</code>, <code>@regression</code>) so reports can be filtered/grouped</li>
+      </ul>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q15 -->
+  <section class="qa" id="q15">
+    <div class="q-head"><div class="q-num">Q15</div><div class="q-title">What kind of waits are there in Selenium?</div></div>
+    <div class="a-body">
+      <table class="cmp">
+        <tr><th>Wait type</th><th>Behavior</th></tr>
+        <tr><td><strong>Implicit Wait</strong></td><td>Global wait applied to all <code>findElement</code> calls; polls DOM up to a fixed max time before <code>NoSuchElementException</code></td></tr>
+        <tr><td><strong>Explicit Wait</strong></td><td><code>WebDriverWait</code> + <code>ExpectedConditions</code>; waits for a specific condition on a specific element</td></tr>
+        <tr><td><strong>Fluent Wait</strong></td><td>Like explicit wait but configurable <strong>polling frequency</strong> and can <strong>ignore specific exceptions</strong> during the wait</td></tr>
+      </table>
+      <div class="note">Avoid mixing implicit and explicit waits in the same test — causes unpredictable wait behavior.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q16 -->
+  <section class="qa" id="q16">
+    <div class="q-head"><div class="q-num">Q16</div><div class="q-title">Code snippet for Explicit Wait</div></div>
+    <div class="a-body">
+      <pre><span class="lang-tag">java</span><code>WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(<span class="typ">10</span>));
+WebElement element = wait.until(
+    ExpectedConditions.visibilityOfElementLocated(By.id(<span class="str">"submitBtn"</span>))
+);
+element.click();</code></pre>
+      <p>Other common conditions: <code>elementToBeClickable</code>, <code>presenceOfElementLocated</code>, <code>invisibilityOf</code>, <code>textToBePresentInElement</code>.</p>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q17 -->
+  <section class="qa" id="q17">
+    <div class="q-head"><div class="q-num">Q17</div><div class="q-title">Code snippet for Drag and Drop in Selenium</div></div>
+    <div class="a-body">
+      <pre><span class="lang-tag">java</span><code>WebElement source = driver.findElement(By.id(<span class="str">"draggable"</span>));
+WebElement target = driver.findElement(By.id(<span class="str">"droppable"</span>));
+
+Actions actions = <span class="kw">new</span> Actions(driver);
+actions.dragAndDrop(source, target).build().perform();</code></pre>
+      <p>If the built-in method is unreliable (common with JS-heavy drag implementations), use manual step-by-step:</p>
+      <pre><span class="lang-tag">java</span><code>actions.clickAndHold(source)
+       .moveToElement(target)
+       .release()
+       .build()
+       .perform();</code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q18 -->
+  <section class="qa" id="q18">
+    <div class="q-head"><div class="q-num">Q18</div><div class="q-title">How do you switch to different Windows in Selenium?</div></div>
+    <div class="a-body">
+      <pre><span class="lang-tag">java</span><code>String parentWindow = driver.getWindowHandle(); <span class="com">// current window</span>
+Set&lt;String&gt; allWindows = driver.getWindowHandles(); <span class="com">// all open windows</span>
+
+<span class="kw">for</span> (String window : allWindows) {
+    <span class="kw">if</span> (!window.equals(parentWindow)) {
+        driver.switchTo().window(window);
+        <span class="kw">break</span>;
+    }
+}
+<span class="com">// ... actions on new window ...</span>
+driver.switchTo().window(parentWindow); <span class="com">// switch back</span></code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q19 -->
+  <section class="qa" id="q19">
+    <div class="q-head"><div class="q-num">Q19</div><div class="q-title">Why do we use Set in Window Handles?</div></div>
+    <div class="a-body">
+      <p><code>getWindowHandles()</code> returns a <strong><code>Set&lt;String&gt;</code></strong> because:</p>
+      <ul>
+        <li>Each window handle is a <strong>unique identifier</strong> — Sets enforce uniqueness, preventing duplicate handles</li>
+        <li>Order of windows isn't guaranteed/relevant in most cases, so an unordered <code>Set</code> fits better than a <code>List</code></li>
+        <li>Avoids the overhead/semantics of a <code>List</code> when uniqueness, not sequence, is the requirement</li>
+      </ul>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q20 -->
+  <section class="qa" id="q20">
+    <div class="q-head"><div class="q-num">Q20</div><div class="q-title">Code for taking a screenshot in Selenium</div></div>
+    <div class="a-body">
+      <pre><span class="lang-tag">java</span><code>TakesScreenshot ts = (TakesScreenshot) driver;
+File source = ts.getScreenshotAs(OutputType.FILE);
+File destination = <span class="kw">new</span> File(<span class="str">"./screenshots/screenshot.png"</span>);
+FileUtils.copyFile(source, destination); <span class="com">// org.apache.commons.io.FileUtils</span></code></pre>
+      <p>For Cucumber, embed into the report on failure:</p>
+      <pre><span class="lang-tag">java</span><code><span class="kw">byte</span>[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+scenario.attach(screenshot, <span class="str">"image/png"</span>, <span class="str">"Failure Screenshot"</span>);</code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q21 -->
+  <section class="qa" id="q21">
+    <div class="q-head"><div class="q-num">Q21</div><div class="q-title">Difference between Scenario and Scenario Outline</div></div>
+    <div class="a-body">
+      <table class="cmp">
+        <tr><th></th><th>Scenario</th><th>Scenario Outline</th></tr>
+        <tr><td>Use case</td><td>Single, specific test case</td><td>Same steps repeated with different data sets</td></tr>
+        <tr><td>Data</td><td>Hardcoded in steps</td><td>Uses placeholders <code>&lt;param&gt;</code></td></tr>
+        <tr><td>Data source</td><td>None</td><td><code>Examples:</code> table</td></tr>
+        <tr><td>Execution</td><td>Runs once</td><td>Runs once per row in <code>Examples</code></td></tr>
+      </table>
+      <pre><span class="lang-tag">gherkin</span><code>Scenario Outline: Login with multiple users
+  Given user navigates to login page
+  When user enters "&lt;username&gt;" and "&lt;password&gt;"
+  Then login should be "&lt;result&gt;"
+
+  Examples:
+    | username | password | result  |
+    | user1    | pass1    | success |
+    | user2    | wrong    | failure |</code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q22 -->
+  <section class="qa" id="q22">
+    <div class="q-head"><div class="q-num">Q22</div><div class="q-title">How do you pass data to your Selenium Scripts?</div></div>
+    <div class="a-body">
+      <ul>
+        <li><strong>TestNG <code>@DataProvider</code></strong> — method returning <code>Object[][]</code></li>
+        <li><strong>Excel/CSV</strong> via Apache POI — read rows into a data provider</li>
+        <li><strong>JSON</strong> via Jackson/Gson — deserialize into POJOs</li>
+        <li><strong>Properties files</strong> — for static config data (URLs, credentials)</li>
+        <li><strong>Cucumber</strong> — <code>Examples</code> table / <code>DataTable</code> in step definitions</li>
+        <li><strong>Database</strong> — JDBC query results feeding test data directly</li>
+        <li><strong>External APIs</strong> — test data generated/fetched via a setup API call before the UI test runs</li>
+      </ul>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q23 -->
+  <section class="qa" id="q23">
+    <div class="q-head"><div class="q-num">Q23</div><div class="q-title">How do you decide the priorities of your Test Cases?</div></div>
+    <div class="a-body">
+      <ul>
+        <li><strong>Business criticality</strong> — core flows (login, payment, checkout) first</li>
+        <li><strong>Risk</strong> — areas with frequent defects or recent changes</li>
+        <li><strong>Frequency of use</strong> — most-used features by end users</li>
+        <li><strong>Regulatory/compliance impact</strong> — e.g. BFSI compliance flows must always be covered</li>
+        <li><strong>Smoke vs regression</strong> — smoke = P0 (build verification), regression = P1/P2 by module criticality</li>
+      </ul>
+      <p>Often tagged: <code>@P0/@critical</code>, <code>@P1</code>, <code>@P2</code> — prioritized in CI pipelines (P0 on every commit, full regression nightly).</p>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q24 -->
+  <section class="qa" id="q24">
+    <div class="q-head"><div class="q-num">Q24</div><div class="q-title">If you want to execute one test case again and again, how do you do that?</div></div>
+    <div class="a-body">
+      <p><strong>TestNG:</strong></p>
+      <pre><span class="lang-tag">java</span><code><span class="ann">@Test</span>(invocationCount = <span class="typ">5</span>, threadPoolSize = <span class="typ">1</span>)
+<span class="kw">public void</span> loginTest() { ... }</code></pre>
+      <p><strong>Cucumber:</strong> no direct annotation — typically looped via a <code>DataTable</code>/<code>Examples</code> with repeated identical rows, or run via repeated CLI invocation in CI.</p>
+      <div class="note">If the intent is "retry on failure" rather than deliberate repetition, that's a different mechanism — a custom <code>IRetryAnalyzer</code>.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q25 -->
+  <section class="qa" id="q25">
+    <div class="q-head"><div class="q-num">Q25</div><div class="q-title">What are the different annotations used in TestNG?</div></div>
+    <div class="a-body">
+      <ul>
+        <li><code>@BeforeSuite</code> / <code>@AfterSuite</code></li>
+        <li><code>@BeforeTest</code> / <code>@AfterTest</code></li>
+        <li><code>@BeforeClass</code> / <code>@AfterClass</code></li>
+        <li><code>@BeforeMethod</code> / <code>@AfterMethod</code></li>
+        <li><code>@Test</code></li>
+        <li><code>@DataProvider</code></li>
+        <li><code>@Factory</code></li>
+        <li><code>@Parameters</code></li>
+        <li><code>@Listeners</code></li>
+      </ul>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q26 -->
+  <section class="qa" id="q26">
+    <div class="q-head"><div class="q-num">Q26</div><div class="q-title">Write the hierarchy of annotations in TestNG</div></div>
+    <div class="a-body">
+      <div class="flow">@BeforeSuite
+  @BeforeTest
+    @BeforeClass
+      @BeforeMethod
+        @Test
+      @AfterMethod
+    @AfterClass
+  @AfterTest
+@AfterSuite</div>
+      <p><code>@BeforeMethod</code>/<code>@AfterMethod</code> runs around <strong>every</strong> <code>@Test</code>; <code>@BeforeClass</code>/<code>@AfterClass</code> once per class; <code>@BeforeTest</code>/<code>@AfterTest</code> once per <code>&lt;test&gt;</code> tag in <code>testng.xml</code>; <code>@BeforeSuite</code>/<code>@AfterSuite</code> once for the whole suite run.</p>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q27 -->
+  <section class="qa" id="q27">
+    <div class="q-head"><div class="q-num">Q27</div><div class="q-title">What is the defect life cycle?</div></div>
+    <div class="a-body">
+      <div class="flow">New → Assigned → Open (In Progress) → Fixed → Pending Retest →
+Retest → Verified → Closed
+                ↓
+            Reopened (if retest fails) → back to Assigned</div>
+      <p>Other states: <strong>Deferred</strong> (postponed to a later release), <strong>Rejected</strong> (not a valid defect), <strong>Duplicate</strong>.</p>
+      <div class="note">As an SDET, log defects with: steps to reproduce, expected vs actual result, environment, severity, priority, and attach logs/screenshots — often integrated directly with Jira/Azure DevOps from automation failure reports.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q28 -->
+  <section class="qa" id="q28">
+    <div class="q-head"><div class="q-num">Q28</div><div class="q-title">Difference between Agile and Waterfall Model</div></div>
+    <div class="a-body">
+      <table class="cmp">
+        <tr><th></th><th>Waterfall</th><th>Agile</th></tr>
+        <tr><td>Approach</td><td>Sequential phases (req → design → dev → test → deploy)</td><td>Iterative sprints, incremental delivery</td></tr>
+        <tr><td>Flexibility</td><td>Requirements locked early, hard to change</td><td>Requirements evolve each sprint</td></tr>
+        <tr><td>Testing</td><td>After development completes</td><td>Continuous, parallel with development</td></tr>
+        <tr><td>Feedback</td><td>Late (end of project)</td><td>Early and frequent (every sprint)</td></tr>
+        <tr><td>Risk</td><td>Higher — issues found late</td><td>Lower — caught early via continuous testing</td></tr>
+        <tr><td>Documentation</td><td>Heavy upfront</td><td>Lighter, working software prioritized</td></tr>
+        <tr><td>Best for</td><td>Fixed-scope, well-understood projects</td><td>Evolving requirements, faster delivery</td></tr>
+      </table>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q29 -->
+  <section class="qa" id="q29">
+    <div class="q-head"><div class="q-num">Q29</div><div class="q-title">Difference between 201 and 204 Status Code</div></div>
+    <div class="a-body">
+      <table class="cmp">
+        <tr><th>Code</th><th>Meaning</th></tr>
+        <tr><td><strong>201 Created</strong></td><td>Request succeeded and a <strong>new resource was created</strong> (e.g. <code>POST /users</code>). Typically returns the created resource in the body, often with a <code>Location</code> header.</td></tr>
+        <tr><td><strong>204 No Content</strong></td><td>Request succeeded but there's <strong>no body to return</strong> (e.g. successful <code>DELETE</code>, or a <code>PUT</code> update with nothing to send back).</td></tr>
+      </table>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q30 -->
+  <section class="qa" id="q30">
+    <div class="q-head"><div class="q-num">Q30</div><div class="q-title">Difference between 401 and 403 Status Code</div></div>
+    <div class="a-body">
+      <table class="cmp">
+        <tr><th>Code</th><th>Meaning</th></tr>
+        <tr><td><strong>401 Unauthorized</strong></td><td><strong>Authentication</strong> failure — client isn't authenticated at all, or credentials/token are missing/invalid. Server doesn't know who you are.</td></tr>
+        <tr><td><strong>403 Forbidden</strong></td><td><strong>Authorization</strong> failure — client IS authenticated but doesn't have permission to access this resource.</td></tr>
+      </table>
+      <div class="note">Quick recall: 401 = "who are you?" &nbsp;|&nbsp; 403 = "I know who you are, but no."</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q31 -->
+  <section class="qa" id="q31">
+    <div class="q-head"><div class="q-num">Q31</div><div class="q-title">What are the components of an API Request?</div></div>
+    <div class="a-body">
+      <ul>
+        <li><strong>Endpoint/URL</strong> — the resource address</li>
+        <li><strong>HTTP Method</strong> — GET, POST, PUT, PATCH, DELETE</li>
+        <li><strong>Headers</strong> — metadata (<code>Content-Type</code>, <code>Authorization</code>, <code>Accept</code>)</li>
+        <li><strong>Path Parameters</strong> — part of the URL identifying a specific resource (<code>/users/{id}</code>)</li>
+        <li><strong>Query Parameters</strong> — key-value pairs for filtering/sorting (<code>?status=active&amp;page=2</code>)</li>
+        <li><strong>Request Body/Payload</strong> — data sent (JSON/XML), mainly for POST/PUT/PATCH</li>
+        <li><strong>Authentication</strong> — token, API key, basic auth credentials</li>
+      </ul>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q32 -->
+  <section class="qa" id="q32">
+    <div class="q-head"><div class="q-num">Q32</div><div class="q-title">Difference between Query Parameters and Path Parameters</div></div>
+    <div class="a-body">
+      <table class="cmp">
+        <tr><th></th><th>Path Parameter</th><th>Query Parameter</th></tr>
+        <tr><td>Purpose</td><td>Identifies a <strong>specific resource</strong></td><td><strong>Filters/modifies</strong> the request</td></tr>
+        <tr><td>Position</td><td>Part of the URL path</td><td>After <code>?</code>, as key-value pairs</td></tr>
+        <tr><td>Example</td><td><code>/users/123</code></td><td><code>/users?status=active&amp;sort=name</code></td></tr>
+        <tr><td>Required?</td><td>Usually mandatory</td><td>Usually optional</td></tr>
+        <tr><td>REST Assured</td><td><code>.pathParam("id", 123)</code> with <code>{id}</code> in URL</td><td><code>.queryParam("status", "active")</code></td></tr>
+      </table>
+      <pre><span class="lang-tag">java</span><code>given()
+    .pathParam(<span class="str">"id"</span>, <span class="typ">123</span>)
+    .queryParam(<span class="str">"status"</span>, <span class="str">"active"</span>)
+.when()
+    .get(<span class="str">"/users/{id}"</span>)
+.then()
+    .statusCode(<span class="typ">200</span>);</code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q33 -->
+  <section class="qa" id="q33">
+    <div class="q-head"><div class="q-num">Q33</div><div class="q-title">How do you resolve Conflicts in Git?</div></div>
+    <div class="a-body">
+      <p><code>git pull</code> (or merge) triggers a conflict — Git marks conflicting sections in the file:</p>
+      <pre><span class="lang-tag">text</span><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+your changes
+=======
+incoming changes
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; branch-name</code></pre>
+      <p>Resolution steps:</p>
+      <ol>
+        <li>Open the file, manually decide which changes to keep (or combine both), remove the conflict markers</li>
+        <li><code>git add &lt;file&gt;</code> to mark as resolved</li>
+        <li><code>git commit</code> to complete the merge (or <code>git rebase --continue</code> if rebasing)</li>
+        <li><code>git push</code></li>
+      </ol>
+      <div class="note">Tools like VS Code's merge editor or <code>git mergetool</code> simplify this visually. Best practice: pull frequently, keep commits small, communicate with the team to avoid conflicts in the first place.</div>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q34 -->
+  <section class="qa" id="q34">
+    <div class="q-head"><div class="q-num">Q34</div><div class="q-title">Difference between git pull and git patch</div></div>
+    <div class="a-body">
+      <div class="note"><b>Note:</b> there's no command literally called <code>git patch</code> — likely meant <code>git format-patch</code> / <code>git apply</code>. It's fine to politely clarify this in an interview.</div>
+      <table class="cmp">
+        <tr><th>Command</th><th>What it does</th></tr>
+        <tr><td><code>git pull</code></td><td><code>git fetch</code> + <code>git merge</code> — fetches commits from a remote branch and merges them into your current branch directly. Requires network access to the remote.</td></tr>
+        <tr><td><code>git format-patch</code> / <code>git apply</code></td><td>Generates <code>.patch</code> files representing commits as diffs (can be emailed/transferred manually), then applied elsewhere via <code>git apply</code> or <code>git am</code> — useful without direct repo connectivity between two systems.</td></tr>
+      </table>
+      <pre><span class="lang-tag">bash</span><code><span class="com"># generate patch files for last 3 commits</span>
+git format-patch -3
+
+<span class="com"># apply a patch file</span>
+git apply 0001-fix-login-bug.patch</code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <!-- Q35 -->
+  <section class="qa" id="q35">
+    <div class="q-head"><div class="q-num">Q35</div><div class="q-title">Explain the use of Jenkins in the Automation Framework</div></div>
+    <div class="a-body">
+      <ul>
+        <li><strong>CI/CD orchestration</strong> — triggers automated test runs on commits, scheduled intervals, or manual triggers</li>
+        <li><strong>Pipeline as code</strong> — <code>Jenkinsfile</code> defines stages: checkout → build → test → publish reports → notify</li>
+        <li><strong>Parameterized builds</strong> — pass environment, browser, tag filters at trigger time</li>
+        <li><strong>VCS integration</strong> — webhooks from GitHub/Azure Repos auto-trigger builds on push/PR</li>
+        <li><strong>Report publishing</strong> — HTML Publisher, Allure, Cucumber Reports plugins show results in the build dashboard</li>
+        <li><strong>Notifications</strong> — email/Slack/Teams on build pass/fail</li>
+        <li><strong>Scheduling</strong> — cron-style triggers for nightly/weekly regression</li>
+        <li><strong>Distributed builds</strong> — integrates with Selenium Grid/Docker agents for parallel cross-browser execution</li>
+      </ul>
+      <pre><span class="lang-tag">groovy</span><code>pipeline {
+    agent any
+    stages {
+        stage(<span class="str">'Checkout'</span>) {
+            steps { git <span class="str">'https://github.com/org/repo.git'</span> }
+        }
+        stage(<span class="str">'Build'</span>) {
+            steps { sh <span class="str">'mvn clean compile'</span> }
+        }
+        stage(<span class="str">'Test'</span>) {
+            steps { sh <span class="str">'mvn test -Dcucumber.filter.tags="@smoke"'</span> }
+        }
+        stage(<span class="str">'Publish Report'</span>) {
+            steps { publishHTML(<span class="kw">target:</span> [reportDir: <span class="str">'target'</span>, reportFiles: <span class="str">'cucumber-reports.html'</span>]) }
+        }
+    }
+}</code></pre>
+      <a class="back-top" href="#top">↑ back to top</a>
+    </div>
+  </section>
+
+  <footer>ValueLabs SDET Interview Reference &middot; 34 Questions &middot; Built for review, not memorization</footer>
+
+</div>
+</body>
+</html>

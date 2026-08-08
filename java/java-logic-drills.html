@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>21 Java Logic Drills — SDET Interview Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/night-owl.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1218;
+    --surface:#161b24;
+    --surface-2:#1d2330;
+    --surface-3:#242b3a;
+    --border:#2a3142;
+    --text:#e7eaf0;
+    --text-dim:#8b93a7;
+    --text-faint:#5c6478;
+    --accent:#5fb3a0;
+    --accent-soft:#5fb3a026;
+    --accent-2:#e0a542;
+    --accent-2-soft:#e0a54222;
+    --danger:#d97a7a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    height:100vh;
+    overflow:hidden;
+  }
+  code, pre, .mono{font-family:'IBM Plex Mono',monospace;}
+
+  .app{display:flex; height:100vh;}
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:320px;
+    flex-shrink:0;
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+  }
+  .sidebar-header{
+    padding:22px 20px 16px;
+    border-bottom:1px solid var(--border);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    color:var(--accent);
+    text-transform:uppercase;
+    margin:0 0 6px;
+  }
+  .sidebar-header h1{
+    font-size:19px;
+    margin:0 0 4px;
+    line-height:1.3;
+  }
+  .sidebar-header p{
+    font-size:12.5px;
+    color:var(--text-dim);
+    margin:0;
+    line-height:1.5;
+  }
+  .search-wrap{
+    padding:14px 16px 10px;
+    border-bottom:1px solid var(--border);
+  }
+  .search-wrap input{
+    width:100%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:var(--text);
+    padding:9px 12px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    outline:none;
+  }
+  .search-wrap input:focus{border-color:var(--accent);}
+  .search-wrap input::placeholder{color:var(--text-faint);}
+
+  .filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    padding:12px 16px;
+    border-bottom:1px solid var(--border);
+  }
+  .chip{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:5px 10px;
+    border-radius:100px;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    cursor:pointer;
+    background:transparent;
+    transition:all .12s ease;
+  }
+  .chip:hover{border-color:var(--accent);color:var(--text);}
+  .chip.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+
+  .progress-row{
+    padding:10px 16px;
+    border-bottom:1px solid var(--border);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .progress-bar{
+    flex:1;
+    height:4px;
+    background:var(--surface-3);
+    border-radius:4px;
+    margin:0 10px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .25s ease;
+  }
+
+  .q-list{
+    flex:1;
+    overflow-y:auto;
+    padding:8px 10px 20px;
+  }
+  .q-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 10px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:2px;
+    border:1px solid transparent;
+  }
+  .q-item:hover{background:var(--surface-2);}
+  .q-item.active{background:var(--surface-3);border-color:var(--border);}
+  .q-id{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--text-faint);
+    width:44px;
+    flex-shrink:0;
+  }
+  .q-check{
+    width:15px;height:15px;flex-shrink:0;
+    border-radius:4px;
+    border:1.5px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .q-check.done{background:var(--accent);border-color:var(--accent);}
+  .q-check.done::after{content:"✓";font-size:10px;color:#0f1218;font-weight:700;}
+  .q-title{font-size:13px;line-height:1.35;flex:1;}
+  .q-item.active .q-title{color:var(--accent);}
+  .q-diff{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9.5px;
+    padding:2px 6px;
+    border-radius:5px;
+    flex-shrink:0;
+  }
+  .q-diff.Easy{background:var(--accent-soft);color:var(--accent);}
+  .q-diff.Medium{background:var(--accent-2-soft);color:var(--accent-2);}
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    overflow-y:auto;
+    height:100vh;
+    padding:40px 56px 90px;
+  }
+  .detail-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:24px;
+    margin-bottom:22px;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--border);
+  }
+  .detail-id{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--accent);
+    font-size:12px;
+    letter-spacing:.1em;
+    margin:0 0 8px;
+  }
+  .detail-header h2{font-size:26px;margin:0 0 10px;line-height:1.25;}
+  .tag-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:4px 10px;
+    border-radius:100px;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+  .mark-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:9px 16px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--text-dim);
+    cursor:pointer;
+    white-space:nowrap;
+    flex-shrink:0;
+    transition:all .12s ease;
+  }
+  .mark-btn:hover{border-color:var(--accent);}
+  .mark-btn.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);}
+
+  section{margin-bottom:30px;}
+  .section-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--text-faint);
+    margin:0 0 10px;
+  }
+  .prose{font-size:14.5px;line-height:1.65;color:#c9cfdb;}
+  .prose + .prose{margin-top:8px;}
+
+  pre{
+    background:#0d1117 !important;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    overflow-x:auto;
+    font-size:12.8px;
+    line-height:1.6;
+    margin:0;
+  }
+  pre code.hljs{background:transparent !important;padding:0 !important;}
+
+  .stat-row{display:flex;gap:12px;}
+  .stat-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px 18px;
+    flex:1;
+  }
+  .stat-card .k{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--text-faint);
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    margin:0 0 6px;
+  }
+  .stat-card .v{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:18px;
+    color:var(--accent);
+    margin:0;
+  }
+
+  .assert-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .assert-item{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 14px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    line-height:1.5;
+  }
+  .assert-item .mark{color:var(--accent);flex-shrink:0;margin-top:1px;}
+  .assert-item .fn{color:var(--accent-2);}
+  .assert-item .desc{color:#c9cfdb;font-family:'IBM Plex Sans',sans-serif;font-size:13px;}
+
+  .tips-box{
+    background:var(--accent-2-soft);
+    border:1px solid #4a3a1f;
+    border-left:3px solid var(--accent-2);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .tips-box ul{margin:0;padding-left:18px;}
+  .tips-box li{font-size:13.5px;line-height:1.6;color:#e9d9b8;margin-bottom:6px;}
+  .tips-box li:last-child{margin-bottom:0;}
+
+  ::-webkit-scrollbar{width:9px;height:9px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:8px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--border);}
+
+  @media (max-width:860px){
+    .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:10;transform:translateX(-100%);transition:transform .2s ease;}
+    .sidebar.open{transform:translateX(0);}
+    .main{padding:24px 20px 70px;}
+    .toggle-btn{display:flex !important;}
+  }
+  .toggle-btn{
+    display:none;
+    position:fixed;
+    top:16px;left:16px;
+    z-index:11;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    width:38px;height:38px;
+    border-radius:8px;
+    align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<button class="toggle-btn" id="toggleBtn">☰</button>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <p class="eyebrow">SDET · Java Coding Round</p>
+      <h1>21 Logic Drills</h1>
+      <p>Core array, string, and hashing patterns interviewers reuse across QA automation coding rounds.</p>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search a question or pattern…">
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="progress-row">
+      <span>REVIEWED</span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span id="progressText">0/21</span>
+    </div>
+    <div class="q-list" id="qList"></div>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+const DATA = [
+{
+  id:"TC-01", title:"Find Missing Numbers in an Array", pattern:"Array", difficulty:"Medium",
+  problem:"Given an array of size n whose values are meant to range from 1 to n but some values are missing (and others may repeat), return every missing number.",
+  approach:"Use each value as a pointer into the array itself: for value v, negate the element at index v-1 to mark 'v was seen'. After one pass, any index still holding a positive number means (index+1) never showed up. This gets you O(n) time with O(1) extra space (besides the output list) — a strong follow-up to a naive HashSet solution.",
+  code:"import java.util.*;\n\npublic class MissingNumbers {\n    public static List<Integer> findMissing(int[] nums) {\n        int n = nums.length;\n        List<Integer> missing = new ArrayList<>();\n\n        // Step 1: mark visited indices by negating nums[value - 1]\n        for (int num : nums) {\n            int index = Math.abs(num) - 1;\n            if (nums[index] > 0) {\n                nums[index] = -nums[index];\n            }\n        }\n\n        // Step 2: index still positive => (index + 1) never appeared\n        for (int i = 0; i < n; i++) {\n            if (nums[i] > 0) {\n                missing.add(i + 1);\n            }\n        }\n\n        // Step 3: restore the original array (good practice, avoids side effects)\n        for (int i = 0; i < n; i++) {\n            nums[i] = Math.abs(nums[i]);\n        }\n        return missing;\n    }\n\n    public static void main(String[] args) {\n        int[] nums = {4, 3, 2, 7, 8, 2, 3, 1};\n        System.out.println(findMissing(nums)); // [5, 6]\n    }\n}",
+  time:"O(n)", space:"O(1) extra (excluding output)",
+  edges:[
+    "handlesEmptyArray() — returns empty list, no exceptions",
+    "handlesNoMissingValues() — every index gets negated, result is empty",
+    "handlesAllDuplicatesOfOne() — e.g. [1,1,1] should not crash on repeated negation",
+    "handlesUnsortedInput() — algorithm doesn't depend on order"
+  ],
+  tips:[
+    "Interviewers use this to test whether you reach for O(n) extra space (HashSet) by default or can push to O(1) — mention both, then optimize.",
+    "Say out loud that you're mutating the input array and restoring it — that's the kind of side-effect awareness a reviewer wants from an SDET.",
+    "Know the sibling problem: 'find the single missing number' solved via sum formula n*(n+1)/2 minus actual sum."
+  ]
+},
+{
+  id:"TC-02", title:"Move All Zeros to the End Without Changing Order", pattern:"Two-Pointer", difficulty:"Easy",
+  problem:"Given an array of integers, move all zeros to the end while keeping the relative order of the non-zero elements, in-place.",
+  approach:"Two-pointer / write-pointer technique: walk the array once, and every time you see a non-zero value, write it to the next open slot. At the end, fill the remaining slots with zero. This is a stable partition done in a single O(n) pass.",
+  code:"public class MoveZeros {\n    public static void moveZeros(int[] arr) {\n        int insertPos = 0;\n\n        for (int num : arr) {\n            if (num != 0) {\n                arr[insertPos++] = num;\n            }\n        }\n        while (insertPos < arr.length) {\n            arr[insertPos++] = 0;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {0, 1, 0, 3, 12};\n        moveZeros(arr);\n        System.out.println(java.util.Arrays.toString(arr)); // [1, 3, 12, 0, 0]\n    }\n}",
+  time:"O(n)", space:"O(1)",
+  edges:[
+    "handlesAllZeros() — array unchanged in content, all zeros stay",
+    "handlesNoZeros() — array unchanged, no unnecessary writes past insertPos",
+    "handlesSingleElementArray()",
+    "handlesNegativeNumbers() — only literal 0 should move, not negatives"
+  ],
+  tips:[
+    "This is the most common 'write it live' warm-up question — practice it until it's muscle memory, interviewers expect under 3 minutes.",
+    "Mention the swap-based variant (swap arr[insertPos] and arr[i]) as an alternative that avoids a second pass, and discuss the trade-off in extra writes."
+  ]
+},
+{
+  id:"TC-03", title:"Check Whether Brackets Are Balanced", pattern:"Stack", difficulty:"Easy",
+  problem:"Given a string containing (){}[] characters (possibly mixed with other characters), determine whether every opening bracket has a matching, correctly nested closing bracket.",
+  approach:"Classic stack problem: push opening brackets, and on a closing bracket, pop and check it matches. If the stack is empty when you need to pop, or isn't empty at the end, the string is unbalanced.",
+  code:"import java.util.*;\n\npublic class BalancedBrackets {\n    public static boolean isBalanced(String s) {\n        Deque<Character> stack = new ArrayDeque<>();\n        Map<Character, Character> pairs = Map.of(')', '(', ']', '[', '}', '{');\n\n        for (char c : s.toCharArray()) {\n            if (c == '(' || c == '[' || c == '{') {\n                stack.push(c);\n            } else if (pairs.containsKey(c)) {\n                if (stack.isEmpty() || stack.pop() != pairs.get(c)) {\n                    return false;\n                }\n            }\n        }\n        return stack.isEmpty();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isBalanced(\"{[()()]}\")); // true\n        System.out.println(isBalanced(\"{[(])}\"));    // false\n    }\n}",
+  time:"O(n)", space:"O(n) worst case (all opening brackets)",
+  edges:[
+    "handlesEmptyString() — vacuously balanced, returns true",
+    "handlesOnlyClosingBrackets() — stack.isEmpty() guard prevents pop-on-empty crash",
+    "handlesUnmatchedOpeningBrackets() — stack non-empty at end returns false",
+    "handlesNonBracketCharacters() — mixed text like 'a(b)c' is ignored correctly"
+  ],
+  tips:[
+    "This is the canonical 'do you know Deque over Stack class' check — Java's legacy Stack extends Vector and is synchronized/slower; ArrayDeque is the modern idiomatic choice.",
+    "Be ready for the follow-up: 'return the index of the first mismatch' — track index alongside character.",
+    "Map.of() is immutable and fine here since we only read from it."
+  ]
+},
+{
+  id:"TC-04", title:"Find the First Non-Repeating Character", pattern:"Hashing", difficulty:"Easy",
+  problem:"Given a string, return the first character that appears exactly once, in left-to-right order.",
+  approach:"Two passes: build a frequency map (LinkedHashMap to remember insertion order), then walk the string again to find the first key with count 1. A LinkedHashMap avoids needing a separate ordered structure.",
+  code:"import java.util.*;\n\npublic class FirstNonRepeatingChar {\n    public static Character firstNonRepeating(String s) {\n        Map<Character, Integer> counts = new LinkedHashMap<>();\n        for (char c : s.toCharArray()) {\n            counts.merge(c, 1, Integer::sum);\n        }\n        for (Map.Entry<Character, Integer> entry : counts.entrySet()) {\n            if (entry.getValue() == 1) {\n                return entry.getKey();\n            }\n        }\n        return null; // no non-repeating character found\n    }\n\n    public static void main(String[] args) {\n        System.out.println(firstNonRepeating(\"swiss\")); // 'w'\n    }\n}",
+  time:"O(n)", space:"O(1) — bounded by charset size",
+  edges:[
+    "handlesEmptyString() — returns null, caller must null-check",
+    "handlesAllCharactersRepeating() — returns null, e.g. 'aabbcc'",
+    "handlesSingleCharacterString() — that character is the answer",
+    "handlesCaseSensitivity() — 'A' and 'a' are treated as distinct keys"
+  ],
+  tips:[
+    "Returning a boxed Character (not char) so null is a valid 'not found' signal is worth explaining unprompted — shows API design awareness.",
+    "If asked to avoid a second pass, mention iterating counts.entrySet() only works because LinkedHashMap preserves insertion order — a plain HashMap would not guarantee this."
+  ]
+},
+{
+  id:"TC-05", title:"Count Frequency of Each Character", pattern:"Hashing", difficulty:"Easy",
+  problem:"Given a string, return a map of each character to how many times it occurs.",
+  approach:"Single pass with Map.merge — the bread-and-butter counting pattern that underlies half the questions on this list.",
+  code:"import java.util.*;\n\npublic class CharFrequency {\n    public static Map<Character, Integer> countFrequency(String s) {\n        Map<Character, Integer> freq = new LinkedHashMap<>();\n        for (char c : s.toCharArray()) {\n            freq.merge(c, 1, Integer::sum);\n        }\n        return freq;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(countFrequency(\"bookkeeper\"));\n        // {b=1, o=2, k=2, e=3, p=1, r=1}\n    }\n}",
+  time:"O(n)", space:"O(k) where k = distinct characters",
+  edges:[
+    "handlesEmptyString() — returns empty map",
+    "handlesWhitespaceAndPunctuation() — counted like any other character unless explicitly stripped",
+    "handlesUnicodeOrEmoji() — toCharArray() splits by UTF-16 code unit, surrogate pairs can split incorrectly — worth flagging",
+    "handlesLargeInput() — verify no overflow for very long strings (Integer is fine in practice)"
+  ],
+  tips:[
+    "This exact snippet is a building block — reuse it mentally for anagrams, RLE, and first-non-repeating questions rather than re-deriving it each time.",
+    "If asked for a case-insensitive version, normalize with Character.toLowerCase(c) before merging, and say so explicitly."
+  ]
+},
+{
+  id:"TC-06", title:"Calculate Sum by Grouping Keys", pattern:"Hashing", difficulty:"Easy",
+  problem:"Given a list of key-value pairs (e.g. transaction category and amount), return the total amount per key.",
+  approach:"Same merge pattern as frequency counting, but summing the paired value instead of a constant 1 — this is effectively a SQL 'GROUP BY key SUM(value)' done in memory.",
+  code:"import java.util.*;\n\npublic class SumByKey {\n    public static Map<String, Integer> groupSum(List<Map.Entry<String, Integer>> entries) {\n        Map<String, Integer> totals = new LinkedHashMap<>();\n        for (Map.Entry<String, Integer> entry : entries) {\n            totals.merge(entry.getKey(), entry.getValue(), Integer::sum);\n        }\n        return totals;\n    }\n\n    public static void main(String[] args) {\n        List<Map.Entry<String, Integer>> data = List.of(\n            Map.entry(\"apple\", 10),\n            Map.entry(\"banana\", 5),\n            Map.entry(\"apple\", 7)\n        );\n        System.out.println(groupSum(data)); // {apple=17, banana=5}\n    }\n}",
+  time:"O(n)", space:"O(k) distinct keys",
+  edges:[
+    "handlesEmptyList() — returns empty map",
+    "handlesSingleKeyRepeatedManyTimes() — sum accumulates correctly, no overwrite bug",
+    "handlesNegativeValues() — e.g. refunds/debits reducing a running total",
+    "handlesIntegerOverflow() — swap to long if amounts can be large, mention this proactively"
+  ],
+  tips:[
+    "This maps directly to real BFSI/GMF-style test data — grouping transactions by account or category is a very plausible on-the-job utility, not just a toy problem.",
+    "If interviewers hand you Stream API territory, know the one-liner too: entries.stream().collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingInt(Map.Entry::getValue)))."
+  ]
+},
+{
+  id:"TC-07", title:"Reverse Alternate Words in a Sentence", pattern:"String", difficulty:"Medium",
+  problem:"Given a sentence, reverse the characters of every alternate word (the 2nd, 4th, 6th…) while leaving the others and the word order untouched.",
+  approach:"Split on spaces, and for words at odd indices, reverse the characters with StringBuilder.reverse(). Rebuild the sentence with single spaces. State this interpretation explicitly to the interviewer since 'reverse alternate words' is genuinely ambiguous — it could also mean reversing word order at alternate positions.",
+  code:"public class ReverseAlternateWords {\n    public static String reverseAlternate(String sentence) {\n        String[] words = sentence.split(\" \");\n        StringBuilder result = new StringBuilder();\n\n        for (int i = 0; i < words.length; i++) {\n            String word = words[i];\n            if (i % 2 == 1) { // reverse the 2nd, 4th, 6th... word\n                word = new StringBuilder(word).reverse().toString();\n            }\n            result.append(word);\n            if (i != words.length - 1) result.append(\" \");\n        }\n        return result.toString();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(reverseAlternate(\"This is a QA test\"));\n        // \"This si a AQ test\"\n    }\n}",
+  time:"O(n) total characters", space:"O(n) for the rebuilt string",
+  edges:[
+    "handlesSingleWordSentence() — no alternate word exists, returned unchanged",
+    "handlesMultipleConsecutiveSpaces() — split(\" \") produces empty-string 'words', prefer split(\"\\\\s+\") if that matters",
+    "handlesEmptyString() — returns empty string",
+    "handlesPunctuationAttachedToWord() — punctuation gets reversed along with letters unless explicitly stripped first"
+  ],
+  tips:[
+    "State your interpretation of the ambiguous requirement out loud before coding — this is exactly the kind of requirement-clarification instinct SDET interviewers are screening for.",
+    "Mention split(\"\\\\s+\") vs split(\" \") as a real-world text-cleanliness edge case, since test data (logs, CSV exports) is rarely single-spaced."
+  ]
+},
+{
+  id:"TC-08", title:"Rotate an Array by K Positions", pattern:"Array", difficulty:"Medium",
+  problem:"Given an array and an integer k, rotate the array to the right by k positions in-place.",
+  approach:"The reversal algorithm: reverse the whole array, then reverse the first k elements, then reverse the remaining n-k elements. Three linear passes, no extra array needed — a clean O(n) time / O(1) space solution that's a favorite because it generalizes a math trick into code.",
+  code:"public class RotateArray {\n    public static void rotate(int[] arr, int k) {\n        int n = arr.length;\n        k = ((k % n) + n) % n; // normalize negative/large k\n\n        reverse(arr, 0, n - 1);\n        reverse(arr, 0, k - 1);\n        reverse(arr, k, n - 1);\n    }\n\n    private static void reverse(int[] arr, int start, int end) {\n        while (start < end) {\n            int temp = arr[start];\n            arr[start] = arr[end];\n            arr[end] = temp;\n            start++;\n            end--;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5, 6, 7};\n        rotate(arr, 3);\n        System.out.println(java.util.Arrays.toString(arr)); // [5, 6, 7, 1, 2, 3, 4]\n    }\n}",
+  time:"O(n)", space:"O(1)",
+  edges:[
+    "handlesKGreaterThanArrayLength() — must mod k by n first",
+    "handlesNegativeK() — ((k % n) + n) % n normalizes a left-rotation request",
+    "handlesEmptyOrSingleElementArray() — guard against division/modulo by zero when n == 0",
+    "handlesKEqualsZeroOrN() — array should remain unchanged"
+  ],
+  tips:[
+    "The naive O(n·k) 'rotate one step, k times' solution is a fine starting point — mention it, then upgrade to the reversal trick to show you can optimize under pressure.",
+    "Watch for the off-by-one in reverse(arr, 0, k-1) — walk through a small example (n=7, k=3) on paper before typing."
+  ]
+},
+{
+  id:"TC-09", title:"Sort an Array Without Using Sorting Methods", pattern:"Sorting", difficulty:"Medium",
+  problem:"Sort an integer array without calling Arrays.sort() or any built-in sort utility.",
+  approach:"Implement Quicksort: pick a pivot (last element), partition so smaller elements land left of the pivot's final position, then recurse on both halves. Demonstrates you understand what Arrays.sort() is actually doing under the hood.",
+  code:"public class ManualSort {\n    public static void quickSort(int[] arr, int low, int high) {\n        if (low < high) {\n            int pivotIndex = partition(arr, low, high);\n            quickSort(arr, low, pivotIndex - 1);\n            quickSort(arr, pivotIndex + 1, high);\n        }\n    }\n\n    private static int partition(int[] arr, int low, int high) {\n        int pivot = arr[high];\n        int i = low - 1;\n        for (int j = low; j < high; j++) {\n            if (arr[j] < pivot) {\n                i++;\n                swap(arr, i, j);\n            }\n        }\n        swap(arr, i + 1, high);\n        return i + 1;\n    }\n\n    private static void swap(int[] arr, int i, int j) {\n        int temp = arr[i];\n        arr[i] = arr[j];\n        arr[j] = temp;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {9, 3, 7, 1, 5};\n        quickSort(arr, 0, arr.length - 1);\n        System.out.println(java.util.Arrays.toString(arr)); // [1, 3, 5, 7, 9]\n    }\n}",
+  time:"O(n log n) average, O(n²) worst case", space:"O(log n) recursion stack",
+  edges:[
+    "handlesAlreadySortedInput() — last-element pivot degrades to O(n²) here, worth naming as the known weakness",
+    "handlesAllDuplicateValues() — partition should still terminate correctly",
+    "handlesEmptyOrSingleElementArray() — low < high guard means recursion simply does nothing",
+    "handlesReverseSortedInput() — another O(n²) trigger with a naive pivot choice"
+  ],
+  tips:[
+    "Know why Arrays.sort() uses dual-pivot quicksort for primitives and a stable Timsort/merge-sort variant for objects — the distinction (objects need stability for equal-key ordering, primitives don't) is a common follow-up.",
+    "If asked to guarantee O(n log n) worst case, pivot to Merge Sort instead and explain the trade-off: guaranteed time complexity vs Quicksort's typically better constant factors and in-place memory use."
+  ]
+},
+{
+  id:"TC-10", title:"Find the Longest Word in a Sentence", pattern:"String", difficulty:"Easy",
+  problem:"Given a sentence, return the longest word. If there's a tie, return the first one encountered.",
+  approach:"Split on whitespace and track the longest word seen so far in a single pass.",
+  code:"public class LongestWord {\n    public static String longestWord(String sentence) {\n        String[] words = sentence.split(\"\\\\s+\");\n        String longest = \"\";\n        for (String word : words) {\n            if (word.length() > longest.length()) {\n                longest = word;\n            }\n        }\n        return longest;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(longestWord(\"Automation testing requires strong debugging skills\"));\n        // \"Automation\" (10 chars, first max-length word)\n    }\n}",
+  time:"O(n) total characters", space:"O(1) extra (excluding split array)",
+  edges:[
+    "handlesEmptyString() — split(\"\\\\s+\") on empty string returns one empty-string element; longest stays \"\"",
+    "handlesLeadingOrTrailingWhitespace() — trim() first, or split may emit a leading empty token",
+    "handlesTiedLengthWords() — strict > (not >=) keeps the first occurrence on a tie",
+    "handlesPunctuationAttachedToWords() — 'skills.' counts the period unless stripped"
+  ],
+  tips:[
+    "This is a five-minute warm-up question — the interesting part interviewers probe is tie-breaking behavior and whitespace handling, not the core loop.",
+    "If asked for 'all words tied for longest', switch from tracking a single String to a List<String> and clear it whenever a strictly longer word appears."
+  ]
+},
+{
+  id:"TC-11", title:"Merge Two Unsorted Arrays into a Sorted Array", pattern:"Sorting", difficulty:"Medium",
+  problem:"Given two unsorted integer arrays, return a single sorted array containing all their elements.",
+  approach:"Sort each input individually (O(n log n) and O(m log m)), then merge them with the classic two-pointer merge step from merge sort in O(n+m). Overall it's dominated by the two sorts.",
+  code:"import java.util.Arrays;\n\npublic class MergeSortedArrays {\n    public static int[] mergeSorted(int[] a, int[] b) {\n        Arrays.sort(a);\n        Arrays.sort(b);\n\n        int[] result = new int[a.length + b.length];\n        int i = 0, j = 0, k = 0;\n\n        while (i < a.length && j < b.length) {\n            result[k++] = (a[i] <= b[j]) ? a[i++] : b[j++];\n        }\n        while (i < a.length) result[k++] = a[i++];\n        while (j < b.length) result[k++] = b[j++];\n\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] a = {5, 1, 9};\n        int[] b = {4, 2, 8};\n        System.out.println(Arrays.toString(mergeSorted(a, b))); // [1, 2, 4, 5, 8, 9]\n    }\n}",
+  time:"O((n+m) log(n+m))", space:"O(n+m) for the result array",
+  edges:[
+    "handlesOneEmptyArray() — merge loop degenerates to a single copy pass",
+    "handlesBothEmptyArrays() — returns a zero-length array",
+    "handlesDuplicateValuesAcrossArrays() — stable ordering isn't guaranteed to matter for ints, but say so",
+    "handlesAlreadySortedInputs() — sorting is a wasted pass; mention the O(n+m) all-merge alternative when both inputs are pre-sorted"
+  ],
+  tips:[
+    "If the interviewer says both arrays are already sorted, drop the two Arrays.sort() calls entirely — that changes the whole complexity story from O((n+m) log(n+m)) to O(n+m), and catching that shows you're listening to constraints, not pattern-matching.",
+    "Mention Arrays.sort(int[]) uses dual-pivot quicksort (not stable) versus Arrays.sort(Object[]) using a stable Timsort — relevant if these were objects with secondary fields."
+  ]
+},
+{
+  id:"TC-12", title:"Remove Duplicates Without Using Set/List/Map", pattern:"Array", difficulty:"Medium",
+  problem:"Given an integer array, return the distinct elements without relying on Set, List, or Map collections.",
+  approach:"Sort the array first so duplicates become adjacent, then do a single pass copying only the first occurrence of each run into a plain array.",
+  code:"import java.util.Arrays;\n\npublic class RemoveDuplicates {\n    public static int[] removeDuplicates(int[] arr) {\n        Arrays.sort(arr);\n        int[] temp = new int[arr.length];\n        int j = 0;\n\n        for (int i = 0; i < arr.length; i++) {\n            if (i == 0 || arr[i] != arr[i - 1]) {\n                temp[j++] = arr[i];\n            }\n        }\n        return Arrays.copyOf(temp, j);\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 2, 4, 3, 2, 1};\n        System.out.println(Arrays.toString(removeDuplicates(arr))); // [1, 2, 3, 4]\n    }\n}",
+  time:"O(n log n)", space:"O(n) for the temp array",
+  edges:[
+    "handlesEmptyArray() — sort and loop are no-ops, returns empty array",
+    "handlesNoDuplicates() — result equals the sorted input",
+    "handlesAllSameValue() — result is a single-element array",
+    "handlesResultOrderChanged() — sorting means the original relative order is lost; flag this trade-off explicitly"
+  ],
+  tips:[
+    "The 'without Set/List/Map' constraint is really testing whether you can fall back to a manual index-tracking technique (the j pointer here) instead of leaning on library collections — narrate that reasoning.",
+    "If order must be preserved, the sort-based approach won't work; you'd need nested loops (O(n²)) to check each element against everything already kept — mention that trade-off proactively."
+  ]
+},
+{
+  id:"TC-13", title:"Find the Intersection of Two Arrays", pattern:"Hashing", difficulty:"Easy",
+  problem:"Given two integer arrays, return the set of values present in both.",
+  approach:"Load the first array into a HashSet for O(1) lookups, then scan the second array and collect any value found in that set. Use a LinkedHashSet for the result if insertion order matters for output stability.",
+  code:"import java.util.*;\n\npublic class ArrayIntersection {\n    public static Set<Integer> intersection(int[] a, int[] b) {\n        Set<Integer> setA = new HashSet<>();\n        for (int num : a) setA.add(num);\n\n        Set<Integer> result = new LinkedHashSet<>();\n        for (int num : b) {\n            if (setA.contains(num)) {\n                result.add(num);\n            }\n        }\n        return result;\n    }\n\n    public static void main(String[] args) {\n        int[] a = {1, 2, 2, 3};\n        int[] b = {2, 3, 3, 4};\n        System.out.println(intersection(a, b)); // [2, 3]\n    }\n}",
+  time:"O(n + m)", space:"O(n) for the lookup set",
+  edges:[
+    "handlesNoOverlap() — returns an empty set",
+    "handlesDuplicatesInEitherArray() — a Set naturally collapses them; if counts must be respected (multiset intersection) this approach is wrong, say so",
+    "handlesEmptyInputArray() — returns an empty set immediately",
+    "handlesLargeSizeDisparity() — build the HashSet from the smaller array to minimize memory"
+  ],
+  tips:[
+    "Ask whether duplicate counts matter (e.g. [2,2,3] ∩ [2,3,3] → is the answer [2,3] or [2,3] with counts capped at min(2,2)). If counts matter, switch to a HashMap<Integer,Integer> of remaining counts instead of a Set.",
+    "This pattern — load smaller collection into a Set, scan the larger one — is worth naming as a general optimization habit for any 'compare two collections' question."
+  ]
+},
+{
+  id:"TC-14", title:"Find All Pairs with a Given Sum", pattern:"Hashing", difficulty:"Medium",
+  problem:"Given an array and a target sum, return all pairs of elements that add up to the target.",
+  approach:"Single pass with a HashSet of 'seen' values: for each number, check whether its complement (target - num) was already seen, and if so, that's a pair. This avoids the O(n²) brute-force nested loop.",
+  code:"import java.util.*;\n\npublic class PairsWithSum {\n    public static List<int[]> findPairs(int[] arr, int target) {\n        List<int[]> pairs = new ArrayList<>();\n        Set<Integer> seen = new HashSet<>();\n\n        for (int num : arr) {\n            int complement = target - num;\n            if (seen.contains(complement)) {\n                pairs.add(new int[]{complement, num});\n            }\n            seen.add(num);\n        }\n        return pairs;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {2, 4, 3, 7, 5};\n        for (int[] pair : findPairs(arr, 9)) {\n            System.out.println(pair[0] + \" + \" + pair[1]);\n        }\n        // 4 + 5, 2 + 7\n    }\n}",
+  time:"O(n)", space:"O(n) for the seen set",
+  edges:[
+    "handlesDuplicateElements() — this implementation only reports one pair per matching value even if duplicates could form multiple pairs — call this limitation out explicitly",
+    "handlesNegativeNumbersOrZero() — complement math (target - num) works unchanged",
+    "handlesNoPairsFound() — returns an empty list",
+    "handlesSelfPairing() — e.g. target=4, value=2 twice; the current 'seen' check requires two distinct occurrences and won't double-count a single 2"
+  ],
+  tips:[
+    "Proactively flag the duplicate-handling limitation before the interviewer catches it — that's a big trust signal for an SDET role, where noticing gaps in test coverage is the actual job.",
+    "If duplicates must be fully counted, switch 'seen' from a Set to a Map<Integer,Integer> of remaining counts and decrement as pairs are consumed."
+  ]
+},
+{
+  id:"TC-15", title:"Check Whether Two Strings Are Anagrams", pattern:"Hashing", difficulty:"Easy",
+  problem:"Given two strings, determine whether one is a rearrangement of the letters of the other.",
+  approach:"Early-exit on length mismatch, then use a fixed-size count array (256 for extended ASCII) — increment for the first string, decrement for the second. If every bucket returns to zero, they're anagrams.",
+  code:"public class AnagramCheck {\n    public static boolean isAnagram(String s1, String s2) {\n        if (s1.length() != s2.length()) return false;\n\n        int[] counts = new int[256];\n        for (char c : s1.toCharArray()) counts[c]++;\n        for (char c : s2.toCharArray()) counts[c]--;\n\n        for (int count : counts) {\n            if (count != 0) return false;\n        }\n        return true;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isAnagram(\"listen\", \"silent\")); // true\n        System.out.println(isAnagram(\"test\", \"ttew\"));       // false\n    }\n}",
+  time:"O(n)", space:"O(1) — fixed 256-length array",
+  edges:[
+    "handlesDifferentLengths() — early return avoids scanning at all",
+    "handlesCaseSensitivity() — 'Listen' vs 'Silent' fails unless both are lowercased first; decide and state the requirement",
+    "handlesEmptyStrings() — two empty strings are trivially anagrams",
+    "handlesUnicodeCharacters() — a 256-slot array breaks for chars beyond extended ASCII; use a HashMap<Character,Integer> instead for full Unicode support"
+  ],
+  tips:[
+    "The count-array-of-256 trick is the expected 'optimized' answer over sorting both strings and comparing (O(n log n)) — mention both and justify why counting wins.",
+    "If the interviewer says 'what about emojis or accented characters', pivot immediately to a HashMap-based counter — this shows you know the fixed-array trick has a real boundary."
+  ]
+},
+{
+  id:"TC-16", title:"Find the First Non-Repeating Integer", pattern:"Hashing", difficulty:"Easy",
+  problem:"Given an array of integers, return the first value that appears exactly once, in left-to-right order.",
+  approach:"Identical pattern to the first-non-repeating-character question, just swapping the key type from Character to Integer — a LinkedHashMap count, then a second pass to find the first count-of-1 entry.",
+  code:"import java.util.*;\n\npublic class FirstNonRepeatingInt {\n    public static Integer firstNonRepeating(int[] arr) {\n        Map<Integer, Integer> counts = new LinkedHashMap<>();\n        for (int num : arr) {\n            counts.merge(num, 1, Integer::sum);\n        }\n        for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {\n            if (entry.getValue() == 1) return entry.getKey();\n        }\n        return null;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {4, 5, 4, 6, 5, 7};\n        System.out.println(firstNonRepeating(arr)); // 6\n    }\n}",
+  time:"O(n)", space:"O(n) worst case, all-distinct input",
+  edges:[
+    "handlesAllValuesRepeating() — returns null, caller must handle",
+    "handlesEmptyArray() — returns null immediately",
+    "handlesNegativeIntegers() — HashMap keys work the same regardless of sign",
+    "handlesSingleElementArray() — that one value is trivially non-repeating"
+  ],
+  tips:[
+    "If asked to do it with autoboxing concerns in mind (this is int, not char, so boxing overhead is real for huge arrays), mention that a primitive-friendly structure (e.g. a manually sized int[] frequency table, if the value range is bounded) avoids Integer boxing entirely.",
+    "Naming the null-return contract explicitly (rather than silently returning 0, which could be a legitimate value) is exactly the kind of defensive-API instinct interviewers listen for."
+  ]
+},
+{
+  id:"TC-17", title:"Compress a String (Run-Length Encoding)", pattern:"String", difficulty:"Medium",
+  problem:"Given a string, compress consecutive repeated characters into character+count form (e.g. 'aaabb' → 'a3b2'). Return the original string if the compressed version isn't actually shorter.",
+  approach:"Single pass comparing each character to the previous one, accumulating a run count, and flushing char+count into a StringBuilder whenever the run breaks. Compare final lengths before deciding what to return.",
+  code:"public class RunLengthEncoding {\n    public static String compress(String s) {\n        if (s == null || s.isEmpty()) return s;\n\n        StringBuilder sb = new StringBuilder();\n        int count = 1;\n\n        for (int i = 1; i <= s.length(); i++) {\n            if (i < s.length() && s.charAt(i) == s.charAt(i - 1)) {\n                count++;\n            } else {\n                sb.append(s.charAt(i - 1)).append(count);\n                count = 1;\n            }\n        }\n        String compressed = sb.toString();\n        return compressed.length() < s.length() ? compressed : s;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(compress(\"aaabbbccd\")); // \"a3b3c2d1\"\n        System.out.println(compress(\"abcd\"));       // \"abcd\" (compression not shorter)\n    }\n}",
+  time:"O(n)", space:"O(n) for the builder",
+  edges:[
+    "handlesNoRepeats() — returned as-is since compressed form would be longer, e.g. 'abcd' → 'a1b1c1d1' (8 chars) stays 'abcd' (4 chars)",
+    "handlesSingleCharacterString() — 'a' compresses to 'a1', which is longer, so 'a' is returned",
+    "handlesNullOrEmptyInput() — guarded at the top, returns input unchanged",
+    "handlesDoubleDigitRunLengths() — e.g. 12 consecutive 'a's must become 'a12', not 'a1' repeated — verify the loop appends the full count, not per-character"
+  ],
+  tips:[
+    "The 'only return compressed if actually shorter' requirement is the part people forget under pressure — write the length check as a deliberate final step, not an afterthought.",
+    "This is a great one to pair with a decompress() counterpart if the interviewer asks for round-tripping — good opportunity to demonstrate symmetric test thinking."
+  ]
+},
+{
+  id:"TC-18", title:"Find the Second Largest Distinct Number", pattern:"Array", difficulty:"Easy",
+  problem:"Given an integer array, find the second largest distinct value (duplicates of the largest don't count as 'second').",
+  approach:"Single pass tracking both the largest and second-largest seen so far, being careful to only update 'second' when the new number is distinct from 'first'.",
+  code:"public class SecondLargest {\n    public static Integer secondLargest(int[] arr) {\n        Integer first = null, second = null;\n\n        for (int num : arr) {\n            if (first == null || num > first) {\n                second = first;\n                first = num;\n            } else if (num != first && (second == null || num > second)) {\n                second = num;\n            }\n        }\n        return second;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {5, 1, 5, 3, 4};\n        System.out.println(secondLargest(arr)); // 4\n    }\n}",
+  time:"O(n)", space:"O(1)",
+  edges:[
+    "handlesAllIdenticalValues() — e.g. [5,5,5] has no distinct second largest, returns null",
+    "handlesArrayWithFewerThanTwoElements() — returns null for empty or single-element arrays",
+    "handlesLargestValueRepeated() — [9,9,7] correctly returns 7, not 9",
+    "handlesNegativeNumbers() — comparisons work unchanged with negatives"
+  ],
+  tips:[
+    "This is a favorite because the naive 'sort then take index [length-2]' solution silently breaks when the largest value repeats — walk through that failure case explicitly, then justify the single-pass approach as the fix, not just a speed optimization.",
+    "Boxed Integer (not primitive int) for first/second is deliberate so null can represent 'not yet found' — mention this the same way as in the first-non-repeating question."
+  ]
+},
+{
+  id:"TC-19", title:"Find the Maximum Sum of Three Consecutive Elements", pattern:"Array", difficulty:"Easy",
+  problem:"Given an integer array, find the maximum sum achievable by any three consecutive elements.",
+  approach:"Sliding window of fixed size 3: compute the first window's sum, then slide one step at a time by subtracting the element leaving the window and adding the one entering it — avoids recomputing the sum from scratch each time.",
+  code:"public class MaxSumThreeConsecutive {\n    public static int maxSum(int[] arr) {\n        if (arr.length < 3) {\n            throw new IllegalArgumentException(\"Array must have at least 3 elements\");\n        }\n\n        int windowSum = arr[0] + arr[1] + arr[2];\n        int maxSum = windowSum;\n\n        for (int i = 3; i < arr.length; i++) {\n            windowSum += arr[i] - arr[i - 3];\n            maxSum = Math.max(maxSum, windowSum);\n        }\n        return maxSum;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5, 10};\n        System.out.println(maxSum(arr)); // 19 (4+5+10)\n    }\n}",
+  time:"O(n)", space:"O(1)",
+  edges:[
+    "handlesExactlyThreeElements() — the loop never runs, single window sum is the answer",
+    "handlesFewerThanThreeElements() — deliberately throws IllegalArgumentException rather than returning a misleading value",
+    "handlesAllNegativeNumbers() — max is still correctly the 'least negative' window",
+    "handlesLargeValuesOverflow() — sum of three ints is safe in int range for realistic inputs, but mention switching to long for very large values"
+  ],
+  tips:[
+    "This generalizes directly to 'max sum of k consecutive elements' — the same subtract-the-old/add-the-new sliding window trick applies with a variable k, and interviewers often ask that as a live follow-up.",
+    "Throwing IllegalArgumentException instead of returning 0 or Integer.MIN_VALUE for invalid input is a deliberate contract choice worth stating — silently returning a sentinel value hides bugs."
+  ]
+},
+{
+  id:"TC-20", title:"Reverse Only the Alphabetic Part of a Mixed String", pattern:"Two-Pointer", difficulty:"Medium",
+  problem:"Given a string containing letters mixed with digits, spaces, or punctuation, reverse only the letters in place, leaving every non-letter character exactly where it was.",
+  approach:"Two pointers starting at both ends. Skip inward past any non-letter character on either side; when both pointers sit on letters, swap them and move both inward. This preserves the position of every non-alphabetic character automatically.",
+  code:"public class ReverseAlphabeticOnly {\n    public static String reverseAlphaOnly(String s) {\n        char[] chars = s.toCharArray();\n        int left = 0, right = chars.length - 1;\n\n        while (left < right) {\n            if (!Character.isLetter(chars[left])) {\n                left++;\n            } else if (!Character.isLetter(chars[right])) {\n                right--;\n            } else {\n                char temp = chars[left];\n                chars[left] = chars[right];\n                chars[right] = temp;\n                left++;\n                right--;\n            }\n        }\n        return new String(chars);\n    }\n\n    public static void main(String[] args) {\n        System.out.println(reverseAlphaOnly(\"a-bC-dEf-e\"));\n        // \"e-fE-dCb-a\"\n    }\n}",
+  time:"O(n)", space:"O(n) for the char array copy",
+  edges:[
+    "handlesNoLettersAtAll() — pointers pass through without ever swapping, string returned unchanged",
+    "handlesAllLetters() — behaves exactly like a normal full-string reversal",
+    "handlesLettersAtBothEnds() — verify the loop terminates correctly when left and right meet or cross by one",
+    "handlesMixedCase() — case is preserved per original position, only positions are swapped, not letter case itself"
+  ],
+  tips:[
+    "This is a strong 'do you actually understand two-pointer, or did you memorize one version of it' check — the two independent skip-conditions (left non-letter, right non-letter) are the part people fumble.",
+    "Walk through a short example by hand ('a-bC') before coding — tracing the pointer movement on paper catches off-by-one bugs before they show up live."
+  ]
+},
+{
+  id:"TC-21", title:"Find the Largest Element in an Array", pattern:"Array", difficulty:"Easy",
+  problem:"Given an integer array, return the largest value.",
+  approach:"Single linear scan tracking a running maximum — the simplest baseline question on this list, usually used as an icebreaker or to check how you handle the empty-array edge case.",
+  code:"public class LargestElement {\n    public static int findLargest(int[] arr) {\n        if (arr == null || arr.length == 0) {\n            throw new IllegalArgumentException(\"Array must not be empty\");\n        }\n\n        int largest = arr[0];\n        for (int num : arr) {\n            if (num > largest) {\n                largest = num;\n            }\n        }\n        return largest;\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {3, 7, 2, 9, 4};\n        System.out.println(findLargest(arr)); // 9\n    }\n}",
+  time:"O(n)", space:"O(1)",
+  edges:[
+    "handlesNullArray() — explicit check avoids a NullPointerException on arr.length",
+    "handlesEmptyArray() — explicit check avoids ArrayIndexOutOfBoundsException on arr[0]",
+    "handlesSingleElementArray() — that element is trivially the largest",
+    "handlesAllNegativeNumbers() — starting largest at arr[0] (not 0) is essential here, a common seeded bug"
+  ],
+  tips:[
+    "Seeing this question, resist rushing — interviewers use it to check whether you reflexively guard null/empty input before writing the happy path, which is exactly the mindset an SDET is hired for.",
+    "The classic seeded bug is initializing largest = 0 instead of arr[0] — call that out explicitly since it silently breaks on all-negative arrays."
+  ]
+}
+];
+
+const PATTERNS = ["All", ...Array.from(new Set(DATA.map(d => d.pattern)))];
+let activeFilter = "All";
+let activeSearch = "";
+let activeId = DATA[0].id;
+let reviewed = new Set();
+
+function renderFilters(){
+  const wrap = document.getElementById('filters');
+  wrap.innerHTML = '';
+  PATTERNS.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (p === activeFilter ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => { activeFilter = p; renderFilters(); renderList(); };
+    wrap.appendChild(btn);
+  });
+}
+
+function filteredData(){
+  return DATA.filter(d => {
+    const matchesFilter = activeFilter === "All" || d.pattern === activeFilter;
+    const q = activeSearch.toLowerCase();
+    const matchesSearch = !q || d.title.toLowerCase().includes(q) || d.pattern.toLowerCase().includes(q) || d.id.toLowerCase().includes(q);
+    return matchesFilter && matchesSearch;
+  });
+}
+
+function renderProgress(){
+  const pct = Math.round((reviewed.size / DATA.length) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = reviewed.size + '/' + DATA.length;
+}
+
+function renderList(){
+  const list = document.getElementById('qList');
+  list.innerHTML = '';
+  const items = filteredData();
+  if (items.length === 0){
+    list.innerHTML = '<div style="padding:20px 10px;color:var(--text-faint);font-size:13px;">No matches.</div>';
+    return;
+  }
+  items.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'q-item' + (d.id === activeId ? ' active' : '');
+    el.innerHTML = `
+      <span class="q-id">${d.id}</span>
+      <span class="q-check ${reviewed.has(d.id) ? 'done' : ''}"></span>
+      <span class="q-title">${d.title}</span>
+      <span class="q-diff ${d.difficulty}">${d.difficulty}</span>
+    `;
+    el.onclick = () => { activeId = d.id; renderList(); renderMain(); if(window.innerWidth<=860){document.getElementById('sidebar').classList.remove('open');} };
+    list.appendChild(el);
+  });
+}
+
+function renderMain(){
+  const d = DATA.find(x => x.id === activeId);
+  const main = document.getElementById('main');
+  if (!d){ main.innerHTML = ''; return; }
+
+  const edgeItems = d.edges.map(e => {
+    const parts = e.split(" — ");
+    const fn = parts[0];
+    const desc = parts.slice(1).join(" — ");
+    return `<li class="assert-item"><span class="mark">✓</span><span><span class="fn">${fn}</span>${desc ? ' <span class="desc">— ' + desc + '</span>' : ''}</span></li>`;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <p class="detail-id">${d.id}</p>
+        <h2>${d.title}</h2>
+        <div class="tag-row">
+          <span class="tag">${d.pattern}</span>
+          <span class="tag">${d.difficulty}</span>
+        </div>
+      </div>
+      <button class="mark-btn ${reviewed.has(d.id) ? 'done' : ''}" id="markBtn">${reviewed.has(d.id) ? '✓ Reviewed' : 'Mark reviewed'}</button>
+    </div>
+
+    <section>
+      <p class="section-label">Problem</p>
+      <p class="prose">${d.problem}</p>
+    </section>
+
+    <section>
+      <p class="section-label">Approach</p>
+      <p class="prose">${d.approach}</p>
+    </section>
+
+    <section>
+      <p class="section-label">Java Solution</p>
+      <pre><code class="language-java">${d.code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>
+    </section>
+
+    <section>
+      <div class="stat-row">
+        <div class="stat-card"><p class="k">Time Complexity</p><p class="v">${d.time}</p></div>
+        <div class="stat-card"><p class="k">Space Complexity</p><p class="v">${d.space}</p></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="section-label">Edge Cases — Test Checklist</p>
+      <ul class="assert-list">${edgeItems}</ul>
+    </section>
+
+    <section>
+      <p class="section-label">Interview Tips</p>
+      <div class="tips-box"><ul>${d.tips.map(t => `<li>${t}</li>`).join('')}</ul></div>
+    </section>
+  `;
+
+  document.getElementById('markBtn').onclick = () => {
+    if (reviewed.has(d.id)) reviewed.delete(d.id); else reviewed.add(d.id);
+    renderProgress(); renderList(); renderMain();
+  };
+
+  if (window.hljs) hljs.highlightAll();
+  main.scrollTop = 0;
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  activeSearch = e.target.value;
+  renderList();
+});
+
+document.getElementById('toggleBtn').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+renderFilters();
+renderList();
+renderProgress();
+renderMain();
+</script>
+</body>
+</html>

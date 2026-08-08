@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright TS — Command Reference</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0d12;
+    --panel:#0f141b;
+    --panel-2:#131a23;
+    --border:#1e2733;
+    --pass:#00e08a;
+    --pass-dim:#00e08a33;
+    --amber:#ffb02e;
+    --fail:#ff5c6c;
+    --text:#c9d4e0;
+    --text-dim:#7c8ba1;
+    --text-bright:#eef3f8;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);}
+  body{display:flex;min-height:100vh;}
+
+  /* ===== Sidebar ===== */
+  #sidebar{
+    width:260px;flex-shrink:0;background:var(--panel);
+    border-right:1px solid var(--border);
+    position:sticky;top:0;height:100vh;overflow-y:auto;
+    padding:20px 0 40px;
+  }
+  .brand{padding:0 20px 16px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+  .brand .prompt{color:var(--pass);font-family:var(--mono);font-size:12px;letter-spacing:.5px;}
+  .brand h1{font-size:16px;margin:6px 0 2px;color:var(--text-bright);font-weight:700;letter-spacing:.2px;}
+  .brand .sub{font-size:11px;color:var(--text-dim);font-family:var(--mono);}
+
+  #search{
+    margin:0 16px 16px;padding:9px 12px;width:calc(100% - 32px);
+    background:var(--panel-2);border:1px solid var(--border);border-radius:6px;
+    color:var(--text-bright);font-family:var(--mono);font-size:13px;outline:none;
+  }
+  #search:focus{border-color:var(--pass);}
+  #search::placeholder{color:var(--text-dim);}
+
+  .navgroup{margin-bottom:2px;}
+  .navcat{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 20px;cursor:pointer;font-size:12.5px;color:var(--text-dim);
+    font-family:var(--mono);text-transform:uppercase;letter-spacing:.8px;
+    transition:color .15s;
+  }
+  .navcat:hover{color:var(--text-bright);}
+  .navcat .count{background:var(--panel-2);color:var(--text-dim);border-radius:10px;padding:1px 7px;font-size:10.5px;}
+  .navcat.active{color:var(--pass);}
+  .navcat.active .count{color:var(--pass);background:var(--pass-dim);}
+
+  /* ===== Main ===== */
+  #main{flex:1;padding:34px 44px 80px;max-width:980px;}
+  header.top{margin-bottom:30px;border-bottom:1px solid var(--border);padding-bottom:20px;}
+  header.top .runline{
+    font-family:var(--mono);font-size:12.5px;color:var(--text-dim);margin-bottom:10px;
+  }
+  header.top .runline .ok{color:var(--pass);}
+  header.top h2{font-size:26px;color:var(--text-bright);margin:0 0 8px;font-weight:800;letter-spacing:-.3px;}
+  header.top p{margin:0;color:var(--text-dim);font-size:14px;max-width:640px;line-height:1.55;}
+
+  .category-section{margin-bottom:46px;scroll-margin-top:20px;}
+  .category-section h3{
+    font-size:12.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--amber);
+    font-family:var(--mono);margin:0 0 4px;
+  }
+  .category-section .catdesc{color:var(--text-dim);font-size:13.5px;margin:0 0 18px;}
+
+  .cmd-card{
+    background:var(--panel);border:1px solid var(--border);border-radius:8px;
+    margin-bottom:14px;overflow:hidden;transition:border-color .15s;
+  }
+  .cmd-card:hover{border-color:#2a3646;}
+  .cmd-head{
+    display:flex;align-items:baseline;gap:10px;padding:14px 18px 4px;flex-wrap:wrap;
+  }
+  .cmd-sig{
+    font-family:var(--mono);font-size:14.5px;color:var(--pass);font-weight:600;
+  }
+  .cmd-tag{
+    font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--text-dim);border:1px solid var(--border);border-radius:4px;padding:1px 6px;
+  }
+  .cmd-desc{padding:6px 18px 14px;font-size:13.5px;color:var(--text);line-height:1.55;}
+  .cmd-desc code{
+    background:var(--panel-2);padding:1px 5px;border-radius:4px;font-family:var(--mono);
+    font-size:12.5px;color:var(--amber);
+  }
+  .cmd-code{position:relative;}
+  .cmd-code pre{margin:0;padding:14px 18px;font-size:12.8px;line-height:1.6;overflow-x:auto;background:#0d1117 !important;}
+  .cmd-code code.hljs{background:transparent !important;}
+  .note{
+    margin:0 18px 14px;padding:8px 12px;border-left:2px solid var(--amber);
+    background:#ffb02e14;font-size:12.5px;color:var(--text-dim);border-radius:0 4px 4px 0;
+  }
+  .note b{color:var(--amber);}
+
+  .hidden{display:none !important;}
+  #empty-state{display:none;color:var(--text-dim);font-family:var(--mono);font-size:13px;padding:40px 0;text-align:center;}
+
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:#232e3c;border-radius:5px;}
+  ::-webkit-scrollbar-thumb:hover{background:#2f3d4f;}
+
+  @media (max-width:820px){
+    body{flex-direction:column;}
+    #sidebar{width:100%;height:auto;position:relative;border-right:none;border-bottom:1px solid var(--border);}
+    #main{padding:24px 18px 60px;}
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div class="brand">
+    <div class="prompt">$ npx playwright test --list</div>
+    <h1>Playwright · TypeScript</h1>
+    <div class="sub">Command Reference — SDET Edition</div>
+  </div>
+  <input id="search" type="text" placeholder="filter commands…">
+  <div id="navlist"></div>
+</nav>
+
+<main id="main">
+  <header class="top">
+    <div class="runline"><span class="ok">✓</span> reference loaded — <span id="total-count">0</span> commands across <span id="cat-count">0</span> categories</div>
+    <h2>Playwright Command Reference</h2>
+    <p>Locators, actions, assertions, waits, fixtures, API testing, network interception, tracing, and config — the day-to-day surface area for building and debugging a Playwright/TypeScript automation suite.</p>
+  </header>
+
+  <div id="content"></div>
+  <div id="empty-state">no commands match that filter</div>
+</main>
+
+<script>
+const DATA = [
+{
+  id:"locators", title:"Locators", desc:"Ways to resolve elements. Locators are lazy — they don't query the DOM until an action or assertion runs, and they auto-wait + auto-retry.",
+  items:[
+    {sig:"page.locator(selector)", tag:"core", desc:"Generic CSS/XPath locator. Returns a <code>Locator</code>, not an element — re-evaluated on every action.",
+      code:`const button = page.locator('button.submit');\nawait button.click();`},
+    {sig:"page.getByRole(role, options)", tag:"recommended", desc:"Locates by ARIA role — the most resilient locator since it mirrors how assistive tech and users perceive the page.",
+      code:`await page.getByRole('button', { name: 'Sign in' }).click();\nawait page.getByRole('checkbox', { name: 'Remember me' }).check();`},
+    {sig:"page.getByText(text, options)", tag:"core", desc:"Matches by visible text content. Accepts a string (substring) or regex (exact via <code>{ exact: true }</code>).",
+      code:`await page.getByText('Order confirmed').isVisible();`},
+    {sig:"page.getByLabel(text)", tag:"core", desc:"Locates a form control by its associated <code>&lt;label&gt;</code> text.",
+      code:`await page.getByLabel('Email address').fill('sai@example.com');`},
+    {sig:"page.getByPlaceholder(text)", tag:"core", desc:"Locates an input by its placeholder attribute.",
+      code:`await page.getByPlaceholder('Search products').fill('laptop');`},
+    {sig:"page.getByTestId(testId)", tag:"recommended", desc:"Locates by <code>data-testid</code> (configurable attribute). Stable against copy/style changes — good for volatile UI.",
+      code:`await page.getByTestId('cart-total').textContent();`},
+    {sig:"page.getByTitle(text)", tag:"core", desc:"Locates by the <code>title</code> attribute.",
+      code:`await page.getByTitle('Close dialog').click();`},
+    {sig:"page.getByAltText(text)", tag:"core", desc:"Locates an image (or any element) by its <code>alt</code> attribute.",
+      code:`await page.getByAltText('Company logo').isVisible();`},
+    {sig:"locator.filter({ hasText, has })", tag:"chaining", desc:"Narrows a locator to matches containing given text or a nested locator — useful for picking one row in a repeated list.",
+      code:`await page.getByRole('listitem')\n  .filter({ hasText: 'Product A' })\n  .getByRole('button', { name: 'Remove' })\n  .click();`},
+    {sig:"locator.nth(index) / .first() / .last()", tag:"chaining", desc:"Selects one element from a multi-match locator by position. Prefer <code>filter()</code> when a stable attribute is available — position breaks when order changes.",
+      code:`await page.locator('.row').nth(2).click();\nawait page.locator('.row').first().click();`},
+    {sig:"locator.and(other) / locator.or(other)", tag:"chaining", desc:"Combines two locators with AND/OR logic to build compound conditions.",
+      code:`const btn = page.getByRole('button').and(page.getByTitle('Submit'));`},
+    {sig:"page.frameLocator(selector)", tag:"iframe", desc:"Enters an iframe and returns a <code>FrameLocator</code> scoped to it — required for interacting with elements inside frames.",
+      code:`await page.frameLocator('#payment-frame')\n  .getByLabel('Card number').fill('4242424242424242');`},
+  ]
+},
+{
+  id:"actions", title:"Actions", desc:"Interactions that trigger real browser input events. Each auto-waits for the element to be actionable (visible, stable, enabled, receives events) before executing.",
+  items:[
+    {sig:"locator.click(options)", tag:"core", desc:"Clicks the element. Options: <code>{ button, clickCount, force, position, modifiers }</code>.",
+      code:`await page.getByRole('button', { name: 'Submit' }).click();\nawait page.locator('#menu').click({ button: 'right' });`},
+    {sig:"locator.dblclick()", tag:"core", desc:"Double-clicks the element.",
+      code:`await page.locator('.editable-cell').dblclick();`},
+    {sig:"locator.fill(value)", tag:"core", desc:"Clears the field and sets its value directly — faster than typing key-by-key, but skips per-key JS handlers.",
+      code:`await page.getByLabel('Username').fill('sai.dasari');`},
+    {sig:"locator.pressSequentially(text, options)", tag:"core", desc:"Types character-by-character, firing real keyboard events. Use when the app has key-driven logic (autocomplete, masks) that <code>fill()</code> would skip.",
+      code:`await page.locator('#search').pressSequentially('playwright', { delay: 80 });`},
+    {sig:"locator.press(key)", tag:"core", desc:"Sends a single key or key combination to a focused element.",
+      code:`await page.locator('#search').press('Enter');\nawait page.locator('input').press('Control+A');`},
+    {sig:"locator.check() / .uncheck()", tag:"core", desc:"Sets a checkbox/radio to checked/unchecked state idempotently — no-ops if already in that state.",
+      code:`await page.getByLabel('Accept terms').check();`},
+    {sig:"locator.selectOption(value)", tag:"core", desc:"Selects one or more options in a <code>&lt;select&gt;</code>, by value, label, or index.",
+      code:`await page.locator('#country').selectOption({ label: 'India' });\nawait page.locator('#tags').selectOption(['qa', 'automation']);`},
+    {sig:"locator.hover()", tag:"core", desc:"Moves the mouse over the element — triggers hover-only menus and tooltips.",
+      code:`await page.locator('.dropdown-trigger').hover();`},
+    {sig:"locator.dragTo(target)", tag:"core", desc:"Performs a drag-and-drop from this locator to the target locator.",
+      code:`await page.locator('#task-1').dragTo(page.locator('#done-column'));`},
+    {sig:"locator.setInputFiles(paths)", tag:"core", desc:"Uploads one or more files to a <code>&lt;input type=file&gt;</code>, bypassing the native OS file picker.",
+      code:`await page.locator('#upload').setInputFiles('reports/invoice.pdf');`},
+    {sig:"locator.focus() / .blur()", tag:"core", desc:"Programmatically focuses or blurs the element without a click.",
+      code:`await page.locator('#otp-1').focus();`},
+    {sig:"locator.scrollIntoViewIfNeeded()", tag:"core", desc:"Scrolls the element into the viewport if it's currently outside it. Rarely needed — most actions auto-scroll.",
+      code:`await page.locator('#footer-link').scrollIntoViewIfNeeded();`},
+    {sig:"page.keyboard.press(key) / .type(text)", tag:"low-level", desc:"Global keyboard input, not tied to a specific locator — use for shortcuts or when no element should hold focus.",
+      code:`await page.keyboard.press('Escape');`},
+    {sig:"page.mouse.move(x,y) / .click(x,y)", tag:"low-level", desc:"Raw mouse control by coordinates — use for canvas apps or custom drag gestures locators can't express.",
+      code:`await page.mouse.move(100, 200);\nawait page.mouse.down();`},
+  ]
+},
+{
+  id:"assertions", title:"Assertions (expect)", desc:"Web-first assertions auto-retry until the condition is met or the timeout expires — no manual polling needed.",
+  items:[
+    {sig:"expect(locator).toBeVisible() / toBeHidden()", tag:"state", desc:"Asserts the element is (or isn't) visible in the DOM and viewport.",
+      code:`await expect(page.getByText('Order placed')).toBeVisible();`},
+    {sig:"expect(locator).toBeEnabled() / toBeDisabled()", tag:"state", desc:"Asserts the element's enabled/disabled state.",
+      code:`await expect(page.getByRole('button', { name: 'Pay' })).toBeEnabled();`},
+    {sig:"expect(locator).toHaveText(text)", tag:"content", desc:"Asserts exact (trimmed) text content. Accepts a string, regex, or array for multiple elements.",
+      code:`await expect(page.locator('h1')).toHaveText('Dashboard');`},
+    {sig:"expect(locator).toContainText(text)", tag:"content", desc:"Asserts the element's text contains the given substring — looser than <code>toHaveText</code>.",
+      code:`await expect(page.locator('.toast')).toContainText('saved');`},
+    {sig:"expect(locator).toHaveValue(value)", tag:"content", desc:"Asserts the current value of an input, textarea, or select.",
+      code:`await expect(page.getByLabel('Quantity')).toHaveValue('3');`},
+    {sig:"expect(locator).toHaveAttribute(name, value)", tag:"content", desc:"Asserts an attribute's value on the element.",
+      code:`await expect(page.locator('#save-btn')).toHaveAttribute('aria-disabled', 'false');`},
+    {sig:"expect(locator).toHaveCount(n)", tag:"content", desc:"Asserts the number of elements a locator resolves to — handy for list/table row counts.",
+      code:`await expect(page.locator('.cart-item')).toHaveCount(3);`},
+    {sig:"expect(page).toHaveURL(url)", tag:"navigation", desc:"Asserts the page's current URL, string or regex.",
+      code:`await expect(page).toHaveURL(/.*\\/dashboard/);`},
+    {sig:"expect(page).toHaveTitle(title)", tag:"navigation", desc:"Asserts the document title.",
+      code:`await expect(page).toHaveTitle('GMF | Dashboard');`},
+    {sig:"expect(locator).toBeChecked()", tag:"state", desc:"Asserts a checkbox/radio is checked.",
+      code:`await expect(page.getByLabel('Remember me')).toBeChecked();`},
+    {sig:"expect(locator).toBeFocused()", tag:"state", desc:"Asserts the element currently has keyboard focus.",
+      code:`await expect(page.locator('#search')).toBeFocused();`},
+    {sig:"expect.soft(locator).toBeVisible()", tag:"control", desc:"Records a failure without stopping the test — remaining assertions still run, all failures reported at the end.",
+      code:`expect.soft(page.locator('.warning')).toBeHidden();\n// test continues even if this fails`},
+    {sig:"expect(fn).toPass(options)", tag:"control", desc:"Retries an arbitrary block of assertions/logic until it passes or times out — for conditions <code>expect</code> matchers don't cover directly.",
+      code:`await expect(async () => {\n  const count = await page.locator('.item').count();\n  expect(count).toBeGreaterThan(0);\n}).toPass({ timeout: 10000 });`},
+  ]
+},
+{
+  id:"waiting", title:"Waiting Strategies", desc:"Most waiting is implicit via auto-wait. These are the explicit tools for the cases auto-wait doesn't cover — network settling, SPA navigation, custom conditions.",
+  items:[
+    {sig:"locator.waitFor({ state })", tag:"recommended", desc:"Waits for an element to reach a state: <code>attached</code>, <code>detached</code>, <code>visible</code>, <code>hidden</code>.",
+      code:`await page.locator('.spinner').waitFor({ state: 'hidden' });`},
+    {sig:"page.waitForLoadState(state)", tag:"navigation", desc:"Waits for <code>load</code>, <code>domcontentloaded</code>, or <code>networkidle</code>. Prefer web-first assertions over this where possible.",
+      code:`await page.waitForLoadState('networkidle');`},
+    {sig:"page.waitForURL(url)", tag:"navigation", desc:"Waits for the page URL to match after a client-side navigation (SPA route change).",
+      code:`await page.getByRole('link', { name: 'Reports' }).click();\nawait page.waitForURL('**/reports');`},
+    {sig:"page.waitForResponse(urlOrPredicate)", tag:"network", desc:"Waits for a matching network response — essential for asserting an API call completed before checking UI state.",
+      code:`const [response] = await Promise.all([\n  page.waitForResponse(r => r.url().includes('/api/orders') && r.status() === 200),\n  page.getByRole('button', { name: 'Place order' }).click(),\n]);`},
+    {sig:"page.waitForRequest(urlOrPredicate)", tag:"network", desc:"Waits for a matching outgoing network request.",
+      code:`await page.waitForRequest(req => req.url().includes('/api/analytics'));`},
+    {sig:"page.waitForFunction(fn)", tag:"custom", desc:"Polls an arbitrary JS predicate in the page context until it returns truthy — escape hatch for conditions no built-in wait covers.",
+      code:`await page.waitForFunction(() => window.appReady === true);`},
+    {sig:"page.waitForTimeout(ms)", tag:"discouraged", desc:"Hard sleep. Flags as a flaky-test smell in review — reach for a condition-based wait instead.",
+      code:`await page.waitForTimeout(2000); // avoid in real suites`},
+  ]
+},
+{
+  id:"navigation", title:"Navigation & Page", desc:"Controlling page/browser-level state: loading URLs, history, screenshots, and multi-page/tab handling.",
+  items:[
+    {sig:"page.goto(url, options)", tag:"core", desc:"Navigates to a URL. Options: <code>{ waitUntil, timeout, referer }</code>.",
+      code:`await page.goto('https://eventhub.rahulshettyacademy.com/login');`},
+    {sig:"page.reload() / page.goBack() / page.goForward()", tag:"core", desc:"Standard browser navigation controls.",
+      code:`await page.reload({ waitUntil: 'networkidle' });`},
+    {sig:"page.title() / page.url()", tag:"core", desc:"Reads the current document title or URL.",
+      code:`const title = await page.title();`},
+    {sig:"page.screenshot(options)", tag:"artifact", desc:"Captures a screenshot. <code>{ fullPage: true }</code> captures beyond the viewport.",
+      code:`await page.screenshot({ path: 'debug.png', fullPage: true });`},
+    {sig:"page.pdf(options)", tag:"artifact", desc:"Renders the page to PDF (Chromium headless only).",
+      code:`await page.pdf({ path: 'invoice.pdf', format: 'A4' });`},
+    {sig:"context.newPage() / context.pages()", tag:"multi-tab", desc:"Opens a new tab in the same browser context, or lists open tabs — needed when an action opens a new window.",
+      code:`const [newPage] = await Promise.all([\n  context.waitForEvent('page'),\n  page.getByRole('link', { name: 'Open in new tab' }).click(),\n]);\nawait newPage.waitForLoadState();`},
+  ]
+},
+{
+  id:"fixtures", title:"Test Structure & Fixtures", desc:"How tests, hooks, and reusable setup/teardown are organized. Fixtures are Playwright's dependency-injection mechanism for test context.",
+  items:[
+    {sig:"test(name, async ({ page }) => {})", tag:"core", desc:"Defines a test. Built-in fixtures (<code>page</code>, <code>context</code>, <code>browser</code>, <code>request</code>) are destructured from the callback argument.",
+      code:`import { test, expect } from '@playwright/test';\n\ntest('user can log in', async ({ page }) => {\n  await page.goto('/login');\n});`},
+    {sig:"test.describe(name, () => {})", tag:"core", desc:"Groups related tests — supports nesting, and scopes <code>beforeEach</code>/<code>afterEach</code> to the group.",
+      code:`test.describe('Checkout flow', () => {\n  test('applies a coupon', async ({ page }) => { /* ... */ });\n});`},
+    {sig:"test.beforeEach() / afterEach()", tag:"hooks", desc:"Runs before/after every test in the current file or describe block — typical place for login or cleanup.",
+      code:`test.beforeEach(async ({ page }) => {\n  await page.goto('/login');\n});`},
+    {sig:"test.beforeAll() / afterAll()", tag:"hooks", desc:"Runs once per worker before/after all tests in the file — good for expensive shared setup (seeding data via API).",
+      code:`test.beforeAll(async ({ request }) => {\n  await request.post('/api/test-data/seed');\n});`},
+    {sig:"test.use({ options })", tag:"config", desc:"Overrides fixture values (e.g. <code>storageState</code>, <code>viewport</code>, <code>baseURL</code>) for a file or describe block.",
+      code:`test.use({ storageState: 'auth/admin.json' });`},
+    {sig:"test.extend({ fixture })", tag:"custom-fixtures", desc:"Creates custom fixtures — the standard way to share a logged-in page object, API client, or test-data factory across tests.",
+      code:`export const test = base.extend<{ loginPage: LoginPage }>({\n  loginPage: async ({ page }, use) => {\n    await use(new LoginPage(page));\n  },\n});`},
+    {sig:"test.skip() / .only() / .fixme()", tag:"control", desc:"Skips, isolates, or marks a test as a known failure. <code>.only</code> should never reach CI — most teams lint against it.",
+      code:`test.skip(condition, 'reason');\ntest.only('debug this one', async ({ page }) => {});`},
+    {sig:"test.step(title, fn)", tag:"reporting", desc:"Wraps a block of actions as a named step — shows up individually in the HTML report and trace viewer.",
+      code:`await test.step('fill shipping address', async () => {\n  await page.getByLabel('Address').fill('221B Baker St');\n});`},
+  ]
+},
+{
+  id:"api", title:"API Testing", desc:"Playwright's request context sends real HTTP calls without a browser — useful for seeding data, verifying backend contracts, or hybrid API+UI tests.",
+  items:[
+    {sig:"request.get/post/put/delete/patch(url, options)", tag:"core", desc:"Sends an HTTP request via the built-in <code>request</code> fixture, sharing cookies with the browser context when used together.",
+      code:`const res = await request.post('/api/orders', {\n  data: { productId: 42, qty: 2 },\n});`},
+    {sig:"playwright.request.newContext(options)", tag:"standalone", desc:"Creates an isolated <code>APIRequestContext</code> outside a test — for pure API suites with no browser involved.",
+      code:`const apiContext = await request.newContext({\n  baseURL: 'https://api.eventhub.rahulshettyacademy.com',\n  extraHTTPHeaders: { Authorization: 'Bearer ' + token },\n});`},
+    {sig:"expect(response).toBeOK()", tag:"assertion", desc:"Asserts the response status is in the 200–299 range.",
+      code:`const res = await request.get('/api/health');\nexpect(res).toBeOK();`},
+    {sig:"response.json() / .text() / .status()", tag:"core", desc:"Reads the response body or status code for further assertions.",
+      code:`const body = await res.json();\nexpect(body.status).toBe('CREATED');`},
+    {sig:"response.headers()", tag:"core", desc:"Reads response headers as a plain object.",
+      code:`const headers = res.headers();\nexpect(headers['content-type']).toContain('application/json');`},
+    {sig:"apiContext.dispose()", tag:"cleanup", desc:"Releases a manually-created request context — call in <code>afterAll</code> to avoid leaking connections.",
+      code:`await apiContext.dispose();`},
+  ]
+},
+{
+  id:"network", title:"Network Interception", desc:"Intercept, inspect, mock, or block requests at the browser level — for testing error states, stubbing slow/unstable dependencies, or isolating the UI from a backend.",
+  items:[
+    {sig:"page.route(urlPattern, handler)", tag:"core", desc:"Intercepts matching requests before they hit the network, giving full control over the response.",
+      code:`await page.route('**/api/orders', async route => {\n  await route.fulfill({ status: 200, json: { orders: [] } });\n});`},
+    {sig:"route.fulfill(response)", tag:"mocking", desc:"Responds to an intercepted request with a custom status/body/headers instead of hitting the real server.",
+      code:`await route.fulfill({\n  status: 500,\n  contentType: 'application/json',\n  body: JSON.stringify({ error: 'Service unavailable' }),\n});`},
+    {sig:"route.continue(overrides)", tag:"mocking", desc:"Lets the intercepted request proceed to the network, optionally modifying method/headers/postData first.",
+      code:`await route.continue({ headers: { ...route.request().headers(), 'x-test': '1' } });`},
+    {sig:"route.abort(errorCode)", tag:"mocking", desc:"Fails the request outright — simulates offline mode or a dropped connection.",
+      code:`await page.route('**/analytics.js', route => route.abort());`},
+    {sig:"page.unroute(urlPattern)", tag:"cleanup", desc:"Removes a previously registered route handler.",
+      code:`await page.unroute('**/api/orders');`},
+    {sig:"page.on('request', handler) / .on('response', handler)", tag:"observability", desc:"Passive listeners for logging or asserting on network traffic without altering it.",
+      code:`page.on('response', res => {\n  if (res.status() >= 400) console.log(res.status(), res.url());\n});`},
+    {sig:"context.route(urlPattern, handler)", tag:"scope", desc:"Same as <code>page.route</code> but applies to every page opened in the browser context.",
+      code:`await context.route('**/*.png', route => route.abort());`},
+  ]
+},
+{
+  id:"debugging", title:"Tracing & Debugging", desc:"Tools for diagnosing failures — locally and from CI artifacts — without re-running the whole suite blind.",
+  items:[
+    {sig:"context.tracing.start() / .stop({ path })", tag:"trace", desc:"Manually records a trace (DOM snapshots, network, console, screenshots) for a block of code — usually configured globally instead via <code>trace:</code> in config.",
+      code:`await context.tracing.start({ screenshots: true, snapshots: true });\n// ... test actions ...\nawait context.tracing.stop({ path: 'trace.zip' });`},
+    {sig:"npx playwright show-trace trace.zip", tag:"cli", desc:"Opens the Trace Viewer — a timeline of every action, network call, and DOM snapshot for a recorded run.",
+      code:`npx playwright show-trace trace.zip`},
+    {sig:"page.pause()", tag:"interactive", desc:"Halts execution and opens the Playwright Inspector for step-by-step debugging with a live browser.",
+      code:`await page.pause();`},
+    {sig:"PWDEBUG=1 npx playwright test", tag:"cli", desc:"Runs the suite in debug mode — headed browser + Inspector open from the start, with a built-in locator picker.",
+      code:`PWDEBUG=1 npx playwright test tests/checkout.spec.ts`},
+    {sig:"npx playwright codegen url", tag:"cli", desc:"Opens a browser that records your interactions and generates locator + action code live — good for scaffolding a new spec fast.",
+      code:`npx playwright codegen https://eventhub.rahulshettyacademy.com`},
+    {sig:"testInfo.attach(name, options)", tag:"reporting", desc:"Attaches a file (screenshot, log, JSON payload) to the test's entry in the HTML report.",
+      code:`await testInfo.attach('response-body', {\n  body: JSON.stringify(payload),\n  contentType: 'application/json',\n});`},
+    {sig:"npx playwright test --debug / --headed / --ui", tag:"cli", desc:"Common CLI debug flags: <code>--debug</code> opens Inspector, <code>--headed</code> shows the browser, <code>--ui</code> opens the interactive UI Mode runner.",
+      code:`npx playwright test --ui`},
+  ]
+},
+{
+  id:"config", title:"Config Essentials", desc:"The shape of playwright.config.ts — where project-wide behavior (browsers, base URL, retries, reporting) is defined once instead of per test.",
+  items:[
+    {sig:"defineConfig({ ... })", tag:"core", desc:"Root config function providing type-checked autocomplete for every setting.",
+      code:`import { defineConfig, devices } from '@playwright/test';\n\nexport default defineConfig({\n  testDir: './tests',\n  timeout: 30000,\n  retries: 2,\n});`},
+    {sig:"use: { baseURL, headless, viewport }", tag:"global-options", desc:"Default options applied to every test — <code>baseURL</code> lets you call <code>page.goto('/login')</code> instead of the full URL everywhere.",
+      code:`use: {\n  baseURL: 'https://eventhub.rahulshettyacademy.com',\n  headless: true,\n  viewport: { width: 1366, height: 768 },\n  trace: 'on-first-retry',\n}`},
+    {sig:"projects: [{ name, use: { ...devices[...] } }]", tag:"cross-browser", desc:"Runs the same suite across multiple browsers/devices in one command.",
+      code:`projects: [\n  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },\n  { name: 'firefox', use: { ...devices['Desktop Firefox'] } },\n  { name: 'webkit', use: { ...devices['Desktop Safari'] } },\n]`},
+    {sig:"reporter: [...]", tag:"reporting", desc:"Configures output format(s) — commonly HTML locally and JUnit/JSON for CI pipeline integration.",
+      code:`reporter: [['html', { open: 'never' }], ['junit', { outputFile: 'results.xml' }]]`},
+    {sig:"fullyParallel / workers", tag:"execution", desc:"Controls parallelism — <code>fullyParallel: true</code> parallelizes individual tests rather than just files.",
+      code:`fullyParallel: true,\nworkers: process.env.CI ? 2 : undefined,`},
+    {sig:"globalSetup / globalSetup", tag:"setup", desc:"A script run once before the whole suite — typical place to authenticate and save <code>storageState</code> for reuse across tests.",
+      code:`globalSetup: require.resolve('./global-setup'),`},
+  ]
+},
+{
+  id:"cli", title:"CLI / npx Commands", desc:"Terminal commands for installing, running, and maintaining a Playwright project — the shell-level counterpart to the in-test API above.",
+  items:[
+    {sig:"npm init playwright@latest", tag:"setup", desc:"Scaffolds a new Playwright project — installs the package, creates <code>playwright.config.ts</code>, example tests, and a GitHub Actions workflow.",
+      code:`npm init playwright@latest`},
+    {sig:"npx playwright install", tag:"setup", desc:"Downloads the browser binaries (Chromium, Firefox, WebKit) Playwright drives. Run after cloning a repo or upgrading the package.",
+      code:`npx playwright install\nnpx playwright install chromium   # single browser`},
+    {sig:"npx playwright install --with-deps", tag:"setup", desc:"Also installs OS-level dependencies the browsers need — the standard form for a fresh Linux CI image.",
+      code:`npx playwright install --with-deps`},
+    {sig:"npx playwright test", tag:"run", desc:"Runs the full suite headlessly using <code>playwright.config.ts</code>.",
+      code:`npx playwright test`},
+    {sig:"npx playwright test <file-or-folder>", tag:"run", desc:"Runs only the specified spec file, folder, or a glob pattern.",
+      code:`npx playwright test tests/checkout.spec.ts\nnpx playwright test tests/api/`},
+    {sig:"npx playwright test -g &quot;pattern&quot;", tag:"run", desc:"Runs only tests whose title matches the given regex/substring — equivalent to filtering by <code>test.describe</code>/<code>test</code> name.",
+      code:`npx playwright test -g "login"`},
+    {sig:"npx playwright test --project=name", tag:"run", desc:"Runs only the named project from <code>projects: []</code> in config — e.g. a single browser or device.",
+      code:`npx playwright test --project=chromium`},
+    {sig:"npx playwright test --headed", tag:"run", desc:"Runs with a visible browser window instead of headless — useful while writing or diagnosing a test.",
+      code:`npx playwright test --headed`},
+    {sig:"npx playwright test --debug", tag:"run", desc:"Runs with the Playwright Inspector attached, pausing before each action for step-through debugging.",
+      code:`npx playwright test --debug tests/checkout.spec.ts`},
+    {sig:"npx playwright test --ui", tag:"run", desc:"Opens UI Mode — a watch-mode runner with a timeline, DOM snapshots, and one-click re-runs per test.",
+      code:`npx playwright test --ui`},
+    {sig:"npx playwright test --workers=n", tag:"run", desc:"Overrides the number of parallel workers for this run.",
+      code:`npx playwright test --workers=4`},
+    {sig:"npx playwright test --retries=n", tag:"run", desc:"Overrides the retry count for this run — commonly bumped only in CI, not locally.",
+      code:`npx playwright test --retries=2`},
+    {sig:"npx playwright test --repeat-each=n", tag:"run", desc:"Runs each test <code>n</code> times in a row — useful for hunting flaky tests.",
+      code:`npx playwright test --repeat-each=5 tests/flaky.spec.ts`},
+    {sig:"npx playwright test --last-failed", tag:"run", desc:"Re-runs only the tests that failed in the previous run.",
+      code:`npx playwright test --last-failed`},
+    {sig:"npx playwright test --grep-invert &quot;pattern&quot;", tag:"run", desc:"Runs everything except tests matching the pattern — the inverse of <code>-g</code>.",
+      code:`npx playwright test --grep-invert "@slow"`},
+    {sig:"npx playwright show-report", tag:"reporting", desc:"Opens the last generated HTML report in a browser.",
+      code:`npx playwright show-report`},
+    {sig:"npx playwright show-trace <file>", tag:"debugging", desc:"Opens a <code>.zip</code> trace file (from a local run or downloaded CI artifact) in the Trace Viewer.",
+      code:`npx playwright show-trace test-results/trace.zip`},
+    {sig:"npx playwright codegen <url>", tag:"authoring", desc:"Opens a recorder browser that generates locator + action code as you interact with the page.",
+      code:`npx playwright codegen https://eventhub.rahulshettyacademy.com`},
+    {sig:"npx playwright codegen --target=java", tag:"authoring", desc:"Generates code in a different language binding (e.g. Java, Python, .NET) instead of the default TypeScript.",
+      code:`npx playwright codegen --target=java https://eventhub.rahulshettyacademy.com`},
+    {sig:"npx playwright --version", tag:"info", desc:"Prints the installed Playwright version — check this matches the browser binaries installed.",
+      code:`npx playwright --version`},
+    {sig:"PWDEBUG=1 npx playwright test", tag:"env-var", desc:"Environment-variable form of debug mode — forces headed + Inspector, useful when a flag isn't wired through your CI runner.",
+      code:`PWDEBUG=1 npx playwright test tests/checkout.spec.ts`},
+    {sig:"CI=true npx playwright test", tag:"env-var", desc:"Signals CI mode — config often reads <code>process.env.CI</code> to toggle retries, workers, and <code>forbidOnly</code>.",
+      code:`CI=true npx playwright test`},
+  ]
+},
+];
+
+// ---- render ----
+const content = document.getElementById('content');
+const navlist = document.getElementById('navlist');
+let totalCmds = 0;
+
+DATA.forEach(section => {
+  totalCmds += section.items.length;
+
+  // nav entry
+  const navBtn = document.createElement('div');
+  navBtn.className = 'navcat';
+  navBtn.dataset.target = section.id;
+  navBtn.innerHTML = `<span>${section.title}</span><span class="count">${section.items.length}</span>`;
+  navBtn.addEventListener('click', () => {
+    document.getElementById('sec-' + section.id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  navlist.appendChild(navBtn);
+
+  // section
+  const sec = document.createElement('section');
+  sec.className = 'category-section';
+  sec.id = 'sec-' + section.id;
+
+  const h3 = document.createElement('h3');
+  h3.textContent = '// ' + section.title;
+  sec.appendChild(h3);
+
+  const catdesc = document.createElement('p');
+  catdesc.className = 'catdesc';
+  catdesc.textContent = section.desc;
+  sec.appendChild(catdesc);
+
+  section.items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'cmd-card';
+    card.dataset.search = (item.sig + ' ' + item.desc + ' ' + item.tag).toLowerCase();
+
+    card.innerHTML = `
+      <div class="cmd-head">
+        <span class="cmd-sig">${item.sig}</span>
+        <span class="cmd-tag">${item.tag}</span>
+      </div>
+      <div class="cmd-desc">${item.desc}</div>
+      <div class="cmd-code"><pre><code class="language-typescript"></code></pre></div>
+    `;
+    card.querySelector('code').textContent = item.code;
+    sec.appendChild(card);
+  });
+
+  content.appendChild(sec);
+});
+
+document.getElementById('total-count').textContent = totalCmds;
+document.getElementById('cat-count').textContent = DATA.length;
+
+hljs.highlightAll();
+
+// ---- search filter ----
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  let anyVisible = false;
+
+  document.querySelectorAll('.category-section').forEach(sec => {
+    let sectionHasMatch = false;
+    sec.querySelectorAll('.cmd-card').forEach(card => {
+      const match = !q || card.dataset.search.includes(q);
+      card.classList.toggle('hidden', !match);
+      if (match) sectionHasMatch = true;
+    });
+    sec.classList.toggle('hidden', !sectionHasMatch);
+    if (sectionHasMatch) anyVisible = true;
+  });
+
+  document.getElementById('empty-state').style.display = anyVisible ? 'none' : 'block';
+});
+
+// ---- active nav highlight on scroll ----
+const sections = Array.from(document.querySelectorAll('.category-section'));
+const navBtns = Array.from(document.querySelectorAll('.navcat'));
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const btn = navBtns.find(b => b.dataset.target === entry.target.id.replace('sec-',''));
+    if (!btn) return;
+    if (entry.isIntersecting) {
+      navBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDET Interview Prep Hub</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-card: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --accent-2: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    padding: 48px 24px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    margin: 0 0 8px;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+  }
+  header p {
+    color: var(--text-dim);
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  .search-box {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    margin: 24px auto 0;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+  .search-box:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .category {
+    margin-bottom: 40px;
+  }
+  .category h2 {
+    font-size: 1.1rem;
+    color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .card .title {
+    font-weight: 600;
+    font-size: 0.98rem;
+    margin-bottom: 4px;
+  }
+  .card .path {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+  }
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SDET Interview Prep Hub</h1>
+  <p>Java · SQL · Playwright · API Testing · Linux · Company-Specific Guides</p>
+  <input class="search-box" id="search" type="text" placeholder="Search guides...">
+</header>
+
+<main id="main">
+
+  <div class="category" data-cat="java">
+    <h2>Java</h2>
+    <div class="grid">
+      <a class="card" href="java/java-collections-30-questions.html">
+        <div class="title">Top 30 Java Collections Questions</div>
+        <div class="path">java/java-collections-30-questions.html</div>
+      </a>
+      <a class="card" href="java/java-logic-drills.html">
+        <div class="title">21 Java Logic Drills — SDET Interview Prep</div>
+        <div class="path">java/java-logic-drills.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category" data-cat="sql">
+    <h2>SQL</h2>
+    <div class="grid">
+      <a class="card" href="sql/sql-for-sdets.html">
+        <div class="title">SQL for SDETs — The Query Bench</div>
+        <div class="path">sql/sql-for-sdets.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category" data-cat="playwright">
+    <h2>Playwright</h2>
+    <div class="grid">
+      <a class="card" href="playwright/playwright-study-questions.html">
+        <div class="title">Playwright Interview Study Questions</div>
+        <div class="path">playwright/playwright-study-questions.html</div>
+      </a>
+      <a class="card" href="playwright/playwright-command-reference.html">
+        <div class="title">Playwright TS — Command Reference</div>
+        <div class="path">playwright/playwright-command-reference.html</div>
+      </a>
+        <a class="card" href="playwright/playwright-interview-field-notes.html">
+        <div class="title">Playwright TS —interview-field-notes</div>
+        <div class="path">playwright/playwright-interview-field-notes.html</div>
+      </a>
+      <a class="card" href="playwright/playwright-framework-spec-sheet.html">
+        <div class="title">Playwright Framework — Interview Spec Sheet</div>
+        <div class="path">playwright/playwright-framework-spec-sheet.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category" data-cat="api">
+    <h2>API Testing</h2>
+    <div class="grid">
+      <a class="card" href="api-testing/api-testing-questions.html">
+        <div class="title">API Testing Interview Questions — SDET Guide</div>
+        <div class="path">api-testing/api-testing-questions.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category" data-cat="linux">
+    <h2>Linux / Shell</h2>
+    <div class="grid">
+      <a class="card" href="linux-shell/shell-field-guide.html">
+        <div class="title">Shell for SDETs — A Terminal Field Guide</div>
+        <div class="path">linux-shell/shell-field-guide.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category" data-cat="company">
+    <h2>Company-Specific Prep</h2>
+    <div class="grid">
+      <a class="card" href="company-prep/cgi-master-answer-guide.html">
+        <div class="title">CGI QA Automation Interview — Master Answer Guide</div>
+        <div class="path">company-prep/cgi-master-answer-guide.html</div>
+      </a>
+      <a class="card" href="company-prep/cgi-qa-reference.html">
+        <div class="title">CGI Interview Prep — Q&amp;A Reference</div>
+        <div class="path">company-prep/cgi-qa-reference.html</div>
+      </a>
+      <a class="card" href="company-prep/barclays-qa-prep.html">
+        <div class="title">Barclays QA Automation — Interview Prep</div>
+        <div class="path">company-prep/barclays-qa-prep.html</div>
+      </a>
+      <a class="card" href="company-prep/hcltech-qa-prep.html">
+        <div class="title">HCLTech QA Engineer — Interview Prep</div>
+        <div class="path">company-prep/hcltech-qa-prep.html</div>
+      </a>
+      <a class="card" href="company-prep/infosys-qa-guide.html">
+        <div class="title">Infosys QA Automation Interview Guide (3–4 YOE)</div>
+        <div class="path">company-prep/infosys-qa-guide.html</div>
+      </a>
+      <a class="card" href="company-prep/valuelabs-qa.html">
+        <div class="title">ValueLabs SDET Interview — Q&amp;A Reference</div>
+        <div class="path">company-prep/valuelabs-qa.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="category" data-cat="general">
+    <h2>General</h2>
+    <div class="grid">
+      <a class="card" href="general/interview-debrief-may-june-2026.html">
+        <div class="title">Interview Debrief :: May–June 2026</div>
+        <div class="path">general/interview-debrief-may-june-2026.html</div>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Personal SDET interview prep archive · deployed on Netlify
+</footer>
+
+<script>
+  const search = document.getElementById('search');
+  search.addEventListener('input', () => {
+    const q = search.value.trim().toLowerCase();
+    document.querySelectorAll('.card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.classList.toggle('hidden', q && !text.includes(q));
+    });
+    document.querySelectorAll('.category').forEach(cat => {
+      const anyVisible = [...cat.querySelectorAll('.card')].some(c => !c.classList.contains('hidden'));
+      cat.classList.toggle('hidden', !anyVisible);
+    });
+  });
+</script>
+
+</body>
+</html>

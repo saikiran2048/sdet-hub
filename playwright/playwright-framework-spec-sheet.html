@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright Framework — Interview Spec Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0D1117;
+    --panel: #131A22;
+    --panel-2: #171F29;
+    --border: #232D3A;
+    --text: #D9E1EA;
+    --text-dim: #7C8A9C;
+    --amber: #E8A33D;
+    --amber-dim: #6b5527;
+    --violet: #9A8CD9;
+    --green: #6FCF97;
+    --red: #E27D7D;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --disp: 'Space Grotesk', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height:100vh;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-attachment: fixed;
+    background-color: var(--bg);
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background: radial-gradient(ellipse at 20% 0%, rgba(232,163,61,0.06), transparent 55%),
+                radial-gradient(ellipse at 80% 100%, rgba(154,140,217,0.06), transparent 55%);
+    pointer-events:none;
+  }
+
+  .app{ display:flex; min-height:100vh; position:relative; z-index:1; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width: 280px;
+    flex-shrink:0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 22px 14px 22px 18px;
+    position: sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .sidebar-head{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .sidebar-title{
+    font-family: var(--disp);
+    font-weight:700;
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height:1.3;
+  }
+  .sidebar-title span{ color: var(--amber); }
+
+  .progress-wrap{
+    margin-bottom: 18px;
+    padding: 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .progress-label{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom: 8px;
+  }
+  #progress-count{ color: var(--green); }
+  .progress-bar{
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background: linear-gradient(90deg, var(--amber), var(--green));
+    transition: width 0.35s ease;
+  }
+
+  .nav-list{ list-style:none; }
+  .nav-item{
+    display:flex;
+    align-items:center;
+    gap: 9px;
+    padding: 7px 8px;
+    border-radius: 5px;
+    cursor:pointer;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--text-dim);
+    border-left: 2px solid transparent;
+    transition: background 0.15s, color 0.15s;
+  }
+  .nav-item:hover{ background: var(--panel-2); color: var(--text); }
+  .nav-item.active{ background: var(--panel-2); color: var(--amber); border-left-color: var(--amber); }
+  .nav-check{
+    width: 13px; height:13px;
+    border-radius:3px;
+    border: 1.5px solid var(--text-dim);
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 9px;
+    color: transparent;
+  }
+  .nav-item.reviewed .nav-check{
+    background: var(--green);
+    border-color: var(--green);
+    color: #0D1117;
+  }
+  .nav-item.reviewed .nav-check::after{ content:"✓"; }
+  .nav-item .nlabel{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* ---------- Main ---------- */
+  .main{
+    flex:1;
+    padding: 40px 56px 90px;
+    max-width: 900px;
+  }
+  .page-header{
+    margin-bottom: 34px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--violet);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .page-header h1{
+    font-family: var(--disp);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .page-header p{
+    color: var(--text-dim);
+    font-size: 14.5px;
+    max-width: 640px;
+    line-height:1.6;
+  }
+
+  .qa-block{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    scroll-margin-top: 24px;
+  }
+  .qa-block.reviewed{ border-color: var(--amber-dim); }
+
+  .qa-question{
+    display:flex;
+    align-items:flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select:none;
+  }
+  .qa-num{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--amber);
+    background: rgba(232,163,61,0.1);
+    border: 1px solid var(--amber-dim);
+    border-radius: 4px;
+    padding: 2px 7px;
+    flex-shrink:0;
+    margin-top: 2px;
+  }
+  .qa-question h2{
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 15.5px;
+    color: var(--text);
+    flex: 1;
+    line-height: 1.5;
+  }
+  .qa-toggle{
+    font-family: var(--mono);
+    color: var(--text-dim);
+    font-size: 14px;
+    flex-shrink:0;
+    transition: transform 0.2s ease;
+    margin-top: 2px;
+  }
+  .qa-block.open .qa-toggle{ transform: rotate(45deg); color: var(--amber); }
+
+  .qa-answer{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.28s ease;
+  }
+  .qa-block.open .qa-answer{ max-height: 2400px; }
+  .qa-answer-inner{
+    padding: 0 20px 22px 54px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .qa-answer-inner p{ margin-bottom: 10px; }
+  .qa-answer-inner ul{ margin: 6px 0 12px 18px; }
+  .qa-answer-inner li{ margin-bottom: 6px; }
+  .qa-answer-inner strong{ color: var(--amber); font-weight:600; }
+  .qa-answer-inner code{
+    font-family: var(--mono);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--violet);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12.5px;
+  }
+  .tradeoff{
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border-left: 2px solid var(--violet);
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .tradeoff strong{ color: var(--violet); }
+
+  .mark-btn{
+    margin-top: 4px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    background: transparent;
+    border: 1px solid var(--border);
+    padding: 6px 11px;
+    border-radius: 5px;
+    cursor:pointer;
+    transition: all 0.15s;
+  }
+  .mark-btn:hover{ border-color: var(--green); color: var(--green); }
+  .qa-block.reviewed .mark-btn{ color: var(--green); border-color: var(--green); }
+
+  @media (max-width: 860px){
+    .sidebar{ display:none; }
+    .main{ padding: 26px 18px 70px; max-width:100%; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="sidebar-head">// sdet · interview-prep</div>
+    <div class="sidebar-title">Playwright Framework<br><span>Spec Sheet</span></div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>reviewed</span><span id="progress-count">0 / 15</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <ul class="nav-list" id="nav-list"></ul>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div class="eyebrow">15 questions · click to expand</div>
+      <h1>Playwright Automation Framework — Interview Answers</h1>
+      <p>Direct, technical answers for framework-design questions. Click a question to expand it, and mark it reviewed as you internalize it — the sidebar tracks your run.</p>
+    </div>
+
+    <div id="qa-container"></div>
+  </main>
+
+</div>
+
+<script>
+const data = [
+{
+  q: "Explain the architecture of your Playwright Automation Framework.",
+  a: `
+    <p>The framework is layered so each concern can change independently:</p>
+    <ul>
+      <li><strong>Config layer</strong> — <code>playwright.config.ts</code> defines projects (browsers), timeouts, base URL, reporters, and retry policy. Environment values are injected via <code>.env</code> files, never hardcoded.</li>
+      <li><strong>Core/driver layer</strong> — browser, context, and page lifecycle management, exposed to tests through Playwright's fixture system rather than manual setup/teardown.</li>
+      <li><strong>Page Object layer</strong> — one class per screen or reusable component, encapsulating locators and actions only, no assertions.</li>
+      <li><strong>Test layer</strong> — spec files that orchestrate page objects and make assertions; this is the only place assertions live.</li>
+      <li><strong>Utilities layer</strong> — data generators, API clients, DB helpers, wait/retry helpers.</li>
+      <li><strong>Data layer</strong> — JSON/environment-scoped fixtures and dynamic data builders.</li>
+      <li><strong>Reporting layer</strong> — HTML/Allure reporters plus trace and video artifacts wired to CI.</li>
+    </ul>
+    <p>The key design goal is separation of concerns: a locator changing shouldn't touch test logic, and a test-flow change shouldn't touch config or CI.</p>
+  `
+},
+{
+  q: "Why did you choose Playwright over Selenium?",
+  a: `
+    <p>Playwright talks to browsers directly over <strong>CDP/WebSocket</strong> instead of the WebDriver JSON wire protocol Selenium uses, which removes a network hop per command and makes execution noticeably faster.</p>
+    <ul>
+      <li><strong>Auto-waiting</strong> — Playwright waits for elements to be actionable (visible, stable, enabled) before interacting, which eliminates most of the explicit-wait boilerplate Selenium needs.</li>
+      <li><strong>One API, three engines</strong> — Chromium, Firefox, and WebKit are driven through the same API without separate driver binaries to version-match.</li>
+      <li><strong>Browser contexts</strong> — isolated, cheap sessions (like incognito profiles) let you parallelize without spinning up a new browser instance per test, unlike Selenium's model of one driver per browser.</li>
+      <li><strong>Native tooling</strong> — trace viewer, codegen, and inspector are built in, first-class citizens rather than third-party add-ons.</li>
+      <li><strong>First-class network interception</strong> — mocking and intercepting requests doesn't need a separate proxy library.</li>
+    </ul>
+    <div class="tradeoff"><strong>Trade-off I'd acknowledge:</strong> Selenium still has broader language bindings, a much larger legacy ecosystem, and pairs with Appium/Selenium Grid for real-device mobile testing, which Playwright doesn't natively cover as maturely. I chose Playwright because our stack is web-only and speed/stability mattered more than legacy breadth.</p>
+  `
+},
+{
+  q: "What design patterns have you implemented in your Playwright framework?",
+  a: `
+    <ul>
+      <li><strong>Page Object Model (POM)</strong> — the backbone; every screen is a class exposing locators and behavior.</li>
+      <li><strong>Component Object pattern</strong> — shared UI pieces (nav bar, modals, date pickers) are their own objects, composed into page objects instead of duplicated across them.</li>
+      <li><strong>Fixture-based Dependency Injection</strong> — Playwright's own fixture mechanism replaces a hand-rolled factory: tests declare what they need (a logged-in page, an API client) and the fixture supplies it.</li>
+      <li><strong>Builder pattern</strong> — test data objects (e.g. a loan applicant, a user) are constructed via a fluent builder so tests only override the fields they care about.</li>
+      <li><strong>Singleton</strong> — used sparingly, mainly for a shared API client or config loader within a worker process.</li>
+      <li><strong>Strategy pattern</strong> — for environment-specific behavior (e.g. different auth flows per environment) selected at runtime from config.</li>
+    </ul>
+  `
+},
+{
+  q: "How do you handle test data in your automation framework?",
+  a: `
+    <ul>
+      <li><strong>Dynamic generation</strong> — Faker (<code>@faker-js/faker</code> in TS, JavaFaker in Java) for anything that needs uniqueness — names, emails, IDs — so tests never collide on shared data.</li>
+      <li><strong>Static reference data</strong> — kept in JSON/YAML fixtures per environment, for things like fixed product codes or lookup values that shouldn't change.</li>
+      <li><strong>Data builders</strong> — a fluent builder produces valid default objects, with only the fields relevant to a given test overridden inline.</li>
+      <li><strong>API-first setup</strong> — where possible, test preconditions are created via direct API/DB calls rather than UI, both for speed and to keep UI tests focused on the flow being verified.</li>
+      <li><strong>Isolation and cleanup</strong> — each test uses a unique identifier (timestamp/UUID) and cleans up (or uses a fresh sandboxed record) so tests can run in parallel without stepping on each other.</li>
+    </ul>
+  `
+},
+{
+  q: "How do you manage multiple environments (Dev, QA, UAT, Production)?",
+  a: `
+    <p>Environment-specific values (base URL, credentials, DB connection strings, feature flags) live in separate <code>.env.dev</code>, <code>.env.qa</code>, <code>.env.uat</code> files, loaded via <code>dotenv</code> based on an <code>ENV</code> variable passed at runtime.</p>
+    <ul>
+      <li><code>playwright.config.ts</code> reads <code>process.env.ENV</code> to resolve <code>baseURL</code> and any environment-scoped settings.</li>
+      <li>Secrets are never committed — they're injected from the CI/CD secret store (Jenkins credentials binding, GitHub Actions secrets, Azure Key Vault) at pipeline runtime.</li>
+      <li>Test execution is parametrized: <code>ENV=qa npx playwright test</code>, so the same suite runs unmodified against any environment.</li>
+      <li>Some suites are tagged to skip in Production (e.g. destructive flows), enforced through Playwright's tag/grep filtering.</li>
+    </ul>
+  `
+},
+{
+  q: "How have you implemented the Page Object Model (POM) in your framework?",
+  a: `
+    <ul>
+      <li>One class per page or logical screen, holding <strong>locators as class properties</strong> and <strong>actions as methods</strong> (e.g. <code>login()</code>, <code>submitLoanApplication()</code>).</li>
+      <li><strong>No assertions inside page objects</strong> — a page object can expose a getter (e.g. <code>getErrorMessage()</code>) but the test file decides what to assert.</li>
+      <li>Locators favor Playwright's user-facing strategies — <code>getByRole</code>, <code>getByLabel</code>, <code>getByTestId</code> — over brittle CSS/XPath, since they mirror how a real user finds the element and survive markup churn.</li>
+      <li>A <strong>BasePage</strong> class holds cross-cutting methods (navigation, waiting for load state, shared header/footer interactions) that concrete page objects extend.</li>
+      <li>Repeated widgets (modals, tables, date pickers) are pulled out as <strong>component objects</strong> and composed into page objects instead of copy-pasted.</li>
+    </ul>
+  `
+},
+{
+  q: "How do you capture screenshots, videos, and traces on test failures?",
+  a: `
+    <p>Configured centrally in <code>playwright.config.ts</code> rather than per test:</p>
+    <ul>
+      <li><code>screenshot: 'only-on-failure'</code> — captures the page state at the point of failure.</li>
+      <li><code>video: 'retain-on-failure'</code> — keeps the recording only for failing tests to avoid bloating storage.</li>
+      <li><code>trace: 'on-first-retry'</code> — the trace (DOM snapshots, network, console, actions timeline) is captured only when a test fails and gets retried, giving full step-by-step replay without paying the overhead on every green run.</li>
+    </ul>
+    <p>Artifacts are archived as CI build artifacts and opened locally with <code>npx playwright show-trace</code>, which is usually enough to root-cause a failure without reproducing it manually.</p>
+  `
+},
+{
+  q: "Which reporting tools have you integrated into your Playwright framework?",
+  a: `
+    <ul>
+      <li><strong>Built-in HTML reporter</strong> for local runs and quick triage — shows pass/fail, retries, and attached traces per test.</li>
+      <li><strong>Allure Report</strong> (<code>allure-playwright</code>) for stakeholder-facing reports — history trends, categorized failures, and screenshots embedded per step.</li>
+      <li><strong>JUnit XML reporter</strong> so CI tools (Jenkins, Azure DevOps) can parse results natively and show pass/fail trends on the build dashboard.</li>
+      <li><strong>Slack/Teams webhook</strong> triggered from the CI pipeline on failure, posting a summary with a link to the full report.</li>
+    </ul>
+  `
+},
+{
+  q: "How do you execute Playwright tests in parallel across multiple browsers?",
+  a: `
+    <ul>
+      <li><strong>Worker-based parallelism</strong> — the <code>workers</code> setting in config controls how many tests run concurrently, each in its own isolated browser context, without extra infrastructure like Selenium Grid.</li>
+      <li><strong>Cross-browser matrix</strong> — the <code>projects</code> array in config defines Chromium, Firefox, and WebKit; the same spec files run against each without duplicating code.</li>
+      <li><strong>Sharding</strong> — for large suites, <code>--shard=1/4</code> style flags split the suite across multiple CI machines/agents, each running a slice in parallel.</li>
+      <li>In CI, this is typically combined with a matrix strategy (GitHub Actions <code>matrix</code>, Jenkins parallel stages) so browser × shard combinations fan out automatically.</li>
+    </ul>
+  `
+},
+{
+  q: "How do you handle authentication and session management in Playwright?",
+  a: `
+    <ul>
+      <li><strong>storageState</strong> — a global setup script logs in once per role (e.g. admin, standard user) and saves the resulting cookies/localStorage to a JSON file.</li>
+      <li>Individual tests then create their browser context <em>from</em> that storage state, so they start already authenticated — no repeated UI login per test, which is both faster and removes login-flow flakiness from unrelated tests.</li>
+      <li>Where possible, the login itself is done via a direct <strong>API call</strong> to fetch a token, rather than through the UI, and that token is injected into the context — UI login is only tested explicitly in its own dedicated spec.</li>
+      <li>For suites needing multiple roles, separate storage-state files are maintained per role and selected per test/project.</li>
+      <li>Token expiry is handled by refreshing storage state on a schedule (or before long-running suites) so sessions don't go stale mid-run.</li>
+    </ul>
+  `
+},
+{
+  q: "How do you identify and handle flaky tests in your automation framework?",
+  a: `
+    <p>The priority is root-causing flakiness, not masking it with retries.</p>
+    <ul>
+      <li><strong>Reduce timing flakiness at the source</strong> — Playwright's auto-waiting already removes most of it; remaining cases usually mean waiting on the wrong condition (e.g. waiting for a network call or a specific DOM state instead of a fixed timeout).</li>
+      <li><strong>Stable selectors</strong> — brittle CSS/XPath selectors that shift with markup changes are replaced with <code>data-testid</code> or role-based locators.</li>
+      <li><strong>Test isolation</strong> — flakiness often traces back to shared state (same test data used by parallel tests); each test gets its own data.</li>
+      <li><strong>Controlled retries</strong> — <code>retries: 2</code> is enabled only in CI, paired with trace-on-retry so a flaky failure still leaves a diagnosable trace instead of silently passing on rerun.</li>
+      <li><strong>Flakiness tracking</strong> — tests that fail intermittently are tagged/quarantined and tracked in the report so they get fixed rather than living in the suite indefinitely.</li>
+    </ul>
+  `
+},
+{
+  q: "How is your Playwright framework folder structure organised?",
+  a: `
+    <ul>
+      <li><code>tests/</code> — spec files, split into <code>e2e/</code> and <code>api/</code></li>
+      <li><code>pages/</code> — page objects, with a <code>components/</code> subfolder for shared widgets</li>
+      <li><code>fixtures/</code> — custom Playwright fixtures (auth, API client, test data setup)</li>
+      <li><code>utils/</code> — helpers: data generators, wait utilities, DB/API clients</li>
+      <li><code>config/</code> — environment config loading</li>
+      <li><code>test-data/</code> — static JSON/YAML fixtures</li>
+      <li><code>reports/</code> — output directory for HTML/Allure results (gitignored)</li>
+      <li><code>playwright.config.ts</code> at the root, plus CI pipeline definitions (<code>.github/workflows/</code> or <code>Jenkinsfile</code>)</li>
+    </ul>
+    <p>The guiding rule: anything a test author touches often (specs, page objects, test data) is easy to find; anything infrastructural (config, CI, reporting) is separated out so it doesn't clutter day-to-day test authoring.</p>
+  `
+},
+{
+  q: "How have you integrated your Playwright framework with Jenkins, Azure DevOps, or GitHub Actions?",
+  a: `
+    <ul>
+      <li><strong>Jenkins</strong> — a <code>Jenkinsfile</code> defines stages: checkout, install dependencies (with browser binaries cached), run tests parametrized by environment, publish the HTML/Allure report, archive traces and videos as build artifacts, and post a Slack notification on failure.</li>
+      <li><strong>GitHub Actions</strong> — a workflow triggered on PR and push, using a <code>matrix</code> strategy across browsers/shards, caching <code>node_modules</code> and Playwright's browser binaries between runs, and uploading the report via <code>actions/upload-artifact</code>.</li>
+      <li><strong>Azure DevOps</strong> — a YAML pipeline with equivalent stages, using the <code>PublishTestResults</code> task against the JUnit XML output so results show natively in the pipeline's test tab.</li>
+      <li>Execution is split by purpose: a fast smoke suite gates every PR, and a full regression (sharded) runs on a nightly schedule.</li>
+    </ul>
+  `
+},
+{
+  q: "How do you combine API and UI automation testing within the same Playwright framework?",
+  a: `
+    <ul>
+      <li>Playwright ships a built-in <strong>APIRequestContext</strong>, so API calls are made in the same language and test runner as UI tests — no separate REST client library needed.</li>
+      <li><strong>API for setup/teardown</strong> — preconditions (creating a record, seeding a user) are done via direct API calls, which is faster and more reliable than driving the UI just to get into a starting state.</li>
+      <li><strong>Hybrid verification</strong> — a typical test creates data via API, then verifies it renders correctly through the UI, or performs a UI action and asserts the resulting state via an API/DB check — catching mismatches between what the UI shows and what was actually persisted.</li>
+      <li>Both API responses (status/schema) and UI assertions are validated within the same spec and reported together, so a single test gives full-stack confidence rather than testing each layer in isolation.</li>
+    </ul>
+  `
+},
+{
+  q: "If you were asked to improve or redesign your current Playwright automation framework, what changes would you make and why?",
+  a: `
+    <ul>
+      <li><strong>Shift more setup to API-first</strong> — any remaining UI-driven preconditions would move to API calls to cut suite runtime further.</li>
+      <li><strong>Composition over inheritance in page objects</strong> — move fully to component objects assembled per page, rather than large page classes, for better reuse and smaller diffs when UI changes.</li>
+      <li><strong>Flakiness observability</strong> — a dedicated dashboard tracking flaky-test rate over time, with automatic quarantine and a re-review SLA, instead of relying on ad hoc retries.</li>
+      <li><strong>Contract/schema validation on the API layer</strong> — catch backend contract drift before it surfaces as a UI test failure.</li>
+      <li><strong>Visual regression coverage</strong> — layer in Playwright's built-in screenshot comparison (or a tool like Percy) for pages where visual correctness matters, not just functional correctness.</li>
+      <li><strong>Containerized execution</strong> — run the suite in Docker so local, CI, and different engineers' machines all execute against an identical environment.</li>
+      <li><strong>Centralized test-data service</strong> — replace scattered fixture files with an API-backed test-data service so data stays consistent as the schema evolves.</li>
+    </ul>
+  `
+}
+];
+
+const navList = document.getElementById('nav-list');
+const qaContainer = document.getElementById('qa-container');
+const progressFill = document.getElementById('progress-fill');
+const progressCount = document.getElementById('progress-count');
+const reviewed = new Set();
+
+function updateProgress(){
+  progressCount.textContent = reviewed.size + ' / ' + data.length;
+  progressFill.style.width = (reviewed.size / data.length * 100) + '%';
+}
+
+data.forEach((item, i) => {
+  const id = 'qa-' + i;
+
+  const navItem = document.createElement('li');
+  navItem.className = 'nav-item';
+  navItem.id = 'nav-' + i;
+  navItem.innerHTML = '<span class="nav-check"></span><span class="nlabel">' + (i+1) + '. ' + item.q.replace(/^.{0,0}/,'') + '</span>';
+  navItem.addEventListener('click', () => {
+    document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'});
+    openBlock(i);
+  });
+  navList.appendChild(navItem);
+
+  const block = document.createElement('div');
+  block.className = 'qa-block';
+  block.id = id;
+  block.innerHTML = `
+    <div class="qa-question">
+      <span class="qa-num">Q${i+1}</span>
+      <h2>${item.q}</h2>
+      <span class="qa-toggle">+</span>
+    </div>
+    <div class="qa-answer">
+      <div class="qa-answer-inner">
+        ${item.a}
+        <button class="mark-btn" data-idx="${i}">☐ Mark reviewed</button>
+      </div>
+    </div>
+  `;
+  block.querySelector('.qa-question').addEventListener('click', () => toggleBlock(i));
+  block.querySelector('.mark-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleReviewed(i);
+  });
+  qaContainer.appendChild(block);
+});
+
+function openBlock(i){
+  const block = document.getElementById('qa-' + i);
+  document.querySelectorAll('.qa-block').forEach(b => { if(b.id !== 'qa-'+i) b.classList.remove('open'); });
+  block.classList.add('open');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('nav-' + i).classList.add('active');
+}
+
+function toggleBlock(i){
+  const block = document.getElementById('qa-' + i);
+  const isOpen = block.classList.contains('open');
+  document.querySelectorAll('.qa-block').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if(!isOpen){
+    block.classList.add('open');
+    document.getElementById('nav-' + i).classList.add('active');
+  }
+}
+
+function toggleReviewed(i){
+  const block = document.getElementById('qa-' + i);
+  const navItem = document.getElementById('nav-' + i);
+  const btn = block.querySelector('.mark-btn');
+  if(reviewed.has(i)){
+    reviewed.delete(i);
+    block.classList.remove('reviewed');
+    navItem.classList.remove('reviewed');
+    btn.textContent = '☐ Mark reviewed';
+  } else {
+    reviewed.add(i);
+    block.classList.add('reviewed');
+    navItem.classList.add('reviewed');
+    btn.textContent = '☑ Reviewed';
+  }
+  updateProgress();
+}
+
+// open the first question by default
+openBlock(0);
+updateProgress();
+</script>
+</body>
+</html>

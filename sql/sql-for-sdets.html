@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SQL for SDETs — The Query Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1220;
+    --surface:#101b2d;
+    --surface-2:#132238;
+    --surface-3:#0e1929;
+    --line:#223252;
+    --line-soft:#1a2740;
+    --ink:#e4ecf7;
+    --muted:#8296b5;
+    --muted-2:#5b6d8c;
+    --amber:#f0b429;
+    --amber-dim:#8a6a24;
+    --cyan:#4fd1e8;
+    --green:#3ddc97;
+    --red:#f87171;
+    --purple:#b39ddb;
+    --pk:#f0b429;
+    --fk:#4fd1e8;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--bg),var(--bg)),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, var(--line-soft) 39px, var(--line-soft) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, var(--line-soft) 39px, var(--line-soft) 40px);
+    background-blend-mode:normal;
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.65;
+  }
+  ::selection{background:var(--amber);color:#0b1220;}
+  a{color:var(--cyan);text-decoration:none;}
+  code, pre, .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- layout ---------- */
+  .shell{display:flex; min-height:100vh;}
+  nav.toc{
+    position:fixed; top:0; left:0; width:272px; height:100vh;
+    background:var(--surface-3); border-right:1px solid var(--line);
+    overflow-y:auto; padding:28px 0 40px;
+    z-index:20;
+  }
+  nav.toc::-webkit-scrollbar{width:6px;}
+  nav.toc::-webkit-scrollbar-thumb{background:var(--line); border-radius:3px;}
+  .toc-brand{
+    padding:0 24px 20px; margin-bottom:8px; border-bottom:1px solid var(--line);
+  }
+  .toc-brand .tag{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber);
+    letter-spacing:.12em; text-transform:uppercase;
+  }
+  .toc-brand h1{
+    font-family:'Space Grotesk',sans-serif; font-size:19px; margin:6px 0 2px; color:var(--ink);
+  }
+  .toc-brand p{margin:0; font-size:12.5px; color:var(--muted);}
+  .toc-group{padding:14px 24px 4px;}
+  .toc-group-label{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--muted-2);
+    text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px;
+  }
+  .toc-group a{
+    display:flex; gap:8px; align-items:baseline;
+    font-size:13.5px; color:var(--muted); padding:5px 0; border-left:2px solid transparent;
+    padding-left:10px; margin-left:-10px; transition:.15s;
+  }
+  .toc-group a .idx{color:var(--muted-2); font-size:11px; min-width:20px;}
+  .toc-group a:hover{color:var(--ink); border-left-color:var(--cyan);}
+
+  main{margin-left:272px; width:calc(100% - 272px); position:relative;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:90px 64px 60px; border-bottom:1px solid var(--line);
+    position:relative; overflow:hidden;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--amber);
+    letter-spacing:.15em; text-transform:uppercase; display:flex; align-items:center; gap:10px;
+  }
+  .hero-eyebrow::before{content:"SELECT *"; color:var(--muted-2);}
+  .hero h1{
+    font-family:'Space Grotesk',sans-serif; font-size:52px; line-height:1.08; margin:18px 0 20px;
+    max-width:820px; color:#fff;
+  }
+  .hero h1 span{color:var(--amber);}
+  .hero p.lede{font-size:17px; color:var(--muted); max-width:680px;}
+  .hero-row{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); margin-top:44px; border:1px solid var(--line);}
+  .hero-stat{background:var(--surface); padding:18px 20px;}
+  .hero-stat .n{font-family:'Space Grotesk',sans-serif; font-size:26px; color:var(--cyan);}
+  .hero-stat .l{font-size:12px; color:var(--muted); margin-top:4px;}
+
+  /* ---------- section chrome ---------- */
+  section.topic{padding:64px 64px 10px; border-bottom:1px solid var(--line); scroll-margin-top:20px;}
+  .topic-head{
+    display:flex; align-items:center; gap:14px; font-family:'JetBrains Mono',monospace;
+    font-size:12.5px; color:var(--muted); border:1px solid var(--line); background:var(--surface);
+    padding:9px 16px; margin-bottom:22px; letter-spacing:.03em;
+  }
+  .topic-head b{color:var(--amber); font-weight:600;}
+  .topic-head .col{color:var(--muted-2);}
+  .topic-head .type{margin-left:auto; color:var(--cyan);}
+  h2.topic-title{
+    font-family:'Space Grotesk',sans-serif; font-size:31px; margin:0 0 8px; color:#fff;
+  }
+  p.topic-sub{color:var(--muted); max-width:760px; font-size:15.5px; margin:0 0 28px;}
+  h3.sub{font-family:'Space Grotesk',sans-serif; font-size:19px; color:var(--ink); margin:34px 0 12px;}
+  p{color:#c7d3e5; max-width:820px;}
+  .prose{max-width:820px;}
+
+  /* ---------- code blocks ---------- */
+  .code{
+    background:var(--surface-3); border:1px solid var(--line); border-radius:8px;
+    margin:16px 0 24px; overflow:hidden; max-width:900px;
+  }
+  .code-bar{
+    display:flex; align-items:center; gap:8px; padding:9px 14px; background:var(--surface-2);
+    border-bottom:1px solid var(--line);
+  }
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .dot.r{background:var(--red);} .dot.a{background:var(--amber);} .dot.g{background:var(--green);}
+  .code-bar .label{margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted-2);}
+  .code pre{margin:0; padding:16px 18px; overflow-x:auto; font-size:13.3px; line-height:1.7; color:#dbe6f5;}
+  .code pre .kw{color:var(--cyan); font-weight:600;}
+  .code pre .fn{color:var(--amber);}
+  .code pre .str{color:var(--green);}
+  .code pre .cm{color:var(--muted-2); font-style:italic;}
+  .code pre .num{color:var(--purple);}
+
+  /* result table styled like a query result grid */
+  .result{border-collapse:collapse; margin:6px 0 26px; font-family:'JetBrains Mono',monospace; font-size:12.8px; max-width:100%; display:block; overflow-x:auto; white-space:nowrap;}
+  .result th{background:var(--surface-2); color:var(--amber); text-align:left; padding:8px 14px; border:1px solid var(--line); font-weight:600;}
+  .result td{padding:7px 14px; border:1px solid var(--line-soft); color:#cdd9ec; background:var(--surface-3);}
+  .result td.null{color:var(--muted-2); font-style:italic;}
+  .result caption{caption-side:top; text-align:left; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--muted); margin-bottom:6px;}
+
+  /* callouts */
+  .callout{border:1px solid var(--line); border-left:3px solid var(--cyan); background:var(--surface); padding:14px 18px; margin:20px 0; max-width:820px; border-radius:0 6px 6px 0;}
+  .callout .tag{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--cyan); margin-bottom:6px; display:block;}
+  .callout.sdet{border-left-color:var(--green);} .callout.sdet .tag{color:var(--green);}
+  .callout.interview{border-left-color:var(--amber);} .callout.interview .tag{color:var(--amber);}
+  .callout.warn{border-left-color:var(--red);} .callout.warn .tag{color:var(--red);}
+  .callout p{margin:0; font-size:14.5px; color:#cbd7e8;}
+
+  /* two column grid */
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:22px; max-width:900px; margin:18px 0;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:900px; margin:18px 0;}
+  @media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+  .card{border:1px solid var(--line); background:var(--surface); padding:16px 18px; border-radius:8px;}
+  .card h4{margin:0 0 8px; font-family:'Space Grotesk',sans-serif; font-size:15.5px; color:var(--ink);}
+  .card p{font-size:13.8px; margin:0; color:var(--muted);}
+
+  /* join venn diagrams */
+  .join-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin:24px 0 8px;}
+  @media(max-width:900px){.join-grid{grid-template-columns:1fr 1fr;}}
+  .join-card{border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:16px; text-align:center;}
+  .join-card svg{display:block; margin:0 auto 10px;}
+  .join-card h4{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--amber); margin:0 0 4px;}
+  .join-card p{font-size:12.3px; color:var(--muted); margin:0;}
+
+  /* schema / ER blocks */
+  .schema{display:flex; gap:20px; flex-wrap:wrap; margin:22px 0;}
+  .tbl{border:1px solid var(--line); border-radius:8px; overflow:hidden; min-width:230px;}
+  .tbl-head{background:var(--surface-2); padding:9px 14px; font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#fff; border-bottom:1px solid var(--line); display:flex; justify-content:space-between;}
+  .tbl-head span{color:var(--muted-2); font-size:10.5px;}
+  .tbl-row{display:flex; justify-content:space-between; padding:6px 14px; font-family:'JetBrains Mono',monospace; font-size:12px; border-bottom:1px solid var(--line-soft); color:#c7d3e5;}
+  .tbl-row:last-child{border-bottom:none;}
+  .tbl-row .k{color:var(--muted);}
+  .tbl-row.pk .k::before{content:"PK "; color:var(--pk); font-weight:700;}
+  .tbl-row.fk .k::before{content:"FK "; color:var(--fk); font-weight:700;}
+
+  /* footer / interview bank */
+  .qbank{max-width:900px; margin:10px 0 20px;}
+  .qitem{border:1px solid var(--line); border-radius:8px; margin-bottom:12px; overflow:hidden;}
+  .qitem summary{padding:13px 18px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-size:14.5px; color:var(--ink); background:var(--surface); list-style:none; display:flex; gap:10px; align-items:center;}
+  .qitem summary::-webkit-details-marker{display:none;}
+  .qitem summary::before{content:"▸"; color:var(--amber); font-size:12px;}
+  .qitem[open] summary::before{content:"▾";}
+  .qitem .qbody{padding:6px 18px 16px; background:var(--surface-3);}
+
+  table.cheat{width:100%; max-width:900px; border-collapse:collapse; margin:16px 0 30px; font-size:13.5px;}
+  table.cheat th{background:var(--surface-2); color:var(--amber); text-align:left; padding:9px 14px; border:1px solid var(--line);}
+  table.cheat td{padding:9px 14px; border:1px solid var(--line-soft); color:#c7d3e5;}
+  table.cheat td code{color:var(--cyan);}
+
+  footer.end{padding:50px 64px 90px; color:var(--muted-2); font-size:13px;}
+  .backtotop{display:inline-block; margin-top:20px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cyan); border:1px solid var(--line); padding:8px 14px; border-radius:6px;}
+
+  @media(max-width:1000px){
+    nav.toc{display:none;}
+    main{margin-left:0; width:100%;}
+    .hero, section.topic{padding-left:26px; padding-right:26px;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="toc">
+  <div class="toc-brand">
+    <div class="tag">FROM sdet_knowledge</div>
+    <h1>The Query Bench</h1>
+    <p>SQL for Software Test Engineers — MySQL edition</p>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-label">Foundations</div>
+    <a href="#schema"><span class="idx">01</span>Dummy schema & data</a>
+    <a href="#select"><span class="idx">02</span>SELECT · WHERE · ORDER</a>
+    <a href="#aggregates"><span class="idx">03</span>Aggregates & GROUP BY</a>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-label">The Core Skill</div>
+    <a href="#joins"><span class="idx">04</span>JOINS — the full picture</a>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-label">Intermediate</div>
+    <a href="#subqueries"><span class="idx">05</span>Subqueries</a>
+    <a href="#cte"><span class="idx">06</span>CTEs & recursion</a>
+    <a href="#window"><span class="idx">07</span>Window functions</a>
+    <a href="#setops"><span class="idx">08</span>Set operations</a>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-label">Data & Schema</div>
+    <a href="#dml"><span class="idx">09</span>DML — insert/update/delete</a>
+    <a href="#ddl"><span class="idx">10</span>DDL & constraints</a>
+    <a href="#index"><span class="idx">11</span>Indexes & EXPLAIN</a>
+    <a href="#txn"><span class="idx">12</span>Transactions & ACID</a>
+    <a href="#views"><span class="idx">13</span>Views · procs · triggers</a>
+    <a href="#normal"><span class="idx">14</span>Normalization</a>
+  </div>
+  <div class="toc-group">
+    <div class="toc-group-label">SDET Zone</div>
+    <a href="#sdet"><span class="idx">15</span>SQL in test automation</a>
+    <a href="#interview"><span class="idx">16</span>Interview question bank</a>
+    <a href="#cheat"><span class="idx">17</span>Cheat sheet</a>
+  </div>
+</nav>
+<main>
+<div class="hero">
+  <div class="hero-eyebrow">experience FROM sdet WHERE role = 'senior' AND stack = 'automation';</div>
+  <h1>SQL isn't a side skill for an SDET.<br>It's how you <span>prove</span> the data is right.</h1>
+  <p class="lede">Every automation framework eventually hits a wall that Selenium, Karate, or Playwright can't see past: is the row that landed in the database actually correct? This is the full reference — from a beginner's first SELECT to the joins, window functions, and reconciliation queries that show up in senior SDET interviews at banks and product companies.</p>
+  <div class="hero-row">
+    <div class="hero-stat"><div class="n">17</div><div class="l">concept sections</div></div>
+    <div class="hero-stat"><div class="n">3</div><div class="l">dummy schemas: banking, e-commerce, org chart</div></div>
+    <div class="hero-stat"><div class="n">6</div><div class="l">join types, diagrammed</div></div>
+    <div class="hero-stat"><div class="n">20+</div><div class="l">interview questions, solved</div></div>
+  </div>
+</div>
+<section class="topic" id="schema">
+  <div class="topic-head"><b>01</b><span class="col">foundations</span><span class="col">·</span><span>dummy schema & data</span><span class="type">setup</span></div>
+  <h2 class="topic-title">Three schemas we'll reuse everywhere</h2>
+  <p class="topic-sub">Real interviews mix domains, so every example below pulls from one of these three. Run these once in MySQL and every query in this guide will work as-is.</p>
+
+  <h3 class="sub">Schema A — Banking (loans & accounts)</h3>
+  <div class="schema">
+    <div class="tbl"><div class="tbl-head">customers <span>4 rows</span></div>
+      <div class="tbl-row pk"><span class="k">customer_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">full_name</span><span>VARCHAR</span></div>
+      <div class="tbl-row"><span class="k">city</span><span>VARCHAR</span></div>
+      <div class="tbl-row"><span class="k">credit_score</span><span>INT</span></div>
+    </div>
+    <div class="tbl"><div class="tbl-head">accounts <span>5 rows</span></div>
+      <div class="tbl-row pk"><span class="k">account_id</span><span>INT</span></div>
+      <div class="tbl-row fk"><span class="k">customer_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">account_type</span><span>VARCHAR</span></div>
+      <div class="tbl-row"><span class="k">balance</span><span>DECIMAL</span></div>
+    </div>
+    <div class="tbl"><div class="tbl-head">loans <span>5 rows</span></div>
+      <div class="tbl-row pk"><span class="k">loan_id</span><span>INT</span></div>
+      <div class="tbl-row fk"><span class="k">customer_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">loan_amount</span><span>DECIMAL</span></div>
+      <div class="tbl-row"><span class="k">status</span><span>VARCHAR</span></div>
+    </div>
+  </div>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">banking_schema.sql</span></div>
+    <pre><span class="kw">CREATE TABLE</span> customers (
+  customer_id   <span class="kw">INT</span> <span class="kw">PRIMARY KEY</span> <span class="kw">AUTO_INCREMENT</span>,
+  full_name     <span class="kw">VARCHAR</span>(100) <span class="kw">NOT NULL</span>,
+  city          <span class="kw">VARCHAR</span>(50),
+  credit_score  <span class="kw">INT</span> <span class="kw">CHECK</span> (credit_score <span class="kw">BETWEEN</span> 300 <span class="kw">AND</span> 900)
+);
+
+<span class="kw">CREATE TABLE</span> accounts (
+  account_id    <span class="kw">INT</span> <span class="kw">PRIMARY KEY</span> <span class="kw">AUTO_INCREMENT</span>,
+  customer_id   <span class="kw">INT</span>,
+  account_type  <span class="kw">VARCHAR</span>(20),      <span class="cm">-- SAVINGS / CURRENT</span>
+  balance       <span class="kw">DECIMAL</span>(12,2) <span class="kw">DEFAULT</span> 0.00,
+  <span class="kw">FOREIGN KEY</span> (customer_id) <span class="kw">REFERENCES</span> customers(customer_id)
+);
+
+<span class="kw">CREATE TABLE</span> loans (
+  loan_id       <span class="kw">INT</span> <span class="kw">PRIMARY KEY</span> <span class="kw">AUTO_INCREMENT</span>,
+  customer_id   <span class="kw">INT</span>,
+  loan_amount   <span class="kw">DECIMAL</span>(12,2),
+  interest_rate <span class="kw">DECIMAL</span>(4,2),
+  status        <span class="kw">VARCHAR</span>(20),      <span class="cm">-- APPROVED / PENDING / CLOSED / REJECTED</span>
+  disbursed_date <span class="kw">DATE</span>,
+  <span class="kw">FOREIGN KEY</span> (customer_id) <span class="kw">REFERENCES</span> customers(customer_id)
+);
+
+<span class="kw">INSERT INTO</span> customers (full_name, city, credit_score) <span class="kw">VALUES</span>
+(<span class="str">'Ravi Teja'</span>, <span class="str">'Hyderabad'</span>, 780),
+(<span class="str">'Ananya Rao'</span>, <span class="str">'Bengaluru'</span>, 650),
+(<span class="str">'Meera Iyer'</span>, <span class="str">'Chennai'</span>, 820),
+(<span class="str">'Karthik Nair'</span>, <span class="str">'Hyderabad'</span>, 590);
+
+<span class="kw">INSERT INTO</span> accounts (customer_id, account_type, balance) <span class="kw">VALUES</span>
+(1, <span class="str">'SAVINGS'</span>, 125000.00),
+(1, <span class="str">'CURRENT'</span>, 42000.00),
+(2, <span class="str">'SAVINGS'</span>, 8000.00),
+(3, <span class="str">'SAVINGS'</span>, 305000.00),
+(4, <span class="str">'CURRENT'</span>, -1500.00);
+
+<span class="kw">INSERT INTO</span> loans (customer_id, loan_amount, interest_rate, status, disbursed_date) <span class="kw">VALUES</span>
+(1, 500000.00, 8.5, <span class="str">'APPROVED'</span>, <span class="str">'2025-02-10'</span>),
+(2, 200000.00, 11.0, <span class="str">'PENDING'</span>, <span class="kw">NULL</span>),
+(2, 150000.00, 10.5, <span class="str">'REJECTED'</span>, <span class="kw">NULL</span>),
+(3, 900000.00, 7.9, <span class="str">'APPROVED'</span>, <span class="str">'2024-11-05'</span>),
+(3, 300000.00, 8.0, <span class="str">'CLOSED'</span>, <span class="str">'2022-06-01'</span>);
+<span class="cm">-- note: customer_id 4 (Karthik) has NO loan row — deliberately, to demonstrate LEFT JOIN later</span></pre>
+  </div>
+
+  <h3 class="sub">Schema B — E-commerce</h3>
+  <div class="schema">
+    <div class="tbl"><div class="tbl-head">ec_customers <span>4 rows</span></div>
+      <div class="tbl-row pk"><span class="k">cust_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">name</span><span>VARCHAR</span></div>
+      <div class="tbl-row"><span class="k">segment</span><span>VARCHAR</span></div>
+    </div>
+    <div class="tbl"><div class="tbl-head">products <span>4 rows</span></div>
+      <div class="tbl-row pk"><span class="k">product_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">name</span><span>VARCHAR</span></div>
+      <div class="tbl-row"><span class="k">price</span><span>DECIMAL</span></div>
+    </div>
+    <div class="tbl"><div class="tbl-head">orders <span>5 rows</span></div>
+      <div class="tbl-row pk"><span class="k">order_id</span><span>INT</span></div>
+      <div class="tbl-row fk"><span class="k">cust_id</span><span>INT</span></div>
+      <div class="tbl-row fk"><span class="k">product_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">qty</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">order_date</span><span>DATE</span></div>
+    </div>
+  </div>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">ecommerce_schema.sql</span></div>
+    <pre><span class="kw">CREATE TABLE</span> ec_customers (cust_id <span class="kw">INT PRIMARY KEY</span>, name <span class="kw">VARCHAR</span>(50), segment <span class="kw">VARCHAR</span>(20));
+<span class="kw">CREATE TABLE</span> products   (product_id <span class="kw">INT PRIMARY KEY</span>, name <span class="kw">VARCHAR</span>(50), price <span class="kw">DECIMAL</span>(8,2));
+<span class="kw">CREATE TABLE</span> orders     (order_id <span class="kw">INT PRIMARY KEY</span>, cust_id <span class="kw">INT</span>, product_id <span class="kw">INT</span>, qty <span class="kw">INT</span>, order_date <span class="kw">DATE</span>,
+  <span class="kw">FOREIGN KEY</span>(cust_id) <span class="kw">REFERENCES</span> ec_customers(cust_id),
+  <span class="kw">FOREIGN KEY</span>(product_id) <span class="kw">REFERENCES</span> products(product_id));
+
+<span class="kw">INSERT INTO</span> ec_customers <span class="kw">VALUES</span>
+(1,<span class="str">'Divya'</span>,<span class="str">'RETAIL'</span>), (2,<span class="str">'Rahul'</span>,<span class="str">'WHOLESALE'</span>), (3,<span class="str">'Fatima'</span>,<span class="str">'RETAIL'</span>), (4,<span class="str">'Sanjay'</span>,<span class="str">'RETAIL'</span>);
+
+<span class="kw">INSERT INTO</span> products <span class="kw">VALUES</span>
+(101,<span class="str">'Wireless Mouse'</span>,799.00), (102,<span class="str">'Mechanical Keyboard'</span>,3499.00),
+(103,<span class="str">'USB-C Hub'</span>,1299.00), (104,<span class="str">'Webcam HD'</span>,2199.00);
+
+<span class="kw">INSERT INTO</span> orders <span class="kw">VALUES</span>
+(1001,1,101,2,<span class="str">'2026-05-02'</span>), (1002,1,103,1,<span class="str">'2026-05-04'</span>),
+(1003,2,102,5,<span class="str">'2026-05-10'</span>), (1004,3,104,1,<span class="str">'2026-05-11'</span>),
+(1005,2,101,10,<span class="str">'2026-06-01'</span>);
+<span class="cm">-- note: customer 4 (Sanjay) has never placed an order — used later for anti-join / NOT EXISTS</span></pre>
+  </div>
+
+  <h3 class="sub">Schema C — Employee / Department (the classic interview schema)</h3>
+  <div class="schema">
+    <div class="tbl"><div class="tbl-head">departments <span>3 rows</span></div>
+      <div class="tbl-row pk"><span class="k">dept_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">dept_name</span><span>VARCHAR</span></div>
+    </div>
+    <div class="tbl"><div class="tbl-head">employees <span>7 rows</span></div>
+      <div class="tbl-row pk"><span class="k">emp_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">emp_name</span><span>VARCHAR</span></div>
+      <div class="tbl-row fk"><span class="k">dept_id</span><span>INT</span></div>
+      <div class="tbl-row fk"><span class="k">manager_id</span><span>INT</span></div>
+      <div class="tbl-row"><span class="k">salary</span><span>DECIMAL</span></div>
+    </div>
+  </div>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">org_schema.sql</span></div>
+    <pre><span class="kw">CREATE TABLE</span> departments (dept_id <span class="kw">INT PRIMARY KEY</span>, dept_name <span class="kw">VARCHAR</span>(40));
+<span class="kw">CREATE TABLE</span> employees (
+  emp_id <span class="kw">INT PRIMARY KEY</span>, emp_name <span class="kw">VARCHAR</span>(50), dept_id <span class="kw">INT</span>,
+  manager_id <span class="kw">INT</span>, salary <span class="kw">DECIMAL</span>(10,2),
+  <span class="kw">FOREIGN KEY</span>(dept_id) <span class="kw">REFERENCES</span> departments(dept_id),
+  <span class="kw">FOREIGN KEY</span>(manager_id) <span class="kw">REFERENCES</span> employees(emp_id)
+);
+
+<span class="kw">INSERT INTO</span> departments <span class="kw">VALUES</span> (10,<span class="str">'Engineering'</span>), (20,<span class="str">'QA'</span>), (30,<span class="str">'Sales'</span>);
+
+<span class="kw">INSERT INTO</span> employees <span class="kw">VALUES</span>
+(1,<span class="str">'Sai'</span>,20,<span class="kw">NULL</span>,95000),
+(2,<span class="str">'Priya'</span>,20,1,78000),
+(3,<span class="str">'Arjun'</span>,10,<span class="kw">NULL</span>,110000),
+(4,<span class="str">'Neha'</span>,10,3,98000),
+(5,<span class="str">'Vikram'</span>,10,3,98000),
+(6,<span class="str">'Farah'</span>,30,<span class="kw">NULL</span>,65000),
+(7,<span class="str">'Imran'</span>,<span class="kw">NULL</span>,6,58000);
+<span class="cm">-- note: Imran has dept_id NULL (unassigned) — used later for outer joins & NULL handling</span></pre>
+  </div>
+
+  <div class="callout sdet">
+    <span class="tag">SDET in practice</span>
+    <p>In real projects you rarely hand-type INSERTs like this — you generate them from a test-data builder, or seed a Dockerized MySQL container in your Jenkins pipeline before the suite runs, and truncate/reseed in an <code>@BeforeSuite</code> hook so every run starts from a known state.</p>
+  </div>
+</section>
+<section class="topic" id="select">
+  <div class="topic-head"><b>02</b><span class="col">foundations</span><span class="col">·</span><span>SELECT · WHERE · ORDER BY</span><span class="type">beginner</span></div>
+  <h2 class="topic-title">Reading data: the SELECT statement</h2>
+  <p class="topic-sub">Every query is a sentence: <em>which columns</em>, <em>from where</em>, <em>filtered how</em>, <em>sorted how</em>. Using the banking schema:</p>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">01_basic_select.sql</span></div>
+    <pre><span class="kw">SELECT</span> full_name, city, credit_score
+<span class="kw">FROM</span> customers
+<span class="kw">WHERE</span> credit_score &gt;= 700
+<span class="kw">ORDER BY</span> credit_score <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> 2;</pre>
+  </div>
+  <table class="result">
+    <caption>result</caption>
+    <tr><th>full_name</th><th>city</th><th>credit_score</th></tr>
+    <tr><td>Meera Iyer</td><td>Chennai</td><td>820</td></tr>
+    <tr><td>Ravi Teja</td><td>Hyderabad</td><td>780</td></tr>
+  </table>
+
+  <h3 class="sub">Filtering operators you'll use daily</h3>
+  <div class="grid2">
+    <div class="card"><h4>Comparison</h4><p><code class="mono">= &lt;&gt; &gt; &lt; &gt;= &lt;=</code> — standard comparisons. <code class="mono">&lt;&gt;</code> or <code class="mono">!=</code> means "not equal".</p></div>
+    <div class="card"><h4>BETWEEN</h4><p><code class="mono">credit_score BETWEEN 600 AND 800</code> — inclusive range, cleaner than two AND conditions.</p></div>
+    <div class="card"><h4>IN</h4><p><code class="mono">status IN ('APPROVED','CLOSED')</code> — matches any value in a list, replaces chained OR.</p></div>
+    <div class="card"><h4>LIKE</h4><p><code class="mono">full_name LIKE 'Ka%'</code> — pattern match. <code class="mono">%</code> = any characters, <code class="mono">_</code> = exactly one character.</p></div>
+    <div class="card"><h4>IS NULL / IS NOT NULL</h4><p>Never use <code class="mono">= NULL</code> — NULL means "unknown", so it never equals anything, even another NULL.</p></div>
+    <div class="card"><h4>DISTINCT</h4><p><code class="mono">SELECT DISTINCT city FROM customers</code> — removes duplicate rows from the result.</p></div>
+  </div>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">02_filters.sql</span></div>
+    <pre><span class="cm">-- loans that are still active or under review</span>
+<span class="kw">SELECT</span> loan_id, customer_id, loan_amount, status
+<span class="kw">FROM</span> loans
+<span class="kw">WHERE</span> status <span class="kw">IN</span> (<span class="str">'APPROVED'</span>, <span class="str">'PENDING'</span>)
+  <span class="kw">AND</span> loan_amount <span class="kw">BETWEEN</span> 100000 <span class="kw">AND</span> 600000;
+
+<span class="cm">-- loans that were never disbursed (still NULL)</span>
+<span class="kw">SELECT</span> loan_id, status <span class="kw">FROM</span> loans <span class="kw">WHERE</span> disbursed_date <span class="kw">IS NULL</span>;
+
+<span class="cm">-- customers whose name starts with 'Ka'</span>
+<span class="kw">SELECT</span> full_name <span class="kw">FROM</span> customers <span class="kw">WHERE</span> full_name <span class="kw">LIKE</span> <span class="str">'Ka%'</span>;</pre>
+  </div>
+
+  <div class="callout interview">
+    <span class="tag">Interview trap</span>
+    <p>"Write a query to find rows where a column is NULL" — candidates often write <code class="mono">WHERE column = NULL</code>, which silently returns zero rows every time. The correct form is always <code class="mono">IS NULL</code> / <code class="mono">IS NOT NULL</code>.</p>
+  </div>
+</section>
+<section class="topic" id="aggregates">
+  <div class="topic-head"><b>03</b><span class="col">foundations</span><span class="col">·</span><span>aggregates & GROUP BY / HAVING</span><span class="type">beginner</span></div>
+  <h2 class="topic-title">Turning many rows into one number</h2>
+  <p class="topic-sub">Aggregate functions collapse a set of rows into a single summary value: <code class="mono">COUNT</code>, <code class="mono">SUM</code>, <code class="mono">AVG</code>, <code class="mono">MIN</code>, <code class="mono">MAX</code>. <code class="mono">GROUP BY</code> tells SQL to do that separately per bucket, and <code class="mono">HAVING</code> filters those buckets.</p>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">03_aggregates.sql</span></div>
+    <pre><span class="cm">-- total balance and account count per customer</span>
+<span class="kw">SELECT</span> customer_id,
+       <span class="fn">COUNT</span>(*)      <span class="kw">AS</span> num_accounts,
+       <span class="fn">SUM</span>(balance)  <span class="kw">AS</span> total_balance,
+       <span class="fn">AVG</span>(balance)  <span class="kw">AS</span> avg_balance,
+       <span class="fn">MAX</span>(balance)  <span class="kw">AS</span> highest_balance
+<span class="kw">FROM</span> accounts
+<span class="kw">GROUP BY</span> customer_id
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(balance) &gt; 10000
+<span class="kw">ORDER BY</span> total_balance <span class="kw">DESC</span>;</pre>
+  </div>
+  <table class="result">
+    <caption>result</caption>
+    <tr><th>customer_id</th><th>num_accounts</th><th>total_balance</th><th>avg_balance</th><th>highest_balance</th></tr>
+    <tr><td>3</td><td>1</td><td>305000.00</td><td>305000.00</td><td>305000.00</td></tr>
+    <tr><td>1</td><td>2</td><td>167000.00</td><td>83500.00</td><td>125000.00</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <span class="tag">Why HAVING and not WHERE</span>
+    <p><code class="mono">WHERE</code> filters individual rows <em>before</em> grouping happens. <code class="mono">HAVING</code> filters groups <em>after</em> aggregation. You cannot write <code class="mono">WHERE SUM(balance) > 10000</code> — at that point in execution, SUM doesn't exist yet. This is one of the most common SDET interview questions.</p>
+  </div>
+
+  <h3 class="sub">MySQL logical execution order (know this cold)</h3>
+  <table class="cheat">
+    <tr><th>Order</th><th>Clause</th><th>What it does</th></tr>
+    <tr><td>1</td><td><code>FROM / JOIN</code></td><td>Build the working set of rows</td></tr>
+    <tr><td>2</td><td><code>WHERE</code></td><td>Filter individual rows</td></tr>
+    <tr><td>3</td><td><code>GROUP BY</code></td><td>Bucket rows into groups</td></tr>
+    <tr><td>4</td><td><code>HAVING</code></td><td>Filter groups</td></tr>
+    <tr><td>5</td><td><code>SELECT</code></td><td>Compute output columns / aliases</td></tr>
+    <tr><td>6</td><td><code>ORDER BY</code></td><td>Sort the final result</td></tr>
+    <tr><td>7</td><td><code>LIMIT</code></td><td>Trim to N rows</td></tr>
+  </table>
+  <p class="prose">This is exactly why you can <code class="mono">ORDER BY</code> a column alias, but you can't <code class="mono">WHERE</code> on one — the alias doesn't exist until step 5.</p>
+</section>
+<section class="topic" id="joins">
+  <div class="topic-head"><b>04</b><span class="col">the core skill</span><span class="col">·</span><span>JOINS — explained from zero</span><span class="type">beginner → advanced</span></div>
+  <h2 class="topic-title">JOINS: the one concept that shows up in every interview</h2>
+  <p class="topic-sub">Forget SQL syntax for a second. A join answers one plain-English question: <em>"I have two separate lists — how do I combine rows that are related to each other?"</em> Think of <code class="mono">customers</code> and <code class="mono">loans</code> as two spreadsheets. Every loan row has a <code class="mono">customer_id</code> that points back to a customer. A join is simply: <em>"for every loan, go find and attach the matching customer."</em></p>
+
+  <div class="callout">
+    <span class="tag">The one rule to remember</span>
+    <p>A join always needs a shared column to match on — usually a primary key in one table (<code class="mono">customer_id</code> in <code>customers</code>) and a foreign key in the other (<code class="mono">customer_id</code> in <code>loans</code>). The join type only decides <strong>what happens when a match isn't found</strong>.</p>
+  </div>
+
+  <div class="join-grid">
+    <div class="join-card">
+      <svg viewBox="0 0 200 140" width="180" height="120">
+        <defs><clipPath id="clipL"><circle cx="70" cy="66" r="45"/></clipPath><clipPath id="clipR"><circle cx="130" cy="66" r="45"/></clipPath></defs>
+        <circle cx="70" cy="66" r="45" fill="none" stroke="var(--muted-2)" stroke-width="1.5"/>
+        <circle cx="130" cy="66" r="45" fill="none" stroke="var(--muted-2)" stroke-width="1.5"/>
+        <circle cx="70" cy="66" r="45" fill="var(--green)" clip-path="url(#clipR)"/>
+        <text x="100" y="128" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="JetBrains Mono">A ∩ B</text>
+      </svg>
+      <h4>INNER JOIN</h4>
+      <p>Only rows that match in <em>both</em> tables. No match = row disappears entirely.</p>
+    </div>
+    <div class="join-card">
+      <svg viewBox="0 0 200 140" width="180" height="120">
+        <circle cx="70" cy="66" r="45" fill="var(--green)"/>
+        <circle cx="130" cy="66" r="45" fill="none" stroke="var(--muted-2)" stroke-width="1.5"/>
+        <text x="100" y="128" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="JetBrains Mono">ALL of A</text>
+      </svg>
+      <h4>LEFT JOIN</h4>
+      <p>Every row from the left table, plus matches from the right. No match → right columns are NULL.</p>
+    </div>
+    <div class="join-card">
+      <svg viewBox="0 0 200 140" width="180" height="120">
+        <circle cx="70" cy="66" r="45" fill="none" stroke="var(--muted-2)" stroke-width="1.5"/>
+        <circle cx="130" cy="66" r="45" fill="var(--green)"/>
+        <text x="100" y="128" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="JetBrains Mono">ALL of B</text>
+      </svg>
+      <h4>RIGHT JOIN</h4>
+      <p>Every row from the right table, plus matches from the left. Mirror image of LEFT JOIN.</p>
+    </div>
+    <div class="join-card">
+      <svg viewBox="0 0 200 140" width="180" height="120">
+        <circle cx="70" cy="66" r="45" fill="var(--green)" opacity="0.85"/>
+        <circle cx="130" cy="66" r="45" fill="var(--green)" opacity="0.85"/>
+        <text x="100" y="128" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="JetBrains Mono">A ∪ B</text>
+      </svg>
+      <h4>FULL OUTER JOIN</h4>
+      <p>Everything from both sides. Unmatched rows on either side get NULLs for the other table. (Not native in MySQL — emulated with UNION.)</p>
+    </div>
+    <div class="join-card">
+      <svg viewBox="0 0 200 140" width="180" height="120">
+        <circle cx="45" cy="46" r="6" fill="var(--cyan)"/><circle cx="45" cy="66" r="6" fill="var(--cyan)"/><circle cx="45" cy="86" r="6" fill="var(--cyan)"/>
+        <circle cx="155" cy="46" r="6" fill="var(--amber)"/><circle cx="155" cy="66" r="6" fill="var(--amber)"/><circle cx="155" cy="86" r="6" fill="var(--amber)"/>
+        <g stroke="var(--muted-2)" stroke-width="0.75">
+          <line x1="45" y1="46" x2="155" y2="46"/><line x1="45" y1="46" x2="155" y2="66"/><line x1="45" y1="46" x2="155" y2="86"/>
+          <line x1="45" y1="66" x2="155" y2="46"/><line x1="45" y1="66" x2="155" y2="66"/><line x1="45" y1="66" x2="155" y2="86"/>
+          <line x1="45" y1="86" x2="155" y2="46"/><line x1="45" y1="86" x2="155" y2="66"/><line x1="45" y1="86" x2="155" y2="86"/>
+        </g>
+        <text x="100" y="128" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="JetBrains Mono">3 × 3 = 9</text>
+      </svg>
+      <h4>CROSS JOIN</h4>
+      <p>Every row of A paired with every row of B. No matching column at all — pure cartesian product.</p>
+    </div>
+    <div class="join-card">
+      <svg viewBox="0 0 200 140" width="180" height="120">
+        <circle cx="100" cy="60" r="40" fill="none" stroke="var(--cyan)" stroke-width="1.5"/>
+        <path d="M 80 40 A 30 30 0 1 1 78 82" fill="none" stroke="var(--green)" stroke-width="2" marker-end="url(#ah)"/>
+        <defs><marker id="ah" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--green)"/></marker></defs>
+        <text x="100" y="128" text-anchor="middle" fill="var(--muted)" font-size="10" font-family="JetBrains Mono">table → itself</text>
+      </svg>
+      <h4>SELF JOIN</h4>
+      <p>A table joined to itself, e.g. matching each employee to their own manager in the same table.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">INNER JOIN — banking example</h3>
+  <p class="prose">Get every loan alongside the customer's name and city. Customers with no loan row simply won't appear.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">04_inner_join.sql</span></div>
+    <pre><span class="kw">SELECT</span> c.full_name, c.city, l.loan_amount, l.status
+<span class="kw">FROM</span> customers <span class="kw">AS</span> c
+<span class="kw">INNER JOIN</span> loans <span class="kw">AS</span> l
+  <span class="kw">ON</span> c.customer_id = l.customer_id
+<span class="kw">ORDER BY</span> l.loan_amount <span class="kw">DESC</span>;</pre>
+  </div>
+  <table class="result">
+    <caption>result — 5 rows (Karthik, who has no loan, is absent)</caption>
+    <tr><th>full_name</th><th>city</th><th>loan_amount</th><th>status</th></tr>
+    <tr><td>Meera Iyer</td><td>Chennai</td><td>900000.00</td><td>APPROVED</td></tr>
+    <tr><td>Ravi Teja</td><td>Hyderabad</td><td>500000.00</td><td>APPROVED</td></tr>
+    <tr><td>Meera Iyer</td><td>Chennai</td><td>300000.00</td><td>CLOSED</td></tr>
+    <tr><td>Ananya Rao</td><td>Bengaluru</td><td>200000.00</td><td>PENDING</td></tr>
+    <tr><td>Ananya Rao</td><td>Bengaluru</td><td>150000.00</td><td>REJECTED</td></tr>
+  </table>
+
+  <h3 class="sub">LEFT JOIN — the "show me everyone, even with no match" pattern</h3>
+  <p class="prose">This is the join you'll write most often in real testing work: "list every customer, and show their loan details if they have one." Karthik now appears, with NULLs.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">05_left_join.sql</span></div>
+    <pre><span class="kw">SELECT</span> c.full_name, l.loan_id, l.loan_amount, l.status
+<span class="kw">FROM</span> customers <span class="kw">AS</span> c
+<span class="kw">LEFT JOIN</span> loans <span class="kw">AS</span> l
+  <span class="kw">ON</span> c.customer_id = l.customer_id;</pre>
+  </div>
+  <table class="result">
+    <caption>result — every customer is present</caption>
+    <tr><th>full_name</th><th>loan_id</th><th>loan_amount</th><th>status</th></tr>
+    <tr><td>Ravi Teja</td><td>1</td><td>500000.00</td><td>APPROVED</td></tr>
+    <tr><td>Ananya Rao</td><td>2</td><td>200000.00</td><td>PENDING</td></tr>
+    <tr><td>Ananya Rao</td><td>3</td><td>150000.00</td><td>REJECTED</td></tr>
+    <tr><td>Meera Iyer</td><td>4</td><td>900000.00</td><td>APPROVED</td></tr>
+    <tr><td>Meera Iyer</td><td>5</td><td>300000.00</td><td>CLOSED</td></tr>
+    <tr><td>Karthik Nair</td><td class="null">NULL</td><td class="null">NULL</td><td class="null">NULL</td></tr>
+  </table>
+
+  <h3 class="sub">The anti-join pattern: finding rows with NO match</h3>
+  <p class="prose">Flip the LEFT JOIN idea around by filtering for the NULLs — this is one of the most-used real-world queries in data validation and reconciliation testing.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">06_anti_join.sql</span></div>
+    <pre><span class="cm">-- customers who have never taken a loan</span>
+<span class="kw">SELECT</span> c.full_name
+<span class="kw">FROM</span> customers c
+<span class="kw">LEFT JOIN</span> loans l <span class="kw">ON</span> c.customer_id = l.customer_id
+<span class="kw">WHERE</span> l.loan_id <span class="kw">IS NULL</span>;
+<span class="cm">-- → Karthik Nair</span>
+
+<span class="cm">-- same idea on the e-commerce schema: customers who never ordered</span>
+<span class="kw">SELECT</span> ec.name
+<span class="kw">FROM</span> ec_customers ec
+<span class="kw">WHERE NOT EXISTS</span> (
+  <span class="kw">SELECT</span> 1 <span class="kw">FROM</span> orders o <span class="kw">WHERE</span> o.cust_id = ec.cust_id
+);
+<span class="cm">-- → Sanjay</span></pre>
+  </div>
+
+  <h3 class="sub">RIGHT JOIN and FULL OUTER JOIN</h3>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">07_right_and_full.sql</span></div>
+    <pre><span class="cm">-- RIGHT JOIN: same as LEFT JOIN with tables swapped — rarely used in practice</span>
+<span class="kw">SELECT</span> c.full_name, l.loan_id
+<span class="kw">FROM</span> loans l
+<span class="kw">RIGHT JOIN</span> customers c <span class="kw">ON</span> l.customer_id = c.customer_id;
+
+<span class="cm">-- FULL OUTER JOIN: MySQL has no native FULL JOIN — emulate with UNION</span>
+<span class="kw">SELECT</span> c.full_name, l.loan_id <span class="kw">FROM</span> customers c <span class="kw">LEFT JOIN</span> loans l <span class="kw">ON</span> c.customer_id = l.customer_id
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> c.full_name, l.loan_id <span class="kw">FROM</span> customers c <span class="kw">RIGHT JOIN</span> loans l <span class="kw">ON</span> c.customer_id = l.customer_id;</pre>
+  </div>
+
+  <h3 class="sub">SELF JOIN — an employee and their own manager</h3>
+  <p class="prose">The trick with self joins: you're joining one table to itself, so you must alias it twice to treat it as "two different tables" in your head.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">08_self_join.sql</span></div>
+    <pre><span class="kw">SELECT</span> e.emp_name <span class="kw">AS</span> employee, m.emp_name <span class="kw">AS</span> manager
+<span class="kw">FROM</span> employees e
+<span class="kw">LEFT JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id;</pre>
+  </div>
+  <table class="result">
+    <caption>result</caption>
+    <tr><th>employee</th><th>manager</th></tr>
+    <tr><td>Sai</td><td class="null">NULL</td></tr>
+    <tr><td>Priya</td><td>Sai</td></tr>
+    <tr><td>Arjun</td><td class="null">NULL</td></tr>
+    <tr><td>Neha</td><td>Arjun</td></tr>
+    <tr><td>Vikram</td><td>Arjun</td></tr>
+    <tr><td>Farah</td><td class="null">NULL</td></tr>
+    <tr><td>Imran</td><td>Farah</td></tr>
+  </table>
+
+  <h3 class="sub">CROSS JOIN</h3>
+  <p class="prose">No <code class="mono">ON</code> clause — every row pairs with every row. Genuinely useful for generating combinations, e.g. "every product against every discount tier" for test data generation.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">09_cross_join.sql</span></div>
+    <pre><span class="kw">SELECT</span> p.name, d.tier
+<span class="kw">FROM</span> products p
+<span class="kw">CROSS JOIN</span> (<span class="kw">SELECT</span> <span class="str">'BRONZE'</span> <span class="kw">AS</span> tier <span class="kw">UNION ALL SELECT</span> <span class="str">'SILVER' UNION ALL SELECT</span> <span class="str">'GOLD'</span>) d;
+<span class="cm">-- 4 products × 3 tiers = 12 rows, every combination</span></pre>
+  </div>
+
+  <h3 class="sub">Chaining three or more tables</h3>
+  <p class="prose">Real queries almost always join more than two tables. Order of joins doesn't change the logical result — the optimizer decides execution order.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">10_multi_join.sql</span></div>
+    <pre><span class="cm">-- every order with customer name and product name and line total</span>
+<span class="kw">SELECT</span> ec.name <span class="kw">AS</span> customer, p.name <span class="kw">AS</span> product, o.qty, (o.qty * p.price) <span class="kw">AS</span> line_total
+<span class="kw">FROM</span> orders o
+<span class="kw">JOIN</span> ec_customers ec <span class="kw">ON</span> o.cust_id = ec.cust_id
+<span class="kw">JOIN</span> products p     <span class="kw">ON</span> o.product_id = p.product_id
+<span class="kw">ORDER BY</span> line_total <span class="kw">DESC</span>;</pre>
+  </div>
+
+  <div class="callout interview">
+    <span class="tag">Interview trap: ON vs WHERE with outer joins</span>
+    <p>With a LEFT JOIN, putting a filter on the right table in <code class="mono">WHERE</code> silently turns it back into an INNER JOIN, because unmatched rows have NULL there and fail the WHERE condition. If you want to filter the right table <em>without</em> losing unmatched left rows, put that condition inside the <code class="mono">ON</code> clause instead: <code class="mono">LEFT JOIN loans l ON c.customer_id = l.customer_id AND l.status = 'APPROVED'</code>.</p>
+  </div>
+
+  <div class="callout warn">
+    <span class="tag">Avoid in real code</span>
+    <p><code class="mono">NATURAL JOIN</code> auto-matches on any identically-named columns across tables. MySQL supports it, but it's dangerous in production queries — if someone adds an unrelated column with the same name later, the join silently changes behavior. Always use an explicit <code class="mono">ON</code>.</p>
+  </div>
+</section>
+<section class="topic" id="subqueries">
+  <div class="topic-head"><b>05</b><span class="col">intermediate</span><span class="col">·</span><span>subqueries</span><span class="type">core</span></div>
+  <h2 class="topic-title">A query inside a query</h2>
+  <p class="topic-sub">A subquery is just a SELECT nested inside another SELECT, INSERT, UPDATE, or DELETE. Use it when you need a value or a set of values before you can finish the outer question.</p>
+
+  <div class="grid2">
+    <div class="card"><h4>Scalar subquery</h4><p>Returns exactly one value. Can be used anywhere a single value is expected.</p></div>
+    <div class="card"><h4>Row / column subquery</h4><p>Returns a list — used with <code class="mono">IN</code>, <code class="mono">ANY</code>, <code class="mono">ALL</code>.</p></div>
+    <div class="card"><h4>Correlated subquery</h4><p>References a column from the outer query — re-evaluated once per outer row. Powerful, but can be slow.</p></div>
+    <div class="card"><h4>Non-correlated subquery</h4><p>Runs independently of the outer query — evaluated once.</p></div>
+  </div>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">11_subqueries.sql</span></div>
+    <pre><span class="cm">-- scalar subquery: customers with an above-average credit score</span>
+<span class="kw">SELECT</span> full_name, credit_score
+<span class="kw">FROM</span> customers
+<span class="kw">WHERE</span> credit_score &gt; (<span class="kw">SELECT AVG</span>(credit_score) <span class="kw">FROM</span> customers);
+
+<span class="cm">-- non-correlated: customers who have at least one APPROVED loan</span>
+<span class="kw">SELECT</span> full_name <span class="kw">FROM</span> customers
+<span class="kw">WHERE</span> customer_id <span class="kw">IN</span> (<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> loans <span class="kw">WHERE</span> status = <span class="str">'APPROVED'</span>);
+
+<span class="cm">-- correlated: each customer's own highest loan amount, next to every loan row</span>
+<span class="kw">SELECT</span> l.loan_id, l.customer_id, l.loan_amount,
+  (<span class="kw">SELECT MAX</span>(l2.loan_amount) <span class="kw">FROM</span> loans l2 <span class="kw">WHERE</span> l2.customer_id = l.customer_id) <span class="kw">AS</span> customer_max
+<span class="kw">FROM</span> loans l;
+
+<span class="cm">-- subquery in FROM (a "derived table") — must always be aliased</span>
+<span class="kw">SELECT</span> t.city, t.avg_score
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> city, <span class="kw">AVG</span>(credit_score) <span class="kw">AS</span> avg_score
+  <span class="kw">FROM</span> customers <span class="kw">GROUP BY</span> city
+) <span class="kw">AS</span> t
+<span class="kw">WHERE</span> t.avg_score &gt; 650;</pre>
+  </div>
+
+  <div class="callout interview">
+    <span class="tag">Interview question</span>
+    <p>"When would you use a subquery instead of a JOIN?" — Use a subquery in <code class="mono">WHERE</code>/<code class="mono">EXISTS</code> when you only need to filter, not pull columns from the other table. Use a JOIN when you need columns from both tables in the output. Correlated subqueries are logically equivalent to joins but often perform worse, since they can re-run once per outer row instead of once per join.</p>
+  </div>
+</section>
+
+<section class="topic" id="cte">
+  <div class="topic-head"><b>06</b><span class="col">intermediate</span><span class="col">·</span><span>CTEs & recursive queries</span><span class="type">core</span></div>
+  <h2 class="topic-title">Common Table Expressions (WITH clause)</h2>
+  <p class="topic-sub">A CTE is a named, temporary result set that only exists for the duration of one query. Think of it as giving a subquery a name so the rest of the query can read like plain English.</p>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">12_cte_basic.sql</span></div>
+    <pre><span class="kw">WITH</span> high_value_loans <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> customer_id, loan_amount
+  <span class="kw">FROM</span> loans
+  <span class="kw">WHERE</span> loan_amount &gt; 250000
+)
+<span class="kw">SELECT</span> c.full_name, h.loan_amount
+<span class="kw">FROM</span> high_value_loans h
+<span class="kw">JOIN</span> customers c <span class="kw">ON</span> c.customer_id = h.customer_id;</pre>
+  </div>
+
+  <p class="prose">CTEs really shine when chained — each one builds on the last, replacing what would otherwise be deeply nested subqueries:</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">13_cte_chained.sql</span></div>
+    <pre><span class="kw">WITH</span> per_customer <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> customer_id, <span class="kw">SUM</span>(loan_amount) <span class="kw">AS</span> total_borrowed
+  <span class="kw">FROM</span> loans <span class="kw">GROUP BY</span> customer_id
+),
+ranked <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> customer_id, total_borrowed,
+    <span class="kw">RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> total_borrowed <span class="kw">DESC</span>) <span class="kw">AS</span> borrow_rank
+  <span class="kw">FROM</span> per_customer
+)
+<span class="kw">SELECT</span> c.full_name, r.total_borrowed, r.borrow_rank
+<span class="kw">FROM</span> ranked r <span class="kw">JOIN</span> customers c <span class="kw">ON</span> c.customer_id = r.customer_id;</pre>
+  </div>
+
+  <h3 class="sub">Recursive CTE — walking a hierarchy</h3>
+  <p class="prose">Recursive CTEs solve the exact problem a self join can't: arbitrary-depth hierarchies (org charts, category trees). It has an "anchor" (the starting point) and a "recursive" part that keeps joining back to itself.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">14_recursive_cte.sql</span></div>
+    <pre><span class="kw">WITH RECURSIVE</span> org_chain <span class="kw">AS</span> (
+  <span class="cm">-- anchor: top-level people (no manager)</span>
+  <span class="kw">SELECT</span> emp_id, emp_name, manager_id, 1 <span class="kw">AS</span> depth
+  <span class="kw">FROM</span> employees <span class="kw">WHERE</span> manager_id <span class="kw">IS NULL</span>
+
+  <span class="kw">UNION ALL</span>
+
+  <span class="cm">-- recursive step: find employees reporting to anyone already in org_chain</span>
+  <span class="kw">SELECT</span> e.emp_id, e.emp_name, e.manager_id, oc.depth + 1
+  <span class="kw">FROM</span> employees e
+  <span class="kw">JOIN</span> org_chain oc <span class="kw">ON</span> e.manager_id = oc.emp_id
+)
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> org_chain <span class="kw">ORDER BY</span> depth;</pre>
+  </div>
+  <div class="callout sdet">
+    <span class="tag">SDET in practice</span>
+    <p>Recursive CTEs are the go-to when validating hierarchical test data — approval-chain workflows in banking apps (maker-checker-approver), category trees in e-commerce catalogs, or nested test-suite dependencies.</p>
+  </div>
+</section>
+<section class="topic" id="window">
+  <div class="topic-head"><b>07</b><span class="col">intermediate</span><span class="col">·</span><span>window functions</span><span class="type">senior-level</span></div>
+  <h2 class="topic-title">Window functions: aggregate without collapsing rows</h2>
+  <p class="topic-sub">GROUP BY collapses rows into one per bucket. A window function calculates across a group of related rows ("the window") but keeps every original row intact — this is what makes ranking, running totals, and row-to-row comparisons possible.</p>
+
+  <table class="cheat">
+    <tr><th>Function</th><th>Purpose</th></tr>
+    <tr><td><code>ROW_NUMBER()</code></td><td>Unique sequential number per row within a partition — no ties</td></tr>
+    <tr><td><code>RANK()</code></td><td>Same rank for ties, but skips the next number(s)</td></tr>
+    <tr><td><code>DENSE_RANK()</code></td><td>Same rank for ties, no gaps in the sequence</td></tr>
+    <tr><td><code>LAG() / LEAD()</code></td><td>Value from the previous / next row</td></tr>
+    <tr><td><code>SUM() OVER(...)</code></td><td>Running total / cumulative sum</td></tr>
+    <tr><td><code>NTILE(n)</code></td><td>Splits rows into n roughly equal buckets</td></tr>
+  </table>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">15_window_ranking.sql</span></div>
+    <pre><span class="cm">-- rank employees by salary within each department</span>
+<span class="kw">SELECT</span> emp_name, dept_id, salary,
+  <span class="kw">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> dept_id <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> row_num,
+  <span class="kw">RANK</span>()       <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> dept_id <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> rnk,
+  <span class="kw">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> dept_id <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> dense_rnk
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> dept_id <span class="kw">IS NOT NULL</span>;</pre>
+  </div>
+  <table class="result">
+    <caption>result — note Neha & Vikram tie at 98000</caption>
+    <tr><th>emp_name</th><th>dept_id</th><th>salary</th><th>row_num</th><th>rnk</th><th>dense_rnk</th></tr>
+    <tr><td>Arjun</td><td>10</td><td>110000</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td>Neha</td><td>10</td><td>98000</td><td>2</td><td>2</td><td>2</td></tr>
+    <tr><td>Vikram</td><td>10</td><td>98000</td><td>3</td><td>2</td><td>2</td></tr>
+    <tr><td>Sai</td><td>20</td><td>95000</td><td>1</td><td>1</td><td>1</td></tr>
+    <tr><td>Priya</td><td>20</td><td>78000</td><td>2</td><td>2</td><td>2</td></tr>
+  </table>
+
+  <div class="callout interview">
+    <span class="tag">Interview question: Nth highest salary</span>
+    <p>This is asked constantly. The window-function answer is short and handles ties correctly, unlike the old <code class="mono">LIMIT</code>/<code class="mono">OFFSET</code> trick:</p>
+  </div>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">16_nth_highest.sql</span></div>
+    <pre><span class="kw">SELECT</span> emp_name, salary <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> emp_name, salary, <span class="kw">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> rnk
+  <span class="kw">FROM</span> employees
+) ranked
+<span class="kw">WHERE</span> rnk = 2;  <span class="cm">-- 2nd highest salary overall</span></pre>
+  </div>
+
+  <h3 class="sub">Running totals and row comparisons</h3>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">17_running_total_lag.sql</span></div>
+    <pre><span class="cm">-- running total of order value per customer, and gap from previous order</span>
+<span class="kw">SELECT</span> ec.name, o.order_date, (o.qty * p.price) <span class="kw">AS</span> order_value,
+  <span class="kw">SUM</span>(o.qty * p.price) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> o.cust_id <span class="kw">ORDER BY</span> o.order_date) <span class="kw">AS</span> running_total,
+  <span class="kw">LAG</span>(o.qty * p.price) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> o.cust_id <span class="kw">ORDER BY</span> o.order_date) <span class="kw">AS</span> previous_order_value
+<span class="kw">FROM</span> orders o
+<span class="kw">JOIN</span> ec_customers ec <span class="kw">ON</span> o.cust_id = ec.cust_id
+<span class="kw">JOIN</span> products p     <span class="kw">ON</span> o.product_id = p.product_id
+<span class="kw">ORDER BY</span> ec.name, o.order_date;</pre>
+  </div>
+
+  <div class="callout sdet">
+    <span class="tag">SDET in practice</span>
+    <p>Window functions are exactly how you validate "top N per group" business rules in test automation — e.g. asserting the API's "top 3 products per category" widget matches a <code class="mono">DENSE_RANK</code> query against the same database, instead of hardcoding expected values.</p>
+  </div>
+</section>
+
+<section class="topic" id="setops">
+  <div class="topic-head"><b>08</b><span class="col">intermediate</span><span class="col">·</span><span>set operations</span><span class="type">core</span></div>
+  <h2 class="topic-title">UNION, UNION ALL, INTERSECT, EXCEPT</h2>
+  <p class="topic-sub">Set operations stack the results of two SELECT statements vertically instead of joining them side by side. Both SELECTs need the same number of columns, in compatible types.</p>
+  <div class="grid2">
+    <div class="card"><h4>UNION</h4><p>Combines results and removes duplicate rows. Slightly slower — it has to check for dupes.</p></div>
+    <div class="card"><h4>UNION ALL</h4><p>Combines results and keeps duplicates. Faster — always prefer this when you know there won't be overlaps, or don't care.</p></div>
+    <div class="card"><h4>INTERSECT</h4><p>Rows that appear in <em>both</em> result sets. (MySQL 8.0.31+)</p></div>
+    <div class="card"><h4>EXCEPT</h4><p>Rows in the first result set that are <em>not</em> in the second. (MySQL 8.0.31+)</p></div>
+  </div>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">18_set_ops.sql</span></div>
+    <pre><span class="cm">-- all cities that have either a customer or appear as a loan disbursal region (example combine)</span>
+<span class="kw">SELECT</span> city <span class="kw">FROM</span> customers
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> <span class="str">'Pune'</span> <span class="kw">AS</span> city; <span class="cm">-- dupes removed automatically</span>
+
+<span class="cm">-- customers who are in BOTH the "has a loan" and "has an account" sets</span>
+<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> loans
+<span class="kw">INTERSECT</span>
+<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> accounts;
+
+<span class="cm">-- customers with an account but NO loan at all</span>
+<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> accounts
+<span class="kw">EXCEPT</span>
+<span class="kw">SELECT</span> customer_id <span class="kw">FROM</span> loans;</pre>
+  </div>
+  <div class="callout warn">
+    <span class="tag">Older MySQL versions</span>
+    <p>Before MySQL 8.0.31, <code class="mono">INTERSECT</code>/<code class="mono">EXCEPT</code> don't exist — emulate with <code class="mono">JOIN</code> (for intersect) or <code class="mono">LEFT JOIN ... WHERE ... IS NULL</code> / <code class="mono">NOT IN</code> (for except). Many production banking systems still run older MySQL, so know both approaches.</p>
+  </div>
+</section>
+<section class="topic" id="dml">
+  <div class="topic-head"><b>09</b><span class="col">data & schema</span><span class="col">·</span><span>DML — insert / update / delete</span><span class="type">beginner</span></div>
+  <h2 class="topic-title">Changing data: INSERT, UPDATE, DELETE</h2>
+  <p class="topic-sub">DML = Data Manipulation Language. These are the statements you'll run constantly to set up and tear down test data.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">19_dml.sql</span></div>
+    <pre><span class="cm">-- INSERT a single row</span>
+<span class="kw">INSERT INTO</span> customers (full_name, city, credit_score) <span class="kw">VALUES</span> (<span class="str">'Test User QA'</span>, <span class="str">'Pune'</span>, 700);
+
+<span class="cm">-- UPDATE — always pair with a WHERE, or every row changes</span>
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance + 5000 <span class="kw">WHERE</span> account_id = 3;
+
+<span class="cm">-- DELETE — same warning applies</span>
+<span class="kw">DELETE FROM</span> loans <span class="kw">WHERE</span> status = <span class="str">'REJECTED'</span>;
+
+<span class="cm">-- UPSERT in MySQL: insert, or update if the unique/primary key already exists</span>
+<span class="kw">INSERT INTO</span> accounts (account_id, customer_id, account_type, balance)
+<span class="kw">VALUES</span> (3, 2, <span class="str">'SAVINGS'</span>, 9000.00)
+<span class="kw">ON DUPLICATE KEY UPDATE</span> balance = <span class="kw">VALUES</span>(balance);</pre>
+  </div>
+  <div class="callout warn">
+    <span class="tag">The most expensive typo in SQL</span>
+    <p>Running <code class="mono">UPDATE</code> or <code class="mono">DELETE</code> without a <code class="mono">WHERE</code> clause applies it to every row in the table. Always run the equivalent <code class="mono">SELECT ... WHERE ...</code> first to confirm exactly which rows you're about to touch, especially against a shared test environment.</p>
+  </div>
+</section>
+
+<section class="topic" id="ddl">
+  <div class="topic-head"><b>10</b><span class="col">data & schema</span><span class="col">·</span><span>DDL & constraints</span><span class="type">beginner</span></div>
+  <h2 class="topic-title">Defining structure: CREATE, ALTER, DROP, TRUNCATE</h2>
+  <p class="topic-sub">DDL = Data Definition Language — it shapes the tables themselves, not the rows in them.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">20_ddl.sql</span></div>
+    <pre><span class="kw">ALTER TABLE</span> customers <span class="kw">ADD COLUMN</span> email <span class="kw">VARCHAR</span>(100) <span class="kw">UNIQUE</span>;
+<span class="kw">ALTER TABLE</span> customers <span class="kw">MODIFY COLUMN</span> credit_score <span class="kw">INT NOT NULL DEFAULT</span> 600;
+<span class="kw">ALTER TABLE</span> customers <span class="kw">DROP COLUMN</span> email;
+
+<span class="kw">TRUNCATE TABLE</span> loans;   <span class="cm">-- wipes ALL rows instantly, resets AUTO_INCREMENT, can't be rolled back, skips triggers</span>
+<span class="kw">DROP TABLE</span> loans;      <span class="cm">-- removes the table structure itself, gone entirely</span></pre>
+  </div>
+
+  <table class="cheat">
+    <tr><th>Constraint</th><th>What it guarantees</th></tr>
+    <tr><td><code>PRIMARY KEY</code></td><td>Uniquely identifies each row; implies NOT NULL + UNIQUE</td></tr>
+    <tr><td><code>FOREIGN KEY</code></td><td>Value must exist in the referenced table's key — enforces referential integrity</td></tr>
+    <tr><td><code>UNIQUE</code></td><td>No two rows can share this value (NULLs are allowed, and don't conflict with each other)</td></tr>
+    <tr><td><code>NOT NULL</code></td><td>Column can never be empty/unknown</td></tr>
+    <tr><td><code>CHECK</code></td><td>Value must satisfy a boolean condition, e.g. <code>credit_score BETWEEN 300 AND 900</code></td></tr>
+    <tr><td><code>DEFAULT</code></td><td>Value used automatically when none is supplied on INSERT</td></tr>
+    <tr><td><code>AUTO_INCREMENT</code></td><td>MySQL generates the next sequential integer automatically</td></tr>
+  </table>
+
+  <div class="callout interview">
+    <span class="tag">Interview question: DELETE vs TRUNCATE vs DROP</span>
+    <p><code class="mono">DELETE</code> is DML, removes rows one at a time (optionally filtered), fires triggers, and can be rolled back inside a transaction. <code class="mono">TRUNCATE</code> is DDL, removes all rows at once by deallocating pages, is much faster, resets auto-increment, and in MySQL commits implicitly. <code class="mono">DROP</code> removes the table definition entirely — the table no longer exists.</p>
+  </div>
+</section>
+
+<section class="topic" id="index">
+  <div class="topic-head"><b>11</b><span class="col">data & schema</span><span class="col">·</span><span>indexes & query optimization</span><span class="type">senior-level</span></div>
+  <h2 class="topic-title">Making queries fast, and proving it with EXPLAIN</h2>
+  <p class="topic-sub">An index is a separate, sorted lookup structure (usually a B-Tree) that lets MySQL find rows without scanning the whole table. The tradeoff: indexes speed up reads but slow down writes, since every INSERT/UPDATE/DELETE has to maintain them too.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">21_indexes.sql</span></div>
+    <pre><span class="kw">CREATE INDEX</span> idx_loans_customer <span class="kw">ON</span> loans(customer_id);
+<span class="kw">CREATE UNIQUE INDEX</span> idx_customers_email <span class="kw">ON</span> customers(email);
+<span class="kw">CREATE INDEX</span> idx_loans_status_amount <span class="kw">ON</span> loans(status, loan_amount); <span class="cm">-- composite index</span>
+
+<span class="kw">EXPLAIN SELECT</span> * <span class="kw">FROM</span> loans <span class="kw">WHERE</span> customer_id = 2;</pre>
+  </div>
+  <table class="result">
+    <caption>EXPLAIN output — what to look for</caption>
+    <tr><th>column</th><th>meaning</th></tr>
+    <tr><td>type</td><td><span class="null">ALL</span> = full table scan (bad) → <code class="mono">ref</code>/<code class="mono">range</code> (good) → <code class="mono">const</code>/<code class="mono">eq_ref</code> (best)</td></tr>
+    <tr><td>key</td><td>which index MySQL actually chose to use (NULL = none used)</td></tr>
+    <tr><td>rows</td><td>estimated rows MySQL expects to examine — lower is better</td></tr>
+    <tr><td>Extra</td><td><span class="null">"Using filesort"</span> or <span class="null">"Using temporary"</span> are red flags worth investigating</td></tr>
+  </table>
+
+  <h3 class="sub">Practical rules of thumb</h3>
+  <div class="grid3">
+    <div class="card"><h4>Index foreign keys</h4><p>Columns used in JOIN conditions almost always deserve an index.</p></div>
+    <div class="card"><h4>Leftmost prefix rule</h4><p>A composite index on (status, loan_amount) helps queries filtering on status alone, or status+loan_amount — but not loan_amount alone.</p></div>
+    <div class="card"><h4>Don't over-index</h4><p>Every index adds write overhead. Index what you actually query on, not every column.</p></div>
+  </div>
+
+  <div class="callout sdet">
+    <span class="tag">SDET in practice</span>
+    <p>Performance/API test suites often assert on response time SLAs. When an endpoint suddenly slows down, <code class="mono">EXPLAIN</code> on the underlying query is usually the fastest way to prove — in a bug report — whether it's an application issue or a missing index, rather than guessing.</p>
+  </div>
+</section>
+
+<section class="topic" id="txn">
+  <div class="topic-head"><b>12</b><span class="col">data & schema</span><span class="col">·</span><span>transactions & ACID</span><span class="type">core</span></div>
+  <h2 class="topic-title">Transactions: making multiple changes act as one</h2>
+  <p class="topic-sub">A transaction groups statements so they all succeed together, or all fail together — critical in banking systems where "debit one account, credit another" can never be allowed to happen halfway.</p>
+
+  <div class="grid2">
+    <div class="card"><h4>Atomicity</h4><p>All statements in the transaction succeed, or none do.</p></div>
+    <div class="card"><h4>Consistency</h4><p>The database moves from one valid state to another — constraints are never violated.</p></div>
+    <div class="card"><h4>Isolation</h4><p>Concurrent transactions don't see each other's uncommitted changes.</p></div>
+    <div class="card"><h4>Durability</h4><p>Once committed, the change survives a crash — it's written to disk.</p></div>
+  </div>
+
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">22_transaction.sql</span></div>
+    <pre><span class="kw">START TRANSACTION</span>;
+
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance - 10000 <span class="kw">WHERE</span> account_id = 1;
+<span class="kw">UPDATE</span> accounts <span class="kw">SET</span> balance = balance + 10000 <span class="kw">WHERE</span> account_id = 3;
+
+<span class="cm">-- if anything looks wrong, undo everything since START TRANSACTION</span>
+<span class="kw">ROLLBACK</span>;
+
+<span class="cm">-- otherwise, make it permanent</span>
+<span class="kw">COMMIT</span>;</pre>
+  </div>
+
+  <table class="cheat">
+    <tr><th>Isolation level</th><th>Behavior</th></tr>
+    <tr><td>READ UNCOMMITTED</td><td>Can see other transactions' uncommitted changes ("dirty reads") — rarely used</td></tr>
+    <tr><td>READ COMMITTED</td><td>Only sees data committed before each query starts</td></tr>
+    <tr><td>REPEATABLE READ</td><td><em>MySQL InnoDB's default.</em> Same query returns the same rows throughout the transaction</td></tr>
+    <tr><td>SERIALIZABLE</td><td>Fully isolated, as if transactions ran one at a time — safest, slowest</td></tr>
+  </table>
+
+  <div class="callout sdet">
+    <span class="tag">SDET in practice</span>
+    <p>Wrapping each automated test in <code class="mono">START TRANSACTION</code> / <code class="mono">ROLLBACK</code> (instead of DELETE-based cleanup) is a common pattern for keeping integration tests fast and side-effect-free against a shared database.</p>
+  </div>
+</section>
+
+<section class="topic" id="views">
+  <div class="topic-head"><b>13</b><span class="col">data & schema</span><span class="col">·</span><span>views · stored procedures · triggers</span><span class="type">core</span></div>
+  <h2 class="topic-title">Reusable database logic</h2>
+
+  <h3 class="sub">Views — a saved, reusable query</h3>
+  <p class="prose">A view looks like a table but is really a stored SELECT — it always reflects live data, with no storage of its own.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">23_view.sql</span></div>
+    <pre><span class="kw">CREATE VIEW</span> active_loans_view <span class="kw">AS</span>
+<span class="kw">SELECT</span> c.full_name, l.loan_amount, l.status
+<span class="kw">FROM</span> customers c <span class="kw">JOIN</span> loans l <span class="kw">ON</span> c.customer_id = l.customer_id
+<span class="kw">WHERE</span> l.status = <span class="str">'APPROVED'</span>;
+
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> active_loans_view; <span class="cm">-- query it exactly like a table</span></pre>
+  </div>
+
+  <h3 class="sub">Stored procedures — packaged logic</h3>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">24_procedure.sql</span></div>
+    <pre><span class="kw">DELIMITER</span> $$
+<span class="kw">CREATE PROCEDURE</span> get_customer_loans(<span class="kw">IN</span> cust_id <span class="kw">INT</span>)
+<span class="kw">BEGIN</span>
+  <span class="kw">SELECT</span> * <span class="kw">FROM</span> loans <span class="kw">WHERE</span> customer_id = cust_id;
+<span class="kw">END</span>$$
+<span class="kw">DELIMITER</span> ;
+
+<span class="kw">CALL</span> get_customer_loans(1);</pre>
+  </div>
+
+  <h3 class="sub">Triggers — logic that fires automatically</h3>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">25_trigger.sql</span></div>
+    <pre><span class="kw">CREATE TRIGGER</span> trg_prevent_negative_balance
+<span class="kw">BEFORE UPDATE ON</span> accounts
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+  <span class="kw">IF</span> NEW.balance &lt; -5000 <span class="kw">THEN</span>
+    <span class="kw">SIGNAL SQLSTATE</span> <span class="str">'45000'</span> <span class="kw">SET MESSAGE_TEXT</span> = <span class="str">'Balance cannot go below overdraft limit'</span>;
+  <span class="kw">END IF</span>;
+<span class="kw">END</span>;</pre>
+  </div>
+  <div class="callout warn">
+    <span class="tag">Testing implication</span>
+    <p>Triggers and stored procedures hide business logic inside the database itself, invisible to your application code and your API tests. When validating data, be aware some values may be computed or blocked by trigger logic — not just by the application layer you're automating against.</p>
+  </div>
+</section>
+
+<section class="topic" id="normal">
+  <div class="topic-head"><b>14</b><span class="col">data & schema</span><span class="col">·</span><span>normalization</span><span class="type">core</span></div>
+  <h2 class="topic-title">Normalization: designing tables that don't lie to you</h2>
+  <p class="topic-sub">Normalization removes redundant data so an update in one place can't leave stale, contradicting copies elsewhere.</p>
+  <table class="cheat">
+    <tr><th>Form</th><th>Rule</th><th>Fixes</th></tr>
+    <tr><td>1NF</td><td>Every column holds one atomic value; no repeating groups</td><td>"Products: Mouse, Keyboard" in one cell → split into separate rows</td></tr>
+    <tr><td>2NF</td><td>1NF + every non-key column depends on the <em>whole</em> primary key</td><td>In a composite key (order_id, product_id), a column like "product_name" that only depends on product_id gets moved out</td></tr>
+    <tr><td>3NF</td><td>2NF + no non-key column depends on <em>another non-key column</em></td><td>Storing both "city" and "state" when state is derivable from city → move to a separate lookup table</td></tr>
+    <tr><td>BCNF</td><td>Stricter version of 3NF for edge cases with overlapping candidate keys</td><td>Rare in interviews beyond a mention</td></tr>
+  </table>
+  <div class="callout interview">
+    <span class="tag">Interview question</span>
+    <p>"Why would you ever denormalize?" — Read-heavy reporting/analytics systems sometimes intentionally duplicate data (e.g. storing a customer's city directly on every order row) to avoid expensive joins at query time. It's a deliberate tradeoff: faster reads, at the cost of update complexity and potential inconsistency — common in data warehouses, not in transactional banking systems.</p>
+  </div>
+</section>
+<section class="topic" id="sdet">
+  <div class="topic-head"><b>15</b><span class="col">SDET zone</span><span class="col">·</span><span>SQL inside test automation</span><span class="type">senior-level</span></div>
+  <h2 class="topic-title">Where SQL actually shows up in your framework</h2>
+  <p class="topic-sub">This is the part that separates "I know SQL" from "I use SQL to make automation trustworthy." Four recurring patterns:</p>
+
+  <h3 class="sub">1. Back-end assertion after a UI/API action</h3>
+  <p class="prose">After a Karate/Playwright flow submits a loan application, don't just assert the API's 200 response — assert the row actually landed correctly in the database.</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">LoanDbAssertion.java</span></div>
+    <pre><span class="kw">public</span> <span class="kw">class</span> LoanDbValidator {
+    <span class="kw">public</span> <span class="kw">static</span> Map&lt;String, Object&gt; getLoanById(<span class="kw">int</span> loanId) <span class="kw">throws</span> SQLException {
+        <span class="kw">String</span> sql = <span class="str">"SELECT * FROM loans WHERE loan_id = ?"</span>;
+        <span class="kw">try</span> (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, loanId);
+            <span class="kw">try</span> (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                Map&lt;String, Object&gt; row = <span class="kw">new</span> HashMap&lt;&gt;();
+                row.put(<span class="str">"status"</span>, rs.getString(<span class="str">"status"</span>));
+                row.put(<span class="str">"loan_amount"</span>, rs.getBigDecimal(<span class="str">"loan_amount"</span>));
+                <span class="kw">return</span> row;
+            }
+        }
+    }
+}
+<span class="cm">// assert row.get("status").equals("APPROVED") — trust the database, not just the API response body</span></pre>
+  </div>
+
+  <h3 class="sub">2. Karate feature files calling SQL directly</h3>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">loan_db_validation.feature</span></div>
+    <pre><span class="kw">Feature</span>: Loan application persists correctly
+
+<span class="kw">Background</span>:
+  * <span class="kw">def</span> DbUtils = Java.type(<span class="str">'com.bank.utils.DbUtils'</span>)
+
+<span class="kw">Scenario</span>: Approve a loan via API and verify DB state
+  <span class="kw">Given</span> url loanServiceUrl
+  <span class="kw">And</span> request { customerId: 3, amount: 250000 }
+  <span class="kw">When</span> method post
+  <span class="kw">Then</span> status 201
+  * <span class="kw">def</span> loanId = response.loanId
+  * <span class="kw">def</span> dbRow = DbUtils.query(<span class="str">'SELECT status, loan_amount FROM loans WHERE loan_id = '</span> + loanId)
+  <span class="kw">Then</span> match dbRow[0].status == <span class="str">'APPROVED'</span>
+  <span class="kw">And</span> match dbRow[0].loan_amount == 250000</pre>
+  </div>
+
+  <h3 class="sub">3. Source-vs-target reconciliation (ETL / migration / Kafka testing)</h3>
+  <p class="prose">When events flow from an app → Kafka → a downstream database (a pattern in your Kafka+Karate work), the real test is: did every message that went in actually land correctly on the other side?</p>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">26_reconciliation.sql</span></div>
+    <pre><span class="cm">-- count mismatch check: row counts must match between source and target</span>
+<span class="kw">SELECT</span> (<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> source_db.loans) <span class="kw">AS</span> source_count,
+       (<span class="kw">SELECT COUNT</span>(*) <span class="kw">FROM</span> target_db.loans) <span class="kw">AS</span> target_count;
+
+<span class="cm">-- find rows present in source but missing in target (classic anti-join)</span>
+<span class="kw">SELECT</span> s.loan_id
+<span class="kw">FROM</span> source_db.loans s
+<span class="kw">LEFT JOIN</span> target_db.loans t <span class="kw">ON</span> s.loan_id = t.loan_id
+<span class="kw">WHERE</span> t.loan_id <span class="kw">IS NULL</span>;
+
+<span class="cm">-- find rows that exist on both sides but with different values (data-drift check)</span>
+<span class="kw">SELECT</span> s.loan_id, s.status <span class="kw">AS</span> source_status, t.status <span class="kw">AS</span> target_status
+<span class="kw">FROM</span> source_db.loans s
+<span class="kw">JOIN</span> target_db.loans t <span class="kw">ON</span> s.loan_id = t.loan_id
+<span class="kw">WHERE</span> s.status &lt;&gt; t.status <span class="kw">OR</span> s.loan_amount &lt;&gt; t.loan_amount;</pre>
+  </div>
+
+  <h3 class="sub">4. Test data setup, teardown, and isolation</h3>
+  <div class="grid3">
+    <div class="card"><h4>Seed once per suite</h4><p>Load a known dataset in <code class="mono">@BeforeSuite</code>/CI pipeline step, so results are deterministic across Jenkins runs.</p></div>
+    <div class="card"><h4>Transaction rollback per test</h4><p><code class="mono">START TRANSACTION</code> before, <code class="mono">ROLLBACK</code> after — the fastest way to keep tests independent without full re-seeding.</p></div>
+    <div class="card"><h4>Idempotent seed scripts</h4><p>Use <code class="mono">ON DUPLICATE KEY UPDATE</code> or <code class="mono">TRUNCATE</code> + re-insert so the same script can run safely on every pipeline execution.</p></div>
+  </div>
+
+  <div class="callout interview">
+    <span class="tag">The question senior SDET interviews actually ask</span>
+    <p>Not "write me a join." More often: <em>"How would you validate that 10,000 records migrated correctly from a legacy system to a new one?"</em> The strong answer covers: row-count parity, checksum/hash comparison per row (not column-by-column diffing at scale), anti-joins for missing/extra rows, and sampling + full reconciliation for high-value records (e.g. loans above a threshold) rather than relying on manual spot checks.</p>
+  </div>
+</section>
+<section class="topic" id="interview">
+  <div class="topic-head"><b>16</b><span class="col">SDET zone</span><span class="col">·</span><span>interview question bank</span><span class="type">practice</span></div>
+  <h2 class="topic-title">20 questions worth rehearsing out loud</h2>
+  <p class="topic-sub">Click to expand each answer. Try writing the query yourself first.</p>
+
+  <div class="qbank">
+    <details class="qitem"><summary>1. Find the second highest salary without using LIMIT/OFFSET</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT MAX</span>(salary) <span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary &lt; (<span class="kw">SELECT MAX</span>(salary) <span class="kw">FROM</span> employees);</pre></div></div>
+    </details>
+    <details class="qitem"><summary>2. Find duplicate rows in a table</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT</span> full_name, city, <span class="kw">COUNT</span>(*)
+<span class="kw">FROM</span> customers
+<span class="kw">GROUP BY</span> full_name, city
+<span class="kw">HAVING COUNT</span>(*) &gt; 1;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>3. Delete duplicate rows, keeping only the lowest id</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">DELETE</span> c1 <span class="kw">FROM</span> customers c1
+<span class="kw">JOIN</span> customers c2
+  <span class="kw">ON</span> c1.full_name = c2.full_name <span class="kw">AND</span> c1.city = c2.city <span class="kw">AND</span> c1.customer_id &gt; c2.customer_id;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>4. Department-wise top 2 earners</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT</span> * <span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> emp_name, dept_id, salary,
+    <span class="kw">DENSE_RANK</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> dept_id <span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> rnk
+  <span class="kw">FROM</span> employees
+) t <span class="kw">WHERE</span> rnk &lt;= 2;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>5. Customers who placed orders in every month they had activity (no gaps)</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">Compare <code class="mono">COUNT(DISTINCT MONTH(order_date))</code> against the span between MIN and MAX month for that customer — if they're equal, there are no gaps.</p></div>
+    </details>
+    <details class="qitem"><summary>6. Difference between WHERE and HAVING</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">WHERE filters rows before grouping/aggregation; HAVING filters groups after aggregation. WHERE can't reference an aggregate function result — HAVING can.</p></div>
+    </details>
+    <details class="qitem"><summary>7. Difference between UNION and JOIN</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">JOIN combines columns from two tables side-by-side based on a related key. UNION stacks two result sets vertically — both need the same column count/types, and there's no "matching" involved at all.</p></div>
+    </details>
+    <details class="qitem"><summary>8. Difference between CHAR and VARCHAR</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">CHAR(n) always stores exactly n characters, padding shorter values with spaces — faster for fixed-length data. VARCHAR(n) stores only the actual characters used plus a small length prefix — more storage-efficient for variable-length text.</p></div>
+    </details>
+    <details class="qitem"><summary>9. Find employees who earn more than their manager</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT</span> e.emp_name <span class="kw">AS</span> employee, e.salary, m.emp_name <span class="kw">AS</span> manager, m.salary <span class="kw">AS</span> manager_salary
+<span class="kw">FROM</span> employees e
+<span class="kw">JOIN</span> employees m <span class="kw">ON</span> e.manager_id = m.emp_id
+<span class="kw">WHERE</span> e.salary &gt; m.salary;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>10. Pivot rows into columns (e.g. loan status counts as columns)</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT</span>
+  <span class="kw">SUM</span>(<span class="kw">CASE WHEN</span> status = <span class="str">'APPROVED'</span> <span class="kw">THEN</span> 1 <span class="kw">ELSE</span> 0 <span class="kw">END</span>) <span class="kw">AS</span> approved,
+  <span class="kw">SUM</span>(<span class="kw">CASE WHEN</span> status = <span class="str">'PENDING'</span>  <span class="kw">THEN</span> 1 <span class="kw">ELSE</span> 0 <span class="kw">END</span>) <span class="kw">AS</span> pending,
+  <span class="kw">SUM</span>(<span class="kw">CASE WHEN</span> status = <span class="str">'REJECTED'</span> <span class="kw">THEN</span> 1 <span class="kw">ELSE</span> 0 <span class="kw">END</span>) <span class="kw">AS</span> rejected
+<span class="kw">FROM</span> loans;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>11. What is a CASE expression used for?</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">Inline conditional logic inside a SELECT — SQL's version of if/else. Common uses: bucketing values (credit_score into "poor/fair/good"), pivot-style aggregation, and conditional formatting of output columns.</p></div>
+    </details>
+    <details class="qitem"><summary>12. Difference between a primary key and a unique key</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">A table can have only one PRIMARY KEY (and it can't be NULL), but multiple UNIQUE keys — and UNIQUE columns can each hold one NULL, since NULL is never considered equal to anything, even another NULL.</p></div>
+    </details>
+    <details class="qitem"><summary>13. Explain a clustered vs non-clustered index</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">A clustered index determines the physical row order on disk — a table has at most one (in MySQL/InnoDB, it's built on the primary key automatically). A non-clustered index is a separate structure that just points back to the row's location, and a table can have many.</p></div>
+    </details>
+    <details class="qitem"><summary>14. Find the total order value per customer segment, only for segments with 2+ customers</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT</span> ec.segment, <span class="kw">COUNT</span>(<span class="kw">DISTINCT</span> ec.cust_id) <span class="kw">AS</span> customers, <span class="kw">SUM</span>(o.qty * p.price) <span class="kw">AS</span> segment_total
+<span class="kw">FROM</span> ec_customers ec
+<span class="kw">JOIN</span> orders o <span class="kw">ON</span> o.cust_id = ec.cust_id
+<span class="kw">JOIN</span> products p <span class="kw">ON</span> p.product_id = o.product_id
+<span class="kw">GROUP BY</span> ec.segment
+<span class="kw">HAVING COUNT</span>(<span class="kw">DISTINCT</span> ec.cust_id) &gt;= 2;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>15. Why is SELECT * discouraged in production queries?</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">It pulls unnecessary columns (wasting I/O and network), breaks if the table schema changes column order, defeats "covering index" optimizations, and makes intent unclear to the next reader.</p></div>
+    </details>
+    <details class="qitem"><summary>16. What is a deadlock, and how would you reproduce one for testing?</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">Two transactions each hold a lock the other needs, so neither can proceed. Reproduce it by having two connections update the same two rows in opposite order inside open transactions — MySQL's InnoDB will detect it and abort one automatically with a deadlock error, which you can assert on.</p></div>
+    </details>
+    <details class="qitem"><summary>17. Write a query using LAG to flag suspicious jumps (fraud-style check)</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT</span> account_id, balance,
+  balance - <span class="kw">LAG</span>(balance) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> account_id <span class="kw">ORDER BY</span> account_id) <span class="kw">AS</span> balance_jump
+<span class="kw">FROM</span> accounts;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>18. Difference between EXISTS and IN</summary>
+      <div class="qbody"><p style="font-size:13.5px;color:var(--muted);margin:8px 0 12px;">EXISTS stops scanning as soon as it finds one matching row and works well with correlated subqueries; IN materializes the full list first. For large subquery result sets, EXISTS is typically faster; for small static lists, IN reads more simply.</p></div>
+    </details>
+    <details class="qitem"><summary>19. Find gaps in a sequential ID column (missing loan_ids)</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="kw">SELECT</span> (l1.loan_id + 1) <span class="kw">AS</span> missing_id
+<span class="kw">FROM</span> loans l1
+<span class="kw">LEFT JOIN</span> loans l2 <span class="kw">ON</span> l1.loan_id + 1 = l2.loan_id
+<span class="kw">WHERE</span> l2.loan_id <span class="kw">IS NULL</span>
+<span class="kw">ORDER BY</span> missing_id;</pre></div></div>
+    </details>
+    <details class="qitem"><summary>20. How would you test for orphaned foreign keys as a data-quality check?</summary>
+      <div class="qbody"><div class="code"><div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><pre><span class="cm">-- accounts pointing to a customer_id that no longer exists</span>
+<span class="kw">SELECT</span> a.* <span class="kw">FROM</span> accounts a
+<span class="kw">LEFT JOIN</span> customers c <span class="kw">ON</span> a.customer_id = c.customer_id
+<span class="kw">WHERE</span> c.customer_id <span class="kw">IS NULL</span>;</pre></div></div>
+    </details>
+  </div>
+</section>
+<section class="topic" id="cheat" style="border-bottom:none;">
+  <div class="topic-head"><b>17</b><span class="col">reference</span><span class="col">·</span><span>cheat sheet</span><span class="type">quick recall</span></div>
+  <h2 class="topic-title">One page to review before an interview</h2>
+
+  <h3 class="sub">Query clause order (write vs execute)</h3>
+  <table class="cheat">
+    <tr><th>You write it as</th><th>MySQL executes it as</th></tr>
+    <tr><td><code>SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT</code></td><td><code>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</code></td></tr>
+  </table>
+
+  <h3 class="sub">Joins at a glance</h3>
+  <table class="cheat">
+    <tr><th>Join</th><th>Keeps</th></tr>
+    <tr><td>INNER JOIN</td><td>Only matching rows from both sides</td></tr>
+    <tr><td>LEFT JOIN</td><td>All of left + matches from right (NULL if none)</td></tr>
+    <tr><td>RIGHT JOIN</td><td>All of right + matches from left (NULL if none)</td></tr>
+    <tr><td>FULL OUTER JOIN</td><td>Everything from both, NULLs where unmatched (emulate via UNION in MySQL)</td></tr>
+    <tr><td>CROSS JOIN</td><td>Every combination — no ON clause</td></tr>
+    <tr><td>SELF JOIN</td><td>A table matched against itself via aliases</td></tr>
+  </table>
+
+  <h3 class="sub">Function families</h3>
+  <table class="cheat">
+    <tr><th>Category</th><th>Examples</th></tr>
+    <tr><td>Aggregate</td><td><code>COUNT SUM AVG MIN MAX GROUP_CONCAT</code></td></tr>
+    <tr><td>String</td><td><code>CONCAT SUBSTRING TRIM UPPER LOWER LENGTH REPLACE</code></td></tr>
+    <tr><td>Date</td><td><code>NOW() CURDATE() DATEDIFF DATE_ADD DATE_FORMAT EXTRACT</code></td></tr>
+    <tr><td>Window</td><td><code>ROW_NUMBER RANK DENSE_RANK LAG LEAD NTILE SUM() OVER()</code></td></tr>
+    <tr><td>Conditional</td><td><code>CASE WHEN COALESCE IFNULL NULLIF</code></td></tr>
+  </table>
+
+  <h3 class="sub">COALESCE / IFNULL — handling NULLs gracefully</h3>
+  <div class="code">
+    <div class="code-bar"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span><span class="label">27_null_handling.sql</span></div>
+    <pre><span class="cm">-- show 'Not disbursed yet' instead of a raw NULL</span>
+<span class="kw">SELECT</span> loan_id, <span class="kw">COALESCE</span>(disbursed_date, <span class="str">'Not disbursed yet'</span>) <span class="kw">AS</span> disbursed_display
+<span class="kw">FROM</span> loans;</pre>
+  </div>
+
+  <a class="backtotop" href="#schema">↑ back to section 01</a>
+</section>
+
+<footer class="end">
+  <p>Built as a working reference — copy any block straight into a MySQL client (or Workbench / DBeaver) against the three seed schemas in section 01 to try it yourself.</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

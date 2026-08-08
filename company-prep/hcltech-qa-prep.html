@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCLTech QA Engineer — Interview Prep</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0a0e14;
+    --panel:#0f141c;
+    --panel-2:#131a24;
+    --border:#1e2733;
+    --border-soft:#171f29;
+    --text:#c9d3de;
+    --text-dim:#6b7889;
+    --text-bright:#eef2f6;
+    --amber:#e3b341;
+    --amber-dim:#4a3c1c;
+    --cyan:#56c8d8;
+    --cyan-dim:#1a3b40;
+    --magenta:#c792ea;
+    --magenta-dim:#3a2a44;
+    --green:#7ee787;
+    --red:#f28b82;
+    --code-bg:#080b10;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+
+  ::selection{ background:var(--amber-dim); color:var(--text-bright); }
+
+  /* ---------- Layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns: 300px 1fr;
+    min-height:100vh;
+  }
+  @media (max-width: 860px){
+    .shell{ grid-template-columns: 1fr; }
+    .sidebar{ position:relative; height:auto; border-right:none; border-bottom:1px solid var(--border); }
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    padding:22px 18px 30px;
+  }
+  .brand{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text-dim);
+    letter-spacing:.08em;
+    margin-bottom:2px;
+  }
+  .brand strong{ color:var(--amber); }
+  .role-title{
+    font-family:var(--mono);
+    font-weight:600;
+    font-size:16px;
+    color:var(--text-bright);
+    margin:2px 0 18px;
+  }
+
+  .progress-wrap{
+    margin-bottom:20px;
+    padding:12px 14px;
+    background:var(--panel-2);
+    border:1px solid var(--border-soft);
+    border-radius:6px;
+  }
+  .progress-label{
+    display:flex; justify-content:space-between;
+    font-family:var(--mono); font-size:11px; color:var(--text-dim);
+    margin-bottom:8px;
+  }
+  #progressCount{ color:var(--green); }
+  .progress-bar{
+    height:6px; background:#0a0f16; border-radius:3px; overflow:hidden;
+    border:1px solid var(--border-soft);
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--amber), var(--green));
+    transition:width .3s ease;
+  }
+
+  .search-box{
+    width:100%;
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:var(--text-bright);
+    font-family:var(--mono);
+    font-size:13px;
+    padding:9px 10px;
+    margin-bottom:16px;
+  }
+  .search-box:focus{ outline:none; border-color:var(--amber); }
+  .search-box::placeholder{ color:var(--text-dim); }
+
+  .filter-group{ margin-bottom:18px; }
+  .filter-title{
+    font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+    color:var(--text-dim); text-transform:uppercase; margin-bottom:8px;
+  }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:6px; }
+  .chip{
+    font-family:var(--mono); font-size:11px;
+    padding:5px 9px; border-radius:20px;
+    border:1px solid var(--border);
+    background:transparent; color:var(--text-dim);
+    cursor:pointer; user-select:none;
+    transition:all .15s ease;
+  }
+  .chip.active[data-round="r1"]{ background:var(--amber-dim); color:var(--amber); border-color:var(--amber); }
+  .chip.active[data-round="r2"]{ background:var(--cyan-dim); color:var(--cyan); border-color:var(--cyan); }
+  .chip.active[data-round="all"]{ background:#1c2430; color:var(--text-bright); border-color:var(--text-dim); }
+
+  .toc{ list-style:none; margin:0; padding:0; }
+  .toc-item{
+    font-family:var(--mono); font-size:12px;
+    padding:6px 8px; border-radius:4px;
+    color:var(--text-dim); cursor:pointer;
+    display:flex; gap:8px; align-items:baseline;
+    border-left:2px solid transparent;
+  }
+  .toc-item:hover{ color:var(--text-bright); background:var(--panel-2); }
+  .toc-item .idx{ color:var(--text-dim); flex-shrink:0; }
+  .toc-item.done .idx{ color:var(--green); }
+  .toc-item.done .lbl{ text-decoration:line-through; color:var(--text-dim); }
+
+  /* ---------- Main ---------- */
+  .main{ padding:36px 44px 90px; max-width:900px; }
+  @media (max-width: 860px){ .main{ padding:24px 18px 70px; } }
+
+  .page-head{ margin-bottom:34px; }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; color:var(--amber);
+    letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px;
+  }
+  h1{
+    font-family:var(--mono); font-size:28px; font-weight:700;
+    color:var(--text-bright); margin:0 0 10px; line-height:1.25;
+  }
+  .subhead{ color:var(--text-dim); font-size:14.5px; max-width:640px; }
+
+  .round-banner{
+    display:flex; align-items:center; gap:12px;
+    font-family:var(--mono); font-size:13px;
+    padding:12px 16px; margin:34px 0 18px;
+    border-radius:6px; border:1px solid var(--border);
+  }
+  .round-banner.r1{ background:linear-gradient(90deg, var(--amber-dim), transparent); border-color:var(--amber-dim); color:var(--amber); }
+  .round-banner.r2{ background:linear-gradient(90deg, var(--cyan-dim), transparent); border-color:var(--cyan-dim); color:var(--cyan); }
+  .round-banner .count{ color:var(--text-dim); font-weight:400; }
+
+  /* Question card */
+  .qcard{
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--panel);
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .qcard[data-round="r1"]{ border-left:3px solid var(--amber); }
+  .qcard[data-round="r2"]{ border-left:3px solid var(--cyan); }
+
+  .qhead{
+    display:flex; align-items:flex-start; gap:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    user-select:none;
+  }
+  .qcheck{
+    flex-shrink:0; margin-top:2px;
+    width:18px; height:18px;
+    border:1px solid var(--text-dim);
+    border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:12px; color:transparent;
+    background:var(--code-bg);
+  }
+  .qcard.done .qcheck{ background:var(--green); border-color:var(--green); color:#08110a; }
+  .qtag{
+    font-family:var(--mono); font-size:10px; letter-spacing:.05em;
+    color:var(--text-dim); text-transform:uppercase;
+    margin-bottom:4px; display:block;
+  }
+  .qtext{
+    font-size:15px; font-weight:600; color:var(--text-bright);
+    flex:1;
+  }
+  .qcard.done .qtext{ color:var(--text-dim); }
+  .chevron{
+    font-family:var(--mono); color:var(--text-dim); flex-shrink:0;
+    transition:transform .2s ease; margin-top:2px;
+  }
+  .qcard.open .chevron{ transform:rotate(90deg); }
+
+  .qbody{
+    max-height:0; overflow:hidden;
+    transition:max-height .25s ease;
+    padding:0 16px;
+    border-top:1px solid transparent;
+  }
+  .qcard.open .qbody{ border-top:1px solid var(--border-soft); }
+
+  .qbody-inner{ padding:16px 2px 20px; font-size:14.5px; color:var(--text); }
+  .qbody-inner p{ margin:0 0 12px; }
+  .qbody-inner ul{ margin:0 0 12px; padding-left:20px; }
+  .qbody-inner li{ margin-bottom:6px; }
+  .qbody-inner strong{ color:var(--text-bright); }
+  .qbody-inner code.inline{
+    font-family:var(--mono); background:var(--code-bg);
+    padding:1px 6px; border-radius:4px; font-size:13px; color:var(--amber);
+    border:1px solid var(--border-soft);
+  }
+
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:14px 16px;
+    overflow-x:auto;
+    margin:0 0 14px;
+  }
+  pre code{
+    font-family:var(--mono); font-size:12.5px; line-height:1.6;
+    color:#d1dae3; white-space:pre;
+  }
+  .lang-tag{
+    font-family:var(--mono); font-size:10px; color:var(--text-dim);
+    text-transform:uppercase; letter-spacing:.08em;
+    margin-bottom:6px; display:block;
+  }
+
+  .note-box{
+    border-left:3px solid var(--cyan);
+    background:var(--cyan-dim);
+    padding:10px 14px; border-radius:0 6px 6px 0;
+    font-size:13.5px; color:#bfeef4; margin:0 0 14px;
+  }
+  .note-box strong{ color:var(--cyan); }
+
+  footer.pagefoot{
+    margin-top:50px; padding-top:20px; border-top:1px solid var(--border-soft);
+    font-family:var(--mono); font-size:12px; color:var(--text-dim);
+  }
+
+  .no-results{
+    display:none; text-align:center; padding:60px 20px;
+    color:var(--text-dim); font-family:var(--mono); font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><strong>&gt;_</strong> qa-prep.log</div>
+    <div class="role-title">HCLTech · QA Engineer</div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>REVIEWED</span>
+        <span><span id="progressCount">0</span>/26</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <input type="text" class="search-box" id="searchBox" placeholder="grep questions...">
+
+    <div class="filter-group">
+      <div class="filter-title">Filter by round</div>
+      <div class="chip-row">
+        <button class="chip active" data-round="all">all (26)</button>
+        <button class="chip" data-round="r1">round 1 (13)</button>
+        <button class="chip" data-round="r2">round 2 (13)</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-title">Jump to</div>
+      <ul class="toc" id="tocList"></ul>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-head">
+      <div class="eyebrow">Interview readiness · saved locally</div>
+      <h1>HCLTech — QA Engineer<br>(5+ Years Experience)</h1>
+      <div class="subhead">
+        Full question set from a reported HCLTech QA Engineer loop — Round 1 (technical fundamentals),
+        Round 2 (framework &amp; production-debugging depth), Round 3 (HR/behavioral). Click a question to expand it,
+        check it off once you can answer it cold, and use the sidebar to filter or jump around. Progress is saved
+        in this browser.
+      </div>
+    </div>
+
+    <div id="content"></div>
+    <div class="no-results" id="noResults">no matches // try a different query</div>
+
+    <footer class="pagefoot">
+      round 3 (HR) — salary discussion + "why HCLTech" + behavioral stories. no fixed script here by design;
+      prep this round conversationally once rounds 1–2 are solid.
+    </footer>
+  </main>
+</div>
+
+<script>
+const DATA = [
+  // ---------------- ROUND 1 ----------------
+  {round:'r1', tag:'Coding · Java', q:'Find the intersection of two arrays.', a: `
+    <span class="lang-tag">java</span>
+    <pre><code>import java.util.*;
+
+public class ArrayIntersection {
+    public static int[] intersection(int[] arr1, int[] arr2) {
+        Set&lt;Integer&gt; set1 = new HashSet&lt;&gt;();
+        for (int num : arr1) set1.add(num);
+
+        Set&lt;Integer&gt; result = new LinkedHashSet&lt;&gt;();
+        for (int num : arr2) {
+            if (set1.contains(num)) result.add(num);
+        }
+
+        int[] resArr = new int[result.size()];
+        int i = 0;
+        for (int num : result) resArr[i++] = num;
+        return resArr;
+    }
+
+    public static void main(String[] args) {
+        int[] a = {1, 2, 2, 3, 4};
+        int[] b = {2, 3, 3, 5};
+        System.out.println(Arrays.toString(intersection(a, b))); // [2, 3]
+    }
+}</code></pre>
+    <p>Time complexity: O(n + m). If duplicates in the result should match the minimum count between both arrays
+    (multiset intersection), use two <code class="inline">HashMap&lt;Integer,Integer&gt;</code> counters instead of <code class="inline">Set</code>.</p>
+  `},
+  {round:'r1', tag:'Coding · Java', q:'Count the number of words in a sentence.', a: `
+    <span class="lang-tag">java</span>
+    <pre><code>public class WordCount {
+    public static int countWords(String sentence) {
+        if (sentence == null || sentence.trim().isEmpty()) return 0;
+        String[] words = sentence.trim().split("\\\\s+");
+        return words.length;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(countWords("  This   is a   sentence ")); // 4
+    }
+}</code></pre>
+    <p>Key point interviewers probe: handling multiple spaces (<code class="inline">\\s+</code> regex), leading/trailing
+    whitespace (<code class="inline">.trim()</code>), and the empty-string edge case.</p>
+  `},
+  {round:'r1', tag:'Mobile / MDM', q:'Write test cases for Mobile Device Enrollment.', a: `
+    <p><strong>Positive</strong></p>
+    <ul>
+      <li>Enroll a device with valid credentials/QR code/enrollment token — device shows as "enrolled" in the console within SLA.</li>
+      <li>Enrollment via each supported method (email invite, QR code, DEP/Zero-touch, manual enrollment).</li>
+      <li>Correct profile/policy pushed immediately post-enrollment.</li>
+      <li>Enrollment status syncs correctly to the admin console and any downstream reporting/DB.</li>
+    </ul>
+    <p><strong>Negative</strong></p>
+    <ul>
+      <li>Enrollment with expired/invalid token.</li>
+      <li>No network connectivity mid-process (should fail gracefully, retry, or resume).</li>
+      <li>Duplicate enrollment of an already-enrolled device.</li>
+      <li>Enrollment attempt on an unsupported OS version.</li>
+      <li>Insufficient storage/battery (if enforced).</li>
+    </ul>
+    <p><strong>Boundary / Edge</strong></p>
+    <ul>
+      <li>OS version at minimum supported threshold and just below it.</li>
+      <li>Enrollment token expiry boundary (1 second before/after expiry).</li>
+      <li>Bulk enrollment at scale (concurrency/load).</li>
+    </ul>
+    <p><strong>Security</strong></p>
+    <ul>
+      <li>Enrollment enforces required certificate/mTLS handshake.</li>
+      <li>Un-enrollment properly wipes managed profile/data (full wipe vs. selective wipe, per policy).</li>
+      <li>Compliance re-check triggers correctly if security posture changes post-enrollment (e.g., jailbreak/root detection).</li>
+    </ul>
+    <p><strong>Cross-platform</strong></p>
+    <ul>
+      <li>Enrollment flow parity and OS-specific differences (Android Enterprise Work Profile vs. iOS Supervised/MDM Profile).</li>
+    </ul>
+  `},
+  {round:'r1', tag:'Mobile / Cross-platform', q:'How would you test an application on both Android and iOS?', a: `
+    <ul>
+      <li><strong>Platform-specific test matrix</strong> — OS version range, device tiers, screen sizes/densities, manufacturer variants (Android) vs. device generations (iOS).</li>
+      <li><strong>Native UI differences</strong> — back button/gesture nav vs. swipe-back; runtime permission dialogs vs. ATT/permission prompts; notification handling differences.</li>
+      <li><strong>Automation tooling</strong> — Appium (cross-platform) with platform-specific capabilities, or native Espresso (Android) + XCUITest (iOS) for deeper native validation.</li>
+      <li><strong>Real devices vs. emulators/simulators</strong> — functional flows can run on simulators for speed, but performance, camera/sensor, push notification, and background/foreground transitions should be validated on real devices via a device farm (BrowserStack, Sauce Labs, Firebase Test Lab).</li>
+      <li><strong>Platform-specific policy/MDM behavior</strong> — iOS Supervised mode restrictions differ from Android Enterprise Work Profile restrictions; enforcement tests must be written per platform.</li>
+      <li><strong>Build channel differences</strong> — TestFlight vs. Play Console internal/beta tracks can behave differently from production builds; test the actual distribution channel.</li>
+      <li><strong>Regression strategy</strong> — shared cases for API-driven business logic, platform-specific suite for OS-native behaviors (biometrics, deep links, push token registration).</li>
+    </ul>
+  `},
+  {round:'r1', tag:'Process', q:'Explain the Defect Life Cycle.', a: `
+    <p><strong>New → Assigned → Open/In Progress → Fixed → Retest → Verified &amp; Closed</strong> (or Reopened if retest fails)</p>
+    <p>Additional states: Duplicate, Rejected (works as designed), Deferred (valid but pushed to a later release), Cannot Reproduce.</p>
+    <ul>
+      <li><strong>New</strong> — tester logs the defect after finding it.</li>
+      <li><strong>Assigned</strong> — triaged and assigned to a developer, severity/priority set.</li>
+      <li><strong>Open/In Progress</strong> — developer is actively working the fix.</li>
+      <li><strong>Fixed</strong> — fix complete, moved to QA build.</li>
+      <li><strong>Retest</strong> — tester validates the fix against the original repro steps.</li>
+      <li><strong>Verified/Closed</strong> — fix confirmed working, defect closed.</li>
+      <li><strong>Reopened</strong> — retest fails, goes back to Open with new evidence.</li>
+    </ul>
+    <p>Severity (impact on the system) and Priority (urgency of fix) are tracked independently — a cosmetic bug can be
+    High Priority (visible on a demo screen) with Low Severity, and vice versa.</p>
+  `},
+  {round:'r1', tag:'Process', q:'What information should every Jira bug contain?', a: `
+    <ul>
+      <li><strong>Summary</strong> — concise, specific title, not "Login broken."</li>
+      <li><strong>Environment</strong> — build version, OS/browser, environment (QA/Staging/Prod), device if mobile.</li>
+      <li><strong>Steps to reproduce</strong> — numbered, exact, reproducible by anyone.</li>
+      <li><strong>Expected vs. actual result.</strong></li>
+      <li><strong>Severity &amp; Priority.</strong></li>
+      <li><strong>Evidence</strong> — screenshots, screen recording, logs, HAR file/API request-response, stack trace.</li>
+      <li><strong>Preconditions</strong> — test data/account state needed.</li>
+      <li><strong>Reproducibility</strong> — always / intermittent / once, with frequency if known.</li>
+      <li><strong>Linked test case / story / epic</strong> for traceability.</li>
+      <li><strong>Assignee, reporter, labels/components</strong> for routing and reporting.</li>
+      <li><strong>API payloads or DB state attachments</strong> if backend-related — this is what separates a fast-fixable report from a back-and-forth thread.</li>
+    </ul>
+  `},
+  {round:'r1', tag:'API · Postman', q:'Write a Postman test to validate response time.', a: `
+    <span class="lang-tag">javascript</span>
+    <pre><code>pm.test("Response time is under 500ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(500);
+});
+
+// Combined with status code check
+pm.test("Status code is 200 and response time is acceptable", function () {
+    pm.response.to.have.status(200);
+    pm.expect(pm.response.responseTime).to.be.below(500);
+});</code></pre>
+    <p>For percentile-based SLAs across a collection run, log <code class="inline">pm.response.responseTime</code> to a
+    collection variable per request and aggregate in Newman's JSON reporter output for p90/p95 analysis, rather than
+    relying on a single-request assertion.</p>
+  `},
+  {round:'r1', tag:'API + Backend', q:'How do you verify backend updates after an API call?', a: `
+    <ul>
+      <li><strong>Direct DB validation</strong> — query the underlying table(s) post-call to confirm the row was inserted/updated/deleted correctly (JDBC in a Java test, or a DB assertion step in REST Assured/TestNG).</li>
+      <li><strong>Follow-up GET call</strong> — hit a read endpoint after the write and assert the state reflects the change; useful when direct DB access isn't available.</li>
+      <li><strong>Message queue/event verification</strong> — for async updates (Kafka, SQS), consume from the topic/queue and assert the event payload — critical when the API returns 200 before downstream processing completes.</li>
+      <li><strong>Log correlation</strong> — trace a correlation/trace ID from the request through logs, especially for eventual consistency scenarios.</li>
+      <li><strong>Timing</strong> — poll with a retry/timeout mechanism for async updates rather than a fixed sleep, to avoid flaky tests from race conditions.</li>
+    </ul>
+  `},
+  {round:'r1', tag:'Coding · Selenium', q:'Write a Selenium script to verify broken links.', a: `
+    <span class="lang-tag">java</span>
+    <pre><code>import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+
+public class BrokenLinkChecker {
+    public static void main(String[] args) throws Exception {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://example.com");
+
+        List&lt;WebElement&gt; links = driver.findElements(By.tagName("a"));
+        System.out.println("Total links found: " + links.size());
+
+        for (WebElement link : links) {
+            String url = link.getAttribute("href");
+            if (url == null || url.isEmpty() || url.startsWith("javascript:")) continue;
+
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setConnectTimeout(5000);
+                connection.setRequestMethod("HEAD");
+                connection.connect();
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode &gt;= 400) {
+                    System.out.println("Broken link: " + url + " -&gt; " + responseCode);
+                } else {
+                    System.out.println("OK: " + url + " -&gt; " + responseCode);
+                }
+            } catch (Exception e) {
+                System.out.println("Error accessing: " + url + " -&gt; " + e.getMessage());
+            }
+        }
+        driver.quit();
+    }
+}</code></pre>
+    <div class="note-box"><strong>Interview note:</strong> mention that raw <code class="inline">HttpURLConnection</code>
+    link-checking is faster than clicking through the UI with Selenium (which would need navigation + back for each
+    link) — this is a common efficiency follow-up.</div>
+  `},
+  {round:'r1', tag:'SQL', q:'Write an SQL query to find unmatched records.', a: `
+    <span class="lang-tag">sql</span>
+    <pre><code>-- Records in TableA that have no matching record in TableB
+SELECT a.*
+FROM TableA a
+LEFT JOIN TableB b ON a.id = b.a_id
+WHERE b.a_id IS NULL;</code></pre>
+    <pre><code>-- Alternative using NOT EXISTS (often more efficient on large tables)
+SELECT a.*
+FROM TableA a
+WHERE NOT EXISTS (
+    SELECT 1 FROM TableB b WHERE b.a_id = a.id
+);</code></pre>
+    <pre><code>-- Full mismatch both directions (FULL OUTER JOIN — reconciliation-style)
+SELECT a.id AS a_id, b.a_id AS b_id
+FROM TableA a
+FULL OUTER JOIN TableB b ON a.id = b.a_id
+WHERE a.id IS NULL OR b.a_id IS NULL;</code></pre>
+    <p>The <code class="inline">FULL OUTER JOIN</code> version is the one to reach for in reconciliation testing
+    (source vs. target comparison) — it surfaces gaps in both directions in a single query.</p>
+  `},
+  {round:'r1', tag:'Logs / Debugging', q:'How do you analyze application logs?', a: `
+    <ul>
+      <li><strong>Scope first</strong> — correlate timestamp/session ID/transaction ID from the failure to narrow the window instead of scanning entire files.</li>
+      <li><strong>Log levels</strong> — filter to ERROR/WARN first; drop to INFO/DEBUG only when the error trace alone doesn't explain root cause.</li>
+      <li><strong>Cross-service correlation</strong> — use a trace ID (if propagated via headers) to stitch logs across multiple microservices for one request.</li>
+      <li><strong>Tooling</strong> — Splunk/ELK/Kibana/Grafana for centralized search and filtering; <code class="inline">grep</code>/<code class="inline">awk</code> for quick local parsing.</li>
+      <li><strong>Pattern recognition</strong> — stack traces, exception types, HTTP status codes, and timing gaps (a large delay between two log lines often points to the bottleneck).</li>
+      <li><strong>Cross-reference with monitoring</strong> — pair logs with APM/metrics dashboards to confirm whether the issue is code-level or infrastructure-level.</li>
+    </ul>
+  `},
+  {round:'r1', tag:'Testing Methodology', q:'Explain Exploratory Testing with a real example.', a: `
+    <p>Exploratory testing is simultaneous learning, test design, and execution — instead of following pre-written
+    scripted steps, the tester actively investigates the app, using each result to inform the next action.</p>
+    <p><strong>Example:</strong> testing a new "bulk device policy update" feature with no formal test cases yet.
+    Instead of waiting for scripted cases, you'd explore: select a small batch of devices and apply a policy — does
+    it apply correctly? Try devices with an already-conflicting policy — what happens on conflict? Try 0 devices,
+    then the max batch size, then a mix of online and offline devices. Each result shapes the next action — e.g.,
+    discovering offline devices silently fail leads to exploring "sync on reconnect" behavior, which wasn't part of
+    any written test case. This is typically time-boxed (session-based, e.g., 60–90 minute charters) with notes/screen
+    recordings captured live, and is most valuable for new features, edge cases scripted tests miss, and usability issues.</p>
+  `},
+  {round:'r1', tag:'Automation Strategy', q:'Which production defects should be automated first?', a: `
+    <p>Prioritize by:</p>
+    <ul>
+      <li><strong>Recurrence risk</strong> — defects tied to core, frequently-touched flows (login, enrollment, policy push) likely to regress with future changes.</li>
+      <li><strong>High business impact</strong> — anything that caused a customer-facing outage or SLA breach.</li>
+      <li><strong>High manual retest cost</strong> — multi-step, cross-system flows that are slow or error-prone to retest by hand.</li>
+      <li><strong>Frequency in regression cycles</strong> — defect areas that keep resurfacing across releases.</li>
+      <li><strong>Low volatility</strong> — automate flows unlikely to have requirements change soon; automating a UI about to be redesigned wastes effort.</li>
+    </ul>
+    <p><strong>Deprioritize:</strong> one-off defects with a narrow, unlikely-to-recur trigger, or low-regression-risk cosmetic issues.</p>
+  `},
+
+  // ---------------- ROUND 2 ----------------
+  {round:'r2', tag:'Framework Architecture', q:'Explain your automation framework architecture.', a: `
+    <p>Standard structure to describe (adapt to what you've actually built):</p>
+    <ul>
+      <li><strong>Driver/Config layer</strong> — WebDriver/Appium driver factory, environment config management, thread-safe driver instantiation via <code class="inline">ThreadLocal</code> for parallel execution.</li>
+      <li><strong>Page Object layer</strong> — POM (or Screenplay pattern for complex flows), one class per page/screen, exposing actions, not locators.</li>
+      <li><strong>Utility layer</strong> — reusable helpers: waits, data generation, API client wrappers, DB utility, reporting hooks.</li>
+      <li><strong>Test layer</strong> — TestNG/JUnit classes or Cucumber feature files + step definitions, organized by module/feature.</li>
+      <li><strong>Data layer</strong> — externalized test data (JSON/Excel/DB-driven), no hardcoded values in test logic.</li>
+      <li><strong>Reporting/CI layer</strong> — Extent Reports/Allure integrated with Jenkins/GitHub Actions, screenshots on failure, retry-on-failure listener for flaky tests.</li>
+      <li><strong>Cross-cutting</strong> — logging (Log4j), listeners for setup/teardown, config-driven multi-environment execution.</li>
+    </ul>
+    <div class="note-box"><strong>If pushed deeper:</strong> describe how UI, API, and DB validation layers plug into the
+    same framework so a single test can assert across all three (UI action → API confirms state → DB confirms persistence).</div>
+  `},
+  {round:'r2', tag:'Regression Strategy', q:'How would you design a regression suite for an MDM product?', a: `
+    <ul>
+      <li><strong>Layer by risk</strong> — core flows (enrollment, policy push, compliance check, un-enrollment) as P0, run every build. Secondary flows (reporting, bulk actions, app deployment) as P1, run nightly. Edge/cosmetic as P2, pre-release only.</li>
+      <li><strong>Platform matrix</strong> — separate suite segments for Android and iOS since policy enforcement differs (Android Enterprise vs. Apple MDM protocol), but share API-layer logic where the backend contract is common.</li>
+      <li><strong>State-based grouping</strong> — unenrolled, enrolled/compliant, enrolled/non-compliant, offline — policy behavior differs by state.</li>
+      <li><strong>Data variation</strong> — include ownership models (BYOD vs. corporate-owned) if policy scope differs.</li>
+      <li><strong>Execution strategy</strong> — fast, parallelizable API/backend checks on every commit; UI/device-farm tests nightly or pre-release; a 5–10 minute smoke subset gates every merge.</li>
+      <li><strong>Maintainability</strong> — tag tests (<code class="inline">@smoke</code>, <code class="inline">@regression</code>, <code class="inline">@android</code>, <code class="inline">@ios</code>) so subsets can be triggered independently in CI.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Environment Management', q:'How do you manage multiple test environments?', a: `
+    <ul>
+      <li>Externalize environment-specific values (base URLs, DB connection strings, credentials, feature flags) into per-environment config files (<code class="inline">qa.properties</code>, <code class="inline">staging.properties</code>, <code class="inline">prod.properties</code>) or environment variables/CI parameters — never hardcoded in test code.</li>
+      <li>A config-loader/factory class reads an <code class="inline">env</code> parameter (TestNG suite XML, Maven profile, or CI variable) and loads the matching config at runtime.</li>
+      <li>Keep environment-specific test data isolated to avoid cross-environment contamination.</li>
+      <li>Secrets go through a vault/CI secrets manager, never committed config files.</li>
+      <li>For environments with different feature availability, tag or conditionally skip tests rather than letting them fail as false negatives.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'API Strategy', q:'Explain your API automation strategy.', a: `
+    <ul>
+      <li><strong>Layered validation</strong> — status code → response schema → field-level assertions → response time → downstream state (DB/queue) validation, in that order of depth.</li>
+      <li><strong>Tooling</strong> — REST Assured (Java) with a reusable request spec builder for auth/base URI, and response spec builders for common assertions.</li>
+      <li><strong>Coverage</strong> — positive, negative (invalid payloads, missing required fields, invalid auth), boundary (pagination limits, field length), and contract tests against an OpenAPI/Swagger spec so breaking changes are caught early.</li>
+      <li><strong>Data-driven</strong> — parameterize via TestNG DataProviders or external JSON/CSV, avoiding duplicated test methods.</li>
+      <li><strong>Chaining</strong> — for multi-endpoint workflows (create → update → verify → delete), chain requests using extracted response values (IDs, tokens) rather than hardcoding.</li>
+      <li><strong>Independence</strong> — each test owns its own setup/teardown so tests can run in parallel without collisions.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Test Data', q:'How do you manage test data?', a: `
+    <ul>
+      <li><strong>Data isolation</strong> — each test creates and owns its own data (via API/DB setup) rather than relying on shared, pre-seeded records other tests might mutate.</li>
+      <li><strong>Builder pattern</strong> — Java test data builders/factories generating valid objects with sensible defaults, overriding only relevant fields.</li>
+      <li><strong>Cleanup</strong> — teardown hooks (<code class="inline">@AfterMethod</code>/<code class="inline">@AfterClass</code>) delete created data, or run against a dedicated, periodically-reset environment/DB.</li>
+      <li><strong>Masked/synthetic data</strong> — for BFSI/PII-adjacent domains, use synthetic/masked data rather than production copies.</li>
+      <li><strong>Externalized data sets</strong> — JSON/Excel/DB-backed sources for large data-driven matrices instead of embedding data in code.</li>
+      <li><strong>Environment-specific reference data</strong> — some master data (device policies, org units) may need one-time seeding per environment via setup scripts.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Release Process', q:'How do you validate hotfixes?', a: `
+    <ul>
+      <li><strong>Targeted regression, not full suite</strong> — run test cases tied to the defect fix plus an impact-analysis of the immediate dependency area; a full suite is often too slow for hotfix SLAs.</li>
+      <li>Verify the original repro steps <strong>no longer reproduce</strong> the defect, then verify closely related flows aren't broken.</li>
+      <li><strong>Run the smoke/critical-path suite</strong> to catch unintended regressions, since hotfixes are often made under time pressure with less review.</li>
+      <li><strong>Environment parity check</strong> — validate in an environment matching production config, since hotfixes often fail on environment-specific config differences.</li>
+      <li><strong>Post-deployment monitoring</strong> — watch logs/metrics/error rates for a defined window after the hotfix ships; validation isn't complete at deployment.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Framework Architecture', q:'How would you organize UI, API and Mobile tests?', a: `
+    <ul>
+      <li><strong>Separate suites/modules per layer</strong> (e.g., <code class="inline">ui-tests</code>, <code class="inline">api-tests</code>, <code class="inline">mobile-tests</code> as distinct Maven modules) — different execution speed, environment dependencies, and failure signal; mixing them slows triage.</li>
+      <li><strong>Shared common layer</strong> — config, utilities, reporting, and a shared API client (since UI tests often need API calls for setup/teardown) to avoid duplication.</li>
+      <li><strong>Execution pipelines tuned per layer</strong> — API tests run fastest and most frequently (every commit); UI tests nightly due to runtime/device-farm cost; mobile tests on a scheduled real-device cadence.</li>
+      <li><strong>Tagging strategy</strong> — cross-cutting tags (<code class="inline">@smoke</code>, <code class="inline">@regression</code>) applied within each layer so a "smoke" pipeline pulls the fastest, highest-value subset from all three together.</li>
+      <li><strong>Ownership clarity</strong> — clear separation so a mobile locator change doesn't risk breaking API test compilation.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Production Debugging', q:'A production issue cannot be reproduced. What will you do?', a: `
+    <ul>
+      <li><strong>Gather context first</strong> — exact timestamp, user/device ID, environment, correlation ID, screenshots/logs from the reporter; reproduction often fails due to missing context, not because the bug doesn't exist.</li>
+      <li><strong>Check logs and monitoring</strong> around that timestamp for errors, timeouts, or anomalies.</li>
+      <li><strong>Look for environmental/data-specific triggers</strong> — specific device model, OS version, network condition, or account/data state not present in QA.</li>
+      <li><strong>Check for race conditions/timing issues</strong> — intermittent bugs are frequently concurrency-related; check async processing, retries, or queue delays.</li>
+      <li><strong>Attempt reproduction with production-parity data/config</strong> rather than QA data.</li>
+      <li><strong>If still unreproducible</strong> — add enhanced logging/monitoring around the suspected area and mark it "monitoring" rather than closing outright, so the next occurrence captures enough data.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Production Debugging', q:'API succeeds but the device policy is not applied. How will you investigate?', a: `
+    <ul>
+      <li><strong>Confirm the "success" is real</strong> — status 200 with correct payload structure, not a false positive (some APIs return 200 with an embedded error).</li>
+      <li><strong>Check backend persistence</strong> — query the DB/policy store directly to confirm the record was created/updated, isolating write path vs. push/sync path.</li>
+      <li><strong>Check device connectivity/sync state</strong> — was the device online when the push was sent? Offline devices often only sync on next check-in.</li>
+      <li><strong>Check policy conflict/precedence rules</strong> — a higher-priority or existing conflicting policy may silently override the new one.</li>
+      <li><strong>Inspect the push/command channel</strong> — APNs (iOS) / FCM/Android Enterprise command channel logs to confirm the command was actually dispatched, not just queued.</li>
+      <li><strong>Check device-side logs</strong> (if accessible) — was the command received but failed to apply due to a device-side restriction (permissions, incompatible OS version)?</li>
+      <li><strong>Isolate the layer</strong> — this is "success at API layer ≠ success at device layer." Walk the full chain: API → DB write → push dispatch → device receipt → device-side enforcement, checking each hop.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Production Debugging', q:'Physical devices fail but emulators pass. How will you debug?', a: `
+    <ul>
+      <li><strong>Hardware/sensor dependency</strong> — check if the feature relies on real hardware (camera, GPS, biometrics, cellular radio) emulators simulate imperfectly or not at all.</li>
+      <li><strong>OS-level differences</strong> — emulators run a clean stock OS image; real devices carry manufacturer customizations (especially Samsung/Xiaomi/OnePlus) with different permission handling or background-process killing.</li>
+      <li><strong>Performance/timing differences</strong> — lower-end real devices may expose race conditions a fast emulator on a powerful host masks.</li>
+      <li><strong>Network conditions</strong> — emulators usually run on a stable host network; real devices on cellular/Wi-Fi handoff can expose network-transition bugs.</li>
+      <li><strong>Build parity</strong> — confirm the same build artifact (not debug vs. release variant) is under test on both.</li>
+      <li><strong>Device-specific logs</strong> — pull <code class="inline">adb logcat</code> (Android) or Xcode device console logs (iOS) from the failing device for the actual stack trace.</li>
+      <li><strong>Isolate via device farm</strong> — reproduce across multiple models/OS versions to determine single-device quirk vs. broader physical-device-class issue.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'STAR Story', q:'Explain a complex production issue you resolved.', a: `
+    <p>Use a real story from your own background rather than a generic answer — interviewers can tell scripted-generic
+    answers apart from lived ones immediately. Two strong candidates fit this well:</p>
+    <ul>
+      <li>Your <strong>Kafka/Redis reconciliation pipeline testing</strong> work — a good fit if the issue involved
+      data consistency/sync failures between systems, closely mapping to the "API succeeds, downstream state
+      doesn't reflect it" pattern this round is probing for.</li>
+      <li>Your <strong>credential rotation incident</strong> — a good fit if asked about a security/production-impacting
+      issue and your response process.</li>
+    </ul>
+    <p>Structure either as <strong>STAR</strong>: Situation (what broke in production, business impact), Task (your
+    role in diagnosis), Action (specific steps — log correlation, isolating the layer, root cause), Result (the fix
+    + what changed afterward, e.g., added monitoring/alerting to catch recurrence).</p>
+  `},
+  {round:'r2', tag:'RCA', q:'How do you perform Root Cause Analysis?', a: `
+    <ul>
+      <li><strong>Gather concrete evidence first</strong> — don't theorize before logs/data confirm the failure point.</li>
+      <li><strong>5 Whys</strong> — keep asking "why did this happen" until you reach the actual root cause, not just the first contributing factor (e.g., "policy didn't apply" → "push command failed" → "device offline during push" → "no retry-on-reconnect logic" → root cause: missing retry mechanism).</li>
+      <li><strong>Timeline reconstruction</strong> — build a timeline across all involved systems using correlated logs/trace IDs.</li>
+      <li><strong>Isolate variables</strong> — change one thing at a time (environment, data, timing, concurrency) rather than guessing broadly.</li>
+      <li><strong>Root cause vs. contributing factor</strong> — a race condition might be root cause, while "high load" was just a trigger; fix the root cause (e.g., proper locking/idempotency), not just the trigger.</li>
+      <li><strong>Document and prevent recurrence</strong> — RCA isn't complete until it produces a concrete action: a fix, a new regression test, or a monitoring/alert.</li>
+    </ul>
+  `},
+  {round:'r2', tag:'Prioritization', q:'How do you prioritize multiple critical production bugs?', a: `
+    <ul>
+      <li><strong>Business/customer impact first</strong> — users affected, revenue impact, compliance/regulatory exposure (highly relevant in BFSI); a bug blocking all enrollments outranks one affecting a niche reporting feature even if both are "critical."</li>
+      <li><strong>Workaround availability</strong> — a critical bug with a viable workaround can be triaged slightly below one with none.</li>
+      <li><strong>Data integrity risk</strong> — silent data corruption or incorrect financial/compliance data outranks visible-but-non-destructive failures, since corruption compounds the longer it's live.</li>
+      <li><strong>Blast radius trend</strong> — actively spreading issues get triaged first even if current impact is smaller.</li>
+      <li><strong>Communicate and parallelize</strong> — for multiple true criticals, parallelize investigation across owners rather than serializing through one person, and give stakeholders a clear ETA/status per issue.</li>
+    </ul>
+  `},
+];
+
+const roundMeta = {
+  r1:{label:'Round 1 — Technical', cls:'r1'},
+  r2:{label:'Round 2 — Framework & Production Debugging', cls:'r2'},
+};
+
+const content = document.getElementById('content');
+const tocList = document.getElementById('tocList');
+const noResults = document.getElementById('noResults');
+const STORAGE_KEY = 'hcltech-qa-prep-reviewed-v1';
+
+function getReviewed(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }catch(e){ return {}; }
+}
+function setReviewed(map){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }catch(e){}
+}
+let reviewed = getReviewed();
+
+let currentFilter = 'all';
+let currentQuery = '';
+
+function render(){
+  content.innerHTML = '';
+  tocList.innerHTML = '';
+  let visibleCount = 0;
+  let lastRound = null;
+
+  DATA.forEach((item, i) => {
+    const matchesFilter = currentFilter === 'all' || item.round === currentFilter;
+    const q = currentQuery.trim().toLowerCase();
+    const matchesQuery = !q || item.q.toLowerCase().includes(q) || item.tag.toLowerCase().includes(q) || item.a.toLowerCase().includes(q);
+    if(!matchesFilter || !matchesQuery) return;
+
+    visibleCount++;
+
+    if(item.round !== lastRound){
+      const meta = roundMeta[item.round];
+      const bannerCount = DATA.filter(d => d.round === item.round).length;
+      const banner = document.createElement('div');
+      banner.className = 'round-banner ' + meta.cls;
+      banner.innerHTML = `<span>${meta.label}</span><span class="count">${bannerCount} questions</span>`;
+      content.appendChild(banner);
+      lastRound = item.round;
+    }
+
+    const isDone = !!reviewed[i];
+    const card = document.createElement('div');
+    card.className = 'qcard' + (isDone ? ' done' : '');
+    card.dataset.round = item.round;
+    card.dataset.idx = i;
+
+    card.innerHTML = `
+      <div class="qhead">
+        <div class="qcheck" data-idx="${i}">${isDone ? '✓' : ''}</div>
+        <div style="flex:1">
+          <span class="qtag">${item.tag}</span>
+          <span class="qtext">${item.q}</span>
+        </div>
+        <div class="chevron">▸</div>
+      </div>
+      <div class="qbody"><div class="qbody-inner">${item.a}</div></div>
+    `;
+
+    card.querySelector('.qhead').addEventListener('click', (e) => {
+      if(e.target.classList.contains('qcheck')) return;
+      const isOpen = card.classList.toggle('open');
+      const body = card.querySelector('.qbody');
+      body.style.maxHeight = isOpen ? body.scrollHeight + 'px' : '0px';
+    });
+
+    card.querySelector('.qcheck').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = e.target.dataset.idx;
+      reviewed[idx] = !reviewed[idx];
+      setReviewed(reviewed);
+      render();
+    });
+
+    content.appendChild(card);
+
+    const tocItem = document.createElement('li');
+    tocItem.className = 'toc-item' + (isDone ? ' done' : '');
+    tocItem.innerHTML = `<span class="idx">${isDone ? '✓' : String(i+1).padStart(2,'0')}</span><span class="lbl">${item.q.length > 40 ? item.q.slice(0,40)+'…' : item.q}</span>`;
+    tocItem.addEventListener('click', () => {
+      card.scrollIntoView({behavior:'smooth', block:'start'});
+      if(!card.classList.contains('open')){
+        card.classList.add('open');
+        const body = card.querySelector('.qbody');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+    tocList.appendChild(tocItem);
+  });
+
+  noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+
+  const doneCount = DATA.reduce((acc, _, i) => acc + (reviewed[i] ? 1 : 0), 0);
+  document.getElementById('progressCount').textContent = doneCount;
+  document.getElementById('progressFill').style.width = (doneCount / DATA.length * 100) + '%';
+}
+
+document.getElementById('searchBox').addEventListener('input', (e) => {
+  currentQuery = e.target.value;
+  render();
+});
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.round;
+    render();
+  });
+});
+
+render();
+</script>
+</body>
+</html>

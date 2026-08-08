@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CGI QA Automation Interview – Master Answer Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --card: #1c2333;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d29922;
+    --accent4: #f78166;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --code-bg: #0d1117;
+    --tag-blue: rgba(88,166,255,0.15);
+    --tag-green: rgba(63,185,80,0.15);
+    --tag-yellow: rgba(210,153,34,0.15);
+    --tag-red: rgba(247,129,102,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a2332 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 32px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(88,166,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--tag-red);
+    border: 1px solid rgba(247,129,102,0.4);
+    color: var(--accent4);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(26px, 4vw, 42px);
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 600px;
+    margin: 0 auto 24px;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* NAV */
+  .toc {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+  }
+  .toc-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 6px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 13px;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .toc-item:hover {
+    background: var(--card);
+    color: var(--accent);
+    border-color: var(--border);
+  }
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    min-width: 22px;
+  }
+
+  /* MAIN */
+  .main { max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* SECTION CARD */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .q-card:hover { border-color: rgba(88,166,255,0.35); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(to right, rgba(88,166,255,0.05), transparent);
+  }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(88,166,255,0.12);
+    border: 1px solid rgba(88,166,255,0.25);
+    padding: 3px 9px;
+    border-radius: 6px;
+    min-width: 42px;
+    text-align: center;
+    margin-top: 2px;
+  }
+  .q-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .q-body { padding: 20px 24px 24px; }
+
+  /* Tags */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-right: 6px;
+    margin-bottom: 8px;
+  }
+  .tag-blue { background: var(--tag-blue); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+  .tag-green { background: var(--tag-green); color: var(--accent2); border: 1px solid rgba(63,185,80,0.3); }
+  .tag-yellow { background: var(--tag-yellow); color: var(--accent3); border: 1px solid rgba(210,153,34,0.3); }
+  .tag-red { background: var(--tag-red); color: var(--accent4); border: 1px solid rgba(247,129,102,0.3); }
+
+  /* Answer text */
+  .answer p { color: #cdd9e5; margin-bottom: 12px; }
+  .answer p:last-child { margin-bottom: 0; }
+  .answer strong { color: var(--text); font-weight: 600; }
+  .answer em { color: var(--accent3); font-style: normal; font-weight: 500; }
+
+  /* Highlight box */
+  .highlight {
+    background: rgba(88,166,255,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 14px 0;
+    font-size: 14px;
+    color: #cdd9e5;
+  }
+  .highlight.green { background: rgba(63,185,80,0.08); border-color: var(--accent2); }
+  .highlight.yellow { background: rgba(210,153,34,0.08); border-color: var(--accent3); }
+  .highlight.red { background: rgba(247,129,102,0.08); border-color: var(--accent4); }
+
+  /* Code */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 14px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+  code { font-family: 'JetBrains Mono', monospace; }
+  .kw { color: #ff7b72; }
+  .cm { color: #8b949e; font-style: italic; }
+  .st { color: #a5d6ff; }
+  .cl { color: #ffa657; }
+  .fn { color: #d2a8ff; }
+  .nm { color: #79c0ff; }
+  .bo { color: #56d364; }
+
+  /* Table */
+  .tbl { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13.5px; }
+  .tbl th {
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  .tbl td {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    color: #cdd9e5;
+    vertical-align: top;
+  }
+  .tbl tr:hover td { background: rgba(88,166,255,0.04); }
+
+  /* List */
+  .ul { list-style: none; padding: 0; margin: 10px 0; }
+  .ul li {
+    padding: 5px 0 5px 22px;
+    position: relative;
+    color: #cdd9e5;
+    font-size: 14px;
+  }
+  .ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  .ul.green li::before { color: var(--accent2); }
+
+  /* Interview tip */
+  .tip {
+    background: rgba(63,185,80,0.07);
+    border: 1px solid rgba(63,185,80,0.25);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #cdd9e5;
+  }
+  .tip-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 36px 0 28px;
+  }
+  .divider-line { flex: 1; height: 1px; background: var(--border); }
+  .divider-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer strong { color: var(--accent); }
+
+  @media(max-width:600px) {
+    .hero { padding: 32px 16px; }
+    .main { padding: 24px 14px 60px; }
+    .q-header { padding: 16px; }
+    .q-body { padding: 14px 16px 18px; }
+    .hero-stats { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🚨 Interview Prep — CGI</div>
+  <h1>QA Automation Interview<br><span>Master Answer Guide</span></h1>
+  <p class="hero-sub">Comprehensive answers with code examples, comparison tables, and interview tips — tailored for a senior SDET profile</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">23</span><span class="stat-label">Questions</span></div>
+    <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Covered</span></div>
+    <div class="stat"><span class="stat-num">SDET</span><span class="stat-label">Level</span></div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Quick Navigation</div>
+  <div class="toc-grid">
+    <a href="#q1" class="toc-item"><span class="toc-num">01</span> Current Project</a>
+    <a href="#q2" class="toc-item"><span class="toc-num">02</span> Fastest Selenium Locator</a>
+    <a href="#q3" class="toc-item"><span class="toc-num">03</span> findElement vs findElements</a>
+    <a href="#q4" class="toc-item"><span class="toc-num">04</span> What is Selenium?</a>
+    <a href="#q5" class="toc-item"><span class="toc-num">05</span> Parallel Execution in TestNG</a>
+    <a href="#q6" class="toc-item"><span class="toc-num">06</span> Switching Browser Windows</a>
+    <a href="#q7" class="toc-item"><span class="toc-num">07</span> TestNG Annotation Order</a>
+    <a href="#q8" class="toc-item"><span class="toc-num">08</span> Read/Write Excel in Java</a>
+    <a href="#q9" class="toc-item"><span class="toc-num">09</span> Types of XPath</a>
+    <a href="#q10" class="toc-item"><span class="toc-num">10</span> Selenium 4 Screenshot API</a>
+    <a href="#q11" class="toc-item"><span class="toc-num">11</span> Gherkin Language & Keywords</a>
+    <a href="#q12" class="toc-item"><span class="toc-num">12</span> Select Class for Dropdowns</a>
+    <a href="#q13" class="toc-item"><span class="toc-num">13</span> Selenium Components</a>
+    <a href="#q14" class="toc-item"><span class="toc-num">14</span> Selenium Locators</a>
+    <a href="#q15" class="toc-item"><span class="toc-num">15</span> Waits</a>
+    <a href="#q16" class="toc-item"><span class="toc-num">16</span> TimeoutException & Sync</a>
+    <a href="#q17" class="toc-item"><span class="toc-num">17</span> Absolute vs Relative XPath</a>
+    <a href="#q18" class="toc-item"><span class="toc-num">18</span> UI Testing</a>
+    <a href="#q19" class="toc-item"><span class="toc-num">19</span> XPath Axes</a>
+    <a href="#q20" class="toc-item"><span class="toc-num">20</span> Open Source Software</a>
+    <a href="#q21" class="toc-item"><span class="toc-num">21</span> Browser Support in Selenium</a>
+    <a href="#q22" class="toc-item"><span class="toc-num">22</span> Page Object Model (POM)</a>
+    <a href="#q23" class="toc-item"><span class="toc-num">23</span> Maven Dependency Management</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- Q1 -->
+<div class="q-card" id="q1">
+  <div class="q-header">
+    <span class="q-num">Q 01</span>
+    <span class="q-title">Explain Your Current Project</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-yellow">Behavioral</span><span class="tag tag-blue">BFSI Domain</span>
+    <div class="answer">
+      <p>I'm currently working as an SDET/QA Automation Consultant at <strong>Deloitte</strong> on the <strong>General Motors Financial (GMF)</strong> client engagement — the financial services arm of General Motors, handling auto loans, leases, and consumer finance products.</p>
+      <p>My primary focus is building and maintaining the end-to-end test automation ecosystem for GMF's core banking web applications. This spans <strong>UI automation</strong> using Selenium WebDriver with Java, <strong>API contract validation</strong> using REST Assured, and <strong>BDD test coverage</strong> using Cucumber with Gherkin.</p>
+      <div class="highlight">
+        <strong>Key responsibility highlight:</strong> I own the DDC (Due Date Change) confirmation email testing — covering UI triggers, REST API contract assertions, business rule validation (CFPB/TILA compliance), email delivery, and CAN-SPAM audit trail verification. This is a regulatory-sensitive workflow with direct sign-off ownership.
+      </div>
+      <p>My framework stack: <strong>Java + Selenium WebDriver + Cucumber BDD + TestNG + Maven + REST Assured</strong>, integrated into <strong>Azure DevOps CI/CD pipelines</strong>. I've implemented ThreadLocal WebDriver for thread-safe parallel execution, Page Object Model with Page Factory, and Extent Reports for real-time test dashboards.</p>
+      <p>Before GMF at Deloitte, I worked at TCS on two BFSI engagements — <strong>DBS Bank</strong> (enterprise backend banking, Kafka/Redis pipeline validation, mTLS security testing) and <strong>USAA Bank</strong> (core banking automation). This gives me a strong BFSI compliance + automation engineering background across 4 years.</p>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>Always close with: "I also own Post Production Validation — I'm the sign-off authority after every deployment." This signals seniority beyond just coding test scripts.</div>
+  </div>
+</div>
+
+<!-- Q2 -->
+<div class="q-card" id="q2">
+  <div class="q-header">
+    <span class="q-num">Q 02</span>
+    <span class="q-title">Fastest Selenium Locator</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">Core Selenium</span>
+    <div class="answer">
+      <p><strong>ID is the fastest Selenium locator.</strong> When you use <code>By.id()</code>, Selenium internally delegates to the browser's native <code>document.getElementById()</code> — a direct O(1) DOM lookup optimized at the browser engine level. No traversal, no pattern matching, just a direct hash-map lookup.</p>
+      <div class="highlight">
+        Speed ranking (fastest → slowest):<br>
+        <strong>ID &gt; Name &gt; CSS Selector &gt; XPath &gt; LinkText &gt; TagName &gt; ClassName</strong>
+      </div>
+      <table class="tbl">
+        <tr><th>Locator</th><th>Speed</th><th>Why</th></tr>
+        <tr><td><code>By.id()</code></td><td>⚡ Fastest</td><td>Native browser getElementById — O(1) hash lookup</td></tr>
+        <tr><td><code>By.name()</code></td><td>Very Fast</td><td>Browser-native getElementsByName</td></tr>
+        <tr><td><code>By.cssSelector()</code></td><td>Fast</td><td>Browser CSS engine — highly optimized, faster than XPath</td></tr>
+        <tr><td><code>By.xpath()</code></td><td>Slower</td><td>XML tree traversal — slower, especially with absolute XPath or axes</td></tr>
+        <tr><td><code>By.linkText()</code></td><td>Moderate</td><td>Scans all anchor tags by text content</td></tr>
+        <tr><td><code>By.tagName()</code></td><td>Moderate</td><td>Returns all elements of that tag — potentially large set</td></tr>
+        <tr><td><code>By.className()</code></td><td>Variable</td><td>Slower when multiple classes — can match large sets</td></tr>
+      </table>
+      <p><strong>Why CSS is preferred over XPath in practice:</strong> CSS Selectors are natively processed by the browser's rendering engine. XPath requires a separate XPath interpreter, making it generally slower — especially with axes like <code>parent::</code> or <code>ancestor::</code>, or when traversing deep trees.</p>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>Add: "In my GMF project, I always prefer ID or CSS selectors for stable elements. XPath is reserved for cases where the DOM has no stable ID or when I need parent/sibling traversal."</div>
+  </div>
+</div>
+
+<!-- Q3 -->
+<div class="q-card" id="q3">
+  <div class="q-header">
+    <span class="q-num">Q 03</span>
+    <span class="q-title">findElement() vs findElements()</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">Core Selenium</span>
+    <div class="answer">
+      <table class="tbl">
+        <tr><th>Aspect</th><th>findElement()</th><th>findElements()</th></tr>
+        <tr><td>Return type</td><td><code>WebElement</code></td><td><code>List&lt;WebElement&gt;</code></td></tr>
+        <tr><td>If element NOT found</td><td>Throws <code>NoSuchElementException</code></td><td>Returns empty list <code>[]</code></td></tr>
+        <tr><td>Match scope</td><td>First matching element only</td><td>All matching elements</td></tr>
+        <tr><td>Use case</td><td>Single unique element</td><td>Tables, lists, repeated elements</td></tr>
+        <tr><td>Null return?</td><td>Never — always throws or returns</td><td>Can return empty list (size = 0)</td></tr>
+      </table>
+      <pre><span class="cm">// findElement — single element; throws if absent</span>
+<span class="cl">WebElement</span> btn = driver.<span class="fn">findElement</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"submitBtn"</span>));
+
+<span class="cm">// findElements — returns empty list if none found (safe for existence check)</span>
+<span class="cl">List</span>&lt;<span class="cl">WebElement</span>&gt; rows = driver.<span class="fn">findElements</span>(<span class="cl">By</span>.<span class="fn">cssSelector</span>(<span class="st">"table tr"</span>));
+<span class="kw">if</span> (rows.<span class="fn">isEmpty</span>()) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"No rows found"</span>);
+}
+
+<span class="cm">// Best practice: use findElements for element existence check (avoids exception)</span>
+<span class="kw">boolean</span> isPresent = !driver.<span class="fn">findElements</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"errorMsg"</span>)).<span class="fn">isEmpty</span>();</pre>
+      <div class="highlight green"><strong>Pro tip:</strong> Use <code>findElements().isEmpty()</code> as a safe way to check if an element exists — avoids try/catch blocks for <code>NoSuchElementException</code>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Q4 -->
+<div class="q-card" id="q4">
+  <div class="q-header">
+    <span class="q-num">Q 04</span>
+    <span class="q-title">What is Selenium?</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">Fundamentals</span>
+    <div class="answer">
+      <p>Selenium is an <strong>open-source browser automation framework</strong> used primarily for automating web application testing. It provides a programming interface to write test scripts in multiple languages (Java, Python, C#, JavaScript, Ruby) that control the browser the same way a real user would.</p>
+      <p>Selenium is not a single tool — it is a <strong>suite of tools</strong>:</p>
+      <ul class="ul">
+        <li><strong>Selenium WebDriver</strong> — The core API that directly communicates with the browser using the W3C WebDriver protocol. No server needed in Selenium 4.</li>
+        <li><strong>Selenium Grid</strong> — Allows running tests in parallel across multiple machines and browsers simultaneously.</li>
+        <li><strong>Selenium IDE</strong> — A browser plugin for record-and-playback test creation (limited use in enterprise).</li>
+      </ul>
+      <div class="highlight">
+        <strong>Selenium 4 key changes:</strong> Native W3C WebDriver protocol (no JSON Wire Protocol), BiDi (CDP) support for network interception, relative locators, <code>getScreenshotAs()</code> on WebElement, and improved Selenium Grid with Docker support.
+      </div>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>Mention: "Selenium WebDriver talks to the browser via the W3C WebDriver protocol — this is why browser-specific drivers like ChromeDriver are needed as a bridge."</div>
+  </div>
+</div>
+
+<!-- Q5 -->
+<div class="q-card" id="q5">
+  <div class="q-header">
+    <span class="q-num">Q 05</span>
+    <span class="q-title">Parallel Execution in TestNG</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">TestNG</span><span class="tag tag-yellow">Advanced</span>
+    <div class="answer">
+      <p>TestNG supports parallel execution at multiple levels — <strong>methods, classes, tests, and suites</strong> — configured via the <code>testng.xml</code> suite file. The <code>parallel</code> attribute determines the granularity.</p>
+      <pre><span class="cm">&lt;!-- testng.xml — parallel at method level --&gt;</span>
+&lt;<span class="kw">suite</span> name=<span class="st">"ParallelSuite"</span> parallel=<span class="st">"methods"</span> thread-count=<span class="st">"4"</span>&gt;
+  &lt;<span class="kw">test</span> name=<span class="st">"GMFTests"</span>&gt;
+    &lt;<span class="kw">classes</span>&gt;
+      &lt;<span class="kw">class</span> name=<span class="st">"tests.LoginTest"</span>/&gt;
+      &lt;<span class="kw">class</span> name=<span class="st">"tests.PaymentTest"</span>/&gt;
+    &lt;/<span class="kw">classes</span>&gt;
+  &lt;/<span class="kw">test</span>&gt;
+&lt;/<span class="kw">suite</span>&gt;</pre>
+      <table class="tbl">
+        <tr><th>parallel= value</th><th>What runs in parallel</th></tr>
+        <tr><td><code>methods</code></td><td>Each @Test method runs in its own thread</td></tr>
+        <tr><td><code>classes</code></td><td>Each test class runs in its own thread</td></tr>
+        <tr><td><code>tests</code></td><td>Each &lt;test&gt; XML tag runs in its own thread</td></tr>
+        <tr><td><code>instances</code></td><td>Each instance of same class runs in its own thread</td></tr>
+      </table>
+      <div class="highlight red"><strong>Critical:</strong> Parallel execution requires ThreadLocal WebDriver. A shared static WebDriver causes race conditions (thread interference). ThreadLocal gives each thread its own isolated driver instance.</div>
+      <pre><span class="kw">public class</span> <span class="cl">DriverManager</span> {
+    <span class="kw">private static</span> <span class="cl">ThreadLocal</span>&lt;<span class="cl">WebDriver</span>&gt; tlDriver = <span class="kw">new</span> <span class="cl">ThreadLocal</span>&lt;&gt;();
+
+    <span class="kw">public static</span> <span class="cl">WebDriver</span> <span class="fn">getDriver</span>() { <span class="kw">return</span> tlDriver.<span class="fn">get</span>(); }
+
+    <span class="kw">public static void</span> <span class="fn">setDriver</span>(<span class="cl">WebDriver</span> driver) { tlDriver.<span class="fn">set</span>(driver); }
+
+    <span class="kw">public static void</span> <span class="fn">quitDriver</span>() {
+        tlDriver.<span class="fn">get</span>().<span class="fn">quit</span>();
+        tlDriver.<span class="fn">remove</span>(); <span class="cm">// Prevent memory leaks</span>
+    }
+}</pre>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>"In my GMF project we run parallel at the 'tests' level — 4 threads across Chrome, Firefox, and two environment configs. ThreadLocal WebDriver with @AfterMethod cleanup prevents any cross-contamination."</div>
+  </div>
+</div>
+
+<!-- Q6 -->
+<div class="q-card" id="q6">
+  <div class="q-header">
+    <span class="q-num">Q 06</span>
+    <span class="q-title">Switching Between Browser Windows</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">Core Selenium</span>
+    <div class="answer">
+      <p>Each browser window/tab in Selenium has a unique <strong>window handle</strong> (a string identifier). Use <code>driver.getWindowHandles()</code> to get all open handles and <code>driver.switchTo().window(handle)</code> to switch context.</p>
+      <pre><span class="cm">// Store original window</span>
+<span class="cl">String</span> mainWindow = driver.<span class="fn">getWindowHandle</span>();
+
+<span class="cm">// Click action that opens new window</span>
+driver.<span class="fn">findElement</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"openNewWindow"</span>)).<span class="fn">click</span>();
+
+<span class="cm">// Get all window handles (Set — order not guaranteed)</span>
+<span class="cl">Set</span>&lt;<span class="cl">String</span>&gt; allHandles = driver.<span class="fn">getWindowHandles</span>();
+
+<span class="kw">for</span> (<span class="cl">String</span> handle : allHandles) {
+    <span class="kw">if</span> (!handle.<span class="fn">equals</span>(mainWindow)) {
+        driver.<span class="fn">switchTo</span>().<span class="fn">window</span>(handle); <span class="cm">// Switch to new window</span>
+        <span class="kw">break</span>;
+    }
+}
+
+<span class="cm">// Perform actions in new window...</span>
+driver.<span class="fn">close</span>(); <span class="cm">// Close new window</span>
+driver.<span class="fn">switchTo</span>().<span class="fn">window</span>(mainWindow); <span class="cm">// Return to main</span></pre>
+      <div class="highlight green"><strong>Selenium 4 upgrade:</strong> Use <code>driver.switchTo().newWindow(WindowType.TAB)</code> or <code>WindowType.WINDOW</code> to programmatically open a new tab/window without any JavaScript hack.</div>
+      <pre><span class="cm">// Selenium 4 — open new tab directly</span>
+driver.<span class="fn">switchTo</span>().<span class="fn">newWindow</span>(<span class="cl">WindowType</span>.<span class="nm">TAB</span>);
+driver.<span class="fn">get</span>(<span class="st">"https://example.com"</span>);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Q7 -->
+<div class="q-card" id="q7">
+  <div class="q-header">
+    <span class="q-num">Q 07</span>
+    <span class="q-title">TestNG Annotation Execution Order</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">TestNG</span>
+    <div class="answer">
+      <p>TestNG annotations follow a strict <strong>hierarchical lifecycle</strong>. Annotations at the Suite level run once per suite; Class level once per class; Method level around every single @Test.</p>
+      <div class="highlight">
+        <strong>Full execution order:</strong><br><br>
+        <code>@BeforeSuite</code> → <code>@BeforeTest</code> → <code>@BeforeClass</code> → <code>@BeforeMethod</code> → <code>@Test</code> → <code>@AfterMethod</code> → <code>@AfterClass</code> → <code>@AfterTest</code> → <code>@AfterSuite</code>
+      </div>
+      <table class="tbl">
+        <tr><th>Annotation</th><th>Runs</th><th>Typical Use</th></tr>
+        <tr><td>@BeforeSuite</td><td>Once — before entire suite</td><td>Global config, DB connection pool</td></tr>
+        <tr><td>@AfterSuite</td><td>Once — after entire suite</td><td>Close connections, generate reports</td></tr>
+        <tr><td>@BeforeTest</td><td>Once per &lt;test&gt; tag</td><td>Browser instantiation for a test group</td></tr>
+        <tr><td>@AfterTest</td><td>Once per &lt;test&gt; tag</td><td>Browser teardown</td></tr>
+        <tr><td>@BeforeClass</td><td>Once per test class</td><td>Class-level setup</td></tr>
+        <tr><td>@AfterClass</td><td>Once per test class</td><td>Class-level cleanup</td></tr>
+        <tr><td>@BeforeMethod</td><td>Before EVERY @Test method</td><td>Login, navigate to URL</td></tr>
+        <tr><td>@AfterMethod</td><td>After EVERY @Test method</td><td>Logout, take screenshot on failure</td></tr>
+        <tr><td>@Test</td><td>The actual test execution</td><td>Verify business logic</td></tr>
+        <tr><td>@DataProvider</td><td>Supplies data to @Test</td><td>Data-driven test parameters</td></tr>
+      </table>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>"I use @BeforeMethod to initialize ThreadLocal WebDriver and navigate to the base URL, and @AfterMethod to capture Extent Report logs, take screenshots on failure, and call DriverManager.quitDriver()."</div>
+  </div>
+</div>
+
+<!-- Q8 -->
+<div class="q-card" id="q8">
+  <div class="q-header">
+    <span class="q-num">Q 08</span>
+    <span class="q-title">Read/Write Excel Using Java</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-yellow">Data-Driven Testing</span>
+    <div class="answer">
+      <p>The standard library for Excel operations in Java automation is <strong>Apache POI</strong>. It supports both <code>.xls</code> (HSSF) and <code>.xlsx</code> (XSSF) formats. It's the backbone of data-driven testing when test data lives in Excel sheets.</p>
+      <pre><span class="cm">// Maven dependency (pom.xml)</span>
+&lt;<span class="kw">dependency</span>&gt;
+  &lt;<span class="kw">groupId</span>&gt;org.apache.poi&lt;/<span class="kw">groupId</span>&gt;
+  &lt;<span class="kw">artifactId</span>&gt;poi-ooxml&lt;/<span class="kw">artifactId</span>&gt; <span class="cm">&lt;!-- .xlsx support --&gt;</span>
+  &lt;<span class="kw">version</span>&gt;5.2.3&lt;/<span class="kw">version</span>&gt;
+&lt;/<span class="kw">dependency</span>&gt;</pre>
+      <pre><span class="cm">// READ from Excel</span>
+<span class="cl">FileInputStream</span> fis = <span class="kw">new</span> <span class="cl">FileInputStream</span>(<span class="st">"testdata/GMFData.xlsx"</span>);
+<span class="cl">Workbook</span> wb = <span class="kw">new</span> <span class="cl">XSSFWorkbook</span>(fis);
+<span class="cl">Sheet</span> sheet = wb.<span class="fn">getSheet</span>(<span class="st">"LoginData"</span>);
+
+<span class="kw">for</span> (<span class="cl">Row</span> row : sheet) {
+    <span class="cl">String</span> username = row.<span class="fn">getCell</span>(<span class="nm">0</span>).<span class="fn">getStringCellValue</span>();
+    <span class="cl">String</span> password = row.<span class="fn">getCell</span>(<span class="nm">1</span>).<span class="fn">getStringCellValue</span>();
+    <span class="cl">System</span>.out.<span class="fn">println</span>(username + <span class="st">" | "</span> + password);
+}
+wb.<span class="fn">close</span>(); fis.<span class="fn">close</span>();
+
+<span class="cm">// WRITE to Excel</span>
+<span class="cl">Workbook</span> newWb = <span class="kw">new</span> <span class="cl">XSSFWorkbook</span>();
+<span class="cl">Sheet</span> s = newWb.<span class="fn">createSheet</span>(<span class="st">"Results"</span>);
+<span class="cl">Row</span> r = s.<span class="fn">createRow</span>(<span class="nm">0</span>);
+r.<span class="fn">createCell</span>(<span class="nm">0</span>).<span class="fn">setCellValue</span>(<span class="st">"Test Case"</span>);
+r.<span class="fn">createCell</span>(<span class="nm">1</span>).<span class="fn">setCellValue</span>(<span class="st">"Status"</span>);
+
+<span class="cl">FileOutputStream</span> fos = <span class="kw">new</span> <span class="cl">FileOutputStream</span>(<span class="st">"output/Results.xlsx"</span>);
+newWb.<span class="fn">write</span>(fos);
+newWb.<span class="fn">close</span>(); fos.<span class="fn">close</span>();</pre>
+      <div class="highlight green">In modern BDD/TestNG setups, Excel data is fed via <code>@DataProvider</code> — the provider reads the sheet and returns <code>Object[][]</code> which TestNG maps to @Test method parameters.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Q9 -->
+<div class="q-card" id="q9">
+  <div class="q-header">
+    <span class="q-num">Q 09</span>
+    <span class="q-title">Types of XPath</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">XPath</span>
+    <div class="answer">
+      <p>There are two fundamental types of XPath expressions in Selenium:</p>
+      <div class="highlight red"><strong>1. Absolute XPath</strong> — Starts from root (<code>/html</code>). Brittle — any structural DOM change breaks it.<br><br>Example: <code>/html/body/div[1]/form/input[2]</code></div>
+      <div class="highlight green"><strong>2. Relative XPath</strong> — Starts with <code>//</code>, searches anywhere in the DOM. Robust and preferred.<br><br>Example: <code>//input[@id='username']</code></div>
+      <p>Within Relative XPath, you have several <strong>expression techniques</strong>:</p>
+      <table class="tbl">
+        <tr><th>Technique</th><th>Example</th><th>Use Case</th></tr>
+        <tr><td>Attribute-based</td><td><code>//input[@name='email']</code></td><td>Stable attribute match</td></tr>
+        <tr><td>Text-based</td><td><code>//button[text()='Submit']</code></td><td>Match by visible text</td></tr>
+        <tr><td>contains()</td><td><code>//a[contains(@href,'login')]</code></td><td>Partial attribute match</td></tr>
+        <tr><td>starts-with()</td><td><code>//input[starts-with(@id,'user')]</code></td><td>Dynamic ID prefix</td></tr>
+        <tr><td>AND / OR</td><td><code>//input[@type='text' and @name='email']</code></td><td>Multiple conditions</td></tr>
+        <tr><td>Axes</td><td><code>//label[text()='Name']/following-sibling::input</code></td><td>DOM traversal</td></tr>
+        <tr><td>Index</td><td><code>(//input[@type='text'])[2]</code></td><td>nth element in set</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Q10 -->
+<div class="q-card" id="q10">
+  <div class="q-header">
+    <span class="q-num">Q 10</span>
+    <span class="q-title">Selenium 4 WebElement Screenshot API</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">Selenium 4</span><span class="tag tag-yellow">New Feature</span>
+    <div class="answer">
+      <p>Selenium 4 introduced the ability to <strong>capture screenshots of individual WebElements</strong> — not just the entire browser viewport. This is a major improvement for debugging and visual regression testing of specific components.</p>
+      <pre><span class="cm">// Full-page screenshot (Selenium 3 & 4)</span>
+<span class="cl">TakesScreenshot</span> ts = (<span class="cl">TakesScreenshot</span>) driver;
+<span class="cl">File</span> fullPage = ts.<span class="fn">getScreenshotAs</span>(<span class="cl">OutputType</span>.<span class="nm">FILE</span>);
+<span class="cl">FileUtils</span>.<span class="fn">copyFile</span>(fullPage, <span class="kw">new</span> <span class="cl">File</span>(<span class="st">"screenshots/fullPage.png"</span>));
+
+<span class="cm">// ✅ Selenium 4 — WebElement-level screenshot (NEW)</span>
+<span class="cl">WebElement</span> card = driver.<span class="fn">findElement</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"loanSummaryCard"</span>));
+<span class="cl">File</span> elementShot = card.<span class="fn">getScreenshotAs</span>(<span class="cl">OutputType</span>.<span class="nm">FILE</span>);
+<span class="cl">FileUtils</span>.<span class="fn">copyFile</span>(elementShot, <span class="kw">new</span> <span class="cl">File</span>(<span class="st">"screenshots/loanCard.png"</span>));
+
+<span class="cm">// As Base64 string (useful for Extent Reports embedding)</span>
+<span class="cl">String</span> base64 = card.<span class="fn">getScreenshotAs</span>(<span class="cl">OutputType</span>.<span class="nm">BASE64</span>);</pre>
+      <div class="highlight green"><strong>Real-world use:</strong> In GMF testing, I capture element-level screenshots of the DDC confirmation email preview component and embed them as Base64 in Extent Reports — no full-page noise, just the relevant component.</div>
+      <p>Other major Selenium 4 additions: <strong>Relative Locators</strong> (<code>RelativeBy.near()</code>, <code>.above()</code>, <code>.below()</code>), <strong>CDP (Chrome DevTools Protocol)</strong> for network throttling/request interception, and <strong>BiDirectional communication</strong>.</p>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>This question tests if you're actually up to date on Selenium 4. Mention the WebElement screenshot API confidently — many candidates only know the old TakesScreenshot on driver.</div>
+  </div>
+</div>
+
+<!-- Q11 -->
+<div class="q-card" id="q11">
+  <div class="q-header">
+    <span class="q-num">Q 11</span>
+    <span class="q-title">Gherkin Language & Keywords</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">BDD / Cucumber</span>
+    <div class="answer">
+      <p>Gherkin is the <strong>domain-specific language (DSL)</strong> used by Cucumber to write BDD scenarios in plain English. It bridges the communication gap between business stakeholders and technical teams by expressing test cases as human-readable specifications.</p>
+      <pre><span class="kw">Feature:</span> GMF Due Date Change
+  As a GMF customer
+  I want to change my loan payment due date
+  So that payments align with my salary date
+
+  <span class="kw">Background:</span>
+    <span class="kw">Given</span> the user is logged into the GMF portal
+
+  <span class="kw">Scenario:</span> Successful due date change
+    <span class="kw">Given</span> the user navigates to "Account Settings"
+    <span class="kw">When</span> the user selects due date as "<span class="st">15th of month</span>"
+    <span class="kw">And</span> clicks "Confirm Change"
+    <span class="kw">Then</span> a confirmation email should be sent within 5 minutes
+    <span class="kw">And</span> the new due date should reflect in the account dashboard
+
+  <span class="kw">Scenario Outline:</span> Due date change for multiple customers
+    <span class="kw">Given</span> customer "<span class="st">&lt;customerId&gt;</span>" is logged in
+    <span class="kw">When</span> they set due date to "<span class="st">&lt;dueDate&gt;</span>"
+    <span class="kw">Then</span> status should be "<span class="st">&lt;status&gt;</span>"
+
+  <span class="kw">Examples:</span>
+    | customerId | dueDate | status  |
+    | C001       | 10th    | Success |
+    | C002       | 28th    | Success |</pre>
+      <table class="tbl">
+        <tr><th>Keyword</th><th>Purpose</th></tr>
+        <tr><td><code>Feature</code></td><td>High-level business capability being tested</td></tr>
+        <tr><td><code>Background</code></td><td>Common preconditions for all scenarios in the feature</td></tr>
+        <tr><td><code>Scenario</code></td><td>A single test case/business flow</td></tr>
+        <tr><td><code>Scenario Outline</code></td><td>Parameterized scenario — runs once per Examples row</td></tr>
+        <tr><td><code>Given</code></td><td>Precondition / initial system state</td></tr>
+        <tr><td><code>When</code></td><td>The action performed by the user</td></tr>
+        <tr><td><code>Then</code></td><td>Expected outcome / assertion</td></tr>
+        <tr><td><code>And / But</code></td><td>Continuation of previous step type</td></tr>
+        <tr><td><code>Examples</code></td><td>Data table for Scenario Outline parameters</td></tr>
+        <tr><td><code>@Tag</code></td><td>Label scenarios for selective execution</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Q12 -->
+<div class="q-card" id="q12">
+  <div class="q-header">
+    <span class="q-num">Q 12</span>
+    <span class="q-title">Select Class for Dropdowns</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">Core Selenium</span>
+    <div class="answer">
+      <p>The <strong><code>Select</code></strong> class in Selenium (from <code>org.openqa.selenium.support.ui.Select</code>) provides a clean API for interacting with native HTML <code>&lt;select&gt;</code> dropdowns. It supports selection by visible text, value attribute, or index.</p>
+      <pre><span class="cl">WebElement</span> dropdownEl = driver.<span class="fn">findElement</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"dueDateDropdown"</span>));
+<span class="cl">Select</span> dropdown = <span class="kw">new</span> <span class="cl">Select</span>(dropdownEl);
+
+<span class="cm">// 3 ways to select</span>
+dropdown.<span class="fn">selectByVisibleText</span>(<span class="st">"15th of Month"</span>);   <span class="cm">// by text shown to user</span>
+dropdown.<span class="fn">selectByValue</span>(<span class="st">"15"</span>);                    <span class="cm">// by &lt;option value="15"&gt;</span>
+dropdown.<span class="fn">selectByIndex</span>(<span class="nm">2</span>);                       <span class="cm">// 0-based index</span>
+
+<span class="cm">// Get selected option</span>
+<span class="cl">String</span> selected = dropdown.<span class="fn">getFirstSelectedOption</span>().<span class="fn">getText</span>();
+
+<span class="cm">// Get all options</span>
+<span class="cl">List</span>&lt;<span class="cl">WebElement</span>&gt; allOptions = dropdown.<span class="fn">getOptions</span>();
+
+<span class="cm">// Multi-select dropdown</span>
+<span class="kw">if</span> (dropdown.<span class="fn">isMultiple</span>()) {
+    dropdown.<span class="fn">selectByVisibleText</span>(<span class="st">"Option A"</span>);
+    dropdown.<span class="fn">selectByVisibleText</span>(<span class="st">"Option B"</span>);
+    dropdown.<span class="fn">deselectByVisibleText</span>(<span class="st">"Option A"</span>);
+    dropdown.<span class="fn">deselectAll</span>();
+}</pre>
+      <div class="highlight yellow"><strong>Important:</strong> The <code>Select</code> class ONLY works on native <code>&lt;select&gt;</code> HTML elements. Custom dropdowns (built with <code>&lt;div&gt;</code>, <code>&lt;ul&gt;</code>, or React/Angular components) require clicking to open and then clicking the option — NOT the Select class.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Q13 -->
+<div class="q-card" id="q13">
+  <div class="q-header">
+    <span class="q-num">Q 13</span>
+    <span class="q-title">Selenium Components</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">Architecture</span>
+    <div class="answer">
+      <p>Selenium is an ecosystem of four distinct components, each serving a different purpose in the test automation pipeline:</p>
+      <table class="tbl">
+        <tr><th>Component</th><th>Purpose</th><th>Use In Enterprise</th></tr>
+        <tr><td><strong>Selenium WebDriver</strong></td><td>Core API for browser automation. Uses W3C WebDriver protocol to communicate with browser drivers (ChromeDriver, GeckoDriver)</td><td>Primary — all automation scripts</td></tr>
+        <tr><td><strong>Selenium Grid</strong></td><td>Distributed test execution across multiple machines/browsers/OS combinations in parallel. Hub + Node architecture (Grid 3) / Router + Node (Grid 4)</td><td>CI/CD parallel execution</td></tr>
+        <tr><td><strong>Selenium IDE</strong></td><td>Browser extension for record-and-playback. Generates test scripts but produces brittle code. Limited enterprise use</td><td>Rapid prototyping only</td></tr>
+        <tr><td><strong>Selenium RC (deprecated)</strong></td><td>Legacy server-based approach. Replaced entirely by WebDriver. No longer used</td><td>Legacy only — don't use</td></tr>
+      </table>
+      <div class="highlight"><strong>Selenium 4 Grid Architecture:</strong> Replaces the Hub-Node model with a more scalable Router → Distributor → Session Map → Node architecture. Supports Kubernetes/Docker deployment and observability via built-in UI dashboard.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Q14 -->
+<div class="q-card" id="q14">
+  <div class="q-header">
+    <span class="q-num">Q 14</span>
+    <span class="q-title">Selenium Locators</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">Core Selenium</span>
+    <div class="answer">
+      <p>Selenium provides <strong>8 built-in locators</strong> through the <code>By</code> class, plus Selenium 4 added <strong>Relative Locators</strong>:</p>
+      <table class="tbl">
+        <tr><th>Locator</th><th>Syntax</th><th>Best For</th></tr>
+        <tr><td>ID</td><td><code>By.id("loginBtn")</code></td><td>Unique elements — fastest</td></tr>
+        <tr><td>Name</td><td><code>By.name("username")</code></td><td>Form inputs with name attribute</td></tr>
+        <tr><td>Class Name</td><td><code>By.className("error-msg")</code></td><td>Single class (not multiple)</td></tr>
+        <tr><td>Tag Name</td><td><code>By.tagName("a")</code></td><td>Tag-level collections</td></tr>
+        <tr><td>Link Text</td><td><code>By.linkText("Forgot Password")</code></td><td>Exact anchor text match</td></tr>
+        <tr><td>Partial Link Text</td><td><code>By.partialLinkText("Forgot")</code></td><td>Partial anchor text match</td></tr>
+        <tr><td>CSS Selector</td><td><code>By.cssSelector("input#email")</code></td><td>Complex elements, fast & flexible</td></tr>
+        <tr><td>XPath</td><td><code>By.xpath("//input[@id='email']")</code></td><td>Dynamic elements, DOM traversal</td></tr>
+      </table>
+      <div class="highlight green"><strong>Selenium 4 — Relative Locators:</strong> Find elements relative to other elements in the DOM.</div>
+      <pre><span class="cm">// Selenium 4 Relative Locators</span>
+<span class="kw">import static</span> org.openqa.selenium.support.locators.<span class="cl">RelativeLocator</span>.*;
+
+<span class="cl">WebElement</span> pwd = driver.<span class="fn">findElement</span>(
+    <span class="fn">with</span>(<span class="cl">By</span>.<span class="fn">tagName</span>(<span class="st">"input"</span>))
+        .<span class="fn">below</span>(driver.<span class="fn">findElement</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"usernameField"</span>)))
+);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Q15 -->
+<div class="q-card" id="q15">
+  <div class="q-header">
+    <span class="q-num">Q 15</span>
+    <span class="q-title">Waits — Implicit, Explicit & Fluent</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-yellow">Advanced</span><span class="tag tag-blue">Synchronization</span>
+    <div class="answer">
+      <table class="tbl">
+        <tr><th>Wait Type</th><th>Scope</th><th>Condition</th><th>Polling</th></tr>
+        <tr><td>Implicit Wait</td><td>Global — all findElement calls</td><td>Element present in DOM</td><td>Fixed — framework default</td></tr>
+        <tr><td>Explicit Wait</td><td>Specific element + condition</td><td>Any ExpectedCondition</td><td>Default 500ms</td></tr>
+        <tr><td>Fluent Wait</td><td>Specific element + condition</td><td>Any ExpectedCondition + ignore specific exceptions</td><td>Configurable interval</td></tr>
+      </table>
+      <pre><span class="cm">// 1. IMPLICIT WAIT — applies globally, set once</span>
+driver.<span class="fn">manage</span>().<span class="fn">timeouts</span>().<span class="fn">implicitlyWait</span>(<span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nm">10</span>));
+
+<span class="cm">// 2. EXPLICIT WAIT — precise condition-based wait</span>
+<span class="cl">WebDriverWait</span> wait = <span class="kw">new</span> <span class="cl">WebDriverWait</span>(driver, <span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nm">15</span>));
+<span class="cl">WebElement</span> element = wait.<span class="fn">until</span>(
+    <span class="cl">ExpectedConditions</span>.<span class="fn">elementToBeClickable</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"submitBtn"</span>))
+);
+
+<span class="cm">// 3. FLUENT WAIT — configurable polling + exception tolerance</span>
+<span class="cl">Wait</span>&lt;<span class="cl">WebDriver</span>&gt; fluentWait = <span class="kw">new</span> <span class="cl">FluentWait</span>&lt;&gt;(driver)
+    .<span class="fn">withTimeout</span>(<span class="cl">Duration</span>.<span class="fn">ofSeconds</span>(<span class="nm">30</span>))
+    .<span class="fn">pollingEvery</span>(<span class="cl">Duration</span>.<span class="fn">ofMillis</span>(<span class="nm">500</span>))
+    .<span class="fn">ignoring</span>(<span class="cl">NoSuchElementException</span>.<span class="kw">class</span>)
+    .<span class="fn">ignoring</span>(<span class="cl">StaleElementReferenceException</span>.<span class="kw">class</span>);
+
+<span class="cl">WebElement</span> el = fluentWait.<span class="fn">until</span>(d -> d.<span class="fn">findElement</span>(<span class="cl">By</span>.<span class="fn">id</span>(<span class="st">"dynamicEl"</span>)));
+
+<span class="cm">// Common ExpectedConditions</span>
+<span class="cl">ExpectedConditions</span>.<span class="fn">visibilityOfElementLocated</span>(by);
+<span class="cl">ExpectedConditions</span>.<span class="fn">elementToBeClickable</span>(by);
+<span class="cl">ExpectedConditions</span>.<span class="fn">textToBePresentInElement</span>(el, <span class="st">"text"</span>);
+<span class="cl">ExpectedConditions</span>.<span class="fn">alertIsPresent</span>();
+<span class="cl">ExpectedConditions</span>.<span class="fn">invisibilityOf</span>(el);</pre>
+      <div class="highlight red"><strong>Anti-pattern:</strong> Never mix Implicit + Explicit waits. They conflict — implicit wait time adds to explicit wait polling, causing unpredictable timeouts. Use explicit wait exclusively in production frameworks.</div>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>"We use Fluent Wait in our GMF framework for async operations like payment processing spinners — because we need to ignore StaleElementReferenceException while the DOM refreshes, with 500ms polling."</div>
+  </div>
+</div>
+
+<!-- Q16 -->
+<div class="q-card" id="q16">
+  <div class="q-header">
+    <span class="q-num">Q 16</span>
+    <span class="q-title">TimeoutException & Synchronization</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-yellow">Exception Handling</span>
+    <div class="answer">
+      <p><strong>TimeoutException</strong> is thrown when a WebDriverWait or FluentWait condition is not met within the specified timeout period. It's the most common wait-related exception in automation — and it's a <strong>synchronization failure</strong>, not a test failure per se.</p>
+      <div class="highlight red"><strong>Root causes:</strong> Element takes longer than expected to appear/become clickable; wrong wait condition used; element is in DOM but not visible; network latency; async JavaScript not completed.</div>
+      <p><strong>Synchronization</strong> is the practice of aligning your test script timing with the application's actual response time. The application's DOM state changes asynchronously (AJAX, JavaScript rendering, API calls) — your test must <em>wait intelligently</em> rather than use fixed Thread.sleep().</p>
+      <table class="tbl">
+        <tr><th>Approach</th><th>Quality</th><th>Notes</th></tr>
+        <tr><td><code>Thread.sleep(3000)</code></td><td>❌ Anti-pattern</td><td>Wastes time, unreliable, hard to maintain</td></tr>
+        <tr><td>Implicit Wait</td><td>⚠️ Basic</td><td>Only checks DOM presence — not visibility/clickability</td></tr>
+        <tr><td>Explicit Wait</td><td>✅ Good</td><td>Condition-specific, precise</td></tr>
+        <tr><td>Fluent Wait</td><td>✅✅ Best</td><td>Configurable polling + exception tolerance</td></tr>
+        <tr><td>Custom ExpectedCondition</td><td>✅✅ Best</td><td>Business-logic specific conditions</td></tr>
+      </table>
+      <pre><span class="cm">// Custom ExpectedCondition example</span>
+<span class="cl">ExpectedCondition</span>&lt;<span class="cl">Boolean</span>&gt; pageLoaded = driver ->
+    ((<span class="cl">JavascriptExecutor</span>) driver)
+        .<span class="fn">executeScript</span>(<span class="st">"return document.readyState"</span>)
+        .<span class="fn">equals</span>(<span class="st">"complete"</span>);
+
+wait.<span class="fn">until</span>(pageLoaded);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Q17 -->
+<div class="q-card" id="q17">
+  <div class="q-header">
+    <span class="q-num">Q 17</span>
+    <span class="q-title">Absolute vs Relative XPath</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">XPath</span>
+    <div class="answer">
+      <table class="tbl">
+        <tr><th>Aspect</th><th>Absolute XPath</th><th>Relative XPath</th></tr>
+        <tr><td>Starts with</td><td><code>/html/body/...</code></td><td><code>//tagName[@attr='value']</code></td></tr>
+        <tr><td>Traversal</td><td>From DOM root — full path</td><td>From anywhere in the DOM</td></tr>
+        <tr><td>Reliability</td><td>❌ Very brittle — breaks on any DOM change</td><td>✅ Robust — targets element directly</td></tr>
+        <tr><td>Performance</td><td>Slightly faster (fixed path)</td><td>Minimal difference in practice</td></tr>
+        <tr><td>Maintainability</td><td>Poor — avoid in production</td><td>Excellent — industry standard</td></tr>
+        <tr><td>Use case</td><td>Never in automation (unless auto-generated)</td><td>Always preferred</td></tr>
+      </table>
+      <pre><span class="cm">// ❌ Absolute — breaks if any parent div is added</span>
+/html/body/div[1]/div[2]/form/div[3]/input[1]
+
+<span class="cm">// ✅ Relative — stable, readable, maintainable</span>
+//input[@id='email']
+//input[@name='email' and @type='text']
+//form[@class='loginForm']//input[contains(@placeholder,'Email')]
+//label[text()='Email']/following-sibling::input</pre>
+      <div class="highlight green"><strong>Rule of thumb:</strong> If you see an XPath starting with <code>/html</code>, it's absolute — rewrite it as relative immediately. Auto-generated absolute XPaths from browser DevTools are never acceptable in production frameworks.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Q18 -->
+<div class="q-card" id="q18">
+  <div class="q-header">
+    <span class="q-num">Q 18</span>
+    <span class="q-title">UI Testing</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">Testing Concepts</span>
+    <div class="answer">
+      <p><strong>UI Testing</strong> (User Interface Testing) validates that the visual layer of an application — the browser front-end — behaves correctly from a user's perspective. It tests the interaction between the user and the application through the interface: clicks, form inputs, navigation, assertions on displayed data.</p>
+      <p>UI testing operates at the <strong>top of the testing pyramid</strong>: it's the most expensive (slow, brittle) but critical for end-to-end business flow validation.</p>
+      <div class="highlight">
+        <strong>What UI Testing validates:</strong><br>
+        Functional correctness (forms work, navigation correct) | Visual rendering (labels, layouts, colors) | Business rules enforcement at UI layer | User journey flows | Responsive behavior | Error message display | Accessibility (WCAG compliance)
+      </div>
+      <table class="tbl">
+        <tr><th>Type</th><th>Description</th><th>Tools</th></tr>
+        <tr><td>Functional UI Testing</td><td>Validate UI behavior — clicks, inputs, navigation</td><td>Selenium, Playwright, Cypress</td></tr>
+        <tr><td>Visual Regression Testing</td><td>Compare screenshots baseline vs current</td><td>Applitools, Percy</td></tr>
+        <tr><td>Cross-browser Testing</td><td>Ensure consistency across Chrome, Firefox, Edge, Safari</td><td>Selenium Grid, BrowserStack</td></tr>
+        <tr><td>Accessibility Testing</td><td>WCAG compliance — screen reader, keyboard nav</td><td>Axe, WAVE</td></tr>
+        <tr><td>Performance UI Testing</td><td>Load time, rendering speed</td><td>Lighthouse, WebPageTest</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Q19 -->
+<div class="q-card" id="q19">
+  <div class="q-header">
+    <span class="q-num">Q 19</span>
+    <span class="q-title">XPath Axes</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">XPath</span><span class="tag tag-yellow">Advanced</span>
+    <div class="answer">
+      <p>XPath axes allow you to <strong>navigate the DOM tree relative to a context node</strong> — going up, down, sideways, or to ancestors/descendants. They're essential when elements have no stable attributes but their relationship to other elements is known.</p>
+      <table class="tbl">
+        <tr><th>Axis</th><th>Syntax</th><th>Navigates To</th><th>Example</th></tr>
+        <tr><td>child</td><td><code>child::tag</code></td><td>Direct children</td><td><code>//div/child::input</code></td></tr>
+        <tr><td>parent</td><td><code>parent::tag</code></td><td>Direct parent</td><td><code>//input/parent::form</code></td></tr>
+        <tr><td>ancestor</td><td><code>ancestor::tag</code></td><td>All ancestors (up the tree)</td><td><code>//span/ancestor::div[@class='card']</code></td></tr>
+        <tr><td>descendant</td><td><code>descendant::tag</code></td><td>All descendants (down)</td><td><code>//form/descendant::input</code></td></tr>
+        <tr><td>following-sibling</td><td><code>following-sibling::tag</code></td><td>All siblings after current</td><td><code>//label[text()='Name']/following-sibling::input</code></td></tr>
+        <tr><td>preceding-sibling</td><td><code>preceding-sibling::tag</code></td><td>All siblings before current</td><td><code>//td[text()='Price']/preceding-sibling::td</code></td></tr>
+        <tr><td>following</td><td><code>following::tag</code></td><td>All nodes after in document</td><td><code>//h2/following::p[1]</code></td></tr>
+        <tr><td>preceding</td><td><code>preceding::tag</code></td><td>All nodes before in document</td><td><code>//button/preceding::input[1]</code></td></tr>
+        <tr><td>self</td><td><code>self::tag</code></td><td>The context node itself</td><td><code>//input[self::input[@type='text']]</code></td></tr>
+      </table>
+      <pre><span class="cm">// Real-world example: Find input next to a label</span>
+<span class="cm">// HTML: &lt;label&gt;Account Number&lt;/label&gt;&lt;input type="text"/&gt;</span>
+//label[text()='Account Number']/following-sibling::input[1]
+
+<span class="cm">// Find a table row containing specific text</span>
+//td[text()='GMF-001']/parent::tr
+
+<span class="cm">// Find parent container of a button with specific text</span>
+//button[text()='Delete']/ancestor::div[@class='action-panel']</pre>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>XPath axes are often asked in written/whiteboard rounds. The most commonly tested: <strong>following-sibling, parent, ancestor, and preceding-sibling</strong>. Know these four cold.</div>
+  </div>
+</div>
+
+<!-- Q20 -->
+<div class="q-card" id="q20">
+  <div class="q-header">
+    <span class="q-num">Q 20</span>
+    <span class="q-title">Open Source Software</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">Concepts</span>
+    <div class="answer">
+      <p><strong>Open Source Software (OSS)</strong> is software whose source code is publicly available, freely distributed, and can be viewed, modified, and redistributed by anyone — subject to the terms of its license.</p>
+      <p>Selenium itself is a <strong>prime example</strong> — maintained by the Selenium project under the Apache 2.0 license, hosted on GitHub, and contributed to by thousands of developers worldwide.</p>
+      <table class="tbl">
+        <tr><th>Characteristic</th><th>Open Source</th><th>Commercial/Proprietary</th></tr>
+        <tr><td>Source Code</td><td>Publicly available</td><td>Closed/hidden</td></tr>
+        <tr><td>Cost</td><td>Free (typically)</td><td>Licensed fees</td></tr>
+        <tr><td>Modification</td><td>Allowed (per license)</td><td>Restricted</td></tr>
+        <tr><td>Support</td><td>Community-driven</td><td>Vendor SLA</td></tr>
+        <tr><td>Examples in QA</td><td>Selenium, Appium, JMeter, Cucumber, TestNG, Maven, Jenkins</td><td>UFT/QTP, TestComplete, Ranorex</td></tr>
+      </table>
+      <div class="highlight green"><strong>Common OSS licenses in test tooling:</strong> Apache 2.0 (Selenium, Maven, Appium), MIT (Playwright, many npm packages), GPL (some GNU tools). Apache 2.0 is enterprise-friendly — allows commercial use without copyleft restrictions.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Q21 -->
+<div class="q-card" id="q21">
+  <div class="q-header">
+    <span class="q-num">Q 21</span>
+    <span class="q-title">Browser Support in Selenium</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-green">Core Selenium</span>
+    <div class="answer">
+      <p>Selenium WebDriver supports all major browsers through <strong>browser-specific WebDriver implementations</strong>. Each browser has a dedicated driver that acts as a bridge between Selenium's W3C WebDriver protocol and the browser's native automation API.</p>
+      <table class="tbl">
+        <tr><th>Browser</th><th>Driver</th><th>Notes</th></tr>
+        <tr><td>Google Chrome</td><td>ChromeDriver</td><td>Most widely used. Version must match Chrome browser version.</td></tr>
+        <tr><td>Mozilla Firefox</td><td>GeckoDriver</td><td>Open source, W3C compliant since Selenium 3.</td></tr>
+        <tr><td>Microsoft Edge</td><td>EdgeDriver (msedgedriver)</td><td>Chromium-based since Edge 80. Very similar to ChromeDriver.</td></tr>
+        <tr><td>Safari</td><td>SafariDriver</td><td>Built into macOS/Safari. Enable via Safari Preferences → Develop → Allow Remote Automation.</td></tr>
+        <tr><td>Internet Explorer</td><td>IEDriverServer</td><td>Deprecated. IE is EOL. Avoid in new projects.</td></tr>
+        <tr><td>Opera</td><td>OperaDriver</td><td>Also Chromium-based — ChromeDriver can be used.</td></tr>
+      </table>
+      <div class="highlight green"><strong>Selenium 4 — Selenium Manager:</strong> Auto-manages driver binaries — no manual ChromeDriver download needed. Just instantiate <code>new ChromeDriver()</code> and Selenium Manager automatically downloads the matching driver version.</div>
+      <pre><span class="cm">// Selenium 4 — no WebDriverManager needed</span>
+<span class="cl">WebDriver</span> driver = <span class="kw">new</span> <span class="cl">ChromeDriver</span>(); <span class="cm">// Auto-manages driver</span>
+<span class="cl">WebDriver</span> firefox = <span class="kw">new</span> <span class="cl">FirefoxDriver</span>(); <span class="cm">// Same</span>
+
+<span class="cm">// Configure Chrome options</span>
+<span class="cl">ChromeOptions</span> options = <span class="kw">new</span> <span class="cl">ChromeOptions</span>();
+options.<span class="fn">addArguments</span>(<span class="st">"--headless=new"</span>);
+options.<span class="fn">addArguments</span>(<span class="st">"--disable-gpu"</span>);
+options.<span class="fn">addArguments</span>(<span class="st">"--window-size=1920,1080"</span>);
+<span class="cl">WebDriver</span> headless = <span class="kw">new</span> <span class="cl">ChromeDriver</span>(options);</pre>
+    </div>
+  </div>
+</div>
+
+<!-- Q22 -->
+<div class="q-card" id="q22">
+  <div class="q-header">
+    <span class="q-num">Q 22</span>
+    <span class="q-title">Page Object Model (POM)</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-yellow">Design Pattern</span><span class="tag tag-blue">Framework</span>
+    <div class="answer">
+      <p><strong>Page Object Model (POM)</strong> is a design pattern in Selenium that creates a class for each web page (or component), encapsulating its elements and actions. This separates the <strong>test logic</strong> from the <strong>page interaction code</strong>, making the framework maintainable, readable, and reusable.</p>
+      <div class="highlight"><strong>Core principle:</strong> If a page's UI changes, only the Page Object class needs updating — not every test that uses that page. DRY (Don't Repeat Yourself) applied to test automation.</div>
+      <pre><span class="cm">// Page Object class — encapsulates elements and actions</span>
+<span class="kw">public class</span> <span class="cl">GMFLoginPage</span> {
+    <span class="kw">private</span> <span class="cl">WebDriver</span> driver;
+
+    <span class="cm">// Page Factory — lazy initialization of elements</span>
+    <span class="cl">@FindBy</span>(id = <span class="st">"username"</span>)
+    <span class="kw">private</span> <span class="cl">WebElement</span> usernameField;
+
+    <span class="cl">@FindBy</span>(id = <span class="st">"password"</span>)
+    <span class="kw">private</span> <span class="cl">WebElement</span> passwordField;
+
+    <span class="cl">@FindBy</span>(css = <span class="st">"button[type='submit']"</span>)
+    <span class="kw">private</span> <span class="cl">WebElement</span> loginButton;
+
+    <span class="cl">@FindBy</span>(css = <span class="st">".error-message"</span>)
+    <span class="kw">private</span> <span class="cl">WebElement</span> errorMessage;
+
+    <span class="kw">public</span> <span class="fn">GMFLoginPage</span>(<span class="cl">WebDriver</span> driver) {
+        <span class="kw">this</span>.driver = driver;
+        <span class="cl">PageFactory</span>.<span class="fn">initElements</span>(driver, <span class="kw">this</span>); <span class="cm">// Init @FindBy fields</span>
+    }
+
+    <span class="kw">public</span> <span class="cl">GMFDashboardPage</span> <span class="fn">login</span>(<span class="cl">String</span> user, <span class="cl">String</span> pass) {
+        usernameField.<span class="fn">clear</span>();
+        usernameField.<span class="fn">sendKeys</span>(user);
+        passwordField.<span class="fn">sendKeys</span>(pass);
+        loginButton.<span class="fn">click</span>();
+        <span class="kw">return new</span> <span class="cl">GMFDashboardPage</span>(driver); <span class="cm">// Fluent chaining</span>
+    }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getErrorMessage</span>() { <span class="kw">return</span> errorMessage.<span class="fn">getText</span>(); }
+}
+
+<span class="cm">// Test class — clean, readable, no locators visible</span>
+<span class="kw">public class</span> <span class="cl">LoginTest</span> {
+    <span class="cl">@Test</span>
+    <span class="kw">public void</span> <span class="fn">validLoginTest</span>() {
+        <span class="cl">GMFLoginPage</span> loginPage = <span class="kw">new</span> <span class="cl">GMFLoginPage</span>(driver);
+        <span class="cl">GMFDashboardPage</span> dashboard = loginPage.<span class="fn">login</span>(<span class="st">"user@gmf.com"</span>, <span class="st">"pass"</span>);
+        <span class="cl">Assert</span>.<span class="fn">assertTrue</span>(dashboard.<span class="fn">isLoaded</span>());
+    }
+}</pre>
+      <table class="tbl">
+        <tr><th>POM Benefit</th><th>How It Helps</th></tr>
+        <tr><td>Maintainability</td><td>Locator change in one place — not 50 test methods</td></tr>
+        <tr><td>Readability</td><td>Tests read like business flows, not Selenium API calls</td></tr>
+        <tr><td>Reusability</td><td>Login page object reused across all tests needing login</td></tr>
+        <tr><td>Separation of concerns</td><td>Test logic ≠ UI interaction code</td></tr>
+      </table>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>"I use Page Factory with @FindBy annotations in my GMF framework — it initializes elements lazily via proxies, reducing stale element issues. I also apply the fluent page object pattern where each action returns the next page object, enabling readable test chaining."</div>
+  </div>
+</div>
+
+<!-- Q23 -->
+<div class="q-card" id="q23">
+  <div class="q-header">
+    <span class="q-num">Q 23</span>
+    <span class="q-title">Maven for Dependency Management</span>
+  </div>
+  <div class="q-body">
+    <span class="tag tag-blue">Build Tool</span><span class="tag tag-green">DevOps</span>
+    <div class="answer">
+      <p><strong>Maven</strong> is a build automation and dependency management tool for Java projects. It uses a central configuration file — <code>pom.xml</code> (Project Object Model) — to declare project dependencies, plugins, build lifecycle, and repository settings.</p>
+      <p>In Selenium/TestNG automation frameworks, Maven handles: downloading JARs (Selenium, TestNG, Cucumber, REST Assured, etc.) from Maven Central, managing transitive dependencies, running tests via <code>mvn test</code>, and integrating with CI/CD pipelines.</p>
+      <pre><span class="cm">&lt;!-- pom.xml — typical Selenium automation project --&gt;</span>
+&lt;<span class="kw">project</span>&gt;
+  &lt;<span class="kw">groupId</span>&gt;com.gmf.automation&lt;/<span class="kw">groupId</span>&gt;
+  &lt;<span class="kw">artifactId</span>&gt;gmf-test-framework&lt;/<span class="kw">artifactId</span>&gt;
+  &lt;<span class="kw">version</span>&gt;1.0.0&lt;/<span class="kw">version</span>&gt;
+
+  &lt;<span class="kw">dependencies</span>&gt;
+    <span class="cm">&lt;!-- Selenium WebDriver --&gt;</span>
+    &lt;<span class="kw">dependency</span>&gt;
+      &lt;<span class="kw">groupId</span>&gt;org.seleniumhq.selenium&lt;/<span class="kw">groupId</span>&gt;
+      &lt;<span class="kw">artifactId</span>&gt;selenium-java&lt;/<span class="kw">artifactId</span>&gt;
+      &lt;<span class="kw">version</span>&gt;4.18.1&lt;/<span class="kw">version</span>&gt;
+    &lt;/<span class="kw">dependency</span>&gt;
+
+    <span class="cm">&lt;!-- TestNG --&gt;</span>
+    &lt;<span class="kw">dependency</span>&gt;
+      &lt;<span class="kw">groupId</span>&gt;org.testng&lt;/<span class="kw">groupId</span>&gt;
+      &lt;<span class="kw">artifactId</span>&gt;testng&lt;/<span class="kw">artifactId</span>&gt;
+      &lt;<span class="kw">version</span>&gt;7.9.0&lt;/<span class="kw">version</span>&gt;
+    &lt;/<span class="kw">dependency</span>&gt;
+
+    <span class="cm">&lt;!-- Cucumber BDD --&gt;</span>
+    &lt;<span class="kw">dependency</span>&gt;
+      &lt;<span class="kw">groupId</span>&gt;io.cucumber&lt;/<span class="kw">groupId</span>&gt;
+      &lt;<span class="kw">artifactId</span>&gt;cucumber-java&lt;/<span class="kw">artifactId</span>&gt;
+      &lt;<span class="kw">version</span>&gt;7.15.0&lt;/<span class="kw">version</span>&gt;
+    &lt;/<span class="kw">dependency</span>&gt;
+
+    <span class="cm">&lt;!-- REST Assured --&gt;</span>
+    &lt;<span class="kw">dependency</span>&gt;
+      &lt;<span class="kw">groupId</span>&gt;io.rest-assured&lt;/<span class="kw">groupId</span>&gt;
+      &lt;<span class="kw">artifactId</span>&gt;rest-assured&lt;/<span class="kw">artifactId</span>&gt;
+      &lt;<span class="kw">version</span>&gt;5.4.0&lt;/<span class="kw">version</span>&gt;
+    &lt;/<span class="kw">dependency</span>&gt;
+  &lt;/<span class="kw">dependencies</span>&gt;
+
+  &lt;<span class="kw">build</span>&gt;
+    &lt;<span class="kw">plugins</span>&gt;
+      <span class="cm">&lt;!-- Run TestNG via Maven --&gt;</span>
+      &lt;<span class="kw">plugin</span>&gt;
+        &lt;<span class="kw">groupId</span>&gt;org.apache.maven.plugins&lt;/<span class="kw">groupId</span>&gt;
+        &lt;<span class="kw">artifactId</span>&gt;maven-surefire-plugin&lt;/<span class="kw">artifactId</span>&gt;
+        &lt;<span class="kw">version</span>&gt;3.2.5&lt;/<span class="kw">version</span>&gt;
+        &lt;<span class="kw">configuration</span>&gt;
+          &lt;<span class="kw">suiteXmlFiles</span>&gt;
+            &lt;<span class="kw">suiteXmlFile</span>&gt;testng.xml&lt;/<span class="kw">suiteXmlFile</span>&gt;
+          &lt;/<span class="kw">suiteXmlFiles</span>&gt;
+        &lt;/<span class="kw">configuration</span>&gt;
+      &lt;/<span class="kw">plugin</span>&gt;
+    &lt;/<span class="kw">plugins</span>&gt;
+  &lt;/<span class="kw">build</span>&gt;
+&lt;/<span class="kw">project</span>&gt;</pre>
+      <table class="tbl">
+        <tr><th>Maven Command</th><th>What It Does</th></tr>
+        <tr><td><code>mvn test</code></td><td>Compile + run all tests</td></tr>
+        <tr><td><code>mvn clean test</code></td><td>Delete target/ first, then compile + test</td></tr>
+        <tr><td><code>mvn install</code></td><td>Build + install JAR to local .m2 repository</td></tr>
+        <tr><td><code>mvn dependency:tree</code></td><td>View full dependency hierarchy</td></tr>
+        <tr><td><code>mvn test -Dtest=LoginTest</code></td><td>Run a specific test class</td></tr>
+        <tr><td><code>mvn test -Dgroups=smoke</code></td><td>Run tests with TestNG group "smoke"</td></tr>
+      </table>
+      <div class="highlight green"><strong>Maven Lifecycle phases</strong> relevant to QA: <code>validate → compile → test → package → verify → install → deploy</code>. The <code>test</code> phase runs via maven-surefire-plugin which picks up your testng.xml.</div>
+    </div>
+    <div class="tip"><span class="tip-label">💡 Interview Tip</span>"In our Azure DevOps pipeline for GMF, we trigger <code>mvn clean test -Denv=staging -Dbrowser=chrome</code> — environment and browser are passed as system properties, which our ConfigReader picks up to parameterize driver instantiation and base URLs dynamically."</div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<footer>
+  <p>CGI QA Automation Interview — Master Answer Guide &nbsp;|&nbsp; <strong>23 Questions Covered</strong> &nbsp;|&nbsp; Profile: Saikiran Dasari — Senior SDET @ Deloitte/GMF</p>
+  <p style="margin-top:8px; font-size:12px; color:#484f58;">Best of luck, Sai! You've got this. 🚀</p>
+</footer>
+
+</body>
+</html>
