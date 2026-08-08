@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Accenture QA Automation Interview Prep</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #161922;
+    --panel-alt: #1c202c;
+    --border: #2a2f3d;
+    --text: #e4e6eb;
+    --text-dim: #9aa1b1;
+    --accent: #5eb3ff;
+    --accent-2: #ffb454;
+    --code-bg: #10131a;
+    --tag-tech: #5eb3ff;
+    --tag-client: #ffb454;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    padding: 32px 24px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(15,17,23,0.95);
+    backdrop-filter: blur(6px);
+    z-index: 10;
+  }
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 1.5rem;
+  }
+  header p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .tab-btn {
+    background: var(--panel-alt);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .tab-btn.active {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+  details {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  summary {
+    padding: 16px 18px;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: "▸";
+    color: var(--accent);
+    transition: transform 0.15s ease;
+    flex-shrink: 0;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  .qnum {
+    color: var(--text-dim);
+    font-weight: 500;
+    min-width: 24px;
+  }
+  .body {
+    padding: 0 20px 20px 50px;
+    color: var(--text-dim);
+  }
+  .body p { color: var(--text); margin: 8px 0; }
+  .body ul, .body ol { margin: 8px 0; padding-left: 20px; }
+  .body li { margin: 4px 0; }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    margin: 10px 0;
+  }
+  code {
+    font-family: "SF Mono", Consolas, Monaco, monospace;
+    color: #a3e6a1;
+  }
+  .body code:not(pre code) {
+    background: var(--code-bg);
+    padding: 1px 6px;
+    border-radius: 4px;
+    color: var(--accent-2);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.88rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+  }
+  th { background: var(--panel-alt); color: var(--accent); }
+  .note {
+    background: var(--panel-alt);
+    border-left: 3px solid var(--accent-2);
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin: 10px 0;
+    font-size: 0.9rem;
+  }
+  .checklist {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 20px;
+  }
+  .checklist h3 { margin-top: 0; color: var(--accent); }
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    padding: 24px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Accenture QA Automation Interview Prep</h1>
+  <p>Java · Selenium WebDriver · TestNG · Maven · Jenkins — hybrid POM framework</p>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('tech')">Technical Round (12)</button>
+    <button class="tab-btn" onclick="showTab('client')">Client Round (11)</button>
+  </div>
+</header>
+
+<main>
+
+<section id="tech" class="section active">
+
+<details>
+<summary><span class="qnum">1.</span> Introduce yourself and share your professional background</summary>
+<div class="body">
+<p>Keep it to 30–45 seconds, then let the interviewer dig deeper.</p>
+<p><em>"I'm an SDET with around 4+ years of experience, primarily in the BFSI domain. I started with a mechanical engineering background and transitioned into IT in 2022. I've worked on automation for banking clients — building and maintaining hybrid Selenium-Java frameworks using the Page Object Model, TestNG for orchestration, and Maven for build management, integrated with Jenkins for CI/CD. My work has spanned UI automation, API testing with REST Assured, database validation, and some exposure to performance testing with JMeter. I'm comfortable owning a framework end-to-end — from object repository design to reporting and CI integration."</em></p>
+<ul>
+  <li>Keep it under a minute; let the interviewer pull threads.</li>
+  <li>End with a differentiator that invites a follow-up question.</li>
+</ul>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">2.</span> Describe the automation framework used in your project</summary>
+<div class="body">
+<p>Hybrid Framework — most common, safest answer to give:</p>
+<ul>
+  <li><strong>Design pattern:</strong> Page Object Model (POM) + Page Factory</li>
+  <li><strong>Test orchestration:</strong> TestNG (annotations, data providers, parallel execution, suite XML)</li>
+  <li><strong>Build tool:</strong> Maven (dependency management, surefire plugin)</li>
+  <li><strong>Data-driven layer:</strong> Excel/JSON/Properties via Apache POI or Jackson</li>
+  <li><strong>Reporting:</strong> ExtentReports / Allure</li>
+  <li><strong>Logging:</strong> Log4j2</li>
+  <li><strong>CI/CD:</strong> Jenkins triggers Maven build → runs testng.xml → publishes reports</li>
+  <li><strong>Version control:</strong> Git/GitHub, feature-branch workflow</li>
+</ul>
+<pre><code>public class LoginPage extends BasePage {
+    @FindBy(id = "username")
+    private WebElement usernameField;
+
+    @FindBy(id = "password")
+    private WebElement passwordField;
+
+    @FindBy(id = "loginBtn")
+    private WebElement loginButton;
+
+    public LoginPage(WebDriver driver) {
+        super(driver);
+        PageFactory.initElements(driver, this);
+    }
+
+    public HomePage login(String user, String pass) {
+        usernameField.sendKeys(user);
+        passwordField.sendKeys(pass);
+        loginButton.click();
+        return new HomePage(driver);
+    }
+}</code></pre>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">3.</span> How would you add new fields to the object repository?</summary>
+<div class="body">
+<p><strong>A. Page Factory style (annotation-based):</strong></p>
+<pre><code>@FindBy(id = "newField")
+private WebElement newField;</code></pre>
+<p>Add the locator to the relevant Page class, then expose an action method for it.</p>
+<p><strong>B. Properties-file / Excel-based Object Repository:</strong></p>
+<ol>
+  <li>Add a new entry: <code>newField=id,newFieldId</code></li>
+  <li>Loaded via <code>Properties.load()</code> or Apache POI</li>
+  <li>Retrieved dynamically: <code>driver.findElement(By.id(orProperties.getProperty("newField")))</code></li>
+</ol>
+<p><strong>Process to mention:</strong></p>
+<ol>
+  <li>Identify the correct page class / repository file for the module.</li>
+  <li>Inspect the DOM to pick the most stable locator (id &gt; name &gt; CSS &gt; XPath).</li>
+  <li>Add the locator with a consistent naming convention.</li>
+  <li>Add a corresponding action/utility method — tests should never call <code>findElement</code> directly.</li>
+  <li>Run a quick smoke check before committing.</li>
+</ol>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">4.</span> Explain the structure of your automation framework, with an example</summary>
+<div class="body">
+<pre><code>project-root/
+├── pom.xml
+├── testng.xml
+├── src/
+│   ├── main/java/
+│   │   ├── base/          → BaseTest.java (driver init/teardown)
+│   │   ├── pages/         → LoginPage.java, HomePage.java...
+│   │   └── utils/         → ExcelUtils.java, WaitUtils.java, ConfigReader.java
+│   └── test/java/
+│       └── tests/         → LoginTest.java, TC_101_ValidLogin.java...
+│   └── test/resources/
+│       ├── config.properties
+│       ├── testdata.xlsx
+│       └── log4j2.xml
+└── test-output/           → Surefire + Extent reports</code></pre>
+<ul>
+  <li><strong>Base layer</strong> — driver setup/teardown, common config.</li>
+  <li><strong>Page layer</strong> — one class per screen; locators + actions only, no assertions.</li>
+  <li><strong>Test layer</strong> — assertions and business flow; calls Page methods, never touches locators directly.</li>
+  <li><strong>Utility layer</strong> — waits, Excel/JSON readers, screenshot helper, custom listeners.</li>
+  <li><strong>Resources</strong> — externalized data/config, nothing hardcoded.</li>
+</ul>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">5.</span> Difference between single slash (/) and double slash (//) in XPath</summary>
+<div class="body">
+<table>
+<tr><th></th><th>/ (single)</th><th>// (double)</th></tr>
+<tr><td>Type</td><td>Absolute path</td><td>Relative path</td></tr>
+<tr><td>Search</td><td>Starts from document root, exact hierarchy</td><td>Searches anywhere in the DOM, any level</td></tr>
+<tr><td>Example</td><td><code>/html/body/div/form/input</code></td><td><code>//input[@id='username']</code></td></tr>
+<tr><td>Fragility</td><td>Breaks easily if DOM structure changes</td><td>More resilient to structural changes</td></tr>
+</table>
+<div class="note">In real frameworks, <code>//</code> with attribute conditions is used almost exclusively — absolute paths are too brittle against UI changes.</div>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">6.</span> Different TestNG annotations and their execution order</summary>
+<div class="body">
+<p><strong>Common annotations:</strong> <code>@BeforeSuite</code>, <code>@BeforeTest</code>, <code>@BeforeClass</code>, <code>@BeforeMethod</code>, <code>@Test</code>, <code>@AfterMethod</code>, <code>@AfterClass</code>, <code>@AfterTest</code>, <code>@AfterSuite</code></p>
+<pre><code>@BeforeSuite
+  @BeforeTest
+    @BeforeClass
+      @BeforeMethod
+        @Test
+      @AfterMethod
+    @AfterClass
+  @AfterTest
+@AfterSuite</code></pre>
+<ul>
+  <li><code>@BeforeMethod</code>/<code>@AfterMethod</code> — run before/after every <code>@Test</code> method.</li>
+  <li><code>@BeforeClass</code>/<code>@AfterClass</code> — run once per class.</li>
+  <li><code>@BeforeTest</code>/<code>@AfterTest</code> — run once per <code>&lt;test&gt;</code> tag in testng.xml.</li>
+  <li><code>@BeforeSuite</code>/<code>@AfterSuite</code> — run once for the entire suite.</li>
+</ul>
+<p><strong>Other important annotations:</strong> <code>@DataProvider</code>, <code>@Test(priority=1)</code>, <code>@Test(dependsOnMethods={"login"})</code>, <code>@Test(enabled=false)</code>, <code>@Test(invocationCount=3)</code>, <code>@Test(retryAnalyzer=...)</code></p>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">8.</span> Explain Jenkins and its role in automation testing</summary>
+<div class="body">
+<p>Jenkins is an open-source CI/CD automation server. In automation testing, it:</p>
+<ol>
+  <li>Triggers test runs automatically — on commit (webhook), schedule (cron), or manually.</li>
+  <li>Builds the project via Maven (<code>mvn clean test -Dsuite=regression.xml</code>).</li>
+  <li>Executes the TestNG suite and collects results.</li>
+  <li>Publishes reports (Extent, Allure, JUnit XML plugin) as build artifacts.</li>
+  <li>Sends notifications — email/Slack on failure, pass/fail badges.</li>
+  <li>Enables pipeline-as-code via a <code>Jenkinsfile</code>.</li>
+</ol>
+<pre><code>pipeline {
+    agent any
+    stages {
+        stage('Checkout') { steps { git 'https://github.com/repo.git' } }
+        stage('Build & Test') { steps { sh 'mvn clean test -DsuiteXmlFile=testng.xml' } }
+        stage('Report') { steps { publishHTML(target: [reportDir: 'test-output', reportFiles: 'index.html', reportName: 'Extent Report']) } }
+    }
+    post { always { junit 'test-output/*.xml' } }
+}</code></pre>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">9.</span> How do you handle alerts in Selenium?</summary>
+<div class="body">
+<pre><code>Alert alert = driver.switchTo().alert();
+
+alert.accept();              // clicks OK
+alert.dismiss();             // clicks Cancel
+String text = alert.getText();      // reads alert message
+alert.sendKeys("input text");       // for prompt-type alerts</code></pre>
+<ul>
+  <li><strong>Simple alert</strong> → <code>accept()</code></li>
+  <li><strong>Confirmation alert</strong> → <code>accept()</code> / <code>dismiss()</code></li>
+  <li><strong>Prompt alert</strong> → <code>sendKeys()</code> then <code>accept()</code></li>
+</ul>
+<pre><code>new WebDriverWait(driver, Duration.ofSeconds(10))
+    .until(ExpectedConditions.alertIsPresent());</code></pre>
+<div class="note">Selenium only handles JavaScript/browser-native alerts, not OS-level pop-ups — those need the Robot class or AutoIT.</div>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">10.</span> How do you handle file upload buttons (browse buttons)?</summary>
+<div class="body">
+<p><strong>Preferred — direct sendKeys</strong> (bypasses the OS dialog entirely):</p>
+<pre><code>WebElement uploadInput = driver.findElement(By.id("fileUpload"));
+uploadInput.sendKeys("C:\\Users\\Sai\\Documents\\testfile.pdf");</code></pre>
+<p><strong>When the element isn't a direct <code>&lt;input type="file"&gt;</code></strong>, use Robot class:</p>
+<pre><code>Robot robot = new Robot();
+robot.delay(2000);
+StringSelection filePath = new StringSelection("C:\\testfile.pdf");
+Toolkit.getDefaultToolkit().getSystemClipboard().setContents(filePath, null);
+robot.keyPress(KeyEvent.VK_CONTROL);
+robot.keyPress(KeyEvent.VK_V);
+robot.keyRelease(KeyEvent.VK_V);
+robot.keyRelease(KeyEvent.VK_CONTROL);
+robot.keyPress(KeyEvent.VK_ENTER);
+robot.keyRelease(KeyEvent.VK_ENTER);</code></pre>
+<p>Older enterprise frameworks also use AutoIT (<code>.exe</code> script) invoked via <code>Runtime.getRuntime().exec("upload.exe")</code>.</p>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">11.</span> What is polymorphism, and how is it applied in Selenium?</summary>
+<div class="body">
+<p>Polymorphism = the same interface/method behaves differently depending on the object or arguments.</p>
+<p><strong>Runtime polymorphism in Selenium:</strong></p>
+<pre><code>WebDriver driver = new ChromeDriver();   // or FirefoxDriver(), EdgeDriver()
+driver.get("https://example.com");</code></pre>
+<p><code>WebDriver</code> is an interface; <code>ChromeDriver</code>, <code>FirefoxDriver</code>, <code>EdgeDriver</code> are concrete implementations. You code against the interface, and the actual browser behavior is decided at runtime based on the object instantiated — which is why switching browsers is a one-line change.</p>
+<p><strong>Compile-time polymorphism (method overloading)</strong> — see Q12 below.</p>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">12.</span> What is method overloading, and when do you use it in Selenium?</summary>
+<div class="body">
+<p>Overloading = same method name, different parameter list, resolved at compile time.</p>
+<pre><code>public class WaitUtils {
+
+    // Wait using a By locator
+    public WebElement waitForElement(WebDriver driver, By locator) {
+        return new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    // Wait using a By locator with custom timeout
+    public WebElement waitForElement(WebDriver driver, By locator, int timeoutInSeconds) {
+        return new WebDriverWait(driver, Duration.ofSeconds(timeoutInSeconds))
+                .until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    // Wait on an already-located WebElement
+    public WebElement waitForElement(WebDriver driver, WebElement element) {
+        return new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.visibilityOf(element));
+    }
+}</code></pre>
+<p>This gives test writers a single, flexible, discoverable API (<code>waitForElement(...)</code>) instead of forcing multiple differently-named methods.</p>
+</div>
+</details>
+
+</section>
+
+<section id="client" class="section">
+
+<details>
+<summary><span class="qnum">1.</span> Describe your current project and its main components</summary>
+<div class="body">
+<p><em>"I'm working on a banking/financial services application. The main components are: a UI layer tested via Selenium-Java automation for critical user flows, an API layer validated using REST Assured for service-level contracts, a database layer for backend data validation and reconciliation, and in some engagements an email/notification validation layer for triggered communications. The framework is CI/CD-integrated via Jenkins, so every build kicks off a regression suite automatically, with results published through Extent/Allure reports and failures triaged the same day."</em></p>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">2.</span> Which automation framework are you using? (details)</summary>
+<div class="body">
+<p>Same hybrid POM + TestNG + Maven + Jenkins framework — for the client round, add depth on:</p>
+<ul>
+  <li><strong>Parallel execution</strong> — <code>testng.xml</code> with <code>parallel="methods"</code>/<code>"classes"</code> and <code>thread-count</code>, backed by <code>ThreadLocal&lt;WebDriver&gt;</code> for thread-safe driver instances.</li>
+  <li><strong>Cross-browser support</strong> — Selenium Grid / cloud grid (BrowserStack/LambdaTest).</li>
+  <li><strong>Retry mechanism</strong> — custom <code>IRetryAnalyzer</code> for flaky test resilience.</li>
+  <li><strong>Reporting/traceability</strong> — linking test cases back to Jira/TestRail IDs.</li>
+</ul>
+<pre><code>public class DriverManager {
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+    public static void setDriver(WebDriver d) { driver.set(d); }
+    public static WebDriver getDriver() { return driver.get(); }
+    public static void unload() { driver.remove(); }
+}</code></pre>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">3.</span> What is POM, and why is the object repository used?</summary>
+<div class="body">
+<p><strong>Page Object Model</strong> — each web page/screen is a class containing locators (fields) and actions (methods that use those locators).</p>
+<p><strong>Why an Object Repository matters:</strong></p>
+<ol>
+  <li><strong>Maintainability</strong> — a locator change is fixed in one place, not across every test file.</li>
+  <li><strong>Reusability</strong> — page methods are reused across many test cases.</li>
+  <li><strong>Readability</strong> — tests read as business language (<code>loginPage.login(user, pass)</code>) instead of raw Selenium calls.</li>
+  <li><strong>Separation of concerns</strong> — test logic stays separate from UI interaction logic.</li>
+</ol>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">4.</span> Purpose of the Robot class in Selenium</summary>
+<div class="body">
+<p><code>java.awt.Robot</code> is a core Java class used to simulate OS-level keyboard and mouse events, outside the browser DOM.</p>
+<p><strong>Common use cases:</strong></p>
+<ul>
+  <li>Native file upload dialogs Selenium can't directly access.</li>
+  <li>Windows authentication pop-ups (basic auth dialogs).</li>
+  <li>Keyboard shortcuts (Ctrl+C, Ctrl+V, Alt+Tab).</li>
+  <li>Capturing screen pixels (<code>createScreenCapture</code>).</li>
+</ul>
+<pre><code>Robot robot = new Robot();
+robot.keyPress(KeyEvent.VK_ENTER);
+robot.keyRelease(KeyEvent.VK_ENTER);</code></pre>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">5.</span> Why is Page Factory used in object repositories?</summary>
+<div class="body">
+<p><code>PageFactory</code> is Selenium's built-in mechanism to initialize <code>@FindBy</code>-annotated <code>WebElement</code> fields.</p>
+<ol>
+  <li><strong>Cleaner, declarative locators</strong> — <code>@FindBy(id="username")</code> instead of repeated <code>findElement</code> calls.</li>
+  <li><strong>Lazy initialization</strong> — elements aren't located until used, via a dynamic proxy.</li>
+  <li><strong>Centralized initialization</strong> — one call, <code>PageFactory.initElements(driver, this)</code>, wires up the entire page class.</li>
+  <li><strong>Supports <code>@FindBys</code>/<code>@FindAll</code></strong> — for chained or OR-based locator strategies.</li>
+</ol>
+<pre><code>public class LoginPage {
+    @FindBy(id = "username") WebElement username;
+    @FindBy(id = "password") WebElement password;
+
+    public LoginPage(WebDriver driver) {
+        PageFactory.initElements(driver, this);
+    }
+}</code></pre>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">6.</span> How do you launch Internet Explorer in Selenium WebDriver?</summary>
+<div class="body">
+<pre><code>System.setProperty("webdriver.ie.driver", "C:\\drivers\\IEDriverServer.exe");
+
+InternetExplorerOptions options = new InternetExplorerOptions();
+options.ignoreZoomSettings();
+options.introduceFlakinessByIgnoringSecurityDomains();
+options.requireWindowFocus();
+
+WebDriver driver = new InternetExplorerDriver(options);
+driver.get("https://example.com");</code></pre>
+<p><strong>Key gotchas:</strong></p>
+<ul>
+  <li>IE requires Protected Mode set identically across all security zones (Internet, Local Intranet, Trusted Sites, Restricted Sites) — mismatches cause <code>NoSuchWindowException</code>.</li>
+  <li>Zoom level must be 100%.</li>
+  <li>IE driver is slower and flakier than Chrome/Firefox — typically only used for legacy banking apps still mandating IE11.</li>
+</ul>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">7.</span> How do you use the Select class for dropdowns?</summary>
+<div class="body">
+<pre><code>WebElement dropdown = driver.findElement(By.id("country"));
+Select select = new Select(dropdown);
+
+select.selectByVisibleText("India");
+select.selectByValue("IN");
+select.selectByIndex(2);
+
+// Multi-select dropdowns
+if (select.isMultiple()) {
+    select.selectByVisibleText("Java");
+    select.selectByVisibleText("Python");
+    select.deselectAll();
+}
+
+List<WebElement> allOptions = select.getOptions();
+WebElement selectedOption = select.getFirstSelectedOption();</code></pre>
+<div class="note"><code>Select</code> only works on native HTML <code>&lt;select&gt;</code> tags. Custom JS-based dropdowns need manual click-based handling instead.</div>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">8.</span> How do you work with frames? How many ways to pass values?</summary>
+<div class="body">
+<p>Frames create a separate DOM context — you must switch into a frame before interacting with elements inside it.</p>
+<p><strong>Three ways to switch into a frame:</strong></p>
+<pre><code>driver.switchTo().frame(0);                      // 1. By index
+driver.switchTo().frame("frameNameOrId");         // 2. By name or ID
+WebElement frameElement = driver.findElement(By.xpath("//iframe[@class='payment']"));
+driver.switchTo().frame(frameElement);             // 3. By WebElement</code></pre>
+<p><strong>Coming back out:</strong></p>
+<pre><code>driver.switchTo().defaultContent();   // back to the main page
+driver.switchTo().parentFrame();      // one level up (for nested frames)</code></pre>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">9.</span> Explain the use of XPath and sibling elements</summary>
+<div class="body">
+<p>Sibling axes are used when an element doesn't have a unique/stable locator itself but sits next to one that does.</p>
+<pre><code>// Find the input right after a label with text "Email"
+//label[text()='Email']/following-sibling::input[1]
+
+// Find element before a given sibling
+//div[@class='footer']/preceding-sibling::div[1]
+
+// All following siblings (not just the immediate one)
+//h2[text()='Section']/following-sibling::p</code></pre>
+<p><strong>Common XPath functions worth mentioning:</strong> <code>contains()</code>, <code>starts-with()</code>, <code>text()</code>, <code>normalize-space()</code>, and logical <code>and</code>/<code>or</code>.</p>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">10.</span> Implicit wait vs explicit wait — difference and syntax</summary>
+<div class="body">
+<table>
+<tr><th></th><th>Implicit Wait</th><th>Explicit Wait</th></tr>
+<tr><td>Scope</td><td>Applies globally to every <code>findElement</code> call for the driver's lifetime</td><td>Applies to a specific element/condition only</td></tr>
+<tr><td>Behavior</td><td>Polls the DOM for a fixed max time before throwing <code>NoSuchElementException</code></td><td>Polls until a specific <code>ExpectedCondition</code> is met</td></tr>
+<tr><td>Flexibility</td><td>One-size-fits-all timeout</td><td>Different waits/conditions per element</td></tr>
+<tr><td>Best practice</td><td>Set once, low value (5–10s)</td><td>Preferred for flaky/dynamic elements</td></tr>
+</table>
+<p><strong>Implicit wait syntax:</strong></p>
+<pre><code>driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));</code></pre>
+<p><strong>Explicit wait syntax:</strong></p>
+<pre><code>WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.id("submitBtn")));</code></pre>
+<div class="note"><strong>Gotcha:</strong> never mix implicit and explicit waits in the same script — it can cause unpredictable wait times since the two timers can stack unexpectedly.</div>
+</div>
+</details>
+
+<details>
+<summary><span class="qnum">11.</span> Program for taking a screenshot in Selenium</summary>
+<div class="body">
+<pre><code>import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
+import java.io.File;
+import java.io.IOException;
+
+public class ScreenshotUtil {
+
+    public static String captureScreenshot(WebDriver driver, String screenshotName) {
+        TakesScreenshot ts = (TakesScreenshot) driver;
+        File source = ts.getScreenshotAs(OutputType.FILE);
+        String destPath = System.getProperty("user.dir")
+                + "/screenshots/" + screenshotName + "_" + System.currentTimeMillis() + ".png";
+        File destination = new File(destPath);
+        try {
+            FileUtils.copyFile(source, destination);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return destPath;
+    }
+}</code></pre>
+<p><strong>Usage in a TestNG listener (auto-capture on failure):</strong></p>
+<pre><code>@Override
+public void onTestFailure(ITestResult result) {
+    WebDriver driver = DriverManager.getDriver();
+    ScreenshotUtil.captureScreenshot(driver, result.getName());
+}</code></pre>
+</div>
+</details>
+
+</section>
+
+<div class="checklist">
+<h3>Quick Prep Checklist</h3>
+<ul>
+  <li>Re-read your answers to Client Q1 and Q2 (both rounds) out loud — near-certain openers.</li>
+  <li>Have one concrete numeric/impact detail ready (test count, coverage %, defects caught).</li>
+  <li>Be ready to whiteboard the framework folder structure from memory (Technical Q4).</li>
+  <li>Practice writing the screenshot and Select-class code from memory — client rounds often ask you to type live.</li>
+</ul>
+</div>
+
+</main>
+
+<footer>Accenture QA Automation Interview Prep — Java / Selenium / TestNG</footer>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>

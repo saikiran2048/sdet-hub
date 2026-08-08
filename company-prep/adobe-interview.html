@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adobe QA Automation — Interview Run Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0d12;
+    --panel:#12161d;
+    --panel-2:#161b23;
+    --border:#232a35;
+    --text:#d7dce4;
+    --muted:#7c8494;
+    --muted-2:#565e6c;
+    --mono:'JetBrains Mono',monospace;
+    --sans:'IBM Plex Sans',sans-serif;
+    --pass:#3ddc84;
+    --pass-dim:#1f6b45;
+    --r1:#5b9dff;
+    --r2:#b18cff;
+    --r3:#ff9f5b;
+    --bonus:#ffd166;
+    --code-bg:#0d1117;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 1200px 600px at 50% -10%, #131a26 0%, var(--bg) 60%);
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+  }
+  ::selection{background:var(--pass-dim);color:#fff;}
+
+  /* ===== HEADER ===== */
+  .console-bar{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 20px;
+    background:#0d1117;
+    border-bottom:1px solid var(--border);
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+  }
+  .dot{width:9px;height:9px;border-radius:50%;}
+  .dot.r{background:#ff5f57;} .dot.y{background:#febc2e;} .dot.g{background:#28c840;}
+  .console-path{margin-left:12px;color:var(--muted-2);}
+
+  header.hero{
+    padding:44px 24px 28px;
+    max-width:980px;margin:0 auto;
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+    color:var(--pass);text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow::before{content:"▶";font-size:10px;}
+  h1{
+    font-size:clamp(28px,4vw,42px);
+    margin:10px 0 8px;
+    font-weight:700;letter-spacing:-0.02em;
+    line-height:1.15;
+  }
+  .sub{color:var(--muted);font-size:15px;max-width:680px;line-height:1.6;}
+  .run-summary{
+    margin-top:22px;display:flex;gap:0;flex-wrap:wrap;
+    border:1px solid var(--border);border-radius:10px;overflow:hidden;
+    background:var(--panel);
+  }
+  .run-stat{
+    padding:14px 20px;border-right:1px solid var(--border);flex:1;min-width:110px;
+  }
+  .run-stat:last-child{border-right:none;}
+  .run-stat .num{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text);}
+  .run-stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+  .run-stat.pass .num{color:var(--pass);}
+
+  /* ===== TABS ===== */
+  .tabs{
+    max-width:980px;margin:28px auto 0;padding:0 24px;
+    display:flex;gap:8px;flex-wrap:wrap;
+    position:sticky;top:0;z-index:10;
+    background:linear-gradient(var(--bg) 82%, transparent);
+    padding-top:14px;padding-bottom:14px;
+  }
+  .tab{
+    font-family:var(--mono);font-size:13px;font-weight:500;
+    padding:9px 16px;border-radius:8px;border:1px solid var(--border);
+    background:var(--panel);color:var(--muted);cursor:pointer;
+    display:flex;align-items:center;gap:8px;
+    transition:.15s ease;
+  }
+  .tab:hover{color:var(--text);border-color:#333c4a;}
+  .tab.active{color:#0a0d12;font-weight:700;border-color:transparent;}
+  .tab[data-tab="r1"].active{background:var(--r1);}
+  .tab[data-tab="r2"].active{background:var(--r2);}
+  .tab[data-tab="r3"].active{background:var(--r3);}
+  .tab[data-tab="bonus"].active{background:var(--bonus);}
+  .tab .count{
+    font-size:11px;background:rgba(255,255,255,.12);padding:1px 6px;border-radius:20px;
+  }
+  .tab.active .count{background:rgba(0,0,0,.18);}
+
+  main{max-width:980px;margin:0 auto;padding:6px 24px 80px;}
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .panel-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin:22px 0 14px;padding-bottom:10px;border-bottom:1px dashed var(--border);
+  }
+  .panel-head h2{font-size:17px;margin:0;font-weight:600;}
+  .panel-head .accent{font-family:var(--mono);font-size:12px;color:var(--muted);}
+
+  /* ===== TEST CASE CARD ===== */
+  .case{
+    border:1px solid var(--border);border-radius:10px;
+    background:var(--panel);margin-bottom:10px;overflow:hidden;
+  }
+  .case-head{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 16px;cursor:pointer;user-select:none;
+  }
+  .case-head:hover{background:var(--panel-2);}
+  .case-id{
+    font-family:var(--mono);font-size:11.5px;color:var(--muted-2);
+    background:#0d1117;border:1px solid var(--border);border-radius:5px;
+    padding:2px 7px;flex-shrink:0;
+  }
+  .case-title{flex:1;font-size:14.5px;font-weight:500;color:var(--text);}
+  .case-status{
+    font-family:var(--mono);font-size:11px;font-weight:700;color:var(--pass);
+    display:flex;align-items:center;gap:5px;flex-shrink:0;
+  }
+  .case-status::before{content:"●";font-size:8px;}
+  .case-time{font-family:var(--mono);font-size:11px;color:var(--muted-2);flex-shrink:0;width:auto;max-width:110px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .chev{color:var(--muted-2);transition:transform .2s ease;flex-shrink:0;font-size:11px;}
+  .case.open .chev{transform:rotate(90deg);}
+
+  .case-body{
+    max-height:0;overflow:hidden;transition:max-height .3s ease;
+    border-top:1px solid transparent;
+  }
+  .case.open .case-body{border-top:1px solid var(--border);}
+  .case-inner{padding:16px 18px 18px 18px;}
+  .case-inner p{margin:0 0 10px;line-height:1.65;font-size:13.8px;color:#c4cad4;}
+  .case-inner p:last-child{margin-bottom:0;}
+  .case-inner ul{margin:8px 0 12px;padding-left:20px;}
+  .case-inner li{font-size:13.6px;line-height:1.6;color:#c4cad4;margin-bottom:5px;}
+  .case-inner strong{color:var(--text);font-weight:600;}
+  .case-inner code.inline{
+    font-family:var(--mono);font-size:12.5px;background:#0d1117;
+    border:1px solid var(--border);padding:1px 5px;border-radius:4px;color:#9fd8ff;
+  }
+  .tag-row{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px;}
+  .tag{
+    font-family:var(--mono);font-size:10.5px;color:var(--muted);
+    border:1px solid var(--border);padding:2px 8px;border-radius:20px;
+  }
+
+  pre.code-block{
+    background:var(--code-bg);border:1px solid var(--border);border-radius:8px;
+    padding:14px 16px;overflow-x:auto;margin:10px 0 12px;
+    font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#c9d1d9;
+  }
+  pre.code-block .kw{color:#ff7b72;}
+  pre.code-block .tp{color:#79c0ff;}
+  pre.code-block .str{color:#a5d6a7;}
+  pre.code-block .cm{color:#6a737d;font-style:italic;}
+  pre.code-block .mth{color:#d2a8ff;}
+
+  .callout{
+    border-left:3px solid var(--pass);background:rgba(61,220,132,.06);
+    padding:9px 13px;border-radius:0 6px 6px 0;margin:10px 0;
+    font-size:13px;color:#b7c0cd;
+  }
+  .callout.warn{border-left-color:var(--r3);background:rgba(255,159,91,.07);}
+  .callout strong{color:var(--text);}
+
+  /* ===== BONUS ===== */
+  .bonus-list{border:1px solid var(--border);border-radius:10px;background:var(--panel);overflow:hidden;}
+  .bonus-item{
+    display:flex;gap:14px;padding:13px 16px;border-bottom:1px solid var(--border);
+    font-size:13.8px;line-height:1.5;
+  }
+  .bonus-item:last-child{border-bottom:none;}
+  .bonus-num{font-family:var(--mono);color:var(--bonus);font-weight:700;flex-shrink:0;width:26px;}
+  .bonus-cat{
+    font-family:var(--mono);font-size:9.5px;color:var(--muted-2);
+    text-transform:uppercase;letter-spacing:.05em;margin-top:3px;display:block;
+  }
+
+  footer{
+    max-width:980px;margin:10px auto 60px;padding:0 24px;
+    font-family:var(--mono);font-size:11.5px;color:var(--muted-2);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  @media (max-width:640px){
+    .run-stat{min-width:33%;}
+    .case-title{font-size:13.5px;}
+    .case-time{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="console-bar">
+  <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+  <span class="console-path">~/interview-prep/adobe-qa-automation $ ./run-suite.sh --full</span>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">Suite executed · 27 test cases · 20 queued follow-ups</div>
+  <h1>Adobe QA Automation — Interview Run Log</h1>
+  <p class="sub">Java + OOPS, Selenium + Framework Design, and API/SQL rounds, answered at senior-SDET depth. Every case is expandable — click to see the full assertion.</p>
+
+  <div class="run-summary">
+    <div class="run-stat pass"><div class="num">27/27</div><div class="lbl">Passed</div></div>
+    <div class="run-stat"><div class="num">03</div><div class="lbl">Rounds</div></div>
+    <div class="run-stat"><div class="num">20</div><div class="lbl">Follow-ups queued</div></div>
+    <div class="run-stat"><div class="num">Java</div><div class="lbl">Primary lang</div></div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <div class="tab active" data-tab="r1"><span>Round 1 · Java/OOPS</span><span class="count">9</span></div>
+  <div class="tab" data-tab="r2"><span>Round 2 · Selenium</span><span class="count">9</span></div>
+  <div class="tab" data-tab="r3"><span>Round 3 · API/SQL</span><span class="count">9</span></div>
+  <div class="tab" data-tab="bonus"><span>Follow-ups</span><span class="count">20</span></div>
+</nav>
+
+<main>
+  <div class="panel active" id="panel-r1"></div>
+  <div class="panel" id="panel-r2"></div>
+  <div class="panel" id="panel-r3"></div>
+  <div class="panel" id="panel-bonus"></div>
+</main>
+
+<footer>
+  <span>node: adobe-qa-round-1..3 · assertions: hard-technical, no-analogy mode</span>
+  <span>exit code 0</span>
+</footer>
+
+<script>
+const DATA = {
+r1: {
+  title: "Round 1 — Java + Coding + OOPS", accent: "r1",
+  cases: [
+    {
+      title: "Explain OOPS principles with real examples.",
+      tags: ["core-java","design"], time: "38ms",
+      body: `
+        <p>Four pillars, each mapped to how they actually show up in a Selenium/TestNG framework:</p>
+        <ul>
+          <li><strong>Encapsulation</strong> — private fields with controlled access. A Page Object keeps its <code class="inline">WebElement</code> fields <code class="inline">private</code> and exposes only action methods (<code class="inline">login()</code>, <code class="inline">enterUsername()</code>) — the test class never touches locators directly.</li>
+          <li><strong>Inheritance</strong> — a <code class="inline">BasePage</code> class holds common logic (<code class="inline">waitForElement()</code>, <code class="inline">click()</code>, driver reference); every concrete page (<code class="inline">LoginPage</code>, <code class="inline">DashboardPage</code>) extends it and inherits that behavior instead of duplicating it.</li>
+          <li><strong>Polymorphism</strong> — overloading: multiple <code class="inline">click(WebElement el)</code> / <code class="inline">click(By locator)</code> variants in a utility class. Overriding: <code class="inline">BasePage.isPageLoaded()</code> is overridden differently in each subclass.</li>
+          <li><strong>Abstraction</strong> — an interface like <code class="inline">IPage</code> or an abstract <code class="inline">BaseTest</code> defines <em>what</em> must exist (setUp/tearDown) without exposing <em>how</em> driver instantiation happens underneath.</li>
+        </ul>
+        <div class="callout"><strong>Interview angle:</strong> lead with the framework example, not the textbook Animal/Dog example — it signals you've actually built one.</div>
+      `
+    },
+    {
+      title: "Difference between ArrayList and LinkedHashSet.",
+      tags: ["collections"], time: "22ms",
+      body: `
+        <ul>
+          <li><strong>ArrayList</strong> — ordered by insertion index, <em>allows duplicates</em>, backed by a resizable array, O(1) random access via index, O(n) for search/remove in the middle.</li>
+          <li><strong>LinkedHashSet</strong> — <em>no duplicates</em>, still preserves insertion order (unlike plain <code class="inline">HashSet</code>), backed by a hash table + doubly linked list, O(1) average add/contains, no index-based access.</li>
+        </ul>
+        <p><strong>When to use which in automation:</strong> <code class="inline">ArrayList</code> for ordered test-data rows read from a CSV/Excel (duplicates are valid rows). <code class="inline">LinkedHashSet</code> for de-duplicating scraped element IDs or API response values while keeping the order they first appeared in.</p>
+      `
+    },
+    {
+      title: "Write a Java program to reverse a string without using reverse().",
+      tags: ["coding"], time: "19ms",
+      body: `
+        <pre class="code-block"><span class="kw">public class</span> <span class="tp">ReverseString</span> {
+    <span class="kw">public static</span> <span class="tp">String</span> <span class="mth">reverse</span>(<span class="tp">String</span> input) {
+        <span class="tp">char</span>[] chars = input.<span class="mth">toCharArray</span>();
+        <span class="tp">int</span> left = 0, right = chars.length - 1;
+        <span class="kw">while</span> (left &lt; right) {
+            <span class="tp">char</span> temp = chars[left];
+            chars[left] = chars[right];
+            chars[right] = temp;
+            left++;
+            right--;
+        }
+        <span class="kw">return new</span> <span class="tp">String</span>(chars);
+    }
+
+    <span class="kw">public static void</span> <span class="mth">main</span>(<span class="tp">String</span>[] args) {
+        <span class="tp">System</span>.out.<span class="mth">println</span>(<span class="mth">reverse</span>(<span class="str">"SDET"</span>)); <span class="cm">// TEDS</span>
+    }
+}</pre>
+        <p>Two-pointer, in-place swap on a <code class="inline">char[]</code>. O(n) time, O(n) space for the copied array (Strings are immutable in Java, so you can't reverse truly in place on the original).</p>
+      `
+    },
+    {
+      title: "Explain StringBuilder vs StringBuffer.",
+      tags: ["core-java"], time: "15ms",
+      body: `
+        <ul>
+          <li><strong>StringBuilder</strong> — not synchronized, faster, use it in almost all test code since Selenium tests run single-threaded per test method.</li>
+          <li><strong>StringBuffer</strong> — synchronized (thread-safe), slightly slower due to lock overhead. Relevant only if you're mutating a shared string across threads during parallel execution — rare in practice; you'd more likely reach for <code class="inline">ThreadLocal</code> instead of sharing a buffer at all.</li>
+        </ul>
+        <div class="callout warn"><strong>Trap:</strong> both are mutable, unlike <code class="inline">String</code>. Interviewers often check if you know <code class="inline">String</code> concatenation in a loop creates a new object each time (O(n²)) — that's exactly the case for <code class="inline">StringBuilder</code>.</div>
+      `
+    },
+    {
+      title: "How do you handle NullPointerException in Java?",
+      tags: ["core-java","debugging"], time: "27ms",
+      body: `
+        <p><strong>Common automation-specific causes:</strong></p>
+        <ul>
+          <li><code class="inline">WebElement</code> fields annotated with <code class="inline">@FindBy</code> used before <code class="inline">PageFactory.initElements(driver, this)</code> is called.</li>
+          <li><code class="inline">driver.findElement()</code> returning fine, but a downstream utility method returning <code class="inline">null</code> on a failed lookup instead of throwing.</li>
+          <li>Unboxing a <code class="inline">null</code> <code class="inline">Integer</code>/<code class="inline">Boolean</code> from a config or JSON map.</li>
+        </ul>
+        <p><strong>Handling strategy:</strong></p>
+        <ul>
+          <li>Prefer <em>fail-fast</em>: <code class="inline">Objects.requireNonNull(driver, "driver not initialized")</code> at entry points rather than catching NPE deep in a chain.</li>
+          <li>Use <code class="inline">Optional&lt;T&gt;</code> for methods that legitimately may not find something (e.g. an optional UI element).</li>
+          <li>Catch narrowly and only where you can actually recover — swallowing NPEs broadly hides real defects.</li>
+          <li>Since Java 14+, "helpful NPEs" (<code class="inline">-XX:+ShowCodeDetailsInExceptionMessages</code>) pinpoint exactly which reference was null — enable it in CI logs.</li>
+        </ul>
+      `
+    },
+    {
+      title: "Write a program to check if two strings are anagrams.",
+      tags: ["coding"], time: "24ms",
+      body: `
+        <pre class="code-block"><span class="cm">// O(n log n) — sort & compare</span>
+<span class="kw">public static boolean</span> <span class="mth">isAnagramSort</span>(<span class="tp">String</span> a, <span class="tp">String</span> b) {
+    <span class="kw">if</span> (a.length() != b.length()) <span class="kw">return false</span>;
+    <span class="tp">char</span>[] c1 = a.<span class="mth">toCharArray</span>(), c2 = b.<span class="mth">toCharArray</span>();
+    <span class="tp">Arrays</span>.<span class="mth">sort</span>(c1);
+    <span class="tp">Arrays</span>.<span class="mth">sort</span>(c2);
+    <span class="kw">return</span> <span class="tp">Arrays</span>.<span class="mth">equals</span>(c1, c2);
+}
+
+<span class="cm">// O(n) — frequency count, no sort</span>
+<span class="kw">public static boolean</span> <span class="mth">isAnagramCount</span>(<span class="tp">String</span> a, <span class="tp">String</span> b) {
+    <span class="kw">if</span> (a.length() != b.length()) <span class="kw">return false</span>;
+    <span class="tp">int</span>[] freq = <span class="kw">new</span> <span class="tp">int</span>[256];
+    <span class="kw">for</span> (<span class="tp">char</span> c : a.<span class="mth">toCharArray</span>()) freq[c]++;
+    <span class="kw">for</span> (<span class="tp">char</span> c : b.<span class="mth">toCharArray</span>()) freq[c]--;
+    <span class="kw">for</span> (<span class="tp">int</span> f : freq) <span class="kw">if</span> (f != 0) <span class="kw">return false</span>;
+    <span class="kw">return true</span>;
+}</pre>
+        <p>Mention both — the sort version is the obvious answer, the frequency-count version shows you can optimize when pushed on complexity.</p>
+      `
+    },
+    {
+      title: "Explain final, finally, and finalize.",
+      tags: ["core-java"], time: "16ms",
+      body: `
+        <ul>
+          <li><strong>final</strong> — keyword. On a variable: value can't be reassigned (use for constants like <code class="inline">WAIT_TIMEOUT</code>). On a method: can't be overridden. On a class: can't be extended (e.g. sealing a utility class).</li>
+          <li><strong>finally</strong> — block that always executes after try/catch, regardless of exception. In automation: guaranteed <code class="inline">driver.quit()</code> or resource cleanup even if the test assertion throws.</li>
+          <li><strong>finalize()</strong> — method invoked by the GC before an object is reclaimed. <strong>Deprecated since Java 9</strong>, removed for practical use since Java 18 (marked for removal). Never rely on it for cleanup — use <code class="inline">try-with-resources</code> or explicit <code class="inline">finally</code>/<code class="inline">AutoCloseable</code> instead.</li>
+        </ul>
+      `
+    },
+    {
+      title: "Difference between HashMap and HashTable.",
+      tags: ["collections","concurrency"], time: "20ms",
+      body: `
+        <ul>
+          <li><strong>HashMap</strong> — not synchronized, allows one <code class="inline">null</code> key and multiple <code class="inline">null</code> values, faster, not thread-safe.</li>
+          <li><strong>Hashtable</strong> — synchronized (legacy, pre-Collections-framework class from JDK 1.0), no <code class="inline">null</code> keys or values (throws NPE), thread-safe but with heavier lock contention.</li>
+        </ul>
+        <div class="callout"><strong>Better answer for the follow-up "so how do you get thread-safety then?"</strong> — use <code class="inline">ConcurrentHashMap</code>, not <code class="inline">Hashtable</code>. Relevant when sharing a results map across parallel TestNG threads.</div>
+      `
+    },
+    {
+      title: "Write a program to rotate an array by K positions.",
+      tags: ["coding","arrays"], time: "31ms",
+      body: `
+        <pre class="code-block"><span class="kw">public class</span> <span class="tp">RotateArray</span> {
+    <span class="kw">public static void</span> <span class="mth">rotate</span>(<span class="tp">int</span>[] arr, <span class="tp">int</span> k) {
+        <span class="tp">int</span> n = arr.length;
+        k = k % n;
+        <span class="mth">reverse</span>(arr, 0, n - 1);
+        <span class="mth">reverse</span>(arr, 0, k - 1);
+        <span class="mth">reverse</span>(arr, k, n - 1);
+    }
+
+    <span class="kw">private static void</span> <span class="mth">reverse</span>(<span class="tp">int</span>[] arr, <span class="tp">int</span> start, <span class="tp">int</span> end) {
+        <span class="kw">while</span> (start &lt; end) {
+            <span class="tp">int</span> temp = arr[start];
+            arr[start] = arr[end];
+            arr[end] = temp;
+            start++; end--;
+        }
+    }
+}</pre>
+        <p><strong>Reversal algorithm:</strong> reverse the whole array, then reverse the first k and remaining n-k segments separately. O(n) time, O(1) extra space — no auxiliary array. This is the answer that separates candidates who know the naive O(n·k) shift-by-one approach from those who know the optimal one.</p>
+      `
+    }
+  ]
+},
+r2: {
+  title: "Round 2 — Selenium + Automation Framework", accent: "r2",
+  cases: [
+    {
+      title: "Explain Page Object Model and its benefits.",
+      tags: ["framework"], time: "29ms",
+      body: `
+        <p>POM separates <strong>locators + page interactions</strong> from <strong>test logic</strong>. Each web page/component gets its own class holding its elements and the actions a user can perform on it; test classes call those actions and assert outcomes, never touching a <code class="inline">By</code> locator directly.</p>
+        <ul>
+          <li><strong>Maintainability</strong> — a UI change updates one page class, not every test that touches that element.</li>
+          <li><strong>Reusability</strong> — <code class="inline">LoginPage.login(user, pass)</code> is reused across dozens of tests.</li>
+          <li><strong>Readability</strong> — tests read like business flows, not raw Selenium calls.</li>
+        </ul>
+        <p>Typical structure: <code class="inline">BasePage</code> → concrete pages (<code class="inline">LoginPage extends BasePage</code>) using <code class="inline">@FindBy</code> + <code class="inline">PageFactory</code>, often paired with a fluent-interface style (methods return <code class="inline">this</code> or the next page object) for chaining.</p>
+      `
+    },
+    {
+      title: "Difference between implicit, explicit, and fluent waits.",
+      tags: ["waits","stability"], time: "26ms",
+      body: `
+        <ul>
+          <li><strong>Implicit wait</strong> — <code class="inline">driver.manage().timeouts().implicitlyWait(...)</code>. Applies globally to every <code class="inline">findElement</code> call; polls the DOM up to the timeout before throwing <code class="inline">NoSuchElementException</code>.</li>
+          <li><strong>Explicit wait</strong> — <code class="inline">WebDriverWait</code> + <code class="inline">ExpectedConditions</code>, scoped to a specific element/condition (visibility, clickability, text change).</li>
+          <li><strong>Fluent wait</strong> — like explicit, but configurable polling interval and a list of exceptions to ignore while polling (e.g. ignore <code class="inline">StaleElementReferenceException</code> during retries).</li>
+        </ul>
+        <div class="callout warn"><strong>Never mix implicit + explicit waits</strong> in the same driver session — Selenium's documented behavior here is inconsistent/undefined (the effective wait can become the sum of both in some driver implementations), and it produces flaky, hard-to-diagnose timeouts.</div>
+      `
+    },
+    {
+      title: "How do you handle dynamic elements using XPath?",
+      tags: ["locators"], time: "23ms",
+      body: `
+        <ul>
+          <li><code class="inline">contains(@id,'submit')</code> / <code class="inline">starts-with(@class,'btn-')</code> — for IDs/classes with runtime-generated suffixes.</li>
+          <li><code class="inline">//label[text()='Email']/following-sibling::input</code> — anchor to stable, human-readable text and traverse relative to it.</li>
+          <li>Axes like <code class="inline">ancestor::</code>, <code class="inline">parent::</code>, <code class="inline">following-sibling::</code> when there's no unique attribute at all.</li>
+          <li>Combine conditions: <code class="inline">//div[contains(@class,'row') and .//span[text()='Active']]</code>.</li>
+        </ul>
+        <p>Prefer stable data attributes (<code class="inline">data-testid</code>) when the dev team can add them — it removes the need for fragile dynamic-XPath gymnastics entirely. CSS selectors are generally faster than XPath and preferred when they can express the same locator.</p>
+      `
+    },
+    {
+      title: "Explain TestNG annotations and their order.",
+      tags: ["testng"], time: "18ms",
+      body: `
+        <pre class="code-block">@BeforeSuite → @BeforeTest → @BeforeClass → @BeforeMethod
+→ @Test
+→ @AfterMethod → @AfterClass → @AfterTest → @AfterSuite</pre>
+        <ul>
+          <li><strong>Suite</strong> level — once per <code class="inline">testng.xml</code> suite (e.g. global driver factory setup).</li>
+          <li><strong>Test</strong> level — once per <code class="inline">&lt;test&gt;</code> tag (e.g. per-browser config in cross-browser runs).</li>
+          <li><strong>Class</strong> level — once per test class (e.g. instantiate a page object).</li>
+          <li><strong>Method</strong> level — before/after every <code class="inline">@Test</code> (e.g. driver launch/quit, or navigation to a base URL).</li>
+        </ul>
+      `
+    },
+    {
+      title: "How do you capture screenshots for failed cases?",
+      tags: ["reporting"], time: "25ms",
+      body: `
+        <p>Implement <code class="inline">ITestListener</code> and override <code class="inline">onTestFailure(ITestResult result)</code> (or do it inline in an <code class="inline">@AfterMethod</code> checking <code class="inline">ITestResult.getStatus() == ITestResult.FAILURE</code>):</p>
+        <pre class="code-block"><span class="kw">public void</span> <span class="mth">onTestFailure</span>(<span class="tp">ITestResult</span> result) {
+    <span class="tp">TakesScreenshot</span> ts = (<span class="tp">TakesScreenshot</span>) driver;
+    <span class="tp">File</span> src = ts.<span class="mth">getScreenshotAs</span>(<span class="tp">OutputType</span>.FILE);
+    <span class="tp">FileUtils</span>.<span class="mth">copyFile</span>(src, <span class="kw">new</span> <span class="tp">File</span>(<span class="str">"screenshots/"</span> + result.<span class="mth">getName</span>() + <span class="str">".png"</span>));
+}</pre>
+        <p>Attach the file into <strong>Extent Reports</strong> or <strong>Allure</strong> so failures are visible directly in the CI report, not just as a separate PNG someone has to go find.</p>
+      `
+    },
+    {
+      title: "Explain DataProvider in TestNG with an example.",
+      tags: ["testng","data-driven"], time: "21ms",
+      body: `
+        <pre class="code-block">@DataProvider(name = <span class="str">"loginData"</span>)
+<span class="kw">public</span> <span class="tp">Object</span>[][] <span class="mth">loginData</span>() {
+    <span class="kw">return new</span> <span class="tp">Object</span>[][] {
+        { <span class="str">"user1"</span>, <span class="str">"pass1"</span> },
+        { <span class="str">"user2"</span>, <span class="str">"pass2"</span> }
+    };
+}
+
+@Test(dataProvider = <span class="str">"loginData"</span>)
+<span class="kw">public void</span> <span class="mth">testLogin</span>(<span class="tp">String</span> username, <span class="tp">String</span> password) {
+    loginPage.<span class="mth">login</span>(username, password);
+    <span class="mth">assertTrue</span>(dashboardPage.<span class="mth">isDisplayed</span>());
+}</pre>
+        <p>Runs the same <code class="inline">@Test</code> once per row — data-driven without loop boilerplate. For larger datasets, back the <code class="inline">DataProvider</code> with an Excel/CSV/DB reader instead of hardcoding rows.</p>
+      `
+    },
+    {
+      title: "Scenario: Login button becomes enabled only after API call — how to handle?",
+      tags: ["scenario","waits"], time: "34ms",
+      body: `
+        <p>Never <code class="inline">Thread.sleep()</code>. Options, in order of preference:</p>
+        <ul>
+          <li><strong>Explicit wait on the element's state:</strong> <code class="inline">wait.until(ExpectedConditions.elementToBeClickable(loginBtn))</code> — waits for both visibility and the <code class="inline">disabled</code> attribute to clear.</li>
+          <li><strong>Custom ExpectedCondition</strong> polling an attribute directly: <code class="inline">wait.until(driver -> loginBtn.isEnabled())</code>.</li>
+          <li><strong>Selenium 4 + CDP (Network interception):</strong> listen for the specific XHR/fetch response completing, then proceed — most deterministic option if the button's enablement is tightly coupled to a known API call.</li>
+        </ul>
+        <p>Root-cause note for the interview: mention that hardcoded sleeps mask real timing issues and make the suite slower on fast runs and still flaky on slow ones — condition-based waiting solves both.</p>
+      `
+    },
+    {
+      title: "How do you manage parallel execution in Selenium?",
+      tags: ["parallel","testng"], time: "30ms",
+      body: `
+        <ul>
+          <li><code class="inline">testng.xml</code>: <code class="inline">&lt;suite parallel="methods" thread-count="5"&gt;</code> (or <code class="inline">classes</code>/<code class="inline">tests</code> depending on granularity needed).</li>
+          <li><strong>ThreadLocal&lt;WebDriver&gt;</strong> — each thread gets its own driver instance; without this, threads stomp on a shared driver and produce cross-contaminated results.</li>
+          <li><strong>Selenium Grid</strong> (or cloud grids like BrowserStack/LambdaTest) to fan sessions out across nodes/browsers, not just threads on one machine.</li>
+          <li>At CI level: Jenkins parallel stages/matrix builds to shard suites across agents for wall-clock time reduction.</li>
+        </ul>
+      `
+    },
+    {
+      title: "Explain use of DesiredCapabilities in Selenium.",
+      tags: ["selenium4","config"], time: "17ms",
+      body: `
+        <p><code class="inline">DesiredCapabilities</code> was used to define browser name/version/platform and driver-specific flags before establishing a <code class="inline">RemoteWebDriver</code>/Grid session.</p>
+        <div class="callout warn"><strong>Selenium 4 note:</strong> <code class="inline">DesiredCapabilities</code> is deprecated. Use browser-specific <strong>Options</strong> classes instead — <code class="inline">ChromeOptions</code>, <code class="inline">FirefoxOptions</code>, <code class="inline">EdgeOptions</code> — which implement <code class="inline">Capabilities</code> and give type-safe, browser-specific configuration (headless mode, extensions, W3C-standard capabilities) instead of a loosely-typed map.</div>
+      `
+    }
+  ]
+},
+r3: {
+  title: "Round 3 — API + SQL + Advanced", accent: "r3",
+  cases: [
+    {
+      title: "SQL: fetch the second highest salary without LIMIT/TOP.",
+      tags: ["sql"], time: "20ms",
+      body: `
+        <pre class="code-block"><span class="cm">-- Correlated subquery approach</span>
+<span class="kw">SELECT</span> MAX(salary) <span class="kw">AS</span> second_highest
+<span class="kw">FROM</span> employees
+<span class="kw">WHERE</span> salary &lt; (<span class="kw">SELECT</span> MAX(salary) <span class="kw">FROM</span> employees);
+
+<span class="cm">-- Window function approach (handles ties correctly)</span>
+<span class="kw">SELECT</span> salary <span class="kw">FROM</span> (
+    <span class="kw">SELECT</span> salary, DENSE_RANK() OVER (<span class="kw">ORDER BY</span> salary <span class="kw">DESC</span>) <span class="kw">AS</span> rnk
+    <span class="kw">FROM</span> employees
+) ranked
+<span class="kw">WHERE</span> rnk = 2;</pre>
+        <p>Mention <strong>why DENSE_RANK is safer</strong>: with plain <code class="inline">MAX(salary &lt; max)</code>, if two employees tie for the highest salary, the "second highest" logic still works correctly here — but if you were asked for <em>Nth</em> highest generally, <code class="inline">DENSE_RANK</code> handles ties without skipping ranks the way <code class="inline">RANK()</code> would.</p>
+      `
+    },
+    {
+      title: "How to validate API response body and schema using Rest Assured?",
+      tags: ["rest-assured","api"], time: "27ms",
+      body: `
+        <pre class="code-block"><span class="cm">// Body assertions</span>
+given()
+    .when().get(<span class="str">"/users/1"</span>)
+    .then()
+        .statusCode(200)
+        .body(<span class="str">"name"</span>, equalTo(<span class="str">"John Doe"</span>))
+        .body(<span class="str">"roles"</span>, hasItem(<span class="str">"admin"</span>));
+
+<span class="cm">// Schema validation (requires json-schema-validator dependency)</span>
+given()
+    .when().get(<span class="str">"/users/1"</span>)
+    .then()
+        .body(matchesJsonSchemaInClasspath(<span class="str">"user-schema.json"</span>));</pre>
+        <p>Body assertions check specific field values; schema validation checks the <em>shape/contract</em> — types, required fields, nested structure — catching breaking API changes even when spot-checked field values happen to still pass.</p>
+      `
+    },
+    {
+      title: "Difference between POST and PUT in REST API.",
+      tags: ["rest","concepts"], time: "14ms",
+      body: `
+        <ul>
+          <li><strong>POST</strong> — create a new resource; <strong>not idempotent</strong> (calling it twice creates two resources); server typically assigns the new resource's ID.</li>
+          <li><strong>PUT</strong> — replace/update an existing resource at a known URI; <strong>idempotent</strong> (calling it N times has the same effect as once); client specifies the full resource, including ID.</li>
+        </ul>
+        <p>Idempotency is the detail interviewers probe for — it directly affects how you design retry logic in an API test framework (safe to auto-retry a failed PUT on network flake; not safe to blindly retry a POST).</p>
+      `
+    },
+    {
+      title: "Scenario: your API returns 500 Internal Server Error — how do you debug?",
+      tags: ["scenario","api"], time: "32ms",
+      body: `
+        <ul>
+          <li>Inspect the <strong>response body</strong> for a stack trace or error code (many APIs surface a generic message to clients but log details server-side).</li>
+          <li>Enable <code class="inline">RequestLoggingFilter</code>/<code class="inline">ResponseLoggingFilter</code> in Rest Assured to capture the exact request that triggered it — headers, payload, auth token.</li>
+          <li>Reproduce independently in Postman/curl to rule out a framework-side bug in the test itself.</li>
+          <li>Check <strong>server/application logs</strong> (or ask backend for correlation-ID-based log lookup) for the exact exception.</li>
+          <li>Check whether it's payload-driven (malformed/missing required field) vs environment-driven (downstream service/DB unavailable) vs data-driven (a specific test data row causing a null-pointer server-side).</li>
+        </ul>
+        <p>Frame the answer as isolating <strong>which layer</strong> owns the defect — this is what separates "I filed a bug" from "I diagnosed it and gave dev the exact repro."</p>
+      `
+    },
+    {
+      title: "How do you handle SSL certificates in API automation?",
+      tags: ["security","rest-assured"], time: "24ms",
+      body: `
+        <ul>
+          <li><strong>Quick/staging approach:</strong> <code class="inline">RestAssured.useRelaxedHTTPSValidation()</code> — bypasses cert validation for self-signed certs in non-prod environments.</li>
+          <li><strong>Proper mTLS/production-like testing:</strong> import the certificate into a Java <strong>truststore</strong> via <code class="inline">keytool</code>, then configure <code class="inline">RestAssured.config = RestAssured.config().sslConfig(new SSLConfig().trustStore(path, password))</code> — this actually exercises the trust chain rather than skipping it.</li>
+        </ul>
+        <p>Relevant to call out given mTLS security testing experience: relaxed validation is fine for functional smoke tests, but any suite validating certificate pinning or mutual-TLS handshakes needs the real truststore/keystore configuration, not the bypass.</p>
+      `
+    },
+    {
+      title: "Explain integration of Selenium scripts with CI/CD tools like Jenkins.",
+      tags: ["ci-cd"], time: "28ms",
+      body: `
+        <ul>
+          <li>Maven/Gradle build wraps the TestNG suite (<code class="inline">mvn test -DsuiteXmlFile=regression.xml</code>).</li>
+          <li>Jenkinsfile pipeline stages: <code class="inline">Checkout → Build → Test → Publish Report → Notify</code>.</li>
+          <li>Parameterized builds for environment/browser selection (QA/staging, Chrome/Firefox headless) via Jenkins build parameters.</li>
+          <li>Triggers: git webhook (on PR/merge) or scheduled (nightly regression).</li>
+          <li>Report publishing: Allure/Extent HTML published as a post-build artifact; failures surfaced in Slack/email via a post-build step.</li>
+          <li>For UI suites specifically: run headless in CI, or against a Selenium Grid/cloud grid so the pipeline doesn't need a GUI browser on the agent.</li>
+        </ul>
+      `
+    },
+    {
+      title: "How do you design a Hybrid Automation Framework?",
+      tags: ["framework","design"], time: "36ms",
+      body: `
+        <p>"Hybrid" = combining <strong>Data-Driven</strong> + <strong>Keyword/Modular-Driven</strong> + <strong>POM</strong>, often with a BDD layer (Cucumber) on top for readability.</p>
+        <ul>
+          <li><strong>Config layer</strong> — environment URLs, credentials, timeouts (properties/YAML, environment-specific overrides).</li>
+          <li><strong>Driver/utils layer</strong> — driver factory (<code class="inline">ThreadLocal</code> for parallel-safety), wait utilities, logging, screenshot capture.</li>
+          <li><strong>Page Object layer</strong> — UI abstraction as above.</li>
+          <li><strong>Test data layer</strong> — Excel/JSON/DB-backed data providers, decoupled from test logic.</li>
+          <li><strong>Test/step layer</strong> — TestNG test classes or Cucumber step definitions calling into page objects.</li>
+          <li><strong>Reporting layer</strong> — Extent/Allure, integrated with CI.</li>
+          <li><strong>Cross-cutting</strong> — same skeleton typically extends to API (Rest Assured) and DB (JDBC) validation layers so one framework covers UI + API + DB assertions for the same business flow.</li>
+        </ul>
+        <p>Design principle to state explicitly: <strong>separation of concerns</strong> — no layer should know the internal details of another (a test class should never build a locator, a page object should never read a properties file directly).</p>
+      `
+    },
+    {
+      title: "Write a program to find duplicate elements in an array.",
+      tags: ["coding"], time: "23ms",
+      body: `
+        <pre class="code-block"><span class="kw">public static</span> <span class="tp">List</span>&lt;<span class="tp">Integer</span>&gt; <span class="mth">findDuplicates</span>(<span class="tp">int</span>[] arr) {
+    <span class="tp">Set</span>&lt;<span class="tp">Integer</span>&gt; seen = <span class="kw">new</span> <span class="tp">HashSet</span>&lt;&gt;();
+    <span class="tp">Set</span>&lt;<span class="tp">Integer</span>&gt; duplicates = <span class="kw">new</span> <span class="tp">LinkedHashSet</span>&lt;&gt;(); <span class="cm">// preserves first-seen order</span>
+
+    <span class="kw">for</span> (<span class="tp">int</span> num : arr) {
+        <span class="kw">if</span> (!seen.<span class="mth">add</span>(num)) {
+            duplicates.<span class="mth">add</span>(num);
+        }
+    }
+    <span class="kw">return new</span> <span class="tp">ArrayList</span>&lt;&gt;(duplicates);
+}</pre>
+        <p>O(n) time, O(n) space using <code class="inline">Set.add()</code>'s boolean return (false if already present) instead of a nested loop's O(n²).</p>
+      `
+    },
+    {
+      title: "Scenario: application loads slowly causing TimeoutException — how do you fix this?",
+      tags: ["scenario","waits","performance"], time: "33ms",
+      body: `
+        <ul>
+          <li>Replace hardcoded sleeps with <strong>explicit waits</strong> tied to a real signal — a loading spinner's <code class="inline">invisibilityOf</code>, or the target element's <code class="inline">visibilityOf</code>.</li>
+          <li>Increase <code class="inline">driver.manage().timeouts().pageLoadTimeout(...)</code> only as a stopgap — not as the fix.</li>
+          <li>Use a JS executor check for <code class="inline">document.readyState === 'complete'</code> when the framework itself, not a specific element, is slow to settle.</li>
+          <li><strong>Root-cause the "why":</strong> is it consistently slow (real app/environment performance issue — escalate to dev/perf team with timing evidence) or only slow under specific data/load conditions (test-environment resourcing issue)? Don't just raise the timeout blindly — that hides a real regression from being caught.</li>
+        </ul>
+        <p>This is a good place to mention JMeter/performance testing experience if it comes up as a follow-up — correlating a Selenium timeout with actual backend response-time data from a load test is a strong senior-level answer.</p>
+      `
+    }
+  ]
+}
+};
+
+const BONUS = [
+  {n:1, cat:"Java", tags:["core-java","design"], q:"Difference between an abstract class and an interface in Java 8+, now that interfaces support default and static methods?",
+   a:`<ul>
+        <li><strong>Abstract class</strong> — can hold state (instance fields), constructors, and non-public members; supports only single inheritance. Use when classes share both a contract <em>and</em> common implementation/state — e.g. <code class="inline">BasePage</code> holding a protected <code class="inline">WebDriver driver</code> field and a constructor that assigns it.</li>
+        <li><strong>Interface</strong> — no instance state (only constants), a class can implement multiple interfaces. Since <strong>Java 8</strong>: <code class="inline">default</code> methods (with a body) let an interface evolve without breaking existing implementers — e.g. <code class="inline">List.forEach()</code> was added as a default method without breaking every class that already implemented <code class="inline">List</code>. Also supports <code class="inline">static</code> methods. Since <strong>Java 9</strong>: private methods for sharing code between default methods internally.</li>
+        <li><strong>Choosing between them:</strong> abstract class for "is-a" relationships needing shared state/code; interface for "can-do" capabilities a class might need several of at once — e.g. a test class implementing both <code class="inline">IRetryAnalyzer</code>-style capability and a custom <code class="inline">Loggable</code> interface.</li>
+      </ul>`},
+  {n:2, cat:"Java", tags:["jvm","performance"], q:"How does the JVM garbage collector work, and why does it matter on long-running Selenium Grid nodes?",
+   a:`<p>The GC reclaims heap memory for objects no longer reachable. Most collectors are <strong>generational</strong>: new objects go into a young generation (Eden + Survivor spaces); objects that survive several minor GCs get promoted to the old generation, which is collected less often but with more expensive pauses.</p>
+      <p><strong>Why it matters on Grid nodes:</strong> every WebDriver session creates a large number of short-lived objects — HTTP request/response wrappers, DOM element handles, JSON payloads. On a node that stays up for days without restarting, the old generation can accumulate and fragment, causing longer stop-the-world pauses over time. Those pauses show up as unexplained, intermittent <code class="inline">TimeoutException</code>s that have nothing to do with the application under test — a classic source of flaky-looking failures that are actually infra-side.</p>
+      <p><strong>Mitigation:</strong> size the heap appropriately (<code class="inline">-Xms</code>/<code class="inline">-Xmx</code>), prefer <strong>G1GC</strong> (or ZGC on newer JDKs) for predictable low-pause behavior, and — the most common real-world fix — run Grid nodes as short-lived Docker containers recreated per pipeline run instead of long-lived VMs, sidestepping the accumulation problem entirely.</p>`},
+  {n:3, cat:"Java", tags:["core-java"], q:"Difference between == and .equals() for String comparison — and what does the String pool have to do with it?",
+   a:`<ul>
+        <li><strong>==</strong> compares references (memory addresses) for objects; <strong>.equals()</strong> (overridden in <code class="inline">String</code>) compares actual character content.</li>
+        <li><strong>String pool:</strong> string literals are interned — <code class="inline">String a = "test"; String b = "test";</code> both point to the same pooled object, so <code class="inline">a == b</code> happens to return <code class="inline">true</code>. But <code class="inline">String c = new String("test");</code> forces a new heap object, so <code class="inline">a == c</code> is <code class="inline">false</code> even though the content is identical.</li>
+      </ul>
+      <div class="callout warn"><strong>Automation impact:</strong> this is a real, recurring source of flaky/incorrect assertions when someone writes <code class="inline">if (actualText == expectedText)</code> instead of <code class="inline">.equals()</code> — it can pass or fail depending purely on how the string was constructed, not on the actual content. Always use <code class="inline">.equals()</code>/<code class="inline">.equalsIgnoreCase()</code> in test assertions, never <code class="inline">==</code>.</div>`},
+  {n:4, cat:"Java", tags:["collections","concurrency"], q:"What is a ConcurrentModificationException, and how do you avoid it while iterating test-data collections?",
+   a:`<p>Thrown by Java's fail-fast iterators when a collection is structurally modified (add/remove) while being iterated, other than through the iterator's own <code class="inline">remove()</code>. Internally detected via a <code class="inline">modCount</code> mismatch check.</p>
+      <p><strong>Common automation trigger:</strong> looping over a <code class="inline">List&lt;WebElement&gt;</code> or a test-data list and calling <code class="inline">list.remove(item)</code> directly inside a for-each loop.</p>
+      <ul>
+        <li>Use <code class="inline">Iterator.remove()</code> instead of the collection's own <code class="inline">remove()</code> while iterating.</li>
+        <li>Use <code class="inline">list.removeIf(condition)</code> for conditional removal (Java 8+).</li>
+        <li>Collect items to remove into a separate list first, then call <code class="inline">removeAll()</code> after the loop finishes.</li>
+        <li>For collections shared across parallel TestNG threads, use a concurrent collection like <code class="inline">CopyOnWriteArrayList</code> rather than trying to synchronize iteration manually.</li>
+      </ul>`},
+  {n:5, cat:"Selenium/TestNG", tags:["testng","flaky-tests"], q:"How would you implement an automatic retry mechanism for flaky tests in TestNG (IRetryAnalyzer)?",
+   a:`<pre class="code-block"><span class="kw">public class</span> <span class="tp">RetryAnalyzer</span> <span class="kw">implements</span> <span class="tp">IRetryAnalyzer</span> {
+    <span class="kw">private int</span> count = 0;
+    <span class="kw">private static final int</span> MAX_RETRY = 2;
+
+    <span class="kw">public boolean</span> <span class="mth">retry</span>(<span class="tp">ITestResult</span> result) {
+        <span class="kw">if</span> (count &lt; MAX_RETRY) {
+            count++;
+            <span class="kw">return true</span>;
+        }
+        <span class="kw">return false</span>;
+    }
+}</pre>
+      <p>Attach per test with <code class="inline">@Test(retryAnalyzer = RetryAnalyzer.class)</code>, or apply it globally without repeating the annotation everywhere by implementing <code class="inline">IAnnotationTransformer.transform()</code> to inject the retry analyzer onto every <code class="inline">@Test</code> at runtime, registered via <code class="inline">&lt;listeners&gt;</code> in <code class="inline">testng.xml</code>.</p>
+      <div class="callout warn"><strong>Guardrail:</strong> cap retries low (1–2) and reserve this for genuinely infra-flaky failures (network blips, grid instability) — not as a way to mask a real, reproducible product defect. Log retried-and-passed cases distinctly in the report so that pattern is visible to the team, not hidden.</div>`},
+  {n:6, cat:"Design Patterns", tags:["patterns","parallel-execution"], q:"What is the Singleton pattern, and how would you apply it to WebDriver instance management safely across parallel threads?",
+   a:`<p>Singleton restricts a class to exactly one instance with a global access point — private constructor, static <code class="inline">getInstance()</code>.</p>
+      <div class="callout warn"><strong>Naive trap:</strong> a plain singleton holding one static <code class="inline">WebDriver</code> breaks immediately under TestNG parallel execution — every thread shares the same browser session and tests corrupt each other's state.</div>
+      <p><strong>Correct pattern — "singleton per thread" via ThreadLocal:</strong></p>
+      <pre class="code-block"><span class="kw">public class</span> <span class="tp">DriverManager</span> {
+    <span class="kw">private static</span> <span class="tp">ThreadLocal</span>&lt;<span class="tp">WebDriver</span>&gt; driver = <span class="kw">new</span> <span class="tp">ThreadLocal</span>&lt;&gt;();
+
+    <span class="kw">public static</span> <span class="tp">WebDriver</span> <span class="mth">getDriver</span>() {
+        <span class="kw">if</span> (driver.<span class="mth">get</span>() == <span class="kw">null</span>) {
+            driver.<span class="mth">set</span>(<span class="kw">new</span> <span class="tp">ChromeDriver</span>());
+        }
+        <span class="kw">return</span> driver.<span class="mth">get</span>();
+    }
+
+    <span class="kw">public static void</span> <span class="mth">quitDriver</span>() {
+        <span class="kw">if</span> (driver.<span class="mth">get</span>() != <span class="kw">null</span>) {
+            driver.<span class="mth">get</span>().<span class="mth">quit</span>();
+            driver.<span class="mth">remove</span>();
+        }
+    }
+}</pre>
+      <p>Each thread gets exactly one driver instance (true to the Singleton contract <em>per thread</em>), and threads never see each other's session. Always call <code class="inline">driver.remove()</code> in teardown to prevent memory leaks across a long parallel suite.</p>`},
+  {n:7, cat:"Java", tags:["core-java","sorting"], q:"Difference between the Comparable and Comparator interfaces — when would you use each for sorting test result objects?",
+   a:`<ul>
+        <li><strong>Comparable</strong> — defines a class's single natural ordering via <code class="inline">compareTo()</code>, implemented by the class itself. e.g. <code class="inline">TestResult implements Comparable&lt;TestResult&gt;</code> sorting by execution duration by default.</li>
+        <li><strong>Comparator</strong> — external, defines an ordering without modifying the class, and you can have as many as you need. e.g. a separate comparator to sort the same <code class="inline">TestResult</code> list by name, or by pass/fail status, without touching the class itself.</li>
+      </ul>
+      <pre class="code-block"><span class="cm">// Java 8+ fluent style — preferred over anonymous Comparator classes</span>
+results.<span class="mth">sort</span>(<span class="tp">Comparator</span>.<span class="mth">comparing</span>(<span class="tp">TestResult</span>::getDuration)
+                      .<span class="mth">thenComparing</span>(<span class="tp">TestResult</span>::getName));</pre>
+      <p>Use <code class="inline">Comparable</code> when there's one obvious default ordering; use <code class="inline">Comparator</code> (or method references/lambdas) whenever you need multiple, situational orderings on the same object — which is the more common case in reporting utilities.</p>`},
+  {n:8, cat:"Selenium", tags:["windows","iframes"], q:"How do you handle multiple windows/tabs and nested iframes in Selenium?",
+   a:`<p><strong>Windows/tabs:</strong></p>
+      <ul>
+        <li>Capture the original handle first: <code class="inline">String original = driver.getWindowHandle();</code></li>
+        <li>After the action that opens a new window: <code class="inline">Set&lt;String&gt; handles = driver.getWindowHandles();</code>, find the new one (set difference from the stored original), then <code class="inline">driver.switchTo().window(newHandle)</code>.</li>
+        <li>Selenium 4 adds <code class="inline">driver.switchTo().newWindow(WindowType.TAB)</code> to open one directly rather than reacting to an app-triggered popup.</li>
+        <li>Switch back to <code class="inline">original</code> (and close the extra window) when done, so subsequent steps don't silently operate on the wrong window.</li>
+      </ul>
+      <p><strong>iframes:</strong></p>
+      <ul>
+        <li>Elements inside an iframe are invisible to Selenium until you explicitly enter that frame's context: <code class="inline">driver.switchTo().frame(index | name | WebElement)</code>.</li>
+        <li><code class="inline">driver.switchTo().defaultContent()</code> returns to the main document; <code class="inline">driver.switchTo().parentFrame()</code> steps up one level for nested frames rather than all the way out.</li>
+      </ul>`},
+  {n:9, cat:"Selenium", tags:["locators","stale-element"], q:"Difference between findElement and findElements — and how do you handle StaleElementReferenceException?",
+   a:`<ul>
+        <li><code class="inline">findElement(By)</code> — returns the first match or throws <code class="inline">NoSuchElementException</code> if nothing is found.</li>
+        <li><code class="inline">findElements(By)</code> — returns a <code class="inline">List&lt;WebElement&gt;</code>, empty (not an exception) if nothing matches — the standard way to check "does this element exist" without a try-catch: <code class="inline">driver.findElements(locator).size() > 0</code>.</li>
+      </ul>
+      <p><strong>StaleElementReferenceException</strong> — thrown when a previously located element is no longer attached to the current DOM (page reload, or a JS/SPA framework re-rendering that node). The <code class="inline">WebElement</code> variable still holds a reference, but it now points to nothing valid.</p>
+      <ul>
+        <li>Don't cache <code class="inline">WebElement</code> references across state changes — re-locate right before interacting.</li>
+        <li>Wrap the interaction in a small retry loop that catches <code class="inline">StaleElementReferenceException</code> and re-finds the element.</li>
+        <li>With <code class="inline">@FindBy</code> + <code class="inline">PageFactory</code>, elements are located lazily on each access by default, which reduces (but doesn't eliminate) staleness in fast-changing single-page apps.</li>
+      </ul>`},
+  {n:10, cat:"Database", tags:["jdbc","db-validation"], q:"How do you perform database validation in an automation framework using JDBC?",
+   a:`<pre class="code-block"><span class="kw">try</span> (<span class="tp">Connection</span> conn = <span class="tp">DriverManager</span>.<span class="mth">getConnection</span>(url, user, pass);
+     <span class="tp">PreparedStatement</span> stmt = conn.<span class="mth">prepareStatement</span>(
+         <span class="str">"SELECT status FROM orders WHERE id = ?"</span>)) {
+
+    stmt.<span class="mth">setString</span>(1, orderId);
+    <span class="kw">try</span> (<span class="tp">ResultSet</span> rs = stmt.<span class="mth">executeQuery</span>()) {
+        <span class="kw">if</span> (rs.<span class="mth">next</span>()) {
+            <span class="mth">assertEquals</span>(rs.<span class="mth">getString</span>(<span class="str">"status"</span>), <span class="str">"SHIPPED"</span>);
+        }
+    }
+}</pre>
+      <ul>
+        <li>Always use <code class="inline">PreparedStatement</code>, never string-concatenated SQL — avoids injection and quoting bugs with test data containing special characters.</li>
+        <li><code class="inline">try-with-resources</code> closes <code class="inline">Connection</code>/<code class="inline">Statement</code>/<code class="inline">ResultSet</code> automatically — critical in a long-running suite to avoid connection-pool exhaustion.</li>
+        <li>In a real framework, wrap this behind a <code class="inline">DBUtils</code> class exposing typed helpers (<code class="inline">getSingleValue()</code>, <code class="inline">getRowAsMap()</code>) so test classes never write raw JDBC boilerplate — and consider a pooled <code class="inline">DataSource</code> (e.g. HikariCP) instead of <code class="inline">DriverManager</code> directly for parallel runs.</li>
+      </ul>`},
+  {n:11, cat:"REST API", tags:["rest","idempotency"], q:"Difference between PATCH and PUT — when is a partial update the right choice?",
+   a:`<ul>
+        <li><strong>PUT</strong> — replaces the entire resource; the client sends the full representation. Idempotent by spec.</li>
+        <li><strong>PATCH</strong> — applies a partial update; the client sends only the fields that change. <strong>Not guaranteed idempotent</strong> — depends on the patch semantics (setting a field to a fixed value is idempotent; incrementing a counter is not).</li>
+      </ul>
+      <p><strong>Testing implication:</strong> PATCH test cases must verify that <em>untouched</em> fields remain unchanged (regression against accidental overwrites — a common real defect class), while PUT tests should verify that fields omitted from the payload get reset/nulled per the API's documented contract, since a full replace is expected.</p>`},
+  {n:12, cat:"REST API", tags:["rest-assured","auth"], q:"How do you handle authentication (OAuth2, Bearer token, Basic Auth) in Rest Assured requests?",
+   a:`<pre class="code-block"><span class="cm">// Basic Auth</span>
+given().auth().preemptive().basic(user, pass)...
+
+<span class="cm">// Bearer token</span>
+given().header(<span class="str">"Authorization"</span>, <span class="str">"Bearer "</span> + token)...
+<span class="cm">// or</span>
+given().auth().oauth2(token)...</pre>
+      <p><strong>OAuth2 flow in a framework:</strong> a setup step calls the token endpoint (client_credentials or password grant), extracts <code class="inline">access_token</code> from the response, and injects it into every subsequent request's header. In practice this lives in a reusable <code class="inline">TokenManager</code>/<code class="inline">AuthUtils</code> class that <strong>caches the token</strong> until it's near expiry, rather than re-authenticating before every single test — for multi-role testing, key the cache by role (admin token, standard-user token) so tests can request the right one.</p>`},
+  {n:13, cat:"Database", tags:["acid","concurrency"], q:"Explain ACID properties in the context of database testing — which one matters most for concurrent test runs?",
+   a:`<ul>
+        <li><strong>Atomicity</strong> — a transaction is all-or-nothing.</li>
+        <li><strong>Consistency</strong> — the DB moves from one valid state to another, respecting constraints.</li>
+        <li><strong>Isolation</strong> — concurrent transactions don't see each other's uncommitted changes.</li>
+        <li><strong>Durability</strong> — committed changes survive a crash.</li>
+      </ul>
+      <p><strong>Most relevant to concurrent test runs: Isolation.</strong> Parallel test threads hitting the same database or API can produce flaky, order-dependent results if the isolation level allows dirty/phantom reads, or — more commonly in practice — if multiple tests share the <em>same test-data rows</em> and race on updates to them.</p>
+      <div class="callout"><strong>Practical fix</strong> isn't tuning isolation levels — it's designing parallel tests to use isolated data per thread (a unique test user/record generated per thread, or a transactional rollback per test) so tests can't collide regardless of DB isolation configuration.</div>`},
+  {n:14, cat:"SQL", tags:["joins","data-validation"], q:"Difference between INNER JOIN and LEFT JOIN, with a concrete data-validation testing use case?",
+   a:`<ul>
+        <li><strong>INNER JOIN</strong> — returns only rows with a match in both tables.</li>
+        <li><strong>LEFT JOIN</strong> — returns all rows from the left table, with <code class="inline">NULL</code>s for any right-table columns that don't match.</li>
+      </ul>
+      <pre class="code-block"><span class="kw">SELECT</span> o.order_id, s.tracking_number
+<span class="kw">FROM</span> orders o
+<span class="kw">LEFT JOIN</span> shipments s <span class="kw">ON</span> o.order_id = s.order_id
+<span class="kw">WHERE</span> s.order_id <span class="kw">IS NULL</span>;</pre>
+      <p><strong>Use case:</strong> validating that every order has a corresponding shipment record. A <code class="inline">LEFT JOIN</code> where the shipment columns come back <code class="inline">NULL</code> directly surfaces orders missing a shipment — an <code class="inline">INNER JOIN</code> would silently exclude exactly the broken rows you're trying to find.</p>`},
+  {n:15, cat:"Framework", tags:["api","microservices"], q:"How do you design an API automation framework for a microservices architecture with 50+ endpoints?",
+   a:`<ul>
+        <li><strong>Modular clients</strong> — one client class per service/domain (<code class="inline">UserServiceClient</code>, <code class="inline">OrderServiceClient</code>) wrapping Rest Assured calls, instead of one flat class covering everything.</li>
+        <li><strong>Centralized specs</strong> — shared <code class="inline">RequestSpecification</code>/<code class="inline">ResponseSpecification</code> builders for common headers, base URIs per environment, and auth.</li>
+        <li><strong>POJOs/DTOs</strong> for request/response (de)serialization via Jackson/Gson instead of raw JSON string manipulation.</li>
+        <li><strong>Schema validation per endpoint</strong>, and ideally consumer-driven contract testing (e.g. Pact) so a change in one service's response shape is caught before it breaks a dependent service, not after.</li>
+        <li><strong>Isolated test data per service</strong> to avoid cross-suite coupling where one service's test data setup accidentally affects another's.</li>
+        <li><strong>Reporting tagged by owning service/domain</strong> so failures triage straight to the right team.</li>
+        <li>At scale, consider running each service's subset on <em>that service's own</em> CI trigger rather than one monolithic 50-endpoint suite gating every change.</li>
+      </ul>`},
+  {n:16, cat:"BDD", tags:["cucumber"], q:"What is Cucumber BDD, and how do you handle Data Tables and Hooks (@Before/@After) in step definitions?",
+   a:`<p><strong>Cucumber BDD</strong> — feature files written in Gherkin (<code class="inline">Given/When/Then</code>), readable by non-technical stakeholders, backed by Java step-definition methods that implement each line.</p>
+      <p><strong>Data Tables</strong> — structured multi-row input in a step:</p>
+      <pre class="code-block">Given the following users exist:
+  | name  | email           | role  |
+  | John  | john@test.com   | admin |
+  | Jane  | jane@test.com   | user  |</pre>
+      <p>Mapped in the step definition via <code class="inline">DataTable.asMaps()</code> (or a custom POJO list) rather than parsing raw table cells manually.</p>
+      <p><strong>Hooks</strong> — <code class="inline">@Before</code>/<code class="inline">@After</code> run around every scenario (the Cucumber equivalent of TestNG's <code class="inline">@BeforeMethod</code>/<code class="inline">@AfterMethod</code>). Tagged hooks like <code class="inline">@Before("@api")</code> scope setup to only scenarios carrying that tag; <code class="inline">@BeforeStep</code>/<code class="inline">@AfterStep</code> give finer-grained control between individual steps when needed (e.g. screenshot after every step, not just at scenario end).</p>`},
+  {n:17, cat:"Systems", tags:["distributed-systems","cap-theorem"], q:"What is the CAP theorem, and why is it relevant when testing distributed systems?",
+   a:`<p>In a distributed system you can only fully guarantee two of three: <strong>Consistency</strong> (every read sees the latest write), <strong>Availability</strong> (every request gets a non-error response), <strong>Partition tolerance</strong> (the system keeps functioning despite network partitions).</p>
+      <p>Since partition tolerance is effectively mandatory for any real distributed system, the practical trade-off in practice is <strong>CP vs AP</strong>.</p>
+      <div class="callout"><strong>Testing relevance:</strong> know which side a given service favors. An AP (eventually-consistent) system means a test that writes data and immediately reads it back can <em>legitimately</em> fail transiently — that's not flakiness to silently retry-and-ignore, it's the system's documented behavior. Tests against such services need built-in eventual-consistency handling (poll-with-backoff until the expected state appears, with a sane max wait) instead of a single immediate assertion.</div>`},
+  {n:18, cat:"API", tags:["mocking","wiremock"], q:"How do you mock external dependencies in API testing — WireMock vs Mockito, and when would you reach for each?",
+   a:`<ul>
+        <li><strong>Mockito</strong> — mocks Java objects/methods within the same JVM/process. Used to unit-test a class's logic in isolation by mocking its direct collaborators (a service class mocking its repository dependency).</li>
+        <li><strong>WireMock</strong> — stands up an actual stub HTTP server; your application-under-test makes real HTTP calls that get intercepted and answered by WireMock. Used at the API/integration level to isolate the service under test from a flaky, rate-limited, or unavailable third-party dependency, while still exercising the real HTTP client code path.</li>
+      </ul>
+      <p><strong>Rule of thumb:</strong> Mockito for unit-level isolation of Java collaborators; WireMock for API/integration-level isolation of external HTTP services.</p>`},
+  {n:19, cat:"Design Patterns", tags:["patterns","test-data"], q:"What is the Builder pattern, and where would you apply it in test-data object creation?",
+   a:`<p>Builder constructs a complex object step by step through chained method calls, avoiding telescoping constructors and giving readable, selectively-populated objects.</p>
+      <pre class="code-block"><span class="tp">UserRequest</span> user = <span class="tp">UserRequest</span>.<span class="mth">builder</span>()
+    .<span class="mth">name</span>(<span class="str">"John"</span>)
+    .<span class="mth">email</span>(<span class="str">"john@test.com"</span>)
+    .<span class="mth">role</span>(<span class="str">"admin"</span>)
+    .<span class="mth">build</span>();</pre>
+      <p><strong>In automation:</strong> each test sets only the fields it actually cares about, while a static factory (e.g. <code class="inline">UserRequest.defaultUser()</code>) supplies sane defaults for everything else — keeps test-data setup readable instead of a constructor with ten positional parameters where the fifth <code class="inline">null</code> means something different in every test. Lombok's <code class="inline">@Builder</code> annotation generates this boilerplate automatically for DTOs/POJOs.</p>`},
+  {n:20, cat:"Reporting", tags:["allure","extent","triage"], q:"How do you set up and interpret an Allure or Extent report with categorized failure reasons (assertion vs environment vs product defect)?",
+   a:`<p><strong>Setup:</strong> add the Allure (or Extent) dependency and the corresponding TestNG listener/adapter, point it at a results directory, and generate the report post-run (<code class="inline">allure serve</code>/<code class="inline">allure generate</code>, or Extent's Spark reporter).</p>
+      <p><strong>Categorization:</strong> Allure supports a <code class="inline">categories.json</code> file that buckets failures by regex-matching the exception message/stack trace — e.g. grouping everything matching an assertion-mismatch pattern as "Product Defects" versus everything matching <code class="inline">TimeoutException</code>/<code class="inline">WebDriverException</code> patterns as "Environment/Infra Issues" — turning a flat pass/fail list into triage-ready groups automatically.</p>
+      <p><strong>Interpretation:</strong> assertion failures are the strongest product-defect candidates (actual vs expected genuinely diverged); exceptions like <code class="inline">TimeoutException</code> or <code class="inline">ElementNotInteractableException</code> are usually environment/stability issues first. A well-set-up report makes this distinction visually obvious so triage time isn't spent re-diagnosing the same infra flakiness as if it were a new bug every single run.</p>`}
+];
+
+function renderRound(key){
+  const round = DATA[key];
+  const el = document.getElementById('panel-'+key);
+  let html = `<div class="panel-head"><h2>${round.title}</h2><span class="accent">${round.cases.length} cases · click to expand</span></div>`;
+  round.cases.forEach((c, i) => {
+    const id = `${key}-${i}`;
+    html += `
+      <div class="case" id="case-${id}">
+        <div class="case-head" onclick="toggleCase('${id}')">
+          <span class="case-id">TC-${key.toUpperCase()}-${String(i+1).padStart(2,'0')}</span>
+          <span class="case-title">${c.title}</span>
+          <span class="case-status">PASS</span>
+          <span class="case-time">${c.time}</span>
+          <span class="chev">▶</span>
+        </div>
+        <div class="case-body">
+          <div class="case-inner">
+            ${c.body}
+            <div class="tag-row">${c.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function renderBonus(){
+  const el = document.getElementById('panel-bonus');
+  let html = `<div class="panel-head"><h2>Follow-up / Related Questions — Answered</h2><span class="accent">20 cases · click to expand</span></div>`;
+  BONUS.forEach(b => {
+    const id = `bonus-${b.n}`;
+    html += `
+      <div class="case" id="case-${id}">
+        <div class="case-head" onclick="toggleCase('${id}')">
+          <span class="case-id">TC-BONUS-${String(b.n).padStart(2,'0')}</span>
+          <span class="case-title">${b.q}</span>
+          <span class="case-status">PASS</span>
+          <span class="case-time">${b.cat}</span>
+          <span class="chev">▶</span>
+        </div>
+        <div class="case-body">
+          <div class="case-inner">
+            ${b.a}
+            <div class="tag-row">${b.tags.map(t=>`<span class="tag">#${t}</span>`).join('')}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function toggleCase(id){
+  const el = document.getElementById('case-'+id);
+  const body = el.querySelector('.case-body');
+  const isOpen = el.classList.contains('open');
+  if(isOpen){
+    el.classList.remove('open');
+    body.style.maxHeight = null;
+  } else {
+    el.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 40 + 'px';
+  }
+}
+
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if(!tab) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+});
+
+renderRound('r1');
+renderRound('r2');
+renderRound('r3');
+renderBonus();
+</script>
+</body>
+</html>
