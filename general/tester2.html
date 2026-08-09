@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tester II - Automation Testing Interview Pack | Full Answers</title>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#161925; --panel2:#1c2030; --accent:#5eb3ff; --accent2:#8b5cf6;
+    --text:#e8eaf0; --muted:#9aa3b8; --code-bg:#0b0d13; --border:#2a2f42; --green:#4ade80; --orange:#fbbf24;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:linear-gradient(180deg,#0f1117 0%, #12141c 100%);
+    color:var(--text); font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin:0; padding:0; line-height:1.65;
+  }
+  .container{max-width:980px; margin:0 auto; padding:40px 24px 100px;}
+  header.top{
+    text-align:center; padding:50px 20px 40px; border-bottom:1px solid var(--border); margin-bottom:30px;
+  }
+  header.top h1{
+    font-size:2.1em; margin:0 0 10px; background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:800;
+  }
+  header.top p{color:var(--muted); margin:4px 0; font-size:1.05em;}
+  nav.toc{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:24px 28px; margin-bottom:40px;
+  }
+  nav.toc h2{margin-top:0; font-size:1.1em; color:var(--accent);}
+  nav.toc ul{columns:2; gap:30px; padding-left:20px; margin:0;}
+  nav.toc li{margin-bottom:6px; font-size:0.95em;}
+  nav.toc a{color:var(--text); text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);}
+  section.part{margin-bottom:56px;}
+  .part-header{
+    display:flex; align-items:center; gap:14px; margin-bottom:24px; padding-bottom:12px;
+    border-bottom:2px solid var(--accent);
+  }
+  .part-header .badge{
+    background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#0b0d13; font-weight:800;
+    padding:6px 14px; border-radius:8px; font-size:0.85em; white-space:nowrap;
+  }
+  .part-header h2{margin:0; font-size:1.5em; color:var(--text);}
+  .qa{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:20px 24px;
+    margin-bottom:18px; scroll-margin-top:20px;
+  }
+  .qa h3{
+    margin:0 0 12px; font-size:1.08em; color:var(--accent); display:flex; gap:10px;
+  }
+  .qnum{
+    background:var(--panel2); color:var(--orange); border-radius:6px; padding:1px 9px; font-size:0.85em;
+    align-self:flex-start; border:1px solid var(--border); font-weight:700;
+  }
+  .answer p{margin:8px 0;}
+  .answer ul, .answer ol{margin:8px 0; padding-left:22px;}
+  .answer li{margin-bottom:5px;}
+  pre{
+    background:var(--code-bg); border:1px solid var(--border); border-radius:8px; padding:14px 16px;
+    overflow-x:auto; margin:12px 0; font-size:0.88em;
+  }
+  code{font-family:'Fira Code', 'Consolas', monospace; color:#c9d6f0;}
+  pre code{color:#c9d6f0;}
+  .inline-code{
+    background:var(--panel2); border:1px solid var(--border); border-radius:4px; padding:1px 6px;
+    font-family:'Consolas', monospace; font-size:0.92em; color:var(--green);
+  }
+  .tip{
+    background:rgba(94,179,255,0.08); border-left:3px solid var(--accent); padding:10px 14px; margin:10px 0;
+    border-radius:0 6px 6px 0; font-size:0.95em;
+  }
+  .tip strong{color:var(--accent);}
+  table{border-collapse:collapse; width:100%; margin:12px 0; font-size:0.92em;}
+  th,td{border:1px solid var(--border); padding:8px 12px; text-align:left;}
+  th{background:var(--panel2); color:var(--accent);}
+  .back-top{
+    display:inline-block; margin-top:8px; font-size:0.8em; color:var(--muted); text-decoration:none;
+  }
+  .back-top:hover{color:var(--accent);}
+  footer{
+    text-align:center; color:var(--muted); padding:40px 20px; border-top:1px solid var(--border); margin-top:40px; font-size:0.9em;
+  }
+  /* --- Back to Hub button --- */
+  .back-to-hub {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px;
+    padding: 8px 14px;
+    background: #101b2d;
+    border: 1px solid #223252;
+    border-radius: 8px;
+    color: #4fd1e8;
+    text-decoration: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-to-hub:hover {
+    border-color: #4fd1e8;
+    transform: translateX(-2px);
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-to-hub">← Back to Hub</a>
+<div class="container">
+
+<header class="top" id="top">
+  <h1>Tester II — Automation Testing Interview Pack</h1>
+  <p>Java · Selenium · TestNG · SQL · Shell Scripting · Framework Design · CI/CD</p>
+  <p style="color:var(--orange); font-weight:600;">Full Detailed Answers — 90 Questions</p>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ul>
+    <li><a href="#part1">Part 1 — Java & Coding (Q1–15)</a></li>
+    <li><a href="#part2">Part 2 — Selenium (Q16–30)</a></li>
+    <li><a href="#part3">Part 3 — TestNG & Framework Design (Q31–40)</a></li>
+    <li><a href="#part4">Part 4 — SQL (Q41–50)</a></li>
+    <li><a href="#part5">Part 5 — Shell Scripting & Linux (Q51–58)</a></li>
+    <li><a href="#part6">Part 6 — CI/CD & Testing (Q59–65)</a></li>
+    <li><a href="#part7">Part 7 — Git & Version Control (Q66–75)</a></li>
+    <li><a href="#part8">Part 8 — API Testing: REST Assured, Karate & Kafka (Q76–85)</a></li>
+    <li><a href="#bonus">Bonus — Scenario-Based (S1–S10)</a></li>
+  </ul>
+</nav>
+<section class="part" id="part1">
+  <div class="part-header"><span class="badge">PART 1</span><h2>Java & Coding (15 Questions)</h2></div>
+
+  <div class="qa" id="q1">
+    <h3><span class="qnum">Q1</span> Explain the four pillars of OOP with automation examples.</h3>
+    <div class="answer">
+      <p>The four pillars are Encapsulation, Inheritance, Polymorphism, and Abstraction. In an automation framework they map directly onto everyday design decisions:</p>
+      <ul>
+        <li><strong>Encapsulation</strong> — Page classes keep <span class="inline-code">WebElement</span> locators <span class="inline-code">private</span> and expose only behavior methods like <span class="inline-code">login()</span> or <span class="inline-code">clickSubmit()</span>. Tests never touch locators directly, so a UI change only requires editing the page class.</li>
+        <li><strong>Inheritance</strong> — A <span class="inline-code">BasePage</span> class holds common methods (<span class="inline-code">waitForElement</span>, <span class="inline-code">click</span>, <span class="inline-code">getText</span>) and every page object (<span class="inline-code">LoginPage</span>, <span class="inline-code">DashboardPage</span>) extends it. Similarly a <span class="inline-code">BaseTest</span> holds driver setup/teardown that all test classes inherit.</li>
+        <li><strong>Polymorphism</strong> — Method overloading, e.g. multiple <span class="inline-code">click(WebElement e)</span> and <span class="inline-code">click(By locator)</span> variants; method overriding, e.g. each page class overrides an abstract <span class="inline-code">isPageLoaded()</span> method from <span class="inline-code">BasePage</span> to define its own load-verification logic.</li>
+        <li><strong>Abstraction</strong> — An interface like <span class="inline-code">DriverFactory</span> exposes <span class="inline-code">getDriver()</span> without exposing whether it's Chrome, Firefox, or a remote grid node underneath — tests just call the interface.</li>
+      </ul>
+      <pre><code>public abstract class BasePage {
+    protected WebDriver driver;
+    public BasePage(WebDriver driver) { this.driver = driver; }
+    public abstract boolean isPageLoaded();
+    protected void click(WebElement el) { el.click(); }
+}
+
+public class LoginPage extends BasePage {
+    public LoginPage(WebDriver driver) { super(driver); }
+    @Override
+    public boolean isPageLoaded() { return driver.findElement(By.id("loginForm")).isDisplayed(); }
+}</code></pre>
+      <div class="tip"><strong>Interview angle:</strong> Don't just define the terms — always tie each one back to a concrete framework decision. Interviewers are checking whether you actually apply OOP or just memorized definitions.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q2">
+    <h3><span class="qnum">Q2</span> Interface vs abstract class? Where would you use an interface in an automation framework?</h3>
+    <div class="answer">
+      <table>
+        <tr><th>Aspect</th><th>Interface</th><th>Abstract Class</th></tr>
+        <tr><td>Methods</td><td>All abstract by default (Java 8+ allows default/static)</td><td>Can mix abstract and concrete methods</td></tr>
+        <tr><td>State</td><td>Only <span class="inline-code">public static final</span> constants</td><td>Can hold instance fields</td></tr>
+        <tr><td>Inheritance</td><td>A class can implement multiple interfaces</td><td>A class can extend only one abstract class</td></tr>
+        <tr><td>Purpose</td><td>Defines a contract / capability</td><td>Provides shared base behavior + partial implementation</td></tr>
+      </table>
+      <p>In a framework, interfaces are used to define a contract that multiple unrelated implementations must satisfy — for example:</p>
+      <pre><code>public interface DriverManager {
+    WebDriver getDriver();
+    void quitDriver();
+}
+
+public class LocalDriverManager implements DriverManager { ... }
+public class GridDriverManager implements DriverManager { ... }
+public class DockerGridDriverManager implements DriverManager { ... }</code></pre>
+      <p>This lets the framework swap between local execution, Selenium Grid, and Docker Grid nodes without touching test code — exactly the kind of design decision that shows up in a real cross-browser/grid framework.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q3">
+    <h3><span class="qnum">Q3</span> What is the difference between == and .equals() in Java?</h3>
+    <div class="answer">
+      <p><span class="inline-code">==</span> compares references (memory addresses) for objects, and actual values for primitives. <span class="inline-code">.equals()</span> compares logical/content equality, and its behavior depends on whether the class has overridden it.</p>
+      <pre><code>String a = new String("QA");
+String b = new String("QA");
+System.out.println(a == b);       // false - different objects
+System.out.println(a.equals(b));  // true  - same content
+
+String c = "QA";
+String d = "QA";
+System.out.println(c == d);       // true - same reference from String pool</code></pre>
+      <div class="tip"><strong>Automation relevance:</strong> Always use <span class="inline-code">.equals()</span> for assertions on Strings, e.g. <span class="inline-code">Assert.assertEquals(actualTitle, expectedTitle)</span> — TestNG's assertEquals internally uses <span class="inline-code">.equals()</span>, not <span class="inline-code">==</span>, which is exactly why it's safe for object comparison.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q4">
+    <h3><span class="qnum">Q4</span> String vs StringBuilder vs StringBuffer?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>String</strong> — immutable. Every concatenation creates a new object in the string pool/heap, which is wasteful in loops.</li>
+        <li><strong>StringBuilder</strong> — mutable, not thread-safe, faster. Best choice for building strings inside loops (e.g. constructing a dynamic XPath or a log message across many appends).</li>
+        <li><strong>StringBuffer</strong> — mutable, thread-safe (synchronized methods), slightly slower than StringBuilder. Rarely needed unless multiple threads write to the same buffer, e.g. shared logging in a parallel TestNG suite.</li>
+      </ul>
+      <pre><code>StringBuilder sb = new StringBuilder();
+for (String col : columnNames) {
+    sb.append(col).append(", ");
+}
+String query = "SELECT " + sb.substring(0, sb.length()-2) + " FROM transactions";</code></pre>
+      <p><strong>Rule of thumb:</strong> use String for fixed values, StringBuilder for single-threaded dynamic building (99% of framework code), StringBuffer only for shared mutable state across threads.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q5">
+    <h3><span class="qnum">Q5</span> ArrayList vs LinkedList?</h3>
+    <div class="answer">
+      <table>
+        <tr><th>Aspect</th><th>ArrayList</th><th>LinkedList</th></tr>
+        <tr><td>Backing structure</td><td>Dynamic array</td><td>Doubly linked list</td></tr>
+        <tr><td>Random access <span class="inline-code">get(i)</span></td><td>O(1)</td><td>O(n)</td></tr>
+        <tr><td>Insert/delete at middle</td><td>O(n) — shifts elements</td><td>O(1) once node located</td></tr>
+        <tr><td>Memory</td><td>Less overhead</td><td>Extra overhead per node (prev/next pointers)</td></tr>
+      </table>
+      <p>In automation, ArrayList is used almost everywhere — storing WebElements from <span class="inline-code">findElements()</span>, test data rows, API response lists — because reads and iteration dominate. LinkedList is rarely needed unless you're implementing something like a queue of pending test steps with frequent insertions/removals at both ends.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q6">
+    <h3><span class="qnum">Q6</span> Explain HashMap internal working (hashCode, buckets, equals, collisions, resizing, load factor, Java 8 treeification).</h3>
+    <div class="answer">
+      <p>HashMap stores entries in an array of <strong>buckets</strong>. The process for <span class="inline-code">put(key, value)</span>:</p>
+      <ol>
+        <li>Java calls <span class="inline-code">key.hashCode()</span>, then applies an internal spreading function to reduce collisions.</li>
+        <li>The hash is mapped to a bucket index via <span class="inline-code">index = hash & (capacity - 1)</span>.</li>
+        <li>If the bucket is empty, the entry is placed directly. If not empty (a <strong>collision</strong>), Java walks the chain and uses <span class="inline-code">.equals()</span> to check if the key already exists — if yes, the value is updated; if no, the new entry is appended to the chain.</li>
+        <li><strong>Load factor</strong> (default 0.75) determines when the map resizes: when <span class="inline-code">size > capacity * loadFactor</span>, capacity doubles and all entries are rehashed.</li>
+        <li><strong>Java 8 treeification</strong>: if a single bucket's chain grows beyond 8 entries (and total capacity ≥ 64), that chain converts from a linked list to a red-black tree, changing lookup from O(n) to O(log n) worst case — a defense against hash-flooding/poor hash functions.</li>
+      </ol>
+      <div class="tip"><strong>Why equals/hashCode both matter:</strong> if you use a custom object as a HashMap key (e.g. a <span class="inline-code">TestDataKey</span> class) and override <span class="inline-code">equals()</span> without overriding <span class="inline-code">hashCode()</span>, two "equal" objects can land in different buckets and the map will behave incorrectly — a classic Java interview trap.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q7">
+    <h3><span class="qnum">Q7</span> HashMap vs HashSet? How does HashSet work internally?</h3>
+    <div class="answer">
+      <p>HashSet is internally backed by a HashMap. Every element you add to a HashSet is stored as a <strong>key</strong> in an underlying HashMap, with a constant dummy <span class="inline-code">PRESENT</span> object as the value.</p>
+      <pre><code>public HashSet() { map = new HashMap<>(); }
+public boolean add(E e) { return map.put(e, PRESENT) == null; }</code></pre>
+      <ul>
+        <li><strong>HashMap</strong> stores key-value pairs, allows one null key.</li>
+        <li><strong>HashSet</strong> stores only unique values, no duplicates, allows one null element.</li>
+      </ul>
+      <p><strong>Automation use case:</strong> deduplicating scraped table data, or verifying "no duplicate order IDs returned by an API" — <span class="inline-code">Assert.assertEquals(list.size(), new HashSet<>(list).size())</span> is a quick way to assert uniqueness.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q8">
+    <h3><span class="qnum">Q8</span> Reverse a String (loop, StringBuilder, recursion).</h3>
+    <div class="answer">
+      <pre><code>// 1. StringBuilder (preferred - cleanest, O(n))
+public static String reverseBuilder(String s) {
+    return new StringBuilder(s).reverse().toString();
+}
+
+// 2. Manual loop (shows you understand the mechanics)
+public static String reverseLoop(String s) {
+    char[] chars = s.toCharArray();
+    int left = 0, right = chars.length - 1;
+    while (left < right) {
+        char temp = chars[left];
+        chars[left] = chars[right];
+        chars[right] = temp;
+        left++; right--;
+    }
+    return new String(chars);
+}
+
+// 3. Recursion
+public static String reverseRecursive(String s) {
+    if (s.isEmpty()) return s;
+    return reverseRecursive(s.substring(1)) + s.charAt(0);
+}</code></pre>
+      <div class="tip"><strong>Follow-up to expect:</strong> "Which is most efficient?" — StringBuilder's <span class="inline-code">reverse()</span> is O(n) time and typically the best answer; recursion is O(n) time but O(n) additional stack space and risks StackOverflowError on very long strings.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q9">
+    <h3><span class="qnum">Q9</span> Check whether a String is a palindrome.</h3>
+    <div class="answer">
+      <pre><code>public static boolean isPalindrome(String s) {
+    String clean = s.toLowerCase().replaceAll("[^a-z0-9]", "");
+    int left = 0, right = clean.length() - 1;
+    while (left < right) {
+        if (clean.charAt(left) != clean.charAt(right)) return false;
+        left++; right--;
+    }
+    return true;
+}
+
+// Quick one-liner alternative
+public static boolean isPalindromeQuick(String s) {
+    String clean = s.toLowerCase().replaceAll("[^a-z0-9]", "");
+    return clean.equals(new StringBuilder(clean).reverse().toString());
+}</code></pre>
+      <p>The two-pointer version is generally preferred in interviews because it's O(n) time, O(1) extra space (no new reversed string built), and demonstrates pointer manipulation.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q10">
+    <h3><span class="qnum">Q10</span> Find duplicate characters in a String using HashMap&lt;Character, Integer&gt;.</h3>
+    <div class="answer">
+      <pre><code>public static void findDuplicates(String s) {
+    Map&lt;Character, Integer&gt; freq = new HashMap&lt;&gt;();
+    for (char c : s.toCharArray()) {
+        freq.put(c, freq.getOrDefault(c, 0) + 1);
+    }
+    for (Map.Entry&lt;Character, Integer&gt; entry : freq.entrySet()) {
+        if (entry.getValue() > 1) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+}</code></pre>
+      <p><span class="inline-code">getOrDefault()</span> avoids null-check boilerplate. Time complexity O(n), space O(k) where k is the number of distinct characters (bounded, so effectively O(1) for ASCII text).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q11">
+    <h3><span class="qnum">Q11</span> Find duplicate elements in an array.</h3>
+    <div class="answer">
+      <pre><code>public static Set&lt;Integer&gt; findDuplicates(int[] arr) {
+    Set&lt;Integer&gt; seen = new HashSet&lt;&gt;();
+    Set&lt;Integer&gt; duplicates = new HashSet&lt;&gt;();
+    for (int num : arr) {
+        if (!seen.add(num)) {   // add() returns false if already present
+            duplicates.add(num);
+        }
+    }
+    return duplicates;
+}</code></pre>
+      <p>Using <span class="inline-code">Set.add()</span>'s boolean return value avoids a separate <span class="inline-code">contains()</span> check, keeping this a single O(n) pass instead of O(n) lookups each also costing time — a small but real optimization interviewers like to see.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q12">
+    <h3><span class="qnum">Q12</span> Find the second-largest number in an array (sorting and single-pass approaches).</h3>
+    <div class="answer">
+      <pre><code>// Sorting approach - O(n log n)
+public static int secondLargestSort(int[] arr) {
+    int[] sorted = arr.clone();
+    Arrays.sort(sorted);
+    return sorted[sorted.length - 2];
+}
+
+// Single-pass approach - O(n), preferred in interviews
+public static int secondLargestSinglePass(int[] arr) {
+    int largest = Integer.MIN_VALUE, second = Integer.MIN_VALUE;
+    for (int num : arr) {
+        if (num > largest) {
+            second = largest;
+            largest = num;
+        } else if (num > second && num != largest) {
+            second = num;
+        }
+    }
+    return second;
+}</code></pre>
+      <p>The single-pass version is the "better" answer because it's O(n) with O(1) space and doesn't mutate/require a full sort just to get one value — call this out explicitly if asked to optimize.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q13">
+    <h3><span class="qnum">Q13</span> Find the frequency of each word in a String.</h3>
+    <div class="answer">
+      <pre><code>public static Map&lt;String, Integer&gt; wordFrequency(String text) {
+    Map&lt;String, Integer&gt; freq = new HashMap&lt;&gt;();
+    String[] words = text.toLowerCase().split("\\s+");
+    for (String word : words) {
+        word = word.replaceAll("[^a-z0-9]", "");
+        if (word.isEmpty()) continue;
+        freq.merge(word, 1, Integer::sum);
+    }
+    return freq;
+}</code></pre>
+      <p><span class="inline-code">Map.merge()</span> is a cleaner Java 8+ alternative to <span class="inline-code">getOrDefault + put</span> — it's a good detail to mention to show familiarity with modern Java APIs, which pairs well with a Streams-based follow-up if asked.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q14">
+    <h3><span class="qnum">Q14</span> Remove duplicates from a collection while preserving insertion order.</h3>
+    <div class="answer">
+      <pre><code>// Using LinkedHashSet - maintains insertion order, removes duplicates
+public static List&lt;Integer&gt; removeDuplicates(List&lt;Integer&gt; list) {
+    return new ArrayList&lt;&gt;(new LinkedHashSet&lt;&gt;(list));
+}
+
+// Using Java 8 Streams
+public static List&lt;Integer&gt; removeDuplicatesStream(List&lt;Integer&gt; list) {
+    return list.stream().distinct().collect(Collectors.toList());
+}</code></pre>
+      <p>A plain <span class="inline-code">HashSet</span> would remove duplicates but not guarantee order; <span class="inline-code">LinkedHashSet</span> keeps a linked list alongside the hash table specifically to preserve insertion order — that distinction is the point of this question.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q15">
+    <h3><span class="qnum">Q15</span> Find the first non-repeated character in a String.</h3>
+    <div class="answer">
+      <pre><code>public static Character firstNonRepeated(String s) {
+    Map&lt;Character, Integer&gt; freq = new LinkedHashMap&lt;&gt;();
+    for (char c : s.toCharArray()) {
+        freq.put(c, freq.getOrDefault(c, 0) + 1);
+    }
+    for (Map.Entry&lt;Character, Integer&gt; entry : freq.entrySet()) {
+        if (entry.getValue() == 1) return entry.getKey();
+    }
+    return null;
+}</code></pre>
+      <p><span class="inline-code">LinkedHashMap</span> is used instead of <span class="inline-code">HashMap</span> specifically to preserve the original character order during the second iteration — this is the subtle detail that separates a correct answer from a functionally-wrong one that returns the wrong character when a plain HashMap reorders entries.</p>
+    </div>
+  </div>
+
+</section>
+<section class="part" id="part2">
+  <div class="part-header"><span class="badge">PART 2</span><h2>Selenium (15 Questions)</h2></div>
+
+  <div class="qa" id="q16">
+    <h3><span class="qnum">Q16</span> Explain Selenium WebDriver architecture.</h3>
+    <div class="answer">
+      <p>Selenium WebDriver architecture has four layers:</p>
+      <ol>
+        <li><strong>Selenium Client Library (bindings)</strong> — the Java/Python/JS API you call (<span class="inline-code">driver.findElement()</span>, <span class="inline-code">driver.get()</span>).</li>
+        <li><strong>JSON Wire Protocol / W3C WebDriver Protocol</strong> — client commands are serialized into HTTP requests carrying JSON payloads, sent to the browser driver over REST.</li>
+        <li><strong>Browser Drivers</strong> — ChromeDriver, GeckoDriver, EdgeDriver etc. Each is a standalone server that receives the HTTP/JSON commands and translates them into native browser automation calls.</li>
+        <li><strong>Browser</strong> — executes the actual native call (click, navigate, type) and the driver returns the result back up the chain as an HTTP response.</li>
+      </ol>
+      <p>This is why Selenium works across browsers and languages: the client library and the wire protocol are standardized (W3C spec since Selenium 4), so any language binding can talk to any compliant browser driver.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q17">
+    <h3><span class="qnum">Q17</span> Difference between findElement() and findElements()?</h3>
+    <div class="answer">
+      <table>
+        <tr><th></th><th>findElement()</th><th>findElements()</th></tr>
+        <tr><td>Return type</td><td>Single WebElement</td><td>List&lt;WebElement&gt;</td></tr>
+        <tr><td>No match found</td><td>Throws <span class="inline-code">NoSuchElementException</span></td><td>Returns an empty list</td></tr>
+        <tr><td>Use case</td><td>Unique, single element (a button, a field)</td><td>Multiple elements (table rows, list items) or existence checks</td></tr>
+      </table>
+      <pre><code>// Common pattern: check existence without try/catch
+boolean isPresent = driver.findElements(By.id("errorBanner")).size() > 0;</code></pre>
+    </div>
+  </div>
+
+  <div class="qa" id="q18">
+    <h3><span class="qnum">Q18</span> Explain implicit wait, explicit wait, and fluent wait.</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Implicit wait</strong> — a global timeout set once on the driver; for every <span class="inline-code">findElement</span> call, WebDriver polls the DOM up to that timeout before throwing <span class="inline-code">NoSuchElementException</span>. <span class="inline-code">driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));</span></li>
+        <li><strong>Explicit wait</strong> — condition-specific, applied to one element at a time using <span class="inline-code">WebDriverWait</span> + <span class="inline-code">ExpectedConditions</span>, e.g. wait until clickable, visible, or an attribute changes.</li>
+        <li><strong>Fluent wait</strong> — a configurable explicit wait that lets you set polling interval and which exceptions to ignore during polling (e.g. ignore <span class="inline-code">StaleElementReferenceException</span> while waiting).</li>
+      </ul>
+      <pre><code>Wait&lt;WebDriver&gt; wait = new FluentWait&lt;&gt;(driver)
+    .withTimeout(Duration.ofSeconds(20))
+    .pollingEvery(Duration.ofMillis(500))
+    .ignoring(StaleElementReferenceException.class);
+
+WebElement el = wait.until(d -> d.findElement(By.id("submitBtn")));</code></pre>
+      <div class="tip"><strong>Critical rule:</strong> never mix implicit and explicit waits in the same test — it causes unpredictable total wait times because the two timers can stack in certain browser/driver combinations. Pick one strategy (explicit is the industry standard) and stay consistent.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q19">
+    <h3><span class="qnum">Q19</span> Why should Thread.sleep() not be used everywhere in Selenium automation?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Fixed, not conditional</strong> — it always waits the full duration regardless of whether the element appeared in 200ms or 5s, making suites unnecessarily slow.</li>
+        <li><strong>Flaky under variable load</strong> — if the app is slower than the hardcoded sleep on a given run (CI runner under load, slower network), the test fails even though the app is fine — this is one of the most common causes of flaky pipelines.</li>
+        <li><strong>Not scalable</strong> — with hundreds of tests, unnecessary fixed sleeps compound into hours of wasted execution time, directly hurting parallel/CI run time (relevant to Q4 in the bonus scenarios: "100 tests take 2 hours").</li>
+      </ul>
+      <p>The correct approach is condition-based waiting (explicit/fluent waits tied to actual DOM state), reserving <span class="inline-code">Thread.sleep()</span> only for rare, justified cases like intentionally pacing a rate-limited third-party API call — and even then a scheduled retry or backoff is usually better.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q20">
+    <h3><span class="qnum">Q20</span> Element present in DOM but Selenium throws ElementNotInteractableException. How to debug and fix?</h3>
+    <div class="answer">
+      <p>This exception means the element exists in the DOM but the browser can't currently interact with it. Debugging steps:</p>
+      <ol>
+        <li><strong>Check visibility</strong> — element might have <span class="inline-code">display:none</span>, zero height/width, or be off-screen. Use an explicit wait for <span class="inline-code">visibilityOf</span> instead of just <span class="inline-code">presenceOf</span>.</li>
+        <li><strong>Check overlap</strong> — another element (modal, spinner, sticky header) may be covering it. Scroll it into view: <span class="inline-code">((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);</span></li>
+        <li><strong>Check disabled state</strong> — element may be present but disabled until a prior form field is filled; wait for the <span class="inline-code">enabled</span> attribute/condition.</li>
+        <li><strong>Check animation/transition</strong> — the element might be mid-CSS-transition (e.g. sliding into a drawer); a small explicit wait on a stable attribute usually resolves this.</li>
+        <li><strong>Last resort — JS click</strong> — <span class="inline-code">executeScript("arguments[0].click();", element)</span> bypasses interactability checks, but should be used sparingly since it can mask real UX bugs (a real user also couldn't click it).</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="qa" id="q21">
+    <h3><span class="qnum">Q21</span> How do you handle StaleElementReferenceException?</h3>
+    <div class="answer">
+      <p>This occurs when the DOM has been refreshed/re-rendered (AJAX update, page reload, React re-render) after the element reference was fetched, so the old reference no longer points to a valid node.</p>
+      <ul>
+        <li><strong>Re-locate the element</strong> right before interacting with it rather than caching it far in advance.</li>
+        <li><strong>Wrap in a retry loop</strong> that catches <span class="inline-code">StaleElementReferenceException</span> and re-fetches:</li>
+      </ul>
+      <pre><code>public void safeClick(By locator) {
+    int attempts = 0;
+    while (attempts < 3) {
+        try {
+            driver.findElement(locator).click();
+            return;
+        } catch (StaleElementReferenceException e) {
+            attempts++;
+        }
+    }
+    throw new RuntimeException("Element still stale after retries: " + locator);
+}</code></pre>
+      <p>Also consider using <span class="inline-code">FluentWait.ignoring(StaleElementReferenceException.class)</span> so waits automatically re-poll through staleness rather than failing outright (as shown in Q18).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q22">
+    <h3><span class="qnum">Q22</span> How do you handle dynamic web elements?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Dynamic locators</strong> — use partial matches: <span class="inline-code">contains()</span>, <span class="inline-code">starts-with()</span>, CSS attribute-contains selectors (<span class="inline-code">[id^='row-']</span>) instead of full static IDs that change per session/build.</li>
+        <li><strong>Relative/axes-based XPath</strong> — anchor to a stable nearby element (a label, a heading) and traverse to the dynamic sibling/child, rather than relying on the dynamic element's own attributes.</li>
+        <li><strong>Explicit waits</strong> for the element to reach the expected state before acting.</li>
+        <li><strong>Data-* test attributes</strong> — if you can influence the dev team, requesting stable <span class="inline-code">data-testid</span> attributes is the most robust long-term fix.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="q23">
+    <h3><span class="qnum">Q23</span> Write XPath for a dynamic element. Explain contains(), starts-with(), text(), and XPath axes.</h3>
+    <div class="answer">
+      <pre><code>// contains() - partial attribute match, id changes per session e.g. "row-8842"
+//tr[contains(@id,'row-')]
+
+// starts-with() - dynamic suffix, e.g. class="btn-primary-a1b2c3"
+//button[starts-with(@class,'btn-primary')]
+
+// text() - exact visible text match
+//span[text()='Approved']
+
+// contains(text()) - partial text match
+//span[contains(text(),'Approv')]
+
+// XPath axes - navigate relative to a known stable anchor
+//label[text()='Loan Amount']/following-sibling::input[1]
+//td[text()='USAA']/parent::tr/td[3]
+//div[@class='card']/ancestor::section</code></pre>
+      <p><strong>Common axes:</strong> <span class="inline-code">parent</span>, <span class="inline-code">child</span>, <span class="inline-code">ancestor</span>, <span class="inline-code">descendant</span>, <span class="inline-code">following-sibling</span>, <span class="inline-code">preceding-sibling</span>. Axes are the go-to technique when the target element has no stable attribute but a nearby element does.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q24">
+    <h3><span class="qnum">Q24</span> How do you handle iframes? How do you return to the main document?</h3>
+    <div class="answer">
+      <pre><code>// Switch by index, name/id, or WebElement
+driver.switchTo().frame(0);
+driver.switchTo().frame("paymentFrame");
+driver.switchTo().frame(driver.findElement(By.cssSelector("iframe.checkout")));
+
+// interact with elements inside the iframe here...
+
+// return to the top-level document
+driver.switchTo().defaultContent();
+
+// or step out one level (useful for nested iframes)
+driver.switchTo().parentFrame();</code></pre>
+      <p>Key point: WebDriver cannot see elements inside an iframe until you explicitly switch context into it — a very common failure mode is a "correct" locator that fails simply because the driver is still on the parent document.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q25">
+    <h3><span class="qnum">Q25</span> How do you handle multiple browser windows/tabs?</h3>
+    <div class="answer">
+      <pre><code>String parentHandle = driver.getWindowHandle();
+Set&lt;String&gt; allHandles = driver.getWindowHandles();
+
+for (String handle : allHandles) {
+    if (!handle.equals(parentHandle)) {
+        driver.switchTo().window(handle);
+        break;
+    }
+}
+// ... interact with the new window/tab ...
+
+driver.close();                      // close current window
+driver.switchTo().window(parentHandle); // return to original</code></pre>
+      <p>Handles are unique session identifiers, not ordered by open time in a guaranteed way across all browsers, so always compare against the known parent handle rather than assuming index order.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q26">
+    <h3><span class="qnum">Q26</span> How do you handle JavaScript alerts?</h3>
+    <div class="answer">
+      <pre><code>Alert alert = driver.switchTo().alert();
+String alertText = alert.getText();
+alert.accept();   // OK
+alert.dismiss();  // Cancel
+alert.sendKeys("some input"); // for prompt() dialogs
+</code></pre>
+      <p>Standard JS <span class="inline-code">alert()</span>/<span class="inline-code">confirm()</span>/<span class="inline-code">prompt()</span> dialogs are handled via <span class="inline-code">driver.switchTo().alert()</span>. Custom-built "fake alerts" made from HTML/CSS divs are NOT real browser alerts — those are just regular DOM elements and are handled with normal <span class="inline-code">findElement</span> + click, a distinction interviewers sometimes probe.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q27">
+    <h3><span class="qnum">Q27</span> How do you handle HTML dropdowns and custom dropdowns?</h3>
+    <div class="answer">
+      <pre><code>// Native &lt;select&gt; dropdown - use the Select class
+Select dropdown = new Select(driver.findElement(By.id("stateSelect")));
+dropdown.selectByVisibleText("Telangana");
+dropdown.selectByValue("TG");
+dropdown.selectByIndex(2);
+
+// Custom dropdown (div/ul-based, common in React/Angular apps)
+driver.findElement(By.id("customDropdownTrigger")).click();  // open it
+List&lt;WebElement&gt; options = driver.findElements(By.cssSelector(".dropdown-option"));
+for (WebElement opt : options) {
+    if (opt.getText().equals("Telangana")) {
+        opt.click();
+        break;
+    }
+}</code></pre>
+      <p>The <span class="inline-code">Select</span> class only works on actual <span class="inline-code">&lt;select&gt;</span> tags — trying to use it on a div-based custom dropdown throws <span class="inline-code">UnexpectedTagNameException</span>, which is a common gotcha worth mentioning.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q28">
+    <h3><span class="qnum">Q28</span> How do you perform mouse hover, double-click, right-click, drag-and-drop, and keyboard actions?</h3>
+    <div class="answer">
+      <pre><code>Actions actions = new Actions(driver);
+
+actions.moveToElement(menuItem).perform();                       // hover
+actions.doubleClick(element).perform();                           // double-click
+actions.contextClick(element).perform();                          // right-click
+actions.dragAndDrop(source, target).perform();                    // drag & drop
+actions.clickAndHold(source).moveToElement(target).release().perform(); // manual drag
+
+actions.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).perform(); // Ctrl+A
+actions.sendKeys(Keys.TAB).perform();
+
+// Chained combo
+actions.moveToElement(menu).click(subMenuItem).build().perform();</code></pre>
+      <p>All of these go through the <span class="inline-code">Actions</span> class, which builds a chain of low-level input commands and executes them together via <span class="inline-code">.perform()</span> or <span class="inline-code">.build().perform()</span>.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q29">
+    <h3><span class="qnum">Q29</span> How do you take screenshots in Selenium? When should screenshots be captured?</h3>
+    <div class="answer">
+      <pre><code>public static void takeScreenshot(WebDriver driver, String testName) {
+    TakesScreenshot ts = (TakesScreenshot) driver;
+    File src = ts.getScreenshotAs(OutputType.FILE);
+    File dest = new File("screenshots/" + testName + "_" + System.currentTimeMillis() + ".png");
+    try {
+        FileUtils.copyFile(src, dest);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}</code></pre>
+      <p><strong>When to capture:</strong></p>
+      <ul>
+        <li>On test failure — via a TestNG <span class="inline-code">@AfterMethod</span> checking <span class="inline-code">ITestResult.getStatus()</span>, so failures always get visual evidence.</li>
+        <li>At key checkpoints in long flows (e.g. before/after a payment submission) for audit trails in regulated domains like banking.</li>
+        <li>Attached automatically into Allure/Extent reports so failures are debuggable without re-running.</li>
+      </ul>
+      <pre><code>@AfterMethod
+public void tearDown(ITestResult result) {
+    if (result.getStatus() == ITestResult.FAILURE) {
+        takeScreenshot(driver, result.getMethod().getMethodName());
+    }
+    driver.quit();
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="qa" id="q30">
+    <h3><span class="qnum">Q30</span> How would you make Selenium tests reliable and reduce flaky failures?</h3>
+    <div class="answer">
+      <ul>
+        <li>Replace all <span class="inline-code">Thread.sleep()</span> with explicit/fluent waits tied to real DOM conditions.</li>
+        <li>Use stable, semantic locators (<span class="inline-code">data-testid</span>) over brittle absolute XPath.</li>
+        <li>Isolate test data per test/thread to avoid cross-test collisions in parallel runs (see Builder + Faker pattern).</li>
+        <li>Retry transient failures at the framework level (a bounded <span class="inline-code">IRetryAnalyzer</span> in TestNG) rather than manual re-runs, but cap retries and log them separately from genuine failures.</li>
+        <li>Stabilize environment — pin browser/driver versions, avoid shared mutable test environments, use Docker for consistent execution across local and CI.</li>
+        <li>Add synchronization around known slow operations (loading spinners, async API calls) instead of assuming instantaneous UI updates.</li>
+        <li>Track flakiness over time (e.g. Allure history/trend) and quarantine chronically flaky tests for investigation rather than letting them erode trust in the whole suite.</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+<section class="part" id="part3">
+  <div class="part-header"><span class="badge">PART 3</span><h2>TestNG & Framework Design (10 Questions)</h2></div>
+
+  <div class="qa" id="q31">
+    <h3><span class="qnum">Q31</span> Explain your automation framework architecture from test execution to browser interaction.</h3>
+    <div class="answer">
+      <p>A good answer walks through the full call chain layer by layer:</p>
+      <ol>
+        <li><strong>Trigger</strong> — Jenkins/GitHub Actions invokes a Maven command (<span class="inline-code">mvn test -DsuiteXmlFile=testng.xml</span>).</li>
+        <li><strong>TestNG</strong> — reads <span class="inline-code">testng.xml</span>, resolves suites/groups/parallel settings, invokes <span class="inline-code">@BeforeSuite → @BeforeClass → @BeforeMethod → @Test → @AfterMethod...</span></li>
+        <li><strong>Base Test / Hooks</strong> — <span class="inline-code">@BeforeMethod</span> initializes a <span class="inline-code">WebDriver</span> via a <span class="inline-code">DriverFactory</span> (ThreadLocal-scoped for parallel safety), reads config (browser, environment, base URL) via a config manager.</li>
+        <li><strong>Page Objects</strong> — the test calls high-level business methods on page objects (<span class="inline-code">loginPage.loginAs(user)</span>), which internally use the driver to locate elements and perform actions, with waits abstracted into a common utility layer.</li>
+        <li><strong>Assertions</strong> — TestNG/Hamcrest/AssertJ assertions validate expected vs actual state, optionally cross-checked against the database layer for backend validation.</li>
+        <li><strong>Reporting</strong> — Allure listeners capture steps, screenshots on failure, and logs; results are aggregated into an HTML report published by the CI pipeline.</li>
+        <li><strong>Teardown</strong> — <span class="inline-code">@AfterMethod</span> quits the driver and releases the grid/browser session.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="qa" id="q32">
+    <h3><span class="qnum">Q32</span> Why do you use Page Object Model? What are its advantages?</h3>
+    <div class="answer">
+      <p>POM separates <strong>UI structure</strong> (locators + page interactions) from <strong>test logic</strong> (business scenarios and assertions), one class per page/screen.</p>
+      <ul>
+        <li><strong>Maintainability</strong> — a UI change (locator, layout) requires editing exactly one page class, not every test that touches that page.</li>
+        <li><strong>Reusability</strong> — the same page methods are reused across many test scenarios (login used in dozens of tests).</li>
+        <li><strong>Readability</strong> — tests read like business flows (<span class="inline-code">loginPage.login(user, pass); dashboardPage.verifyWelcomeMessage();</span>) instead of raw Selenium calls, making them reviewable by non-automation stakeholders.</li>
+        <li><strong>Reduced duplication</strong> — common waits/actions live in a shared <span class="inline-code">BasePage</span>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="q33">
+    <h3><span class="qnum">Q33</span> POM vs PageFactory? Would you use PageFactory in a modern framework?</h3>
+    <div class="answer">
+      <p><strong>PageFactory</strong> is a Selenium utility built on top of POM that uses <span class="inline-code">@FindBy</span> annotations and <span class="inline-code">PageFactory.initElements()</span> to auto-initialize <span class="inline-code">WebElement</span> fields via dynamic proxies, instead of calling <span class="inline-code">driver.findElement()</span> manually in every method.</p>
+      <pre><code>public class LoginPage {
+    @FindBy(id = "username") WebElement usernameField;
+    @FindBy(id = "password") WebElement passwordField;
+
+    public LoginPage(WebDriver driver) {
+        PageFactory.initElements(driver, this);
+    }
+}</code></pre>
+      <p><strong>Would I use it today?</strong> Generally no for a modern framework. PageFactory elements are lazily located but cached in a way that increases exposure to <span class="inline-code">StaleElementReferenceException</span> in highly dynamic SPAs (React/Angular), and it doesn't play as cleanly with Selenium 4's relative locators or with Playwright-style auto-waiting patterns. Most current frameworks use plain <span class="inline-code">By</span> locators returned fresh on each call, or fixture/component-object patterns (as in a Playwright framework), which give more explicit control over waiting and re-fetching.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q34">
+    <h3><span class="qnum">Q34</span> How do you manage WebDriver in an automation framework?</h3>
+    <div class="answer">
+      <pre><code>public class DriverManager {
+    private static ThreadLocal&lt;WebDriver&gt; driverThread = new ThreadLocal&lt;&gt;();
+
+    public static void setDriver(WebDriver driver) { driverThread.set(driver); }
+    public static WebDriver getDriver() { return driverThread.get(); }
+    public static void quitDriver() {
+        if (driverThread.get() != null) {
+            driverThread.get().quit();
+            driverThread.remove();
+        }
+    }
+}</code></pre>
+      <p>Driver lifecycle is managed centrally: created in <span class="inline-code">@BeforeMethod</span> (fresh session per test = isolation), stored via <span class="inline-code">ThreadLocal</span> so parallel threads never share a driver instance, and explicitly quit + removed in <span class="inline-code">@AfterMethod</span> to avoid memory leaks and orphaned browser processes on CI agents.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q35">
+    <h3><span class="qnum">Q35</span> How do you execute Selenium tests in parallel? Why is ThreadLocal&lt;WebDriver&gt; useful?</h3>
+    <div class="answer">
+      <pre><code>&lt;suite name="RegressionSuite" parallel="methods" thread-count="5"&gt;
+    &lt;test name="ChromeTests"&gt;
+        &lt;classes&gt;
+            &lt;class name="tests.LoginTest"/&gt;
+        &lt;/classes&gt;
+    &lt;/test&gt;
+&lt;/suite&gt;</code></pre>
+      <p>TestNG's <span class="inline-code">parallel="methods|classes|tests"</span> with <span class="inline-code">thread-count</span> spins up multiple threads executing tests concurrently. Without <span class="inline-code">ThreadLocal&lt;WebDriver&gt;</span>, all threads would share one static driver instance, causing threads to interfere with each other's browser state (Thread A navigating away mid-way through Thread B's assertion). ThreadLocal gives each thread its own isolated driver instance, keyed internally by thread ID, so parallel execution is safe.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q36">
+    <h3><span class="qnum">Q36</span> How do you manage configuration such as browser, environment, base URL, credentials, and test parameters?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Properties/YAML files per environment</strong> — <span class="inline-code">config-qa.properties</span>, <span class="inline-code">config-staging.properties</span>, loaded based on a <span class="inline-code">-Denv=qa</span> system property.</li>
+        <li><strong>A ConfigReader singleton/utility</strong> that loads the right file once and exposes typed getters (<span class="inline-code">getBaseUrl()</span>, <span class="inline-code">getBrowser()</span>).</li>
+        <li><strong>Environment variables / Jenkins credentials store</strong> for secrets (passwords, API keys) — never hardcoded or committed to the repo.</li>
+        <li><strong>Command-line overrides</strong> via Maven <span class="inline-code">-D</span> system properties so CI can inject browser/environment per pipeline run without code changes: <span class="inline-code">mvn test -Dbrowser=firefox -Denv=staging</span>.</li>
+        <li><strong>TestNG parameters</strong> in <span class="inline-code">testng.xml</span> for suite-level values, read via <span class="inline-code">@Parameters</span>/<span class="inline-code">ITestContext</span>.</li>
+      </ul>
+      <p>This is exactly the "two-tier env management strategy" pattern — a base config layer plus environment-specific overrides that CI can select at runtime.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q37">
+    <h3><span class="qnum">Q37</span> How do you handle failed tests? Explain screenshots, logs, reports, retry, and defect reporting.</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Screenshot on failure</strong> — captured automatically in <span class="inline-code">@AfterMethod</span> (see Q29) and attached to the report.</li>
+        <li><strong>Logs</strong> — structured logging (Log4j2/SLF4J) at each major step, so a failure's log trail shows exactly what the test was doing right before it broke, not just the final exception.</li>
+        <li><strong>Reports</strong> — Allure/Extent aggregate pass/fail counts, step-by-step execution, screenshots, and historical trend (Allure history stitching across CI runs).</li>
+        <li><strong>Retry</strong> — a bounded <span class="inline-code">IRetryAnalyzer</span> re-runs a failed test once or twice to rule out transient flakiness, but retried tests are flagged separately so they don't silently hide real bugs.</li>
+        <li><strong>Defect reporting</strong> — genuine failures (reproducible after retry, with a clear expected-vs-actual mismatch not caused by test/environment issues) get logged in JIRA/Azure DevOps with steps to reproduce, screenshot, logs, and environment/build info attached.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="q38">
+    <h3><span class="qnum">Q38</span> How do you implement retry in TestNG? When should retry NOT be used?</h3>
+    <div class="answer">
+      <pre><code>public class RetryAnalyzer implements IRetryAnalyzer {
+    private int count = 0;
+    private static final int MAX_RETRY = 2;
+
+    @Override
+    public boolean retry(ITestResult result) {
+        if (count < MAX_RETRY) {
+            count++;
+            return true;
+        }
+        return false;
+    }
+}
+
+// Apply via annotation
+@Test(retryAnalyzer = RetryAnalyzer.class)
+public void testLogin() { ... }
+
+// Or globally via an IAnnotationTransformer registered in testng.xml
+// so you don't have to annotate every single @Test method</code></pre>
+      <p><strong>When NOT to use retry:</strong></p>
+      <ul>
+        <li>To mask a genuinely broken feature — retry should only smooth over environment/timing flakiness, never functional bugs.</li>
+        <li>For tests with side effects that aren't idempotent (e.g. a test that creates a unique bank account each run) — re-running blindly can cause duplicate-data errors that look like new failures.</li>
+        <li>As a permanent fix for a known-flaky test — retry buys time; the flaky root cause (bad wait, race condition) still needs to be fixed, and retried-but-passed tests should be visibly flagged in reports, not silently marked green.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="q39">
+    <h3><span class="qnum">Q39</span> How do you identify and reduce flaky tests?</h3>
+    <div class="answer">
+      <p><strong>Identify:</strong></p>
+      <ul>
+        <li>Track pass/fail history per test across runs (Allure trend/history) — a test that flips between pass/fail on the same code+data is a flakiness signal.</li>
+        <li>Run suspect tests repeatedly in isolation (e.g. TestNG invocationCount) to reproduce intermittent failures.</li>
+        <li>Correlate failures with parallel execution — tests that only fail under <span class="inline-code">thread-count &gt; 1</span> usually point to shared state/test-data collisions.</li>
+      </ul>
+      <p><strong>Reduce:</strong> replace hard sleeps with proper waits, isolate test data per test (Builder + Faker pattern generates unique data per run), avoid inter-test dependencies (each test should set up its own preconditions, not rely on execution order), stabilize the environment (pinned driver/browser versions, dedicated Grid nodes), and quarantine chronically flaky tests into a separate suite while root-causing them so they don't erode confidence in the main pipeline.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q40">
+    <h3><span class="qnum">Q40</span> If asked to design an automation framework from scratch, what components would you include?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Driver management layer</strong> — ThreadLocal WebDriver, factory supporting local/Grid/Docker/cloud execution.</li>
+        <li><strong>Configuration layer</strong> — environment-aware config with CLI overrides and secure secret handling.</li>
+        <li><strong>Page Object / Component layer</strong> — POM (or component objects for reusable widgets) with a shared BasePage.</li>
+        <li><strong>Test data layer</strong> — Builder pattern + Faker for dynamic, isolated data; optionally a DB seeding/cleanup utility.</li>
+        <li><strong>API layer</strong> — REST Assured/Karate for hybrid API+UI tests and backend validation, faster than pure UI where possible.</li>
+        <li><strong>Database validation layer</strong> — JDBC utilities for backend/DB assertions (see Q50).</li>
+        <li><strong>Wait/utility layer</strong> — centralized explicit/fluent wait helpers, retry helpers, JS-executor helpers.</li>
+        <li><strong>Assertion layer</strong> — soft/hard assertions, custom domain assertions where useful.</li>
+        <li><strong>Reporting layer</strong> — Allure/Extent with screenshots, logs, and history.</li>
+        <li><strong>CI/CD integration</strong> — Maven/Gradle build, Jenkins/GitHub Actions pipeline, parallel/sharded execution, environment parameterization.</li>
+        <li><strong>Cross-cutting concerns</strong> — logging (Log4j2), exception handling, retry analyzer, listeners (TestNG <span class="inline-code">ITestListener</span> for screenshots/reporting hooks).</li>
+      </ul>
+      <div class="tip"><strong>Interview tip:</strong> Walk through these in a logical build order (driver → config → POM → data → API/DB → reporting → CI) rather than reciting a flat list — it shows architectural thinking, not memorization.</div>
+    </div>
+  </div>
+
+</section>
+<section class="part" id="part4">
+  <div class="part-header"><span class="badge">PART 4</span><h2>SQL (10 Questions)</h2></div>
+
+  <div class="qa" id="q41">
+    <h3><span class="qnum">Q41</span> Write a SQL query to find duplicate records.</h3>
+    <div class="answer">
+      <pre><code>SELECT customer_id, email, COUNT(*) AS cnt
+FROM customers
+GROUP BY customer_id, email
+HAVING COUNT(*) > 1;
+
+-- Finding full-row duplicates across all columns
+SELECT *, COUNT(*) 
+FROM transactions
+GROUP BY order_id, customer_id, amount, order_date
+HAVING COUNT(*) > 1;</code></pre>
+      <p>Group by the columns that define "duplicate" for your context, then filter groups with <span class="inline-code">HAVING COUNT(*) &gt; 1</span> — <span class="inline-code">WHERE</span> can't filter on an aggregate, which is exactly why <span class="inline-code">HAVING</span> exists (see Q44).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q42">
+    <h3><span class="qnum">Q42</span> Write a SQL query to find the second-highest salary (at least two approaches).</h3>
+    <div class="answer">
+      <pre><code>-- Approach 1: Subquery with MAX + NOT IN
+SELECT MAX(salary) AS second_highest
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees);
+
+-- Approach 2: LIMIT / OFFSET
+SELECT DISTINCT salary
+FROM employees
+ORDER BY salary DESC
+LIMIT 1 OFFSET 1;
+
+-- Approach 3: DENSE_RANK() window function - handles ties correctly
+SELECT salary FROM (
+    SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    FROM employees
+) ranked
+WHERE rnk = 2;</code></pre>
+      <p><strong>Interview tip:</strong> mention that <span class="inline-code">DENSE_RANK()</span> is the most robust because it correctly handles duplicate top salaries (e.g. two people tied for #1 both rank 1, and the true second-highest distinct value is rank 2), whereas the LIMIT/OFFSET approach needs <span class="inline-code">DISTINCT</span> to avoid returning a tied duplicate.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q43">
+    <h3><span class="qnum">Q43</span> Explain INNER JOIN vs LEFT JOIN with an example.</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>INNER JOIN</strong> — returns only rows that have a match in both tables.</li>
+        <li><strong>LEFT JOIN</strong> — returns all rows from the left table, plus matched rows from the right table; unmatched right-side columns come back as NULL.</li>
+      </ul>
+      <pre><code>-- INNER JOIN: only customers who have placed at least one order
+SELECT c.customer_name, o.order_id
+FROM customers c
+INNER JOIN orders o ON c.customer_id = o.customer_id;
+
+-- LEFT JOIN: all customers, including those with zero orders (order_id = NULL)
+SELECT c.customer_name, o.order_id
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id;</code></pre>
+      <p>This directly sets up Q46 (customers who never placed an order) — that's a LEFT JOIN filtered to <span class="inline-code">WHERE o.order_id IS NULL</span>.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q44">
+    <h3><span class="qnum">Q44</span> Explain WHERE vs HAVING.</h3>
+    <div class="answer">
+      <table>
+        <tr><th></th><th>WHERE</th><th>HAVING</th></tr>
+        <tr><td>Filters</td><td>Individual rows, before grouping</td><td>Grouped/aggregated results, after GROUP BY</td></tr>
+        <tr><td>Can use aggregates?</td><td>No (<span class="inline-code">WHERE COUNT(*) &gt; 1</span> is invalid)</td><td>Yes (<span class="inline-code">HAVING COUNT(*) &gt; 1</span>)</td></tr>
+        <tr><td>Execution order</td><td>Before GROUP BY</td><td>After GROUP BY</td></tr>
+      </table>
+      <pre><code>SELECT department, AVG(salary)
+FROM employees
+WHERE status = 'ACTIVE'         -- filters rows before grouping
+GROUP BY department
+HAVING AVG(salary) > 60000;     -- filters groups after aggregation</code></pre>
+    </div>
+  </div>
+
+  <div class="qa" id="q45">
+    <h3><span class="qnum">Q45</span> Write a query to find employees earning more than the average salary.</h3>
+    <div class="answer">
+      <pre><code>SELECT employee_id, name, salary
+FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
+
+-- Per-department version using a correlated subquery
+SELECT e.employee_id, e.name, e.department, e.salary
+FROM employees e
+WHERE e.salary > (
+    SELECT AVG(salary) FROM employees e2 WHERE e2.department = e.department
+);</code></pre>
+    </div>
+  </div>
+
+  <div class="qa" id="q46">
+    <h3><span class="qnum">Q46</span> Write a query to find customers who have never placed an order.</h3>
+    <div class="answer">
+      <pre><code>-- LEFT JOIN + IS NULL approach
+SELECT c.customer_id, c.customer_name
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+WHERE o.order_id IS NULL;
+
+-- NOT IN / NOT EXISTS approach
+SELECT customer_id, customer_name
+FROM customers
+WHERE customer_id NOT IN (SELECT customer_id FROM orders WHERE customer_id IS NOT NULL);
+
+-- NOT EXISTS - safest with NULLs, often better performance
+SELECT c.customer_id, c.customer_name
+FROM customers c
+WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id);</code></pre>
+      <div class="tip"><strong>Gotcha:</strong> <span class="inline-code">NOT IN</span> silently returns zero rows if the subquery contains even one NULL value — always guard with <span class="inline-code">WHERE customer_id IS NOT NULL</span> in the subquery, or prefer <span class="inline-code">NOT EXISTS</span> which doesn't have this trap.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q47">
+    <h3><span class="qnum">Q47</span> Write a query to find the third-highest salary (subquery and/or DENSE_RANK()).</h3>
+    <div class="answer">
+      <pre><code>-- Subquery approach
+SELECT MAX(salary) FROM employees
+WHERE salary NOT IN (
+    SELECT DISTINCT salary FROM employees ORDER BY salary DESC LIMIT 2
+);
+
+-- DENSE_RANK() - cleanest, handles ties correctly
+SELECT salary FROM (
+    SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+    FROM employees
+) ranked
+WHERE rnk = 3;</code></pre>
+      <p>This generalizes: for the Nth highest, just change <span class="inline-code">rnk = N</span> — call this out to show you understand the pattern rather than a one-off trick.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q48">
+    <h3><span class="qnum">Q48</span> Write a query to find the latest transaction for each customer using ROW_NUMBER().</h3>
+    <div class="answer">
+      <pre><code>SELECT customer_id, transaction_id, transaction_date, amount
+FROM (
+    SELECT customer_id, transaction_id, transaction_date, amount,
+           ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY transaction_date DESC) AS rn
+    FROM transactions
+) t
+WHERE rn = 1;</code></pre>
+      <p><span class="inline-code">PARTITION BY customer_id</span> restarts the row numbering for each customer; <span class="inline-code">ORDER BY transaction_date DESC</span> makes row 1 the most recent transaction per partition. This is the standard "latest record per group" pattern — extremely common for ETL reconciliation and audit-trail validation in banking test suites.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q49">
+    <h3><span class="qnum">Q49</span> Explain primary key vs foreign key.</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Primary Key (PK)</strong> — uniquely identifies each row in a table; cannot be NULL, must be unique, and a table has exactly one (though it can be composite across multiple columns).</li>
+        <li><strong>Foreign Key (FK)</strong> — a column (or set of columns) in one table that references the Primary Key of another table, enforcing referential integrity (you can't insert an order for a customer_id that doesn't exist in the customers table).</li>
+      </ul>
+      <pre><code>CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    customer_name VARCHAR(100)
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);</code></pre>
+      <p><strong>Test relevance:</strong> understanding FK relationships is essential for writing correct joins in validation queries and for building test data that doesn't violate referential integrity constraints when seeding/cleaning up test data.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q50">
+    <h3><span class="qnum">Q50</span> How do you use SQL in automation for backend/database validation? Explain a UI/API-to-database validation flow.</h3>
+    <div class="answer">
+      <p>Typical flow: perform an action via UI or API, then independently verify the resulting state directly in the database — this catches bugs where the UI/API shows success but the backend data is actually wrong (or vice versa, exactly the S5 scenario: "DB says APPROVED but UI says PENDING").</p>
+      <pre><code>// JDBC assertion example
+public String getOrderStatusFromDB(String orderId) throws SQLException {
+    String query = "SELECT status FROM orders WHERE order_id = ?";
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, orderId);
+        try (ResultSet rs = stmt.executeQuery()) {
+            return rs.next() ? rs.getString("status") : null;
+        }
+    }
+}
+
+// In the test
+@Test
+public void verifyOrderApprovalReflectsInDB() throws SQLException {
+    orderPage.approveOrder(orderId);                     // UI action
+    String uiStatus = orderPage.getDisplayedStatus();     // read from UI
+
+    String dbStatus = getOrderStatusFromDB(orderId);      // read from DB directly
+
+    Assert.assertEquals(uiStatus, "APPROVED", "UI status mismatch");
+    Assert.assertEquals(dbStatus, "APPROVED", "DB status mismatch — possible async/replication issue");
+}</code></pre>
+      <p>In a Karate-based framework this same pattern is done via Karate's JDBC/Java-interop calls; for ETL reconciliation, source-vs-target row counts and checksums are validated with parameterized queries, and test data isolation (unique run IDs, cleanup in <span class="inline-code">@AfterMethod</span>/<span class="inline-code">@AfterSuite</span>) prevents cross-test pollution of shared DB state.</p>
+    </div>
+  </div>
+
+</section>
+<section class="part" id="part5">
+  <div class="part-header"><span class="badge">PART 5</span><h2>Shell Scripting & Linux (8 Questions)</h2></div>
+
+  <div class="qa" id="q51">
+    <h3><span class="qnum">Q51</span> How do you find a particular file in Linux? Explain find.</h3>
+    <div class="answer">
+      <pre><code># Find by name (case-sensitive)
+find /var/log -name "app*.log"
+
+# Case-insensitive
+find /home/user -iname "*testng*.xml"
+
+# Find files modified in the last 1 day
+find /opt/reports -type f -mtime -1
+
+# Find files larger than 100MB
+find / -type f -size +100M
+
+# Combine with an action - delete files older than 7 days
+find /tmp/screenshots -type f -mtime +7 -exec rm {} \;</code></pre>
+      <p><span class="inline-code">find</span> searches the directory tree recursively based on criteria (name, type, size, modification time) and can chain actions like <span class="inline-code">-exec</span> or <span class="inline-code">-delete</span> — very useful for cleaning up old screenshot/log artifacts on CI agents.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q52">
+    <h3><span class="qnum">Q52</span> How do you search for text such as ERROR inside a log file? Explain grep.</h3>
+    <div class="answer">
+      <pre><code># Basic search
+grep "ERROR" application.log
+
+# Case-insensitive
+grep -i "error" application.log
+
+# Show line numbers
+grep -n "ERROR" application.log
+
+# Recursive search across a directory
+grep -r "NullPointerException" /var/log/app/
+
+# Count occurrences
+grep -c "ERROR" application.log
+
+# Show 3 lines of context around each match
+grep -B 2 -A 3 "ERROR" application.log
+
+# Combine with pipes to filter test output
+mvn test | grep -i "fail"</code></pre>
+      <p><span class="inline-code">grep</span> ("global regular expression print") filters lines matching a pattern — indispensable for quickly finding failures/exceptions in large CI log files without opening them manually.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q53">
+    <h3><span class="qnum">Q53</span> How do you monitor an application log in real time? Explain tail -f.</h3>
+    <div class="answer">
+      <pre><code>tail -f application.log
+
+# Combine with grep to watch only errors live
+tail -f application.log | grep --line-buffered "ERROR"
+
+# Show the last N lines then keep following
+tail -n 100 -f application.log</code></pre>
+      <p><span class="inline-code">tail -f</span> ("follow") continuously prints new lines appended to the file as they're written, which is how you watch a long-running test suite's log or an application server's log live during test execution instead of repeatedly re-opening the file.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q54">
+    <h3><span class="qnum">Q54</span> How do you find a running process in Linux?</h3>
+    <div class="answer">
+      <pre><code># List all processes
+ps -ef
+
+# Filter for a specific process, e.g. chromedriver
+ps -ef | grep chromedriver
+
+# More modern/readable view
+ps aux | grep java
+
+# Live, interactive view of resource usage
+top
+# or
+htop
+
+# Get PID by name directly
+pgrep -f chromedriver</code></pre>
+      <p><span class="inline-code">ps</span> gives a static snapshot; <span class="inline-code">top</span>/<span class="inline-code">htop</span> gives a live, refreshing view — useful for diagnosing why a CI agent is slow (e.g. orphaned zombie browser processes from tests that didn't quit the driver properly).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q55">
+    <h3><span class="qnum">Q55</span> How do you terminate a process? Explain kill vs kill -9.</h3>
+    <div class="answer">
+      <pre><code>kill &lt;PID&gt;       # sends SIGTERM (15) - graceful shutdown, process can clean up
+kill -9 &lt;PID&gt;    # sends SIGKILL (9) - immediate, forceful termination, no cleanup
+
+# Kill by name instead of PID
+pkill -f chromedriver
+killall chromedriver</code></pre>
+      <p><span class="inline-code">kill</span> (SIGTERM) asks the process to shut down gracefully — it can close file handles, flush logs, release locks first. <span class="inline-code">kill -9</span> (SIGKILL) is handled by the OS kernel directly and cannot be caught or ignored by the process — it dies immediately with no cleanup, which can leave temp files or locked resources behind. Best practice: try plain <span class="inline-code">kill</span> first, escalate to <span class="inline-code">-9</span> only if the process is genuinely hung and unresponsive (e.g. a stuck orphaned ChromeDriver process after a CI job crash).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q56">
+    <h3><span class="qnum">Q56</span> Explain $? in shell scripting. How would you use it after executing Maven tests?</h3>
+    <div class="answer">
+      <p><span class="inline-code">$?</span> holds the exit status of the last executed command: <span class="inline-code">0</span> means success, any non-zero value means failure (Maven typically returns 1 on test failure or build error).</p>
+      <pre><code>mvn test
+if [ $? -eq 0 ]; then
+    echo "All tests passed"
+else
+    echo "Build failed - tests did not pass"
+    exit 1
+fi</code></pre>
+      <p>This is exactly how Jenkins/CI decides whether to mark a pipeline stage as passed or failed — the shell step's exit code propagates up and determines the overall build/pipeline status.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q57">
+    <h3><span class="qnum">Q57</span> Write a shell script that executes automation tests using Maven and returns a non-zero exit code when tests fail.</h3>
+    <div class="answer">
+      <pre><code>#!/bin/bash
+set -e   # exit immediately if any command fails (optional strictness)
+
+ENVIRONMENT=${1:-qa}
+BROWSER=${2:-chrome}
+
+echo "Running automation suite on env=$ENVIRONMENT browser=$BROWSER"
+
+mvn clean test -Denv="$ENVIRONMENT" -Dbrowser="$BROWSER" -DsuiteXmlFile=testng.xml
+TEST_EXIT_CODE=$?
+
+if [ $TEST_EXIT_CODE -ne 0 ]; then
+    echo "Automation suite FAILED with exit code $TEST_EXIT_CODE"
+    exit $TEST_EXIT_CODE
+else
+    echo "Automation suite PASSED"
+    exit 0
+fi</code></pre>
+      <p>Note: Maven itself already exits non-zero on test failure by default (surefire fails the build), so simply running <span class="inline-code">mvn test</span> without <span class="inline-code">-DtestFailureIgnore=true</span> already propagates the right exit code to Jenkins — this script makes that behavior explicit and parameterizes environment/browser for CI use.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q58">
+    <h3><span class="qnum">Q58</span> Explain these shell variables: $0, $1, $2, $@, $#, $?.</h3>
+    <div class="answer">
+      <table>
+        <tr><th>Variable</th><th>Meaning</th></tr>
+        <tr><td><span class="inline-code">$0</span></td><td>Name of the script itself</td></tr>
+        <tr><td><span class="inline-code">$1</span>, <span class="inline-code">$2</span>...</td><td>Positional arguments passed to the script (1st, 2nd, ...)</td></tr>
+        <tr><td><span class="inline-code">$@</span></td><td>All arguments as separate, individually-quoted words</td></tr>
+        <tr><td><span class="inline-code">$#</span></td><td>Total count of arguments passed</td></tr>
+        <tr><td><span class="inline-code">$?</span></td><td>Exit status of the last executed command</td></tr>
+      </table>
+      <pre><code>#!/bin/bash
+echo "Script name: $0"
+echo "First arg (env): $1"
+echo "Second arg (browser): $2"
+echo "Total args: $#"
+echo "All args: $@"
+
+# ./run.sh qa chrome
+# Script name: ./run.sh
+# First arg (env): qa
+# Second arg (browser): chrome
+# Total args: 2
+# All args: qa chrome</code></pre>
+    </div>
+  </div>
+
+</section>
+<section class="part" id="part6">
+  <div class="part-header"><span class="badge">PART 6</span><h2>CI/CD & Testing (7 Questions)</h2></div>
+
+  <div class="qa" id="q59">
+    <h3><span class="qnum">Q59</span> How do you integrate Selenium automation with Jenkins?</h3>
+    <div class="answer">
+      <ol>
+        <li>Automation project is committed to a Git repo (GitHub/Azure DevOps repos).</li>
+        <li>Jenkins job (Freestyle or, more commonly today, a <span class="inline-code">Jenkinsfile</span> Pipeline) is configured to poll SCM or trigger on webhook/PR/merge.</li>
+        <li>Build step invokes Maven: <span class="inline-code">mvn clean test -Denv=qa -Dbrowser=chrome</span>.</li>
+        <li>Jenkins agent needs the right prerequisites: JDK, Maven, browser binaries + matching driver versions (or a Selenium Grid/Docker setup so the agent doesn't need browsers installed locally).</li>
+        <li>Post-build actions publish the test report (Allure Jenkins plugin, JUnit/TestNG XML publisher) and archive artifacts (screenshots, logs).</li>
+        <li>Pipeline can notify on failure (Slack/Teams/email) and gate downstream stages (e.g. block deployment to the next environment) on test pass/fail via the exit code (Q56).</li>
+      </ol>
+      <pre><code>pipeline {
+    agent any
+    stages {
+        stage('Build & Test') {
+            steps {
+                sh 'mvn clean test -Denv=qa -Dbrowser=chrome'
+            }
+        }
+        stage('Publish Report') {
+            steps {
+                allure includeProperties: false, results: [[path: 'target/allure-results']]
+            }
+        }
+    }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="qa" id="q60">
+    <h3><span class="qnum">Q60</span> What Maven command would you use to execute the automation suite?</h3>
+    <div class="answer">
+      <pre><code># Run the default surefire-configured suite
+mvn clean test
+
+# Run a specific TestNG suite XML
+mvn clean test -DsuiteXmlFile=testng.xml
+
+# Run a specific test class
+mvn test -Dtest=LoginTest
+
+# Run with TestNG groups
+mvn test -Dgroups=smoke
+
+# Pass custom system properties (env, browser) read by the config layer
+mvn clean test -Denv=staging -Dbrowser=firefox -DsuiteXmlFile=regression-suite.xml
+
+# Skip tests (build only) - useful to distinguish compile vs test failures
+mvn clean install -DskipTests</code></pre>
+      <p><span class="inline-code">clean</span> wipes the <span class="inline-code">target/</span> directory first to avoid stale artifacts affecting the run — a good habit to mention for CI reliability.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q61">
+    <h3><span class="qnum">Q61</span> How do you pass environment-specific configuration from Jenkins to the automation framework?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Jenkins build parameters</strong> — a parameterized job with a choice parameter for <span class="inline-code">ENV</span> (qa/staging/prod-like) and <span class="inline-code">BROWSER</span>, passed into the shell step as <span class="inline-code">-Denv=${ENV}</span>.</li>
+        <li><strong>Jenkins Credentials Store</strong> — secrets (DB passwords, API keys) injected as masked environment variables, never hardcoded in the repo or properties files.</li>
+        <li><strong>Environment variables</strong> — Jenkins can export env vars that the framework's config reader checks before falling back to the properties file default.</li>
+        <li><strong>Separate config files per environment</strong> selected at runtime based on the passed parameter, as described in Q36.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="q62">
+    <h3><span class="qnum">Q62</span> Explain Smoke Testing vs Sanity Testing vs Regression Testing.</h3>
+    <div class="answer">
+      <table>
+        <tr><th></th><th>Smoke</th><th>Sanity</th><th>Regression</th></tr>
+        <tr><td>Purpose</td><td>Is the build stable enough to test further?</td><td>Is a specific fix/feature working as expected?</td><td>Did recent changes break existing functionality?</td></tr>
+        <tr><td>Scope</td><td>Broad but shallow — critical paths only</td><td>Narrow but deep — focused on the changed area</td><td>Broad and deep — full or targeted suite</td></tr>
+        <tr><td>When run</td><td>Immediately after a new build/deployment</td><td>After a specific bug fix or small change</td><td>Before release, after significant changes</td></tr>
+        <tr><td>Automated?</td><td>Usually, fast subset in CI</td><td>Sometimes manual, sometimes a tagged subset</td><td>Usually the bulk of the automated suite</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="qa" id="q63">
+    <h3><span class="qnum">Q63</span> Explain the Software Testing Life Cycle (STLC).</h3>
+    <div class="answer">
+      <ol>
+        <li><strong>Requirement Analysis</strong> — understand what needs testing, identify testable requirements, raise ambiguity questions.</li>
+        <li><strong>Test Planning</strong> — define scope, strategy, resources, timelines, tools, entry/exit criteria.</li>
+        <li><strong>Test Case Design</strong> — write test cases/scenarios, identify test data needs, review cases.</li>
+        <li><strong>Environment Setup</strong> — prepare test environment, data, and confirm readiness (smoke test the environment itself).</li>
+        <li><strong>Test Execution</strong> — run test cases (manual/automated), log defects for failures, retest fixes.</li>
+        <li><strong>Test Closure</strong> — evaluate exit criteria, prepare summary reports, capture lessons learned/metrics for the next cycle.</li>
+      </ol>
+      <p>In an automation-heavy context, this maps onto: requirement → automatable-scenario identification → framework/test scripting → environment/CI setup → scheduled/triggered execution → defect logging → reporting/metrics feeding back into planning.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q64">
+    <h3><span class="qnum">Q64</span> How do you decide which test cases should be automated?</h3>
+    <div class="answer">
+      <p><strong>Good candidates for automation:</strong></p>
+      <ul>
+        <li>Repetitive, stable, high-frequency tests (regression suite, smoke tests run on every build).</li>
+        <li>Data-driven tests with many input/output combinations.</li>
+        <li>Time-consuming manual tests where automation saves significant effort (long end-to-end flows).</li>
+        <li>Tests requiring precision that's error-prone manually (financial calculations, large table validations).</li>
+        <li>Cross-browser/cross-environment checks that would multiply manual effort.</li>
+      </ul>
+      <p><strong>Poor candidates:</strong> one-off/exploratory tests, tests on UI still under active/frequent redesign (high maintenance cost for low ROI), highly subjective UX/visual judgment calls, and low-frequency edge cases where automation cost outweighs benefit.</p>
+      <p>The general rule of thumb is a cost-benefit calculation: automate when <em>(execution frequency × manual effort saved) &gt; (automation build + maintenance cost)</em> over a reasonable time horizon.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q65">
+    <h3><span class="qnum">Q65</span> A developer says "It works on my machine." How would you investigate the issue?</h3>
+    <div class="answer">
+      <ol>
+        <li><strong>Compare environments</strong> — OS, browser version, driver version, JDK version, dependency versions (Maven/npm lock files) between dev's machine and the failing environment (CI agent, QA env).</li>
+        <li><strong>Check configuration differences</strong> — base URL, environment-specific config, feature flags, database state/seed data that might differ.</li>
+        <li><strong>Check for environment-specific data</strong> — hardcoded local test data, local-only mocked services, or a local DB with different seed data than CI/QA.</li>
+        <li><strong>Reproduce with logs/screenshots</strong> — if it's an automated test, pull the CI run's logs, screenshots, and Allure report to see the actual failure point rather than guessing.</li>
+        <li><strong>Check network/timing differences</strong> — CI environments are often slower/under more load; a race condition invisible on a fast local machine can surface as a real timing bug in CI (ties back to Q19/Q30 on flakiness).</li>
+        <li><strong>Containerize</strong> — if it becomes a recurring issue, push to standardize execution via Docker so "my machine" and CI are running the literal same image, eliminating this class of discrepancy entirely.</li>
+      </ol>
+    </div>
+  </div>
+
+</section>
+<section class="part" id="part7">
+  <div class="part-header"><span class="badge">PART 7</span><h2>Git & Version Control (10 Questions)</h2></div>
+
+  <div class="qa" id="q66">
+    <h3><span class="qnum">Q66</span> Explain the difference between git fetch, git pull, and git merge.</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>git fetch</strong> — downloads commits/branches/tags from the remote into your local <span class="inline-code">origin/*</span> tracking branches, but does NOT touch your working directory or current branch. Safe to run anytime.</li>
+        <li><strong>git pull</strong> — equivalent to <span class="inline-code">git fetch</span> followed by <span class="inline-code">git merge</span> (or <span class="inline-code">git rebase</span> if <span class="inline-code">--rebase</span> is used) — it fetches AND immediately integrates the remote changes into your current branch.</li>
+        <li><strong>git merge</strong> — combines the changes of a specified branch into your current branch, creating a merge commit if the histories have diverged.</li>
+      </ul>
+      <pre><code>git fetch origin
+git diff main origin/main       # inspect what changed before merging
+git merge origin/main            # merge only when you're ready
+
+# vs the shortcut that does both steps at once
+git pull origin main</code></pre>
+      <div class="tip"><strong>Interview angle:</strong> mention that you prefer <span class="inline-code">fetch</span> + review + <span class="inline-code">merge</span> over a blind <span class="inline-code">pull</span> on shared framework branches, since it lets you see incoming changes before they touch your working copy — relevant when several people modify the same POM classes or CI config.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q67">
+    <h3><span class="qnum">Q67</span> What is the difference between git merge and git rebase? When would you use each?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>git merge</strong> — preserves full history exactly as it happened, creates a merge commit joining two branch tips. Non-destructive, but history can get cluttered with many merge commits on an active repo.</li>
+        <li><strong>git rebase</strong> — replays your branch's commits on top of the target branch's latest commit, producing a linear history with no merge commit. Rewrites commit hashes, so it's destructive to shared history if used incorrectly.</li>
+      </ul>
+      <pre><code>git checkout feature/kafka-validation
+git rebase main
+# resolve any conflicts, then:
+git rebase --continue</code></pre>
+      <p><strong>When to use which:</strong> rebase your own local feature branch onto <span class="inline-code">main</span> before opening a PR, to keep history clean and linear. Never rebase a branch that others have already pulled/based work on — that rewrites shared commit history and breaks everyone else's local copies. Use merge (not rebase) when integrating a completed feature branch into <span class="inml-code">main</span> via a PR, since it preserves an honest record of when the feature landed.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q68">
+    <h3><span class="qnum">Q68</span> How do you resolve a merge conflict? Walk through the process.</h3>
+    <div class="answer">
+      <ol>
+        <li>Git pauses the merge/rebase and marks conflicted files, inserting conflict markers directly into the file:</li>
+      </ol>
+      <pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+public static final int DEFAULT_TIMEOUT = 10;
+=======
+public static final int DEFAULT_TIMEOUT = 15;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/increase-timeout</code></pre>
+      <ol start="2">
+        <li>Open the file, decide which change (or a combination) is correct, and manually remove the conflict markers.</li>
+        <li>Stage the resolved file: <span class="inline-code">git add DriverConfig.java</span></li>
+        <li>Continue the operation: <span class="inline-code">git merge --continue</span> or <span class="inline-code">git rebase --continue</span> (rebase may repeat this per commit).</li>
+        <li>Run the affected tests locally before pushing, to make sure the resolution didn't silently break anything — conflict resolution is a common source of "worked before, broken after merge" bugs in automation config files like <span class="inline-code">testng.xml</span> or CI YAML.</li>
+      </ol>
+      <p>Useful commands during conflict resolution: <span class="inline-code">git status</span> (lists conflicted files), <span class="inline-code">git diff</span> (shows conflict details), <span class="inline-code">git merge --abort</span> / <span class="inline-code">git rebase --abort</span> (bail out completely and return to the pre-merge state if things go wrong).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q69">
+    <h3><span class="qnum">Q69</span> Explain git cherry-pick. When would you use it in a test automation context?</h3>
+    <div class="answer">
+      <p><span class="inline-code">git cherry-pick &lt;commit-hash&gt;</span> applies a single specific commit from one branch onto your current branch, without merging the entire branch.</p>
+      <pre><code>git checkout release/v2.3
+git cherry-pick a1b2c3d
+
+# if the commit conflicts, resolve then:
+git cherry-pick --continue</code></pre>
+      <p><strong>Automation use case:</strong> a critical bug fix (e.g. a broken locator or a wait-condition fix) lands on <span class="inline-code">main</span> but needs to also ship on an active <span class="inline-code">release/v2.3</span> branch that's already diverged — cherry-pick lets you grab just that one commit onto the release branch without pulling in unrelated in-progress work from main.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q70">
+    <h3><span class="qnum">Q70</span> What's the difference between git reset, git revert, and git checkout?</h3>
+    <div class="answer">
+      <table>
+        <tr><th>Command</th><th>What it does</th><th>Rewrites history?</th></tr>
+        <tr><td><span class="inline-code">git reset</span></td><td>Moves the branch pointer backward (soft/mixed/hard variants control what happens to staged/working changes)</td><td>Yes — dangerous on shared branches</td></tr>
+        <tr><td><span class="inline-code">git revert</span></td><td>Creates a NEW commit that undoes the changes of a previous commit, keeping history intact</td><td>No — safe for shared/pushed branches</td></tr>
+        <tr><td><span class="inline-code">git checkout</span></td><td>Switches branches, or restores files/commits into the working directory without altering branch history</td><td>No</td></tr>
+      </table>
+      <pre><code>git reset --soft HEAD~1   # undo last commit, keep changes staged
+git reset --hard HEAD~1   # undo last commit, discard changes completely (destructive)
+
+git revert a1b2c3d        # safely undo a specific commit already pushed to a shared branch
+
+git checkout main         # switch branches
+git checkout -- DriverFactory.java  # discard local uncommitted changes to one file</code></pre>
+      <div class="tip"><strong>Golden rule:</strong> never <span class="inline-code">git reset --hard</span> on a branch others have already pulled — use <span class="inline-code">git revert</span> instead once history is shared, since it adds a corrective commit rather than erasing what happened.</div>
+    </div>
+  </div>
+
+  <div class="qa" id="q71">
+    <h3><span class="qnum">Q71</span> How do you undo the last commit without losing your changes?</h3>
+    <div class="answer">
+      <pre><code>git reset --soft HEAD~1</code></pre>
+      <p>This moves the branch pointer back one commit but keeps all changes staged in the index, so you can immediately re-commit with a corrected message or split it into multiple commits. Variants:</p>
+      <ul>
+        <li><span class="inline-code">git reset --soft HEAD~1</span> — changes stay staged (ready to commit again).</li>
+        <li><span class="inline-code">git reset --mixed HEAD~1</span> (default) — changes stay in the working directory but unstaged.</li>
+        <li><span class="inline-code">git reset --hard HEAD~1</span> — changes are discarded entirely (only use if you're sure).</li>
+      </ul>
+      <p>If the commit was already pushed, prefer <span class="inline-code">git revert</span> instead so you don't rewrite shared history (see Q70).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q72">
+    <h3><span class="qnum">Q72</span> Explain git stash. When is it useful in a day-to-day automation workflow?</h3>
+    <div class="answer">
+      <pre><code>git stash                        # save uncommitted changes, revert working dir to clean state
+git stash list                   # view all stashed snapshots
+git stash apply                  # reapply the most recent stash, keep it in the stash list
+git stash pop                    # reapply the most recent stash AND remove it from the list
+git stash drop stash@{0}         # delete a specific stash
+git stash push -m "wip: kafka consumer test"  # stash with a descriptive message</code></pre>
+      <p><span class="inline-code">git stash</span> temporarily shelves uncommitted changes so you can switch context cleanly — for example, you're mid-way through writing a new Karate feature file when an urgent production bug needs a hotfix branch. Stash your in-progress work, switch branches, fix the bug, switch back, then <span class="inline-code">git stash pop</span> to resume exactly where you left off without a half-finished commit cluttering history.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q73">
+    <h3><span class="qnum">Q73</span> What is a detached HEAD state? How do you recover from it?</h3>
+    <div class="answer">
+      <p>Normally <span class="inline-code">HEAD</span> points to a branch name, which in turn points to a commit. A <strong>detached HEAD</strong> happens when <span class="inline-code">HEAD</span> points directly to a specific commit instead of a branch — typically after <span class="inline-code">git checkout &lt;commit-hash&gt;</span> or checking out a tag. Any new commits made in this state aren't attached to any branch and can be lost once you switch away, since nothing references them.</p>
+      <pre><code># You're in detached HEAD and made commits you want to keep
+git branch recovery-branch     # create a branch pointing at the current commit
+git checkout recovery-branch   # now your commits are safely on a real branch
+
+# If you didn't create a branch in time and already switched away
+git reflog                     # find the "lost" commit hash in the history log
+git checkout -b recovery-branch &lt;lost-commit-hash&gt;</code></pre>
+      <p><span class="inline-code">git reflog</span> is the safety net here — it records every HEAD movement locally (even ones not reachable from any branch), so accidentally "lost" commits are almost always recoverable as long as garbage collection hasn't run.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q74">
+    <h3><span class="qnum">Q74</span> How would you set up a .gitignore for a Java/Selenium/Playwright automation project?</h3>
+    <div class="answer">
+      <pre><code># Build output
+target/
+build/
+node_modules/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# Test artifacts (regenerated every run - shouldn't be versioned)
+test-output/
+allure-results/
+allure-report/
+screenshots/
+logs/
+*.log
+
+# Environment / secrets - never commit credentials
+.env
+config-local.properties
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Playwright specific
+playwright-report/
+test-results/</code></pre>
+      <p>The guiding principle: ignore anything that's <strong>generated</strong> (build output, reports, screenshots) or <strong>secret</strong> (credentials, local env overrides) — only source code, framework configuration templates, and version-controlled test data/POM files should live in Git. Committing generated artifacts bloats the repo and causes constant unnecessary diff noise on every test run.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q75">
+    <h3><span class="qnum">Q75</span> Describe a branching strategy you'd use for an automation framework repo (e.g. Git Flow, trunk-based).</h3>
+    <div class="answer">
+      <p>For most automation framework repos, a lightweight <strong>trunk-based / feature-branch</strong> approach works better than full Git Flow, since test frameworks don't usually need long-lived release branches the way product code sometimes does:</p>
+      <ul>
+        <li><strong>main</strong> — always green/stable; every commit here should be safe for CI to run against any environment.</li>
+        <li><strong>feature/*</strong> branches — one per new capability (e.g. <span class="inline-code">feature/kafka-consumer-tests</span>, <span class="inline-code">feature/docker-grid-setup</span>), short-lived, rebased onto main before merging via PR.</li>
+        <li><strong>PR review + CI gate</strong> — every PR triggers the pipeline (smoke subset at minimum) before merge is allowed, so broken framework code never lands on main.</li>
+        <li><strong>hotfix/*</strong> branches — for urgent fixes to a locator/config that's blocking the whole pipeline, merged and released fast, cherry-picked to any active release branch if one exists (see Q69).</li>
+      </ul>
+      <p>If the project genuinely needs to support multiple parallel product release versions being tested simultaneously (e.g. testing v2.3 in production and v2.4 in staging at the same time), a <span class="inline-code">release/*</span> branch per active version is added, with fixes cherry-picked forward — but for a typical single-target automation suite, keeping it simple with trunk + short feature branches reduces merge overhead and keeps the framework easy to maintain.</p>
+    </div>
+  </div>
+
+</section>
+
+<section class="part" id="part8">
+  <div class="part-header"><span class="badge">PART 8</span><h2>API Testing: REST Assured, Karate & Kafka (10 Questions)</h2></div>
+
+  <div class="qa" id="q76">
+    <h3><span class="qnum">Q76</span> What is REST Assured and how does it fit into a Java automation framework?</h3>
+    <div class="answer">
+      <p>REST Assured is a Java DSL library for testing REST APIs, built around a fluent <span class="inline-code">given()/when()/then()</span> syntax modeled on BDD-style readability. It handles request building, response parsing (JSON/XML), and assertions without needing a separate HTTP client library.</p>
+      <pre><code>given()
+    .baseUri("https://api.eventhub.com")
+    .header("Content-Type", "application/json")
+    .body(bookingPayload)
+.when()
+    .post("/v1/bookings")
+.then()
+    .statusCode(201)
+    .body("status", equalTo("CONFIRMED"))
+    .body("bookingId", notNullValue());</code></pre>
+      <p>In a framework it typically sits as a separate <strong>API layer</strong> alongside the UI/Page Object layer, sharing the same config/environment management and reporting (Allure) infrastructure — the same request specs, base URIs, and auth tokens are reused across both hybrid API+UI tests and pure API-only test suites.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q77">
+    <h3><span class="qnum">Q77</span> Explain the anatomy of a REST Assured test — what do given(), when(), and then() actually do?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>given()</strong> — sets up the request context: base URI, headers, auth, query/path params, request body.</li>
+        <li><strong>when()</strong> — specifies the HTTP action and endpoint: <span class="inline-code">.get()</span>, <span class="inline-code">.post()</span>, <span class="inline-code">.put()</span>, <span class="inline-code">.delete()</span>, <span class="inline-code">.patch()</span>.</li>
+        <li><strong>then()</strong> — validates the response: status code, headers, response time, and body content via JSON path assertions (<span class="inline-code">hamcrest</span> matchers).</li>
+      </ul>
+      <pre><code>Response response =
+given()
+    .pathParam("eventId", 4521)
+    .queryParam("includeVenue", true)
+.when()
+    .get("/v1/events/{eventId}")
+.then()
+    .statusCode(200)
+    .time(lessThan(2000L))
+    .extract().response();
+
+String venueName = response.jsonPath().getString("venue.name");</code></pre>
+      <p>Reusable request specifications are typically extracted into a <span class="inline-code">RequestSpecification</span> builder (base URI, common headers, auth) so every test doesn't repeat boilerplate — analogous to how a <span class="inline-code">BasePage</span> centralizes common Selenium behavior.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q78">
+    <h3><span class="qnum">Q78</span> How do you validate a JSON response's schema or structure, not just individual field values?</h3>
+    <div class="answer">
+      <pre><code>// Field-level assertions (fine for small/simple payloads)
+.then()
+    .body("customer.name", equalTo("Sai"))
+    .body("items.size()", greaterThan(0))
+    .body("items[0].price", greaterThan(0f));
+
+// Full JSON Schema validation (better for larger/contract-critical payloads)
+.then()
+    .assertThat()
+    .body(matchesJsonSchemaInClasspath("schemas/booking-response-schema.json"));</code></pre>
+      <p>Field-by-field assertions are fine for a handful of values, but for larger payloads (or when you care about contract stability — required fields, types, enums) JSON Schema validation is far more maintainable: it validates the entire structure in one call and catches unexpected new/missing fields, not just the specific ones you remembered to assert on. This is especially valuable for banking/FinTech APIs where response contracts have compliance implications.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q79">
+    <h3><span class="qnum">Q79</span> How do you chain data between API calls — for example, get an auth token, then use it in a subsequent request?</h3>
+    <div class="answer">
+      <pre><code>// Step 1: Authenticate and extract the token
+String token =
+given()
+    .contentType("application/json")
+    .body(Map.of("username", "sai", "password", "P@ssw0rd"))
+.when()
+    .post("/auth/login")
+.then()
+    .statusCode(200)
+    .extract().path("accessToken");
+
+// Step 2: Use the extracted token in the next request
+given()
+    .header("Authorization", "Bearer " + token)
+.when()
+    .get("/v1/bookings/mine")
+.then()
+    .statusCode(200);</code></pre>
+      <p><span class="inline-code">.extract().path("...")</span> (or <span class="inline-code">.extract().response()</span> for the full response object) pulls values out of one call's response for reuse. For longer chains (create booking → get bookingId → fetch booking details → cancel booking) this pattern extends naturally, and in Karate the same chaining is even more concise since response values are automatically available as variables in subsequent steps within the same feature file.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q80">
+    <h3><span class="qnum">Q80</span> Explain the Karate framework. How is it different from REST Assured?</h3>
+    <div class="answer">
+      <p>Karate is a BDD-style API testing framework where tests are written in Gherkin-like <span class="inline-code">.feature</span> files, combining API calls, assertions, and even UI/DB steps in one readable syntax — no Java glue code required for most scenarios.</p>
+      <pre><code>Feature: Booking API validation
+
+Scenario: Create a booking and verify confirmation
+    Given url baseUrl + '/v1/bookings'
+    And header Authorization = 'Bearer ' + authToken
+    And request { eventId: 4521, seats: 2 }
+    When method post
+    Then status 201
+    And match response.status == 'CONFIRMED'
+    And match response.bookingId == '#notnull'</code></pre>
+      <table>
+        <tr><th></th><th>REST Assured</th><th>Karate</th></tr>
+        <tr><td>Language</td><td>Pure Java DSL</td><td>Gherkin-style DSL, JS expressions inline</td></tr>
+        <tr><td>Who can write tests</td><td>Requires Java knowledge</td><td>More accessible to manual/BDD-focused testers</td></tr>
+        <tr><td>Built-in features</td><td>HTTP + JSON/XML assertions only</td><td>HTTP, JSON matching, data-driven scenarios, parallel execution, even embedded UI (via Karate UI) and Kafka/JMS support out of the box</td></tr>
+        <tr><td>JSON matching</td><td>JsonPath/Hamcrest, more verbose</td><td>Native match syntax, very concise for nested structures</td></tr>
+      </table>
+      <p>The two aren't mutually exclusive — REST Assured fits naturally into pure-Java frameworks alongside Selenium page objects, while Karate is often chosen when a team wants API tests readable by non-Java-fluent stakeholders, or needs Karate's built-in Kafka producer/consumer support for event-driven validation.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q81">
+    <h3><span class="qnum">Q81</span> How do you validate database state after an API call in a hybrid API+DB test?</h3>
+    <div class="answer">
+      <pre><code>// REST Assured + JDBC combined
+Response response =
+given().body(newOrderPayload)
+.when().post("/v1/orders")
+.then().statusCode(201).extract().response();
+
+String orderId = response.jsonPath().getString("orderId");
+
+// Independently verify the same data landed correctly in the DB
+String dbStatus = getOrderStatusFromDB(orderId);  // JDBC query, see Q50
+Assert.assertEquals(dbStatus, "CREATED");
+Assert.assertEquals(response.jsonPath().getString("status"), "CREATED");</code></pre>
+      <p>In Karate this is done via Java-interop calls to a helper class wrapping JDBC, or Karate's own <span class="inline-code">karate.call</span> to a Java utility, kept inside the same feature file so the full API-to-DB assertion chain reads as one scenario. The core principle mirrors Q50: never trust the API response alone for state-changing operations — independently confirm the backend actually persisted the expected state, since a "green" API response doesn't guarantee correct downstream persistence (especially with async processing via Kafka in between).</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q82">
+    <h3><span class="qnum">Q82</span> How do you handle authentication in API tests — Basic Auth, Bearer/OAuth2 tokens, and API keys?</h3>
+    <div class="answer">
+      <pre><code>// Basic Auth
+given().auth().preemptive().basic("user", "pass")
+
+// Bearer token (most common for modern APIs)
+given().header("Authorization", "Bearer " + token)
+
+// API key in header
+given().header("X-API-Key", apiKey)
+
+// OAuth2 - typically a 2-step flow: get token via client credentials, then use it
+String token =
+given()
+    .auth().preemptive().basic(clientId, clientSecret)
+    .formParam("grant_type", "client_credentials")
+.when().post("/oauth/token")
+.then().extract().path("access_token");</code></pre>
+      <p><strong>Framework design tip:</strong> centralize token acquisition into a reusable utility/fixture that fetches a token once per test suite (or caches it with an expiry check) rather than re-authenticating before every single test — this both speeds up execution and mirrors how a real client application would behave. Credentials themselves should come from the same secure config/secrets layer used for DB and environment credentials (see Q36, Q61), never hardcoded in test code.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q83">
+    <h3><span class="qnum">Q83</span> How do you test asynchronous, event-driven APIs backed by Kafka?</h3>
+    <div class="answer">
+      <p>Kafka-backed flows typically can't be validated with a simple synchronous request/response assertion, since the API call often just triggers a message onto a topic and the real processing happens asynchronously downstream. The general pattern:</p>
+      <ol>
+        <li><strong>Trigger</strong> — call the API/UI action that's expected to publish a Kafka event.</li>
+        <li><strong>Consume</strong> — use a test Kafka consumer (Karate has built-in Kafka support; in pure Java, a lightweight <span class="inline-code">KafkaConsumer</span> subscribed to the relevant topic) to listen for the resulting message.</li>
+        <li><strong>Poll with timeout</strong> — since processing is async, poll/await (not a fixed sleep) for the expected message to arrive within a reasonable timeout, then validate its payload.</li>
+        <li><strong>Cross-check downstream effects</strong> — confirm the consumer service that reads that topic actually processed it correctly (e.g. the resulting DB row, or a follow-up status change visible via a separate API call).</li>
+      </ol>
+      <pre><code># Karate's built-in Kafka support (conceptual)
+* def producer = karate.producer('localhost:9092')
+* producer.send('booking-events', bookingId, bookingEventJson)
+
+* def consumer = karate.consumer('localhost:9092', 'booking-events')
+* def result = consumer.poll(5000)
+* match result.value contains { bookingId: '#(bookingId)', status: 'CONFIRMED' }</code></pre>
+      <p>Key testing considerations: message ordering guarantees (or lack thereof) per partition, idempotency (does reprocessing the same message cause duplicate side effects), and consumer lag/timeout handling — all of which matter a lot in banking-style event pipelines where a lost or duplicated message has real financial impact.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q84">
+    <h3><span class="qnum">Q84</span> What status codes and negative scenarios should you always validate for an API endpoint?</h3>
+    <div class="answer">
+      <table>
+        <tr><th>Code</th><th>Meaning</th><th>Typical test scenario</th></tr>
+        <tr><td>200 / 201</td><td>Success / Created</td><td>Happy path — valid request returns expected data</td></tr>
+        <tr><td>400</td><td>Bad Request</td><td>Missing required field, invalid data type, malformed JSON</td></tr>
+        <tr><td>401</td><td>Unauthorized</td><td>Missing/expired/invalid auth token</td></tr>
+        <tr><td>403</td><td>Forbidden</td><td>Valid auth, but insufficient permissions for the action</td></tr>
+        <tr><td>404</td><td>Not Found</td><td>Requesting a resource ID that doesn't exist</td></tr>
+        <tr><td>409</td><td>Conflict</td><td>Duplicate resource creation, race condition on a unique constraint</td></tr>
+        <tr><td>422</td><td>Unprocessable Entity</td><td>Well-formed request but fails business validation rules</td></tr>
+        <tr><td>429</td><td>Too Many Requests</td><td>Rate limiting behavior under load</td></tr>
+        <tr><td>500</td><td>Internal Server Error</td><td>Should rarely be an *expected* test outcome — usually indicates a real bug if seen</td></tr>
+      </table>
+      <p>Beyond status codes: test boundary values (min/max field lengths, numeric limits), empty/null payloads, wrong content-type headers, SQL-injection-style payloads for basic security sanity, and idempotency of retried requests — negative testing coverage is often what separates a junior API test suite from a senior one in interviews.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="q85">
+    <h3><span class="qnum">Q85</span> How do you implement data-driven API testing / parameterization?</h3>
+    <div class="answer">
+      <pre><code>// REST Assured + TestNG DataProvider
+@DataProvider(name = "invalidBookingPayloads")
+public Object[][] invalidPayloads() {
+    return new Object[][] {
+        { Map.of("eventId", "", "seats", 2), 400 },
+        { Map.of("eventId", 4521, "seats", -1), 422 },
+        { Map.of("eventId", 999999, "seats", 2), 404 }
+    };
+}
+
+@Test(dataProvider = "invalidBookingPayloads")
+public void testInvalidBookingScenarios(Map&lt;String, Object&gt; payload, int expectedStatus) {
+    given().body(payload)
+    .when().post("/v1/bookings")
+    .then().statusCode(expectedStatus);
+}</code></pre>
+      <pre><code># Karate's native Scenario Outline for the same idea - often more concise
+Scenario Outline: Invalid booking payloads return correct error codes
+    Given url baseUrl + '/v1/bookings'
+    And request { eventId: '&lt;eventId&gt;', seats: &lt;seats&gt; }
+    When method post
+    Then status &lt;expectedStatus&gt;
+
+    Examples:
+    | eventId | seats | expectedStatus |
+    | ''      | 2     | 400            |
+    | 4521    | -1    | 422            |
+    | 999999  | 2     | 404            |</code></pre>
+      <p>This pattern is essential for covering a wide validation matrix (boundary values, negative scenarios from Q84) without writing a separate test method per case — combined with a Builder+Faker approach for the valid/happy-path data (see Q7 of Part 3 area on test data strategy), it gives comprehensive coverage with minimal code duplication.</p>
+    </div>
+  </div>
+
+</section>
+
+<section class="part" id="bonus">
+  <div class="part-header"><span class="badge">BONUS</span><h2>Scenario-Based Questions (10 Questions)</h2></div>
+
+  <div class="qa" id="s1">
+    <h3><span class="qnum">S1</span> Selenium tests pass locally but fail in Jenkins. What could be the reasons and how would you debug?</h3>
+    <div class="answer">
+      <p><strong>Likely causes:</strong> different browser/driver versions on the CI agent; headless vs headed execution differences (some elements behave differently, e.g. viewport size affecting visibility); missing environment variables/credentials on the agent; slower CI hardware exposing timing/race issues masked locally; different OS (Linux CI agent vs Windows/Mac local) causing font-rendering or file-path differences; network/firewall restrictions blocking calls that work from a local machine; stale cached dependencies on the agent.</p>
+      <p><strong>Debugging approach:</strong> pull the CI console log, screenshot, and video/trace if captured; diff the config/environment values used locally vs in the pipeline; try running the exact same Maven command locally with <span class="inline-code">-Dheadless=true</span> to rule out headless-specific issues; check driver/browser version pinning; if still unclear, SSH into the agent (or use a matching Docker image) to reproduce directly in that environment.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="s2">
+    <h3><span class="qnum">S2</span> A test fails randomly 1 out of 10 times. How would you investigate the flakiness?</h3>
+    <div class="answer">
+      <p>Run it in isolation with a high invocation count (<span class="inline-code">@Test(invocationCount = 20)</span>) to reproduce reliably. Check for: race conditions (missing wait before an assertion that depends on async data), shared/mutable test data colliding under parallel execution, order dependency on other tests, environment resource contention (CI agent under load causing timing shifts), and non-deterministic sort order from the backend (e.g. asserting on list order when the API doesn't guarantee it). Add detailed step-level logging around the suspected area and re-run until it fails again with logs in hand, rather than guessing blind.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="s3">
+    <h3><span class="qnum">S3</span> Login normally takes 2 seconds but sometimes takes 15 seconds. How would you design synchronization?</h3>
+    <div class="answer">
+      <p>Use an explicit/fluent wait with a generous upper-bound timeout (e.g. 20s) tied to the actual success condition — not a fixed sleep — so the fast case (2s) doesn't waste time and the slow case (15s) doesn't fail prematurely:</p>
+      <pre><code>WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dashboardHeader")));</code></pre>
+      <p>If the app itself is inconsistent, it's also worth flagging as a real performance issue to the dev team rather than only compensating for it in tests — a 7x variance in login time (2s → 15s) is often an application health signal, not just a test synchronization problem.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="s4">
+    <h3><span class="qnum">S4</span> 100 Selenium tests take 2 hours. How would you reduce execution time?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Parallel execution</strong> — TestNG <span class="inline-code">parallel="methods"</span> with a higher thread-count, or sharding across multiple CI runners/nodes.</li>
+        <li><strong>Remove Thread.sleep()</strong> and unnecessary fixed waits — often the single biggest time sink (see Q19).</li>
+        <li><strong>Shift left where possible</strong> — replace some slow end-to-end UI tests with faster API-level tests that validate the same business logic (hybrid API+UI approach), reserving UI tests for genuine UI-critical flows.</li>
+        <li><strong>Grid/Docker scaling</strong> — add more browser nodes so parallel threads aren't bottlenecked on a single Chrome instance queue.</li>
+        <li><strong>Test suite segmentation</strong> — split into smoke (fast, runs every commit) vs full regression (runs nightly/on schedule) so the fast feedback loop isn't blocked on the full 2-hour run.</li>
+        <li><strong>Optimize setup/teardown</strong> — reuse authenticated sessions via API login instead of UI login for tests where login itself isn't the thing under test.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="s5">
+    <h3><span class="qnum">S5</span> Database says APPROVED but the UI says PENDING. How would you investigate end-to-end?</h3>
+    <div class="answer">
+      <ol>
+        <li>Confirm the DB state directly via a JDBC query (rule out the DB read itself being wrong) — cross-check against a second read (e.g. an admin API) if available.</li>
+        <li>Check for caching — the UI might be reading from a cached layer (Redis, CDN, browser cache) that hasn't been invalidated after the DB update.</li>
+        <li>Check for async/eventual consistency — if the backend uses a message queue (Kafka) to propagate status changes, there could be a processing delay or a failed/stuck consumer.</li>
+        <li>Check the API layer directly (bypass the UI) — hit the status endpoint via REST Assured/Karate to see what the API itself returns; this isolates whether the bug is in backend propagation or frontend rendering.</li>
+        <li>Check logs around the transition — look for errors in the service responsible for pushing status updates to the UI (webhook failure, retry exhaustion).</li>
+        <li>Document the full chain (DB value → API value → UI value, with timestamps) in the defect report so developers can pinpoint exactly where the state diverges.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="qa" id="s6">
+    <h3><span class="qnum">S6</span> How would you design automation for a banking transaction?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Hybrid API+UI validation</strong> — initiate/validate via UI for user-facing flows, but cross-check the actual money movement/state directly at the API and DB layers, since UI-only assertions aren't sufficient for financial correctness.</li>
+        <li><strong>Test data isolation</strong> — every test run uses freshly generated account/transaction data (Builder + Faker) to avoid balance/state collisions across parallel runs, especially critical for money-related assertions.</li>
+        <li><strong>Idempotency & rollback checks</strong> — verify duplicate submission doesn't double-charge, and that failed/partial transactions roll back cleanly.</li>
+        <li><strong>Audit trail validation</strong> — assert that every transaction produces the expected audit/log entry (regulatory requirement in banking).</li>
+        <li><strong>Boundary and negative testing</strong> — insufficient funds, exact-balance edge cases, currency rounding, daily transfer limits, concurrent transactions on the same account.</li>
+        <li><strong>Reconciliation</strong> — compare source system vs downstream ledger/reporting system totals (ETL-style validation) to ensure no data is lost or duplicated in transit.</li>
+        <li><strong>Security-adjacent checks</strong> — session timeout behavior, re-authentication for high-value transfers, masking of sensitive fields in logs/screenshots.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="s7">
+    <h3><span class="qnum">S7</span> How would you manage test data for a large automation framework?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Dynamic generation over static fixtures</strong> — Builder pattern + Faker library generates unique, realistic data per test run, avoiding collisions in parallel execution.</li>
+        <li><strong>Test data isolation</strong> — each test creates and owns its own data rather than sharing a global fixture that other tests might mutate.</li>
+        <li><strong>Cleanup strategy</strong> — <span class="inline-code">@AfterMethod</span>/<span class="inline-code">@AfterSuite</span> teardown deletes/resets created data, or tests run against an ephemeral/refreshable environment (e.g. a nightly-reset QA DB, or containerized DB snapshots).</li>
+        <li><strong>Environment-appropriate strategy</strong> — synthetic generated data for lower environments, carefully masked/anonymized production-like data only where realism is essential and compliance allows it.</li>
+        <li><strong>Centralized data builders/factories</strong> — a single source of truth for how a "valid customer," "valid loan application," etc. is constructed, so changes to required fields only need updating in one place.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="s8">
+    <h3><span class="qnum">S8</span> How would you design a framework supporting Chrome, Firefox, and Edge?</h3>
+    <div class="answer">
+      <ul>
+        <li><strong>Driver abstraction</strong> — a <span class="inline-code">DriverFactory</span> that returns the correct <span class="inline-code">WebDriver</span> implementation based on a config/CLI parameter, so tests never reference a browser-specific class directly.</li>
+        <li><strong>Capabilities/Options per browser</strong> — <span class="inline-code">ChromeOptions</span>, <span class="inline-code">FirefoxOptions</span>, <span class="inline-code">EdgeOptions</span> configured centrally (headless mode, window size, download preferences).</li>
+        <li><strong>Cross-browser matrix in testng.xml</strong> — parameterized <span class="inline-code">&lt;test&gt;</span> blocks per browser, run in parallel, so the same suite executes against all three without duplicating test code.</li>
+        <li><strong>Grid/Docker backing</strong> — a Selenium Grid (or Docker Compose setup, as in the EventHubSeleniumRestAssured project) with Hub + Chrome/Firefox/Edge nodes lets the matrix actually run in parallel across real browser instances rather than sequentially on one machine.</li>
+        <li><strong>Browser-specific handling isolated</strong> — any unavoidable browser quirks (e.g. a slightly different wait needed for a Firefox rendering delay) are isolated behind the abstraction layer, not scattered through test code.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="qa" id="s9">
+    <h3><span class="qnum">S9</span> How would you execute only failed tests after a regression run?</h3>
+    <div class="answer">
+      <p>TestNG automatically generates a <span class="inline-code">testng-failed.xml</span> file in the <span class="inline-code">test-output</span> directory after any run containing failures, listing exactly the failed test methods/classes. Re-run just that file:</p>
+      <pre><code>mvn test -DsuiteXmlFile=test-output/testng-failed.xml
+
+# Or reference it directly in a CI re-run stage
+mvn test -Dsurefire.suiteXmlFiles=test-output/testng-failed.xml</code></pre>
+      <p>This is commonly wired into a Jenkins pipeline as an automatic "retry failed tests" post-build stage, distinct from the in-suite <span class="inline-code">IRetryAnalyzer</span> (Q38) — this is a full separate re-run pass, useful for a final confidence check before marking a release build red/green.</p>
+    </div>
+  </div>
+
+  <div class="qa" id="s10">
+    <h3><span class="qnum">S10</span> What characteristics make an automation framework maintainable, scalable, reliable, and CI/CD-friendly?</h3>
+    <div class="answer">
+      <table>
+        <tr><th>Quality</th><th>What it looks like in practice</th></tr>
+        <tr><td>Maintainable</td><td>POM/component separation, no locators in test code, centralized config, consistent naming/structure, good logging</td></tr>
+        <tr><td>Scalable</td><td>ThreadLocal-safe parallel execution, Grid/Docker/cloud execution support, sharding, modular layers (driver/data/API/DB independent of each other)</td></tr>
+        <tr><td>Reliable</td><td>No hard sleeps, proper explicit waits, isolated test data, bounded retry for genuine flakiness, stable environment/driver versioning</td></tr>
+        <tr><td>CI/CD-friendly</td><td>Single Maven command entry point, environment parameterization via CLI, proper exit codes, machine-readable reports (Allure/JUnit XML), fast feedback via smoke/full suite separation</td></tr>
+      </table>
+      <p>The unifying theme across all four is <strong>decoupling</strong>: tests decoupled from locators (POM), from environment (config layer), from browser (driver abstraction), and from execution context (CI vs local) — each of those seams is what makes a framework survive scaling from 10 tests to 1000 without a rewrite.</p>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  <p>Tester II Automation Interview Pack — Full Answer Guide</p>
+  <p style="font-size:0.85em;">Prep priority: Java → Selenium → Framework/TestNG → SQL → Shell/Linux → CI/CD → Git → API Testing → STLC/Agile</p>
+  <a href="#top" class="back-top">↑ Back to top</a>
+</footer>
+
+</div>
+</body>
+</html>

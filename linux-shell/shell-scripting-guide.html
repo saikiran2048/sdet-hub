@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shell Scripting for SDETs — Field Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0e12;
+  --bg-raised:#11161c;
+  --bg-panel:#0e1319;
+  --border:#232b34;
+  --text:#c7d0d9;
+  --text-dim:#7c8a99;
+  --text-bright:#eef2f6;
+  --amber:#e3ac4d;
+  --green:#5fd97a;
+  --cyan:#57c7d4;
+  --red:#e8626a;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  line-height:1.65;
+  font-size:15.5px;
+}
+::selection{background:var(--amber);color:#0b0e12;}
+
+/* ---------- Terminal top bar ---------- */
+.termbar{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(180deg,#12171d,#0e1319);
+  border-bottom:1px solid var(--border);
+  padding:10px 18px;
+  display:flex;align-items:center;gap:10px;
+}
+.dots{display:flex;gap:6px;}
+.dot{width:11px;height:11px;border-radius:50%;}
+.dot.r{background:#e8626a;} .dot.y{background:#e3ac4d;} .dot.g{background:#5fd97a;}
+.termbar .path{
+  font-family:var(--mono);font-size:12.5px;color:var(--text-dim);
+  margin-left:6px;
+}
+.termbar .path b{color:var(--green);}
+.termbar .cursor{
+  display:inline-block;width:7px;height:14px;background:var(--green);
+  margin-left:2px;vertical-align:middle;animation:blink 1s steps(1) infinite;
+}
+@keyframes blink{50%{opacity:0;}}
+
+/* ---------- Layout ---------- */
+.layout{display:flex;max-width:1400px;margin:0 auto;}
+nav.sidebar{
+  width:270px;flex-shrink:0;
+  position:sticky;top:49px;
+  align-self:flex-start;
+  height:calc(100vh - 49px);
+  overflow-y:auto;
+  padding:26px 14px 40px 22px;
+  border-right:1px solid var(--border);
+}
+nav.sidebar::-webkit-scrollbar{width:6px;}
+nav.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.sidebar h4{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  color:var(--text-dim);text-transform:uppercase;margin:22px 0 8px;
+}
+.sidebar h4:first-child{margin-top:0;}
+.sidebar a{
+  display:block;color:var(--text);text-decoration:none;
+  font-size:13.6px;padding:6px 10px;border-radius:6px;
+  border-left:2px solid transparent;
+  font-family:var(--mono);
+}
+.sidebar a:hover{background:var(--bg-raised);color:var(--text-bright);}
+.sidebar a.active{
+  color:var(--amber);border-left-color:var(--amber);background:var(--bg-raised);
+}
+.sidebar .num{color:var(--text-dim);margin-right:6px;}
+
+main{flex:1;min-width:0;padding:0 0 100px;}
+
+/* ---------- Hero ---------- */
+.hero{
+  padding:64px 56px 44px;border-bottom:1px solid var(--border);
+  background:
+    radial-gradient(circle at 85% 0%, rgba(87,199,212,0.08), transparent 45%),
+    radial-gradient(circle at 10% 100%, rgba(227,172,77,0.06), transparent 40%);
+}
+.hero .eyebrow{
+  font-family:var(--mono);color:var(--green);font-size:12.5px;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;
+}
+.hero h1{
+  font-family:var(--sans);font-weight:700;font-size:2.5rem;
+  color:var(--text-bright);margin:0 0 14px;letter-spacing:-0.02em;line-height:1.15;
+}
+.hero h1 span{color:var(--amber);}
+.hero p.lede{max-width:640px;color:var(--text-dim);font-size:16px;margin:0 0 26px;}
+.hero-term{
+  font-family:var(--mono);font-size:13.5px;background:var(--bg-panel);
+  border:1px solid var(--border);border-radius:10px;padding:16px 20px;
+  max-width:620px;overflow-x:auto;
+}
+.hero-term .l{white-space:pre;}
+.hero-term .p{color:var(--green);}
+.hero-term .c{color:var(--text-bright);}
+.hero-term .o{color:var(--text-dim);}
+
+/* ---------- Sections ---------- */
+section.mod{padding:52px 56px;border-bottom:1px solid var(--border);}
+section.mod:target{animation:flash 1.2s ease;}
+@keyframes flash{0%{background:rgba(227,172,77,0.06);}100%{background:transparent;}}
+.mod-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+.mod-index{
+  font-family:var(--mono);font-size:13px;color:var(--bg);
+  background:var(--amber);padding:2px 9px;border-radius:5px;font-weight:700;
+}
+.mod-head h2{font-size:1.55rem;color:var(--text-bright);margin:0;font-weight:700;}
+.mod-time{font-family:var(--mono);font-size:12px;color:var(--text-dim);margin:0 0 28px;}
+
+h3.sub{
+  font-size:1.08rem;color:var(--text-bright);margin:34px 0 10px;
+  font-weight:600;display:flex;align-items:center;gap:9px;
+}
+h3.sub::before{content:'▸';color:var(--cyan);font-size:13px;}
+p{margin:0 0 14px;}
+.mod p{max-width:800px;}
+code.inline{
+  font-family:var(--mono);background:var(--bg-raised);border:1px solid var(--border);
+  padding:1.5px 6px;border-radius:4px;font-size:.88em;color:var(--cyan);
+}
+
+/* ---------- Code blocks ---------- */
+.code{
+  position:relative;background:var(--bg-panel);border:1px solid var(--border);
+  border-radius:9px;margin:14px 0 22px;overflow:hidden;max-width:820px;
+}
+.code .bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 14px;border-bottom:1px solid var(--border);
+  font-family:var(--mono);font-size:11px;color:var(--text-dim);
+  background:#0d1218;
+}
+.code .bar span.fn{color:var(--green);}
+.code button.copy{
+  background:transparent;border:1px solid var(--border);color:var(--text-dim);
+  font-family:var(--mono);font-size:10.5px;padding:3px 9px;border-radius:5px;
+  cursor:pointer;transition:.15s;
+}
+.code button.copy:hover{border-color:var(--amber);color:var(--amber);}
+.code pre{
+  margin:0;padding:15px 18px;overflow-x:auto;font-family:var(--mono);
+  font-size:13px;line-height:1.6;color:var(--text);
+}
+.code pre .cm{color:var(--text-dim);font-style:italic;}
+.code pre .kw{color:var(--amber);}
+.code pre .st{color:var(--green);}
+.code pre .vr{color:var(--cyan);}
+
+/* ---------- Callouts ---------- */
+.callout{
+  border-left:3px solid var(--cyan);background:rgba(87,199,212,0.06);
+  border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0 22px;max-width:800px;
+}
+.callout .tag{
+  font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.1em;
+  text-transform:uppercase;font-weight:700;margin-bottom:6px;display:block;
+}
+.callout.warn{border-left-color:var(--red);background:rgba(232,98,106,0.06);}
+.callout.warn .tag{color:var(--red);}
+.callout.tip{border-left-color:var(--amber);background:rgba(227,172,77,0.06);}
+.callout.tip .tag{color:var(--amber);}
+
+/* ---------- Details / try-it ---------- */
+details.exercise{
+  background:var(--bg-raised);border:1px solid var(--border);border-radius:9px;
+  margin:16px 0 24px;max-width:800px;padding:0;overflow:hidden;
+}
+details.exercise summary{
+  padding:12px 18px;cursor:pointer;font-family:var(--mono);font-size:13px;
+  color:var(--text-bright);list-style:none;display:flex;align-items:center;gap:8px;
+}
+details.exercise summary::-webkit-details-marker{display:none;}
+details.exercise summary::before{content:'⟩';color:var(--green);transition:.2s;}
+details.exercise[open] summary::before{transform:rotate(90deg);}
+details.exercise .inner{padding:0 18px 16px;color:var(--text-dim);font-size:14px;}
+
+/* ---------- Table ---------- */
+table.ref{
+  width:100%;max-width:820px;border-collapse:collapse;margin:14px 0 24px;
+  font-size:13.5px;
+}
+table.ref th{
+  text-align:left;font-family:var(--mono);color:var(--text-dim);
+  font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+  border-bottom:1px solid var(--border);padding:8px 12px;
+}
+table.ref td{
+  padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;
+}
+table.ref td code.inline{white-space:nowrap;}
+table.ref tr:hover td{background:var(--bg-raised);}
+
+/* ---------- Grid cards (foundations) ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;max-width:820px;margin:16px 0 24px;}
+.card{background:var(--bg-raised);border:1px solid var(--border);border-radius:9px;padding:16px;}
+.card .t{font-family:var(--mono);color:var(--amber);font-size:13px;margin-bottom:6px;font-weight:700;}
+.card p{font-size:13.2px;color:var(--text-dim);margin:0;}
+
+/* ---------- Cheatsheet footer ---------- */
+.cheat{padding:52px 56px;}
+.cheat h2{font-size:1.55rem;color:var(--text-bright);margin:0 0 26px;}
+.cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;}
+.cheat-col{background:var(--bg-raised);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.cheat-col h5{font-family:var(--mono);color:var(--cyan);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin:0 0 10px;}
+.cheat-col div.row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12.6px;}
+.cheat-col div.row:last-child{border-bottom:none;}
+.cheat-col .k{font-family:var(--mono);color:var(--text-bright);}
+.cheat-col .v{color:var(--text-dim);text-align:right;}
+
+footer{padding:30px 56px;font-family:var(--mono);font-size:11.5px;color:var(--text-dim);border-top:1px solid var(--border);}
+
+/* --- Back to Hub button --- */
+.back-to-hub{
+  position:sticky;top:0;z-index:100;
+  display:inline-flex;align-items:center;gap:6px;
+  margin:14px;padding:8px 14px;
+  background:#101b2d;border:1px solid #223252;border-radius:8px;
+  color:#4fd1e8;text-decoration:none;
+  font-family:'Inter',-apple-system,sans-serif;font-size:.85rem;font-weight:600;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.back-to-hub:hover{border-color:#4fd1e8;transform:translateX(-2px);}
+
+@media (max-width:900px){
+  .layout{flex-direction:column;}
+  nav.sidebar{position:static;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border);}
+  .hero,section.mod,.cheat{padding:34px 22px;}
+}
+</style>
+</head>
+<body>
+
+<div class="termbar">
+  <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="path"><b>sdet@automation</b>:~/reference$ ./shell-scripting-guide.sh<span class="cursor"></span></div>
+</div>
+
+<a href="../index.html" class="back-to-hub">← Back to Hub</a>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <h4>Start</h4>
+    <a href="#top" data-nav>Overview</a>
+
+    <h4>00 · Absolute Basics</h4>
+    <a href="#primer" data-nav><span class="num">§0</span>Terminal Primer</a>
+
+    <h4>01 · Foundations</h4>
+    <a href="#foundations" data-nav><span class="num">§1</span>Shell & Kernel</a>
+
+    <h4>02 · Getting Started</h4>
+    <a href="#getting-started" data-nav><span class="num">§2</span>First Script</a>
+
+    <h4>03 · Variables, Arrays, Strings</h4>
+    <a href="#variables" data-nav><span class="num">§3</span>Data Handling</a>
+
+    <h4>04 · Logic & Loops</h4>
+    <a href="#logic" data-nav><span class="num">§4</span>Conditions & Iteration</a>
+
+    <h4>05 · Functions & Advanced</h4>
+    <a href="#functions" data-nav><span class="num">§5</span>Reusable Logic</a>
+
+    <h4>06 · Production & Automation</h4>
+    <a href="#automation" data-nav><span class="num">§6</span>Scheduling & Background Jobs</a>
+
+    <h4>07 · End-to-End Scenario</h4>
+    <a href="#scenario" data-nav><span class="num">§7</span>Java + Selenium + TestNG + Maven</a>
+
+    <h4>Reference</h4>
+    <a href="#cheatsheet" data-nav>Cheat Sheet</a>
+  </nav>
+
+  <main id="top">
+    <div class="hero">
+      <div class="eyebrow">// field reference · shell scripting</div>
+      <h1>Shell Scripting for <span>SDETs</span></h1>
+      <p class="lede">A direct, no-fluff reference covering Bash from first principles through production automation — framed around what you'll actually script as an SDET: environment setup, test orchestration, log handling, and CI scheduling.</p>
+      <div class="hero-term">
+        <div class="l"><span class="p">$</span> <span class="c">cat</span> run_regression.sh</div>
+        <div class="l"><span class="o">#!/bin/bash</span></div>
+        <div class="l"><span class="o">for</span> browser in chrome firefox edge; <span class="o">do</span></div>
+        <div class="l">&nbsp;&nbsp;./run_suite.sh <span class="c">"$browser"</span> &gt;&gt; logs/<span class="c">"$browser"</span>.log 2&gt;&amp;1</div>
+        <div class="l"><span class="o">done</span></div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 0 : PRIMER ================= -->
+    <section class="mod" id="primer">
+      <div class="mod-head"><span class="mod-index">00</span><h2>Absolute Beginner Primer</h2></div>
+      <p class="mod-time">read this first if you've never used a terminal</p>
+
+      <p>Everything after this section assumes you're comfortable typing commands into a terminal. If you're not, start here — five minutes now saves confusion later.</p>
+
+      <h3 class="sub">What a terminal actually is</h3>
+      <p>A terminal (also called a console or command line) is a text window where you type commands instead of clicking icons. You type a command, press <code class="inline">Enter</code>, and the shell (see §1) runs it and prints the result back. There is no "undo" button — every command runs immediately, so read a command before pressing Enter, especially anything with <code class="inline">rm</code> (delete) in it.</p>
+
+      <h3 class="sub">The prompt</h3>
+      <p>Before every command you type, the terminal shows a <b>prompt</b> — a short line telling you who you are, what machine you're on, and where you currently are in the filesystem. It typically ends in <code class="inline">$</code> (regular user) or <code class="inline">#</code> (root/admin user). For example:</p>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre>sdet@qa-runner:~/projects/regression-suite$</pre>
+      </div>
+      <p>Reading it left to right: <code class="inline">sdet</code> is the logged-in user, <code class="inline">qa-runner</code> is the machine's hostname, and <code class="inline">~/projects/regression-suite</code> is the current directory (<code class="inline">~</code> means "my home folder"). Everything you type appears after the <code class="inline">$</code>.</p>
+
+      <h3 class="sub">Files, folders, and paths</h3>
+      <p>Linux organizes everything in one single tree starting at <code class="inline">/</code> (the root of the filesystem — unrelated to the "root" user). A <b>path</b> is the address of a file or folder in that tree.</p>
+      <table class="ref">
+        <tr><th>Path type</th><th>Example</th><th>Meaning</th></tr>
+        <tr><td>Absolute</td><td><code class="inline">/home/sdet/scripts/run.sh</code></td><td>Starts with <code class="inline">/</code> — same location no matter where you currently are</td></tr>
+        <tr><td>Relative</td><td><code class="inline">scripts/run.sh</code></td><td>Interpreted starting from your current directory — changes meaning depending on where you are</td></tr>
+        <tr><td>Home shortcut</td><td><code class="inline">~/scripts/run.sh</code></td><td><code class="inline">~</code> expands to your home directory, e.g. <code class="inline">/home/sdet</code></td></tr>
+        <tr><td>Current dir</td><td><code class="inline">./run.sh</code></td><td><code class="inline">.</code> means "here" — required when running a script in your current folder</td></tr>
+        <tr><td>Parent dir</td><td><code class="inline">../logs</code></td><td><code class="inline">..</code> means "one folder up"</td></tr>
+      </table>
+
+      <h3 class="sub">Commands you'll type before you ever write a script</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># where am I right now?</span>
+pwd
+
+<span class="cm"># what's in this folder?</span>
+ls
+ls -la          <span class="cm"># -l = long/detailed list, -a = include hidden files (start with .)</span>
+
+<span class="cm"># move into a folder</span>
+cd projects/regression-suite
+cd ..            <span class="cm"># go up one level</span>
+cd ~             <span class="cm"># go to home directory</span>
+cd -             <span class="cm"># go back to the previous directory</span>
+
+<span class="cm"># create things</span>
+mkdir logs               <span class="cm"># new folder</span>
+touch run.sh              <span class="cm"># new empty file</span>
+
+<span class="cm"># view a file's contents</span>
+cat run.sh                <span class="cm"># dump whole file to screen</span>
+less run.sh                <span class="cm"># scrollable viewer, press q to quit</span>
+head -n 20 run.sh           <span class="cm"># first 20 lines</span>
+tail -n 20 run.sh            <span class="cm"># last 20 lines</span>
+tail -f app.log               <span class="cm"># "follow" — stream new lines live, e.g. watching a running test</span>
+
+<span class="cm"># copy, move/rename, delete</span>
+cp run.sh run_backup.sh
+mv run_backup.sh archive/
+rm run_backup.sh          <span class="cm"># permanent — no recycle bin</span>
+rm -r old_reports/         <span class="cm"># -r = recursive, needed to delete a folder</span></pre>
+      </div>
+
+      <div class="callout warn">
+        <span class="tag">Beginner trap</span>
+        <code class="inline">rm -rf</code> deletes recursively and forcefully with zero confirmation. Before running it, run <code class="inline">ls</code> on the same path first to see exactly what you're about to delete. There is no trash can to recover from.
+      </div>
+
+      <h3 class="sub">Permissions, in plain terms</h3>
+      <p>Every file has three permission groups — <b>owner</b>, <b>group</b>, and <b>everyone else</b> — and three permission types each: <b>r</b>ead, <b>w</b>rite, e<b>x</b>ecute. <code class="inline">ls -l</code> shows them as a 10-character string like <code class="inline">-rwxr-xr--</code>.</p>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># symbolic form — add (+) or remove (-) execute permission for the owner</span>
+chmod +x run.sh
+chmod u+x run.sh
+
+<span class="cm"># numeric form — r=4, w=2, x=1, summed per group (owner/group/other)</span>
+chmod 755 run.sh     <span class="cm"># owner: rwx(7), group: r-x(5), other: r-x(5)</span>
+chmod 644 config.yaml  <span class="cm"># owner: rw-(6), group: r--(4), other: r--(4) — common for data files</span></pre>
+      </div>
+      <p>You'll hit this constantly: a freshly written or freshly cloned script usually isn't executable yet, and <code class="inline">./script.sh</code> fails with "Permission denied" until you run <code class="inline">chmod +x</code> on it.</p>
+
+      <h3 class="sub">PATH — how the shell finds commands</h3>
+      <p>When you type <code class="inline">mvn</code> or <code class="inline">java</code>, the shell doesn't know where those programs live by magic — it searches a list of folders stored in the <code class="inline">PATH</code> environment variable, in order, until it finds a matching executable.</p>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># see the search list (colon-separated)</span>
+echo $PATH
+
+<span class="cm"># find exactly which file will run for a given command</span>
+which java
+which mvn
+
+<span class="cm"># add a folder to PATH for this session</span>
+export PATH=<span class="st">"$PATH:/opt/maven/bin"</span></pre>
+      </div>
+      <p>"Command not found" almost always means the program either isn't installed, or its folder isn't in <code class="inline">PATH</code>.</p>
+
+      <h3 class="sub">Exit codes — how the shell knows pass vs fail</h3>
+      <p>Every command, when it finishes, sets an invisible number called its <b>exit code</b>. <code class="inline">0</code> means success; anything from <code class="inline">1</code>–<code class="inline">255</code> means some kind of failure. This single convention is what every <code class="inline">if</code>, <code class="inline">&&</code>, and CI pipeline pass/fail decision is built on.</p>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre>ls /some/real/folder
+<span class="kw">echo</span> <span class="st">"$?"</span>     <span class="cm"># prints 0 — the previous command succeeded</span>
+
+ls /nonexistent
+<span class="kw">echo</span> <span class="st">"$?"</span>     <span class="cm"># prints 2 (or similar non-zero) — it failed</span></pre>
+      </div>
+      <div class="callout tip">
+        <span class="tag">Why this matters for SDETs</span>
+        When your CI pipeline shows a build as "failed," it's almost always because some command in the pipeline exited non-zero — most importantly, your test runner (<code class="inline">mvn test</code>, for example) exits non-zero when any test fails. Understanding exit codes is understanding how CI/CD actually decides pass vs fail.
+      </div>
+    </section>
+
+    <!-- ================= SECTION 1 ================= -->
+    <section class="mod" id="foundations">
+      <div class="mod-head"><span class="mod-index">01</span><h2>Foundations of the Linux Shell</h2></div>
+      <p class="mod-time">runtime 0:29 – 6:56</p>
+
+      <h3 class="sub">What the shell actually is</h3>
+      <p>The <b>kernel</b> is the core of Linux — it manages memory, processes, and hardware. You never talk to it directly. The <b>shell</b> is the program that sits between you and the kernel: it reads the commands you type, interprets them, and asks the kernel to execute them, then hands the output back to you.</p>
+      <p>When you run a script, you are not "programming Linux" — you are writing a sequence of instructions for the shell interpreter, which translates them into system calls.</p>
+
+      <div class="cards">
+        <div class="card"><div class="t">bash</div><p>Bourne Again Shell. The default on almost every Linux distro and the one CI runners assume. Learn this first.</p></div>
+        <div class="card"><div class="t">sh</div><p>The original POSIX shell. Scripts written for <code class="inline">sh</code> are more portable but lose bash-only features (arrays, <code class="inline">[[ ]]</code>).</p></div>
+        <div class="card"><div class="t">zsh</div><p>Default on macOS since Catalina. Mostly bash-compatible for scripting; differences show up in interactive config, not scripts.</p></div>
+        <div class="card"><div class="t">dash</div><p>A minimal, fast shell — often what <code class="inline">/bin/sh</code> actually points to on Debian/Ubuntu. Bash-isms silently fail here.</p></div>
+      </div>
+
+      <h3 class="sub">Checking your current shell</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># what your login shell is set to</span>
+echo $SHELL
+
+<span class="cm"># what shell is actually running THIS process (more reliable)</span>
+ps -p $$
+
+<span class="cm"># bash-specific version info</span>
+echo $BASH_VERSION</pre>
+      </div>
+
+      <div class="callout">
+        <span class="tag">SDET angle</span>
+        Docker images used by CI runners often use <code class="inline">dash</code> as <code class="inline">/bin/sh</code>, not bash. If your test-setup script uses arrays or <code class="inline">[[ ]]</code> but is invoked as <code class="inline">sh script.sh</code> inside a pipeline container, it will fail with cryptic syntax errors. Always confirm the shell your CI executor actually uses before assuming bash syntax is safe.
+      </div>
+
+      <h3 class="sub">Why shell scripting matters for testing</h3>
+      <p>As an SDET, shell scripts are the glue around your automation framework, not the framework itself. Typical uses: spinning up test environments, pulling/rotating test data, checking service health before a suite runs, parsing logs for failures, and wiring everything into CI schedules. A framework in Java/Python does the testing; the shell script decides <i>when</i> and <i>under what conditions</i> that framework runs.</p>
+    </section>
+
+    <!-- ================= SECTION 2 ================= -->
+    <section class="mod" id="getting-started">
+      <div class="mod-head"><span class="mod-index">02</span><h2>Getting Started with Scripting</h2></div>
+      <p class="mod-time">runtime 6:56 – 18:13</p>
+
+      <h3 class="sub">Your first script</h3>
+      <div class="code">
+        <div class="bar"><span class="fn">setup_env.sh</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">#!/bin/bash</span>
+<span class="cm"># Prepares environment variables before a test run</span>
+<span class="kw">echo</span> <span class="st">"Setting up test environment..."</span>
+<span class="kw">export</span> ENV=qa
+<span class="kw">echo</span> <span class="st">"Environment set to $ENV"</span></pre>
+      </div>
+
+      <h3 class="sub">The shebang line</h3>
+      <p><code class="inline">#!/bin/bash</code> on line 1 tells the OS which interpreter should execute the rest of the file. Without it, running the file directly falls back to whatever shell invoked it, which may not support the syntax you wrote. Common variants:</p>
+      <table class="ref">
+        <tr><th>Shebang</th><th>Meaning</th></tr>
+        <tr><td><code class="inline">#!/bin/bash</code></td><td>Absolute path to bash — most common, most predictable</td></tr>
+        <tr><td><code class="inline">#!/usr/bin/env bash</code></td><td>Finds bash via <code class="inline">PATH</code> — more portable across systems where bash isn't at <code class="inline">/bin/bash</code></td></tr>
+        <tr><td><code class="inline">#!/bin/sh</code></td><td>POSIX shell — safest, most limited feature set</td></tr>
+      </table>
+
+      <h3 class="sub">Running a script — three ways, three behaviors</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># 1. Direct execution — needs execute permission + shebang</span>
+chmod +x setup_env.sh
+./setup_env.sh
+
+<span class="cm"># 2. Explicit interpreter — shebang ignored, permission not required</span>
+bash setup_env.sh
+
+<span class="cm"># 3. Sourcing — runs in your CURRENT shell, not a subshell</span>
+<span class="cm">#    variables/exports set here persist after the script ends</span>
+source setup_env.sh
+<span class="cm"># or</span>
+. setup_env.sh</pre>
+      </div>
+
+      <div class="callout warn">
+        <span class="tag">Common trap</span>
+        If a setup script does <code class="inline">export ENV=qa</code> and you run it with <code class="inline">./setup_env.sh</code> or <code class="inline">bash setup_env.sh</code>, that export dies with the subshell — your current terminal never sees <code class="inline">$ENV</code>. You must <code class="inline">source</code> it for exports to carry into your session. This is the #1 reason "my env var isn't set" bugs happen in test setup scripts.
+      </div>
+
+      <h3 class="sub">Comments</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># single-line comment</span>
+
+<span class="kw">: '</span>
+<span class="cm">this is a multi-line block comment,</span>
+<span class="cm">a colon followed by a quoted string is a no-op</span>
+<span class="kw">'</span></pre>
+      </div>
+
+      <details class="exercise">
+        <summary>Try it — environment bootstrap script</summary>
+        <div class="inner">Write a script <code class="inline">bootstrap.sh</code> that prints the current date, the shell in use, and exports <code class="inline">TEST_ENV=staging</code>. Run it three ways (direct, <code class="inline">bash</code>, <code class="inline">source</code>) and check with <code class="inline">echo $TEST_ENV</code> after each which one actually left the variable behind.</div>
+      </details>
+    </section>
+
+    <!-- ================= SECTION 3 ================= -->
+    <section class="mod" id="variables">
+      <div class="mod-head"><span class="mod-index">03</span><h2>Variables, Arrays, and Strings</h2></div>
+      <p class="mod-time">runtime 18:13 – 47:37</p>
+
+      <h3 class="sub">Variables</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="vr">browser</span>=<span class="st">"chrome"</span>          <span class="cm"># no spaces around =</span>
+<span class="kw">readonly</span> <span class="vr">MAX_RETRIES</span>=3     <span class="cm"># cannot be reassigned</span>
+<span class="kw">export</span> <span class="vr">BASE_URL</span>=<span class="st">"https://qa.app.com"</span>  <span class="cm"># visible to child processes</span>
+
+<span class="kw">echo</span> <span class="st">"Running on $browser"</span>
+<span class="kw">echo</span> <span class="st">"Running on ${browser}_headless"</span>  <span class="cm"># braces avoid ambiguity</span></pre>
+      </div>
+
+      <h3 class="sub">Arrays</h3>
+      <div class="code">
+        <div class="bar"><span class="fn">browsers.sh</span><button class="copy">Copy</button></div>
+        <pre><span class="vr">browsers</span>=(<span class="st">"chrome"</span> <span class="st">"firefox"</span> <span class="st">"edge"</span>)
+
+<span class="kw">echo</span> <span class="st">"${browsers[0]}"</span>        <span class="cm"># chrome — indexing starts at 0</span>
+<span class="kw">echo</span> <span class="st">"${browsers[@]}"</span>        <span class="cm"># all elements</span>
+<span class="kw">echo</span> <span class="st">"${#browsers[@]}"</span>       <span class="cm"># array length -> 3</span>
+
+<span class="vr">browsers</span>+=(<span class="st">"safari"</span>)          <span class="cm"># append</span>
+<span class="kw">unset</span> <span class="st">'browsers[1]'</span>            <span class="cm"># remove firefox</span></pre>
+      </div>
+
+      <h3 class="sub">String operations</h3>
+      <table class="ref">
+        <tr><th>Operation</th><th>Syntax</th><th>Example</th></tr>
+        <tr><td>Length</td><td><code class="inline">${#var}</code></td><td><code class="inline">${#browser}</code> → 6</td></tr>
+        <tr><td>Substring</td><td><code class="inline">${var:start:len}</code></td><td><code class="inline">${browser:0:4}</code> → "chro"</td></tr>
+        <tr><td>Replace first</td><td><code class="inline">${var/old/new}</code></td><td><code class="inline">${log/ERROR/FAIL}</code></td></tr>
+        <tr><td>Replace all</td><td><code class="inline">${var//old/new}</code></td><td><code class="inline">${line// /_}</code></td></tr>
+        <tr><td>Uppercase</td><td><code class="inline">${var^^}</code></td><td><code class="inline">${env^^}</code> → "QA"</td></tr>
+        <tr><td>Concatenate</td><td><code class="inline">"$a$b"</code></td><td><code class="inline">"${env}_report.log"</code></td></tr>
+      </table>
+
+      <h3 class="sub">User input</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">read</span> -p <span class="st">"Enter test environment (dev/qa/prod): "</span> <span class="vr">env</span>
+<span class="kw">echo</span> <span class="st">"You selected: $env"</span>
+
+<span class="cm"># silent input, e.g. for a token</span>
+<span class="kw">read</span> -sp <span class="st">"API token: "</span> <span class="vr">token</span></pre>
+      </div>
+
+      <h3 class="sub">Arithmetic</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="vr">total</span>=$((5 + 3))
+<span class="vr">retry</span>=0
+((<span class="vr">retry</span>++))                    <span class="cm"># increment</span>
+<span class="kw">let</span> <span class="st">"count = count + 1"</span>
+
+<span class="cm"># floating point needs bc — bash arithmetic is integer-only</span>
+<span class="vr">avg</span>=$(echo <span class="st">"scale=2; $total / 3"</span> | bc)</pre>
+      </div>
+
+      <div class="callout">
+        <span class="tag">SDET angle</span>
+        Use an array to hold suite names or browser targets and iterate it in your CI script, instead of hardcoding three near-duplicate commands. Use <code class="inline">${var//old/new}</code> when sanitizing log lines before writing a summary report (e.g. stripping timestamps or replacing spaces so a filename is safe).
+      </div>
+    </section>
+
+    <!-- ================= SECTION 4 ================= -->
+    <section class="mod" id="logic">
+      <div class="mod-head"><span class="mod-index">04</span><h2>Logic, Conditions, and Loops</h2></div>
+      <p class="mod-time">runtime 50:10 – 1:26:52</p>
+
+      <h3 class="sub">Conditionals</h3>
+      <div class="code">
+        <div class="bar"><span class="fn">check_env.sh</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">if</span> [[ <span class="st">"$env"</span> == <span class="st">"prod"</span> ]]; <span class="kw">then</span>
+    <span class="kw">echo</span> <span class="st">"Refusing to run destructive tests against prod"</span>
+    <span class="kw">exit</span> 1
+<span class="kw">elif</span> [[ <span class="st">"$env"</span> == <span class="st">"qa"</span> ]]; <span class="kw">then</span>
+    <span class="kw">echo</span> <span class="st">"Running full regression suite"</span>
+<span class="kw">else</span>
+    <span class="kw">echo</span> <span class="st">"Unknown environment, defaulting to smoke suite"</span>
+<span class="kw">fi</span></pre>
+      </div>
+
+      <h3 class="sub">case — cleaner than chained elifs</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">case</span> <span class="st">"$env"</span> <span class="kw">in</span>
+    dev)  BASE_URL=<span class="st">"https://dev.app.com"</span> ;;
+    qa)   BASE_URL=<span class="st">"https://qa.app.com"</span> ;;
+    prod) BASE_URL=<span class="st">"https://app.com"</span> ;;
+    *)    <span class="kw">echo</span> <span class="st">"Unknown env: $env"</span>; <span class="kw">exit</span> 1 ;;
+<span class="kw">esac</span></pre>
+      </div>
+
+      <h3 class="sub"><code class="inline">[ ]</code> vs <code class="inline">[[ ]]</code>, and logical operators</h3>
+      <p><code class="inline">[[ ]]</code> is a bash keyword — supports <code class="inline">&&</code>, <code class="inline">||</code>, pattern matching, and doesn't word-split unquoted variables. <code class="inline">[ ]</code> is the older POSIX <code class="inline">test</code> command — more portable, more footguns. Default to <code class="inline">[[ ]]</code> in bash scripts.</p>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">if</span> [[ -f <span class="st">"config.yaml"</span> &amp;&amp; -n <span class="st">"$env"</span> ]]; <span class="kw">then</span>
+    <span class="kw">echo</span> <span class="st">"Config present and env set — proceeding"</span>
+<span class="kw">fi</span>
+
+<span class="cm"># short-circuit style, common in CI scripts</span>
+[[ -f <span class="st">"results.xml"</span> ]] || { <span class="kw">echo</span> <span class="st">"No results file — failing build"</span>; <span class="kw">exit</span> 1; }</pre>
+      </div>
+
+      <h3 class="sub">Loops</h3>
+      <div class="code">
+        <div class="bar"><span class="fn">cross_browser_run.sh</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># for — iterate a fixed list, classic cross-browser run</span>
+<span class="kw">for</span> browser <span class="kw">in</span> chrome firefox edge; <span class="kw">do</span>
+    <span class="kw">echo</span> <span class="st">"Launching suite on $browser"</span>
+    ./run_suite.sh <span class="st">"$browser"</span>
+<span class="kw">done</span>
+
+<span class="cm"># while — poll until a condition is true</span>
+<span class="vr">retries</span>=0
+<span class="kw">while</span> ! curl -sf <span class="st">"$BASE_URL/health"</span> &amp;&gt; /dev/null; <span class="kw">do</span>
+    ((<span class="vr">retries</span>++))
+    [[ <span class="vr">$retries</span> -ge 10 ]] &amp;&amp; { <span class="kw">echo</span> <span class="st">"Service never came up"</span>; <span class="kw">exit</span> 1; }
+    <span class="kw">echo</span> <span class="st">"Waiting for service... attempt $retries"</span>
+    sleep 5
+<span class="kw">done</span>
+
+<span class="cm"># until — inverse of while</span>
+<span class="kw">until</span> [[ -f <span class="st">"test-report.html"</span> ]]; <span class="kw">do</span>
+    sleep 2
+<span class="kw">done</span></pre>
+      </div>
+
+      <div class="callout warn">
+        <span class="tag">Infinite loops</span>
+        <code class="inline">while true; do ... done</code> is a real pattern for long-lived watchers (e.g. a script that tails a log directory and triggers reruns on new failures), but every infinite loop in a test-automation context needs an explicit <code class="inline">break</code> condition or external kill signal — otherwise a CI job hangs until it times out and burns runner minutes.
+      </div>
+    </section>
+
+    <!-- ================= SECTION 5 ================= -->
+    <section class="mod" id="functions">
+      <div class="mod-head"><span class="mod-index">05</span><h2>Functions and Advanced Concepts</h2></div>
+      <p class="mod-time">runtime 1:27:06 – 1:58:33</p>
+
+      <h3 class="sub">Defining and calling functions</h3>
+      <div class="code">
+        <div class="bar"><span class="fn">lib.sh</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">function</span> wait_for_service() {
+    <span class="cm"># $1, $2 = positional args passed to the function</span>
+    <span class="kw">local</span> url=<span class="st">"$1"</span>
+    <span class="kw">local</span> timeout=<span class="st">"${2:-30}"</span>   <span class="cm"># default to 30 if not passed</span>
+
+    <span class="kw">for</span> ((i=0; i&lt;timeout; i++)); <span class="kw">do</span>
+        <span class="kw">if</span> curl -sf <span class="st">"$url"</span> &amp;&gt; /dev/null; <span class="kw">then</span>
+            <span class="kw">return</span> 0     <span class="cm"># exit code, not a value — 0 = success</span>
+        <span class="kw">fi</span>
+        sleep 1
+    <span class="kw">done</span>
+    <span class="kw">return</span> 1
+}
+
+<span class="kw">if</span> wait_for_service <span class="st">"http://localhost:8080/health"</span> 20; <span class="kw">then</span>
+    <span class="kw">echo</span> <span class="st">"Service is up — starting tests"</span>
+<span class="kw">else</span>
+    <span class="kw">echo</span> <span class="st">"Timed out waiting for service"</span>; <span class="kw">exit</span> 1
+<span class="kw">fi</span></pre>
+      </div>
+
+      <div class="callout">
+        <span class="tag">Return vs echo</span>
+        A bash function's <code class="inline">return</code> only carries an integer exit code (0–255), used for success/failure — not real data. To return actual data (a string, a computed value), have the function <code class="inline">echo</code> it and capture with command substitution: <code class="inline">result=$(my_function)</code>.
+      </div>
+
+      <h3 class="sub">Script-level arguments</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># invoked as: ./run_suite.sh qa smoke 3</span>
+<span class="kw">echo</span> <span class="st">"$1"</span>     <span class="cm"># qa      — first argument</span>
+<span class="kw">echo</span> <span class="st">"$2"</span>     <span class="cm"># smoke   — second argument</span>
+<span class="kw">echo</span> <span class="st">"$#"</span>     <span class="cm"># 3       — total argument count</span>
+<span class="kw">echo</span> <span class="st">"$@"</span>     <span class="cm"># qa smoke 3   — all args as separate words</span>
+<span class="kw">echo</span> <span class="st">"$0"</span>     <span class="cm"># run_suite.sh — the script's own name</span></pre>
+      </div>
+
+      <h3 class="sub">Connectivity checks</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># is the host reachable at all?</span>
+<span class="kw">if</span> ping -c 1 -W 2 <span class="st">"db.internal"</span> &amp;&gt; /dev/null; <span class="kw">then</span>
+    <span class="kw">echo</span> <span class="st">"Host reachable"</span>
+<span class="kw">fi</span>
+
+<span class="cm"># is the actual HTTP endpoint healthy? (more useful for APIs)</span>
+<span class="vr">status</span>=$(curl -s -o /dev/null -w <span class="st">"%{http_code}"</span> <span class="st">"$BASE_URL/health"</span>)
+[[ <span class="st">"$status"</span> == <span class="st">"200"</span> ]] &amp;&amp; <span class="kw">echo</span> <span class="st">"API healthy"</span> || <span class="kw">echo</span> <span class="st">"API down: $status"</span></pre>
+      </div>
+
+      <h3 class="sub">File and directory existence checks</h3>
+      <table class="ref">
+        <tr><th>Test</th><th>Meaning</th></tr>
+        <tr><td><code class="inline">-f "$file"</code></td><td>Regular file exists</td></tr>
+        <tr><td><code class="inline">-d "$dir"</code></td><td>Directory exists</td></tr>
+        <tr><td><code class="inline">-e "$path"</code></td><td>Path exists (file or directory)</td></tr>
+        <tr><td><code class="inline">-x "$file"</code></td><td>File exists and is executable</td></tr>
+        <tr><td><code class="inline">-s "$file"</code></td><td>File exists and is non-empty</td></tr>
+      </table>
+
+      <div class="callout">
+        <span class="tag">SDET angle</span>
+        Guard every test run with a pre-flight check: <code class="inline">[[ -f "testdata.json" ]] || { echo "missing test data"; exit 1; }</code>. Failing fast with a clear message beats letting the framework fail 40 minutes later with a confusing null-pointer because a fixture file wasn't there.
+      </div>
+
+      <details class="exercise">
+        <summary>Try it — preflight function</summary>
+        <div class="inner">Write a function <code class="inline">preflight_check()</code> that takes a URL and a required file path as arguments, verifies the service is reachable AND the file exists, and returns a non-zero exit code with a specific message for whichever check failed. Call it before a mock <code class="inline">./run_suite.sh</code> line.</div>
+      </details>
+    </section>
+
+    <!-- ================= SECTION 6 ================= -->
+    <section class="mod" id="automation">
+      <div class="mod-head"><span class="mod-index">06</span><h2>Production & Automation</h2></div>
+      <p class="mod-time">runtime 1:58:33 – 2:15:49</p>
+
+      <h3 class="sub">Output redirection</h3>
+      <table class="ref">
+        <tr><th>Syntax</th><th>Effect</th></tr>
+        <tr><td><code class="inline">cmd > file</code></td><td>Redirect stdout, overwrite file</td></tr>
+        <tr><td><code class="inline">cmd >> file</code></td><td>Redirect stdout, append to file</td></tr>
+        <tr><td><code class="inline">cmd 2> file</code></td><td>Redirect stderr only</td></tr>
+        <tr><td><code class="inline">cmd &> file</code></td><td>Redirect both stdout and stderr</td></tr>
+        <tr><td><code class="inline">cmd > /dev/null 2>&1</code></td><td>Discard all output — silence a command</td></tr>
+      </table>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># separate pass/fail logs per browser, appended run over run</span>
+./run_suite.sh chrome &gt;&gt; logs/chrome_$(date +%F).log 2&gt;&amp;1</pre>
+      </div>
+
+      <h3 class="sub">Background execution with nohup</h3>
+      <p><code class="inline">&</code> backgrounds a process for the current session, but it still dies if the shell/SSH session closes. <code class="inline">nohup</code> detaches it from the controlling terminal's hangup signal, so a long regression suite keeps running after you disconnect.</p>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># survives SSH disconnect — output goes to nohup.out by default</span>
+nohup ./run_full_regression.sh &gt; regression.log 2&gt;&amp;1 &amp;
+
+<span class="cm"># get the PID to check on it or kill it later</span>
+<span class="kw">echo</span> <span class="st">"Running as PID $!"</span></pre>
+      </div>
+
+      <h3 class="sub">One-off scheduling with at</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># run a single script once, tonight at 11pm</span>
+echo <span class="st">"./run_full_regression.sh"</span> | at 23:00
+
+<span class="cm"># list pending at-jobs</span>
+atq</pre>
+      </div>
+
+      <h3 class="sub">Recurring schedules with crontab</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre>crontab -e     <span class="cm"># open your crontab for editing</span>
+crontab -l     <span class="cm"># list current cron jobs</span></pre>
+      </div>
+      <table class="ref">
+        <tr><th>Field</th><th>Range</th></tr>
+        <tr><td>minute</td><td>0–59</td></tr>
+        <tr><td>hour</td><td>0–23</td></tr>
+        <tr><td>day of month</td><td>1–31</td></tr>
+        <tr><td>month</td><td>1–12</td></tr>
+        <tr><td>day of week</td><td>0–6 (Sun–Sat)</td></tr>
+      </table>
+      <div class="code">
+        <div class="bar"><span class="fn">crontab -e</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># nightly regression suite at 1:30 AM, every day</span>
+30 1 * * * /home/sdet/scripts/run_full_regression.sh &gt;&gt; /home/sdet/logs/nightly.log 2&gt;&amp;1
+
+<span class="cm"># smoke suite every weekday at 8:00 AM before the team starts</span>
+0 8 * * 1-5 /home/sdet/scripts/run_smoke.sh
+
+<span class="cm"># health check every 15 minutes</span>
+*/15 * * * * /home/sdet/scripts/check_env_health.sh</pre>
+      </div>
+
+      <div class="callout tip">
+        <span class="tag">Reliability tip</span>
+        Cron runs with a minimal environment — no <code class="inline">PATH</code> extensions, no shell profile sourced. A script that works fine when you run it manually can fail silently under cron because <code class="inline">java</code>, <code class="inline">node</code>, or your test binary isn't found. Always use absolute paths inside cron-triggered scripts, and always redirect output to a log file so failures are visible.
+      </div>
+
+      <div class="callout">
+        <span class="tag">SDET angle</span>
+        This is the layer that turns a test suite into a real regression pipeline: <code class="inline">nohup</code> for suites too long for an interactive session, <code class="inline">crontab</code> for nightly/weekly cadences, and disciplined redirection so every run leaves a log you can actually debug from — instead of scrollback that vanished when the terminal closed.
+      </div>
+
+      <details class="exercise">
+        <summary>Try it — nightly pipeline</summary>
+        <div class="inner">Write a crontab entry that runs a regression script every night at 2 AM, logs stdout and stderr to a dated file, and combine it with a <code class="inline">wait_for_service</code> preflight check (from §5) inside the script itself so a bad deploy doesn't cause a wasted 40-minute run against a dead environment.</div>
+      </details>
+    </section>
+
+    <!-- ================= SECTION 7 : SCENARIO ================= -->
+    <section class="mod" id="scenario">
+      <div class="mod-head"><span class="mod-index">07</span><h2>End-to-End Scenario: Java + Selenium + TestNG + Maven</h2></div>
+      <p class="mod-time">how every command above shows up in a real pipeline</p>
+
+      <div class="callout tip">
+        <span class="tag">The scenario</span>
+        You're the SDET on call. Every weeknight, before the team arrives, a regression suite should: pull the latest code, confirm the QA environment is actually up, build the project, run the TestNG regression suite through Maven, check whether it passed, archive the report, and post a Slack alert if it failed — all unattended, all logged, so you can check one file in the morning instead of re-running anything.
+      </div>
+
+      <p>Below is that pipeline built up piece by piece. Each command is one you've already seen in §1–§6 — this section is about how they chain together in practice.</p>
+
+      <h3 class="sub">Step 1 — Get the latest code</h3>
+      <p>The script starts by moving into the project folder and pulling the latest commit, so the nightly run always tests what was actually merged, not a stale local copy.</p>
+      <div class="code">
+        <div class="bar"><span class="fn">nightly_regression.sh — part 1</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">#!/bin/bash</span>
+<span class="kw">set</span> -e   <span class="cm"># stop the whole script the instant any command fails</span>
+
+<span class="vr">PROJECT_DIR</span>=<span class="st">"/home/sdet/projects/regression-suite"</span>
+<span class="vr">LOG_DIR</span>=<span class="st">"$PROJECT_DIR/logs"</span>
+<span class="vr">DATE</span>=$(date +%F)
+<span class="vr">LOG_FILE</span>=<span class="st">"$LOG_DIR/nightly_$DATE.log"</span>
+<span class="vr">SLACK_WEBHOOK</span>=<span class="st">"https://hooks.slack.com/services/XXX/YYY/ZZZ"</span>
+
+mkdir -p <span class="st">"$LOG_DIR"</span>          <span class="cm"># -p: no error if it already exists</span>
+cd <span class="st">"$PROJECT_DIR"</span>
+
+<span class="kw">echo</span> <span class="st">"[$(date)] Pulling latest code..."</span> | tee -a <span class="st">"$LOG_FILE"</span>
+git pull origin main &gt;&gt; <span class="st">"$LOG_FILE"</span> 2&gt;&amp;1</pre>
+      </div>
+      <p><code class="inline">set -e</code> is the single most important line in a CI script — without it, bash keeps executing later commands even after an earlier one fails, silently producing a "green" build on broken code. <code class="inline">tee -a</code> writes to both the screen and the log file at once, appending instead of overwriting.</p>
+
+      <h3 class="sub">Step 2 — Confirm the environment is actually reachable</h3>
+      <p>No point running a 40-minute suite against a QA environment that's mid-deploy. This reuses the <code class="inline">wait_for_service</code> function pattern from §5.</p>
+      <div class="code">
+        <div class="bar"><span class="fn">nightly_regression.sh — part 2</span><button class="copy">Copy</button></div>
+        <pre>wait_for_service() {
+    <span class="kw">local</span> url=<span class="st">"$1"</span> timeout=<span class="st">"${2:-30}"</span>
+    <span class="kw">for</span> ((i=0; i&lt;timeout; i++)); <span class="kw">do</span>
+        curl -sf <span class="st">"$url"</span> &amp;&gt; /dev/null &amp;&amp; <span class="kw">return</span> 0
+        sleep 1
+    <span class="kw">done</span>
+    <span class="kw">return</span> 1
+}
+
+<span class="kw">if</span> ! wait_for_service <span class="st">"https://qa.app.com/health"</span> 30; <span class="kw">then</span>
+    <span class="kw">echo</span> <span class="st">"[$(date)] QA environment unreachable — aborting run"</span> | tee -a <span class="st">"$LOG_FILE"</span>
+    <span class="kw">exit</span> 1
+<span class="kw">fi</span></pre>
+      </div>
+
+      <h3 class="sub">Step 3 — Confirm the toolchain is present</h3>
+      <p>Cron runs with a minimal environment (see §6's reliability tip) — this check catches a broken runner before it wastes 40 minutes.</p>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre>java -version &gt;&gt; <span class="st">"$LOG_FILE"</span> 2&gt;&amp;1  || { <span class="kw">echo</span> <span class="st">"Java not found"</span>; <span class="kw">exit</span> 1; }
+mvn -version &gt;&gt; <span class="st">"$LOG_FILE"</span> 2&gt;&amp;1  || { <span class="kw">echo</span> <span class="st">"Maven not found"</span>; <span class="kw">exit</span> 1; }</pre>
+      </div>
+
+      <h3 class="sub">Step 4 — Build and run the suite through Maven</h3>
+      <p>This is the command your framework actually runs on. <code class="inline">mvn clean test</code> is the standard Maven+TestNG entry point: <code class="inline">clean</code> wipes the previous build's output, <code class="inline">test</code> compiles the code and runs the test phase, which triggers Surefire to execute the TestNG suite XML.</p>
+      <div class="code">
+        <div class="bar"><span class="fn">nightly_regression.sh — part 3</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">echo</span> <span class="st">"[$(date)] Starting Maven build + TestNG suite..."</span> | tee -a <span class="st">"$LOG_FILE"</span>
+
+mvn clean test \
+    -DsuiteXmlFile=testng-regression.xml \
+    -Dbrowser=chrome \
+    -DbaseUrl=https://qa.app.com \
+    -Denv=qa \
+    &gt;&gt; <span class="st">"$LOG_FILE"</span> 2&gt;&amp;1
+
+<span class="vr">MVN_EXIT_CODE</span>=$?   <span class="cm"># capture exit code IMMEDIATELY — the next command overwrites $?</span></pre>
+      </div>
+      <table class="ref">
+        <tr><th>Flag</th><th>What it does</th></tr>
+        <tr><td><code class="inline">clean</code></td><td>Deletes the <code class="inline">target/</code> folder from any previous run — no stale class files</td></tr>
+        <tr><td><code class="inline">test</code></td><td>Runs the Maven lifecycle through the test phase — compiles + executes tests</td></tr>
+        <tr><td><code class="inline">-DsuiteXmlFile=</code></td><td>Tells the Surefire plugin which TestNG suite XML to run (your regression suite, not smoke)</td></tr>
+        <tr><td><code class="inline">-D&lt;key&gt;=&lt;value&gt;</code></td><td>Passes a Java system property into the JVM — this is how shell variables reach your Java test code via <code class="inline">System.getProperty("browser")</code></td></tr>
+      </table>
+      <div class="callout warn">
+        <span class="tag">Why <code class="inline">set -e</code> is temporarily wrong here</span>
+        A failed test suite makes <code class="inline">mvn test</code> exit non-zero — with <code class="inline">set -e</code> still active, the script would stop dead at this line and never reach the reporting/notification steps below. In practice you either run this one command with <code class="inline">set +e</code> / <code class="inline">set -e</code> around it, or (as shown) explicitly capture <code class="inline">$?</code> and let the script continue on purpose so it can still report the failure.
+      </div>
+
+      <h3 class="sub">Step 5 — Parse the results</h3>
+      <p>Surefire writes machine-readable XML per test class to <code class="inline">target/surefire-reports/</code>. A quick <code class="inline">grep</code> across those files gives you pass/fail counts without needing to open a report viewer.</p>
+      <div class="code">
+        <div class="bar"><span class="fn">nightly_regression.sh — part 4</span><button class="copy">Copy</button></div>
+        <pre><span class="vr">TOTAL_FAILURES</span>=$(grep -h -oP <span class="st">'failures="\K[0-9]+'</span> target/surefire-reports/*.xml \
+                  | awk <span class="st">'{s+=$1} END {print s}'</span>)
+<span class="vr">TOTAL_TESTS</span>=$(grep -h -oP <span class="st">'tests="\K[0-9]+'</span> target/surefire-reports/*.xml \
+             | awk <span class="st">'{s+=$1} END {print s}'</span>)
+
+<span class="kw">echo</span> <span class="st">"[$(date)] Result: $((TOTAL_TESTS - TOTAL_FAILURES))/$TOTAL_TESTS passed"</span> | tee -a <span class="st">"$LOG_FILE"</span></pre>
+      </div>
+      <p><code class="inline">grep -oP</code> extracts just the matched number instead of the whole line; <code class="inline">awk '{s+=$1} END {print s}'</code> sums a column of numbers across every file — a standard shell one-liner for tallying results scattered across multiple report files.</p>
+
+      <h3 class="sub">Step 6 — Archive the report</h3>
+      <div class="code">
+        <div class="bar"><span>terminal</span><button class="copy">Copy</button></div>
+        <pre><span class="vr">ARCHIVE</span>=<span class="st">"$LOG_DIR/surefire-report_$DATE.tar.gz"</span>
+tar -czf <span class="st">"$ARCHIVE"</span> target/surefire-reports/
+<span class="kw">echo</span> <span class="st">"[$(date)] Report archived to $ARCHIVE"</span> | tee -a <span class="st">"$LOG_FILE"</span></pre>
+      </div>
+
+      <h3 class="sub">Step 7 — Notify only on failure</h3>
+      <div class="code">
+        <div class="bar"><span class="fn">nightly_regression.sh — part 5</span><button class="copy">Copy</button></div>
+        <pre><span class="kw">if</span> [[ <span class="vr">$MVN_EXIT_CODE</span> -ne 0 ]]; <span class="kw">then</span>
+    curl -s -X POST <span class="st">"$SLACK_WEBHOOK"</span> \
+         -H <span class="st">'Content-type: application/json'</span> \
+         -d <span class="st">"{\"text\":\"Nightly regression FAILED: $((TOTAL_TESTS - TOTAL_FAILURES))/$TOTAL_TESTS passed. See $LOG_FILE\"}"</span>
+    <span class="kw">echo</span> <span class="st">"[$(date)] Failure notification sent"</span> | tee -a <span class="st">"$LOG_FILE"</span>
+<span class="kw">else</span>
+    <span class="kw">echo</span> <span class="st">"[$(date)] All tests passed — no notification needed"</span> | tee -a <span class="st">"$LOG_FILE"</span>
+<span class="kw">fi</span>
+
+<span class="kw">exit</span> <span class="vr">$MVN_EXIT_CODE</span></pre>
+      </div>
+      <p>Exiting with <code class="inline">$MVN_EXIT_CODE</code> at the very end matters: it's what makes this script's own pass/fail status accurately reflect whether the tests passed, which matters if this script itself is ever wrapped by another CI tool (Jenkins, GitLab CI) checking its exit code.</p>
+
+      <h3 class="sub">Step 8 — Schedule it</h3>
+      <p>The finished script gets one line in crontab, tying together everything from §6:</p>
+      <div class="code">
+        <div class="bar"><span class="fn">crontab -e</span><button class="copy">Copy</button></div>
+        <pre><span class="cm"># every weeknight at 1:30 AM</span>
+30 1 * * 1-5 /home/sdet/projects/regression-suite/nightly_regression.sh</pre>
+      </div>
+
+      <div class="callout">
+        <span class="tag">The full picture</span>
+        Notice nothing here is exotic — it's <code class="inline">cd</code>, <code class="inline">export</code>, <code class="inline">if</code>, a loop, a function, redirection, <code class="inline">grep</code>/<code class="inline">awk</code>, and <code class="inline">crontab</code>, chained around one <code class="inline">mvn</code> call. That chaining — not any single command — is what shell scripting contributes to a test framework: it's the difference between "a suite I run by hand" and "a pipeline that runs itself and only interrupts you when something's actually wrong."
+      </div>
+
+      <details class="exercise">
+        <summary>Try it — extend the pipeline</summary>
+        <div class="inner">Add a step between Step 5 and Step 6 that fails the script early (before archiving/Slack) if <code class="inline">TOTAL_TESTS</code> comes back as <code class="inline">0</code> — which would indicate the suite XML path was wrong and nothing actually ran, a silent failure mode that's easy to miss otherwise.</div>
+      </details>
+    </section>
+
+    <!-- ================= CHEATSHEET ================= -->
+    <div class="cheat" id="cheatsheet">
+      <h2>Quick Reference</h2>
+      <div class="cheat-grid">
+        <div class="cheat-col">
+          <h5>Navigation & Files</h5>
+          <div class="row"><span class="k">pwd</span><span class="v">print current directory</span></div>
+          <div class="row"><span class="k">ls -la</span><span class="v">list all, detailed</span></div>
+          <div class="row"><span class="k">cd / cd - / cd ~</span><span class="v">move / previous / home</span></div>
+          <div class="row"><span class="k">mkdir -p</span><span class="v">create dir, no error if exists</span></div>
+          <div class="row"><span class="k">touch</span><span class="v">create empty file / update timestamp</span></div>
+          <div class="row"><span class="k">cp / mv / rm -r</span><span class="v">copy / move-rename / delete recursively</span></div>
+          <div class="row"><span class="k">find . -name "*.log"</span><span class="v">search files by pattern</span></div>
+          <div class="row"><span class="k">tar -czf a.tar.gz dir/</span><span class="v">compress</span></div>
+          <div class="row"><span class="k">tar -xzf a.tar.gz</span><span class="v">extract</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Viewing & Text</h5>
+          <div class="row"><span class="k">cat file</span><span class="v">dump whole file</span></div>
+          <div class="row"><span class="k">less file</span><span class="v">scrollable viewer</span></div>
+          <div class="row"><span class="k">head -n / tail -n</span><span class="v">first / last N lines</span></div>
+          <div class="row"><span class="k">tail -f file</span><span class="v">stream new lines live</span></div>
+          <div class="row"><span class="k">grep "text" file</span><span class="v">search matching lines</span></div>
+          <div class="row"><span class="k">grep -oP 'regex'</span><span class="v">print only the matched part</span></div>
+          <div class="row"><span class="k">grep -r "text" dir/</span><span class="v">recursive search</span></div>
+          <div class="row"><span class="k">sed 's/old/new/g'</span><span class="v">find & replace</span></div>
+          <div class="row"><span class="k">awk '{print $2}'</span><span class="v">print column 2</span></div>
+          <div class="row"><span class="k">cut -d',' -f1</span><span class="v">split on delimiter, take field 1</span></div>
+          <div class="row"><span class="k">sort / sort -n</span><span class="v">sort lines / numerically</span></div>
+          <div class="row"><span class="k">uniq -c</span><span class="v">dedupe with counts</span></div>
+          <div class="row"><span class="k">wc -l</span><span class="v">count lines</span></div>
+          <div class="row"><span class="k">diff a.txt b.txt</span><span class="v">show differences</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Permissions</h5>
+          <div class="row"><span class="k">chmod +x file</span><span class="v">make executable</span></div>
+          <div class="row"><span class="k">chmod 755 / 644</span><span class="v">rwxr-xr-x / rw-r--r--</span></div>
+          <div class="row"><span class="k">chown user:group file</span><span class="v">change ownership</span></div>
+          <div class="row"><span class="k">ls -l</span><span class="v">view permission string</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Execution</h5>
+          <div class="row"><span class="k">./script.sh</span><span class="v">needs +x, uses shebang</span></div>
+          <div class="row"><span class="k">bash script.sh</span><span class="v">explicit interpreter</span></div>
+          <div class="row"><span class="k">source script.sh</span><span class="v">runs in current shell</span></div>
+          <div class="row"><span class="k">set -e</span><span class="v">exit script on any command failure</span></div>
+          <div class="row"><span class="k">set -x</span><span class="v">print each command before running (debug)</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Conditional Tests</h5>
+          <div class="row"><span class="k">-f / -d / -e</span><span class="v">file / dir / either exists</span></div>
+          <div class="row"><span class="k">-x / -s</span><span class="v">executable / non-empty file</span></div>
+          <div class="row"><span class="k">-z / -n</span><span class="v">string empty / non-empty</span></div>
+          <div class="row"><span class="k">== / !=</span><span class="v">string equal / not equal</span></div>
+          <div class="row"><span class="k">-eq -ne -lt -gt -le -ge</span><span class="v">numeric comparisons</span></div>
+          <div class="row"><span class="k">&& / ||</span><span class="v">AND / OR (short-circuit)</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Redirection & Pipes</h5>
+          <div class="row"><span class="k">&gt; / &gt;&gt;</span><span class="v">overwrite / append stdout</span></div>
+          <div class="row"><span class="k">2&gt;</span><span class="v">stderr only</span></div>
+          <div class="row"><span class="k">&amp;&gt;</span><span class="v">stdout + stderr</span></div>
+          <div class="row"><span class="k">&gt; /dev/null</span><span class="v">discard output</span></div>
+          <div class="row"><span class="k">cmd1 | cmd2</span><span class="v">pipe output of 1 into 2</span></div>
+          <div class="row"><span class="k">tee -a file</span><span class="v">write to screen AND file</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Variables & Special Vars</h5>
+          <div class="row"><span class="k">$1 … $9</span><span class="v">positional args</span></div>
+          <div class="row"><span class="k">$@ / $#</span><span class="v">all args / arg count</span></div>
+          <div class="row"><span class="k">$?</span><span class="v">exit code of last command</span></div>
+          <div class="row"><span class="k">$!</span><span class="v">PID of last background job</span></div>
+          <div class="row"><span class="k">$0</span><span class="v">script's own name</span></div>
+          <div class="row"><span class="k">$$</span><span class="v">current shell's PID</span></div>
+          <div class="row"><span class="k">${var:-default}</span><span class="v">use default if unset</span></div>
+          <div class="row"><span class="k">export VAR=val</span><span class="v">make visible to child processes</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Loops & Functions</h5>
+          <div class="row"><span class="k">for x in list; do</span><span class="v">iterate fixed items</span></div>
+          <div class="row"><span class="k">while cond; do</span><span class="v">loop while true</span></div>
+          <div class="row"><span class="k">until cond; do</span><span class="v">loop until true</span></div>
+          <div class="row"><span class="k">break / continue</span><span class="v">exit loop / skip iteration</span></div>
+          <div class="row"><span class="k">function f() { }</span><span class="v">define reusable block</span></div>
+          <div class="row"><span class="k">local var</span><span class="v">scope variable to function</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Process Management</h5>
+          <div class="row"><span class="k">ps -ef</span><span class="v">list running processes</span></div>
+          <div class="row"><span class="k">ps -p $$</span><span class="v">check current shell process</span></div>
+          <div class="row"><span class="k">top / htop</span><span class="v">live process monitor</span></div>
+          <div class="row"><span class="k">kill PID</span><span class="v">terminate a process</span></div>
+          <div class="row"><span class="k">kill -9 PID</span><span class="v">force-kill</span></div>
+          <div class="row"><span class="k">jobs</span><span class="v">list background jobs in session</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Automation & Scheduling</h5>
+          <div class="row"><span class="k">cmd &amp;</span><span class="v">background (dies with session)</span></div>
+          <div class="row"><span class="k">nohup cmd &amp;</span><span class="v">survives disconnect</span></div>
+          <div class="row"><span class="k">at 23:00</span><span class="v">one-off future job</span></div>
+          <div class="row"><span class="k">crontab -e / -l</span><span class="v">edit / list schedule</span></div>
+          <div class="row"><span class="k">min hr dom mon dow</span><span class="v">cron field order</span></div>
+          <div class="row"><span class="k">*/15 in minute field</span><span class="v">every 15 minutes</span></div>
+          <div class="row"><span class="k">1-5 in dow field</span><span class="v">Mon–Fri</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Networking</h5>
+          <div class="row"><span class="k">curl -s url</span><span class="v">silent GET request</span></div>
+          <div class="row"><span class="k">curl -sf url</span><span class="v">fail silently on HTTP error (for scripting)</span></div>
+          <div class="row"><span class="k">curl -X POST -d</span><span class="v">POST with body</span></div>
+          <div class="row"><span class="k">curl -o file url</span><span class="v">download to file</span></div>
+          <div class="row"><span class="k">ping -c 1 host</span><span class="v">single reachability check</span></div>
+          <div class="row"><span class="k">wget url</span><span class="v">download a file</span></div>
+        </div>
+        <div class="cheat-col">
+          <h5>Java / Maven / Git (SDET stack)</h5>
+          <div class="row"><span class="k">java -version</span><span class="v">confirm JDK present</span></div>
+          <div class="row"><span class="k">mvn clean test</span><span class="v">build + run tests</span></div>
+          <div class="row"><span class="k">mvn -DsuiteXmlFile=</span><span class="v">choose TestNG suite XML</span></div>
+          <div class="row"><span class="k">mvn -Dkey=value</span><span class="v">pass JVM system property</span></div>
+          <div class="row"><span class="k">git pull origin main</span><span class="v">update to latest commit</span></div>
+          <div class="row"><span class="k">git status / log</span><span class="v">check state / history</span></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>sdet@automation:~$ end of reference — happy scripting ▮</footer>
+  </main>
+</div>
+
+<script>
+// Copy-to-clipboard for code blocks
+document.querySelectorAll('.code button.copy').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const pre = btn.closest('.code').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(()=>{
+      const orig = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(()=>btn.textContent = orig, 1200);
+    });
+  });
+});
+
+// Scroll-spy sidebar highlighting
+const sections = document.querySelectorAll('section.mod, .hero, .cheat');
+const links = document.querySelectorAll('nav.sidebar a[data-nav]');
+const map = {};
+links.forEach(l=>{ map[l.getAttribute('href').slice(1)] = l; });
+
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    const id = entry.target.id;
+    if(!map[id]) return;
+    if(entry.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      map[id].classList.add('active');
+    }
+  });
+},{rootMargin:'-15% 0px -70% 0px'});
+
+sections.forEach(s=>{ if(s.id) observer.observe(s); });
+</script>
+</body>
+</html>

@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deloitte Senior QA — Interview Prep Suite</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e14;
+    --panel:#0f1520;
+    --panel-2:#131b28;
+    --border:#212b3a;
+    --border-soft:#1a2330;
+    --text:#e7ebf3;
+    --text-dim:#8a95a8;
+    --text-faint:#5c6779;
+    --amber:#e8a33d;
+    --green:#5fd68a;
+    --blue:#5b9dd9;
+    --red:#e8636d;
+    --purple:#b18cf0;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --sans:'Inter', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);}
+  ::selection{background:rgba(232,163,61,0.25);}
+
+  /* ---- Title bar ---- */
+  .titlebar{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 18px;background:var(--panel);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:50;
+  }
+  .dots{display:flex;gap:6px;margin-right:8px;}
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot.r{background:#e8636d;} .dot.y{background:#e8c23d;} .dot.g{background:#5fd68a;}
+  .tab{
+    font-family:var(--mono);font-size:12.5px;color:var(--text-dim);
+    padding:6px 12px;border-radius:6px 6px 0 0;background:var(--panel-2);
+    border:1px solid var(--border-soft);border-bottom:none;display:flex;align-items:center;gap:6px;
+  }
+  .tab.active{color:var(--amber);}
+  .tab .dotfile{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .titlebar-spacer{flex:1;}
+  .runline{font-family:var(--mono);font-size:12px;color:var(--text-faint);}
+  .runline b{color:var(--green);}
+
+  /* ---- Header / hero ---- */
+  .hero{
+    padding:38px 24px 24px;max-width:1180px;margin:0 auto;
+  }
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;color:var(--blue);letter-spacing:.03em;
+    display:flex;align-items:center;gap:8px;margin-bottom:10px;
+  }
+  .eyebrow::before{content:'//';color:var(--text-faint);}
+  h1{
+    font-family:var(--mono);font-weight:700;font-size:clamp(22px,3.4vw,34px);
+    margin:0 0 8px;line-height:1.25;color:var(--text);
+  }
+  h1 .pkg{color:var(--text-faint);font-weight:500;}
+  h1 .cls{color:var(--amber);}
+  .sub{color:var(--text-dim);font-size:14.5px;max-width:680px;line-height:1.6;margin-bottom:22px;}
+  .sub code{background:var(--panel-2);border:1px solid var(--border-soft);padding:1px 6px;border-radius:4px;font-family:var(--mono);color:var(--purple);font-size:13px;}
+
+  .stat-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;}
+  .stat{
+    font-family:var(--mono);font-size:12.5px;background:var(--panel);border:1px solid var(--border);
+    padding:8px 14px;border-radius:8px;display:flex;align-items:center;gap:8px;color:var(--text-dim);
+  }
+  .stat b{color:var(--text);font-size:14px;}
+  .stat.pass b{color:var(--green);}
+  .stat.pending b{color:var(--amber);}
+
+  /* ---- Controls ---- */
+  .controls{
+    max-width:1180px;margin:0 auto;padding:0 24px 18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  }
+  .search{
+    flex:1;min-width:220px;background:var(--panel);border:1px solid var(--border);border-radius:8px;
+    padding:9px 12px;display:flex;align-items:center;gap:8px;
+  }
+  .search input{
+    background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:13px;width:100%;
+  }
+  .search svg{opacity:.5;flex-shrink:0;}
+  .roundtabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:3px;}
+  .roundtab{
+    font-family:var(--mono);font-size:12px;padding:7px 12px;border-radius:6px;color:var(--text-dim);
+    cursor:pointer;border:none;background:transparent;transition:.15s;
+  }
+  .roundtab.active{background:var(--panel-2);color:var(--amber);}
+  .roundtab:hover:not(.active){color:var(--text);}
+
+  /* ---- Layout ---- */
+  .layout{max-width:1180px;margin:0 auto;padding:0 24px 60px;display:grid;grid-template-columns:250px 1fr;gap:22px;}
+  @media (max-width:840px){.layout{grid-template-columns:1fr;}}
+
+  /* ---- Sidebar (test explorer) ---- */
+  .sidebar{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px;
+    align-self:start;position:sticky;top:70px;
+  }
+  @media (max-width:840px){.sidebar{position:static;display:flex;overflow-x:auto;gap:6px;padding:10px;}}
+  .sidebar-title{
+    font-family:var(--mono);font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;
+    padding:6px 8px 10px;
+  }
+  @media (max-width:840px){.sidebar-title{display:none;}}
+  .classitem{
+    display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:7px;cursor:pointer;
+    font-family:var(--mono);font-size:12.5px;color:var(--text-dim);white-space:nowrap;
+  }
+  .classitem:hover{background:var(--panel-2);color:var(--text);}
+  .classitem.active{background:var(--panel-2);color:var(--text);box-shadow:inset 2px 0 0 var(--amber);}
+  .classitem .badge{
+    margin-left:auto;font-size:10.5px;padding:1px 6px;border-radius:20px;background:var(--border-soft);color:var(--text-faint);
+  }
+  .classitem .badge.done{background:rgba(95,214,138,.12);color:var(--green);}
+  .classitem svg{flex-shrink:0;opacity:.7;}
+
+  /* ---- Main panel ---- */
+  .panel-head{
+    display:flex;align-items:baseline;gap:10px;margin-bottom:14px;flex-wrap:wrap;
+  }
+  .panel-head h2{
+    font-family:var(--mono);font-size:17px;margin:0;color:var(--text);
+  }
+  .panel-head h2 span{color:var(--text-faint);font-weight:400;}
+  .panel-head .roundtag{
+    font-family:var(--mono);font-size:10.5px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);
+    color:var(--text-dim);
+  }
+
+  /* ---- Method cards ---- */
+  .method{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;
+  }
+  .method-head{
+    display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;
+  }
+  .method-head:hover{background:var(--panel-2);}
+  .check{
+    width:20px;height:20px;border-radius:5px;border:1.5px solid var(--border);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;
+  }
+  .check.checked{background:var(--green);border-color:var(--green);}
+  .check svg{opacity:0;transition:.1s;}
+  .check.checked svg{opacity:1;}
+  .method-sig{font-family:var(--mono);font-size:13.5px;flex:1;min-width:0;}
+  .method-sig .kw{color:var(--purple);}
+  .method-sig .name{color:var(--amber);word-break:break-word;}
+  .method-sig .qtext{display:block;color:var(--text-dim);font-family:var(--sans);font-size:13.5px;margin-top:3px;font-weight:400;}
+  .statuspill{
+    font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:20px;flex-shrink:0;
+    background:var(--border-soft);color:var(--text-faint);
+  }
+  .statuspill.pass{background:rgba(95,214,138,.12);color:var(--green);}
+  .chev{color:var(--text-faint);transition:transform .15s;flex-shrink:0;}
+  .method.open .chev{transform:rotate(90deg);}
+
+  .method-body{display:none;padding:0 16px 18px 50px;}
+  .method.open .method-body{display:block;}
+  .why{
+    font-family:var(--mono);font-size:12px;color:var(--text-faint);background:var(--panel-2);
+    border-left:2px solid var(--blue);padding:8px 12px;border-radius:0 6px 6px 0;margin-bottom:14px;line-height:1.6;
+  }
+  .why b{color:var(--blue);}
+  .answer{font-size:14px;line-height:1.75;color:var(--text);}
+  .answer p{margin:0 0 10px;}
+  .answer ul{margin:6px 0 12px;padding-left:20px;}
+  .answer li{margin-bottom:6px;}
+  .answer strong{color:var(--amber);font-weight:600;}
+  .answer code{
+    font-family:var(--mono);background:var(--panel-2);border:1px solid var(--border-soft);
+    padding:1px 6px;border-radius:4px;font-size:12.5px;color:var(--purple);
+  }
+  .codeblock{
+    margin:12px 0;border:1px solid var(--border-soft);border-radius:8px;overflow:hidden;background:#0c111b;
+  }
+  .codeblock-head{
+    display:flex;align-items:center;justify-content:space-between;padding:7px 12px;
+    background:var(--panel-2);border-bottom:1px solid var(--border-soft);
+  }
+  .codeblock-head span{font-family:var(--mono);font-size:11px;color:var(--text-faint);}
+  .copybtn{
+    font-family:var(--mono);font-size:11px;color:var(--text-dim);background:transparent;border:1px solid var(--border);
+    padding:3px 9px;border-radius:5px;cursor:pointer;
+  }
+  .copybtn:hover{color:var(--text);border-color:var(--text-faint);}
+  .codeblock pre{margin:0;padding:14px;overflow-x:auto;}
+  .codeblock code{
+    font-family:var(--mono);font-size:12.5px;line-height:1.6;color:#c9d3e0;background:none;border:none;padding:0;
+  }
+  .cmt{color:var(--text-faint);}
+  .kw2{color:var(--purple);}
+  .str{color:var(--green);}
+  .typ{color:var(--blue);}
+
+  .empty{
+    text-align:center;padding:60px 20px;color:var(--text-faint);font-family:var(--mono);font-size:13px;
+  }
+
+  footer{
+    text-align:center;padding:30px 20px 50px;color:var(--text-faint);font-family:var(--mono);font-size:11.5px;
+  }
+
+  /* --- Back to Hub button --- */
+  .back-to-hub {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px;
+    padding: 8px 14px;
+    background: #101b2d;
+    border: 1px solid #223252;
+    border-radius: 8px;
+    color: #4fd1e8;
+    text-decoration: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-to-hub:hover {
+    border-color: #4fd1e8;
+    transform: translateX(-2px);
+  }
+
+  /* ---- Mobile ---- */
+  @media (max-width:600px){
+    .titlebar{flex-wrap:wrap;row-gap:6px;padding:9px 14px;}
+    .runline{display:none;}
+    .tab{font-size:11.5px;padding:5px 10px;}
+    .hero{padding:24px 16px 16px;}
+    .sub{font-size:13.5px;}
+    .stat-row{gap:8px;}
+    .stat{padding:7px 11px;font-size:11.5px;}
+    .controls{padding:0 16px 14px;gap:8px;}
+    .search{min-width:0;width:100%;}
+    .roundtabs{width:100%;justify-content:space-between;}
+    .roundtab{flex:1;text-align:center;padding:8px 6px;}
+    .layout{padding:0 16px 44px;gap:12px;grid-template-columns:1fr;}
+    .sidebar{-webkit-overflow-scrolling:touch;}
+    .classitem{flex-shrink:0;}
+    .panel-head{gap:8px;}
+    .panel-head h2{font-size:15px;}
+    .method-head{padding:12px;gap:10px;}
+    .method-sig{font-size:13px;}
+    .method-sig .qtext{font-size:13px;}
+    .method-body{padding:0 12px 16px 12px;}
+    .why{font-size:11.5px;padding:8px 10px;}
+    .answer{font-size:13.5px;}
+    .codeblock pre{padding:11px;}
+    .codeblock code{font-size:11.5px;}
+    .check{width:22px;height:22px;}
+  }
+  @media (max-width:380px){
+    h1{font-size:19px;}
+    .eyebrow{font-size:10.5px;}
+  }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-to-hub">← Back to Hub</a>
+
+<div class="titlebar">
+  <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+  <div class="tab active"><span class="dotfile"></span>InterviewPrepSuite.java</div>
+  <div class="titlebar-spacer"></div>
+  <div class="runline"><b id="runlineCount">69</b> tests · target comp ~15 LPA · Deloitte Senior QA</div>
+</div>
+
+<div class="hero">
+  <div class="eyebrow">SOURCE: PEER-REPORTED INTERVIEW LOOP + BONUS PREP</div>
+  <h1><span class="pkg">com.deloitte.seniorqa.</span><span class="cls">InterviewPrepSuite</span></h1>
+  <p class="sub">Every question from the Round&nbsp;1 (Technical) and Round&nbsp;2 (Techno-Managerial) loops, plus 40 bonus questions covering API testing, Git, Docker, microservices, Java internals, design patterns, TestNG internals, GraphQL/gRPC, and non-functional/ops topics — rewritten as a runnable test suite. Each question is a <code>@Test</code> method — expand it for the answer, why it's asked, and code where relevant. Tap the checkbox to flip a method from <code>PENDING</code> to <code>PASS</code> as you review it.</p>
+  <div class="stat-row">
+    <div class="stat">Round 1 <b id="statR1">13 tests</b></div>
+    <div class="stat">Round 2 <b id="statR2">16 tests</b></div>
+    <div class="stat">Bonus <b id="statR3">40 tests</b></div>
+    <div class="stat pass">Reviewed <b id="statPass">0</b></div>
+    <div class="stat pending">Pending <b id="statPending">69</b></div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="searchBox" placeholder="grep -i &quot;keyword&quot;  (e.g. wait, join, exception)">
+  </div>
+  <div class="roundtabs" id="roundTabs">
+    <button class="roundtab active" data-round="all">All</button>
+    <button class="roundtab" data-round="1">Round 1</button>
+    <button class="roundtab" data-round="2">Round 2</button>
+    <button class="roundtab" data-round="3">Bonus</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-title">Test Classes</div>
+  </div>
+  <div class="main">
+    <div class="panel-head">
+      <h2 id="panelTitle">All classes</h2>
+      <span class="roundtag" id="panelRound"></span>
+    </div>
+    <div id="methodList"></div>
+  </div>
+</div>
+
+<footer>compiled from a real Deloitte Senior QA loop · answers written for a Java/Selenium/BFSI SDET background · review offline, this file saves nothing</footer>
+
+<script>
+// ---------------------------------------------------------------
+// Data model: rounds -> classes (categories) -> methods (questions)
+// ---------------------------------------------------------------
+const DATA = [
+  {
+    round:1, roundLabel:"Round 1 · Technical",
+    className:"IntroductionTest",
+    icon:"user",
+    methods:[
+      {
+        name:"shouldIntroduceSelfAndCurrentRole",
+        q:"Tell me about yourself, your current role, and your key responsibilities.",
+        why:"Sets the tone for the whole interview. The panel is checking how you frame scope and impact, not collecting biography — and calibrating how deep to go on later questions based on how you describe your current work.",
+        answer:`<p>Use a <strong>Present → Past → Future</strong> structure (roughly 60–90 seconds spoken):</p>
+<ul>
+<li><strong>Present:</strong> current title, company, engagement, and the shape of the work — tech stack, scale, what you personally own.</li>
+<li><strong>Past:</strong> one or two prior roles that explain how you got your strongest skills, told as a build-up, not a list.</li>
+<li><strong>Future/Fit:</strong> one sentence connecting why this role is the logical next step.</li>
+</ul>
+<p>A draft tailored to your background:</p>
+<p>"I'm a Senior SDET / Automation QA Consultant at Deloitte, currently on the General Motors Financial (GMF) engagement, where my focus is validation of email/marketing campaign flows across Adobe Experience Platform and Oracle DB, alongside broader QA ownership. Before this, I spent time at TCS on the DBS Bank and USAA Bank BFSI engagements, where I built out a 9-phase Selenium automation framework with ThreadLocal-based parallel execution, ran JMeter performance testing that signed off at 300 TPS, and did security-focused testing around mTLS/JKS/PKCS12 certificate flows. That BFSI depth — reconciliation, security, and performance under regulatory constraints — is what I bring into this role, along with roughly four years of dedicated SDET experience on top of an engineering foundation."</p>
+<p>Adjust the specifics to whatever DBS/USAA/GMF details you're most fluent explaining under follow-up questions — never state a number or system you can't defend if probed.</p>`
+      },
+      {
+        name:"shouldExplainBlackBoxVsWhiteBoxTesting",
+        q:"Explain the difference between Black-box and White-box testing with real examples.",
+        why:"Baseline testing-fundamentals check — also tests whether you can connect the theory to techniques you'd actually use day to day.",
+        answer:`<p><strong>Black-box testing</strong> validates functionality against requirements/specs without any knowledge of the internal code. It's what most functional and UI automation is. Common techniques: equivalence partitioning, boundary value analysis, decision tables.</p>
+<p><em>Example:</em> Testing a login page by trying valid credentials, invalid credentials, empty fields, and SQL-injection-style strings — all without ever opening the authentication code.</p>
+<p><strong>White-box testing</strong> validates internal logic and code paths, and requires access to the source. Techniques: statement/branch/path coverage, code review, unit testing.</p>
+<p><em>Example:</em> Testing a discount-calculation method by inspecting its actual if/else branches (customer tier, order value thresholds, promo stacking rules) and writing a test for every branch, including ones a black-box tester would never think to target.</p>
+<p>Worth mentioning: as an SDET you often sit in a <strong>grey-box</strong> position — you don't own the production code, but you do inspect API contracts, DB schemas, and logs to design smarter black-box tests.</p>`
+      },
+      {
+        name:"shouldFetchThirdHighestSalary",
+        q:"In SQL, how do you retrieve the third-highest salary from a table?",
+        why:"Classic SQL screening question. They're really checking whether you know how duplicate values break naive approaches — DENSE_RANK is usually the answer they want to hear.",
+        answer:`<p>Three common approaches, in order of how robust they are to duplicate salaries:</p>
+<p><strong>1. LIMIT/OFFSET</strong> (simple, MySQL/Postgres) — breaks if there are duplicate top salaries, since <code>DISTINCT</code> collapses them before ranking:</p>`,
+        code:{lang:"sql", text:
+`SELECT DISTINCT salary
+FROM employee
+ORDER BY salary DESC
+LIMIT 1 OFFSET 2;`},
+        answer2:`<p><strong>2. Correlated subquery</strong> (portable across most RDBMS, no window functions needed):</p>`,
+        code2:{lang:"sql", text:
+`SELECT MAX(salary) AS third_highest
+FROM employee
+WHERE salary < (
+  SELECT MAX(salary) FROM employee
+  WHERE salary < (
+    SELECT MAX(salary) FROM employee
+  )
+);`},
+        answer3:`<p><strong>3. DENSE_RANK() window function</strong> — the answer to lead with, because it correctly handles ties (two people on the same salary still count as one rank):</p>`,
+        code3:{lang:"sql", text:
+`SELECT salary
+FROM (
+  SELECT salary,
+         DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+  FROM employee
+) ranked
+WHERE rnk = 3;`},
+        answer4:`<p>If asked to justify the choice: <code>ROW_NUMBER()</code> would skip a legitimate tied salary and over-count rows; <code>RANK()</code> leaves gaps after ties (1,1,3); <code>DENSE_RANK()</code> is the only one of the three that gives a clean, gap-free "Nth distinct salary" result.</p>`
+      },
+      {
+        name:"shouldExplainSqlJoins",
+        q:"What are SQL joins and when would you use each type?",
+        why:"Checks whether you understand relational data well enough to validate multi-table integrations — common in BFSI systems with accounts/transactions/customers spread across tables.",
+        answer:`<ul>
+<li><strong>INNER JOIN</strong> — only rows with a match in both tables. Use when you only care about complete, related records (e.g. orders that have a matching customer).</li>
+<li><strong>LEFT (OUTER) JOIN</strong> — all rows from the left table, matched rows from the right, NULLs where there's no match. Use to find "all X, with Y if it exists" — e.g. all customers, including those with zero orders.</li>
+<li><strong>RIGHT (OUTER) JOIN</strong> — mirror of LEFT; rarely used in practice since you can just reorder tables and use LEFT.</li>
+<li><strong>FULL OUTER JOIN</strong> — all rows from both sides, NULLs where no match exists. Use to find mismatches on either side, e.g. reconciliation between two systems.</li>
+<li><strong>SELF JOIN</strong> — a table joined to itself, typically for hierarchical or comparative data (e.g. an employee table joined to itself to find each employee's manager).</li>
+<li><strong>CROSS JOIN</strong> — Cartesian product of both tables. Rare in real queries; mostly used to generate combinations (e.g. every product × every warehouse).</li>
+</ul>
+<p>As an SDET, LEFT JOIN and FULL OUTER JOIN come up most — they're the natural tool for reconciliation checks (data present in the source but missing downstream, or vice versa).</p>`
+      },
+      {
+        name:"shouldCompareMapImplementations",
+        q:"What is the difference between HashMap, LinkedHashMap, and TreeMap?",
+        why:"Java Collections fundamentals — checks whether you know when ordering and performance trade-offs actually matter, not just that the three classes exist.",
+        answer:`<ul>
+<li><strong>HashMap</strong> — no ordering guarantee, O(1) average get/put, backed by an array of buckets (treeified into a red-black tree per bucket once a bucket exceeds 8 entries, since Java 8). Allows one null key. Default choice when order doesn't matter.</li>
+<li><strong>LinkedHashMap</strong> — extends HashMap, additionally maintains a doubly linked list to preserve insertion order (or access order, if configured via constructor). Same O(1) average performance with a bit more memory overhead. Commonly used to implement an LRU cache by overriding <code>removeEldestEntry()</code>.</li>
+<li><strong>TreeMap</strong> — sorted by natural ordering or a supplied <code>Comparator</code>, backed by a red-black tree, so get/put is O(log n). Implements <code>NavigableMap</code>, giving methods like <code>floorKey()</code>, <code>ceilingKey()</code>, <code>firstKey()</code>. Does not allow null keys.</li>
+</ul>`,
+        code:{lang:"java", text:
+`Map<String,Integer> hash = new HashMap<>();
+Map<String,Integer> linked = new LinkedHashMap<>();
+Map<String,Integer> tree = new TreeMap<>();
+
+for (Map<String,Integer> m : List.of(hash, linked, tree)) {
+    m.put("banana", 2);
+    m.put("apple", 1);
+    m.put("cherry", 3);
+}
+// hash   -> order not guaranteed (implementation-dependent)
+// linked -> banana, apple, cherry   (insertion order preserved)
+// tree   -> apple, banana, cherry   (sorted order)`}
+      },
+      {
+        name:"shouldDistinguishCheckedAndUncheckedExceptions",
+        q:"Explain Checked vs Unchecked exceptions with examples.",
+        why:"Core Java error-handling fundamentals — also relevant to how you design retry/failure logic in automation code.",
+        answer:`<p><strong>Checked exceptions</strong> — subclasses of <code>Exception</code> excluding <code>RuntimeException</code>. The compiler forces you to either catch them or declare them with <code>throws</code>. They represent recoverable conditions external to the program's logic — a file that might not exist, a network call that might fail.</p>
+<p>Examples: <code>IOException</code>, <code>SQLException</code>, <code>ParseException</code>.</p>
+<p><strong>Unchecked exceptions</strong> — subclasses of <code>RuntimeException</code>. Not checked at compile time; they usually represent programming bugs rather than expected external failures.</p>
+<p>Examples: <code>NullPointerException</code>, <code>ArrayIndexOutOfBoundsException</code>, <code>IllegalArgumentException</code>.</p>`,
+        code:{lang:"java", text:
+`// Checked — must be handled or declared
+public void readConfig(String path) throws IOException {
+    Files.readAllLines(Paths.get(path));
+}
+
+// Unchecked — compiler doesn't force handling
+public int divide(int a, int b) {
+    return a / b;  // may throw ArithmeticException at runtime
+}`},
+        answer2:`<p>Worth knowing for a Selenium-heavy interview: most Selenium exceptions (<code>NoSuchElementException</code>, <code>TimeoutException</code>, <code>ElementClickInterceptedException</code>) are all subclasses of <code>WebDriverException</code>, which is itself a <code>RuntimeException</code> — so they're all <strong>unchecked</strong>, which is why your framework's retry/wait logic has to catch them deliberately rather than being forced to by the compiler.</p>`
+      },
+      {
+        name:"shouldReverseStringPreservingSpacePositions",
+        q:"Write Java code to reverse a string without changing the position of spaces.",
+        why:"Tests basic algorithmic thinking and array/pointer manipulation under interview pressure — a very common SDET coding-round question.",
+        answer:`<p>Two-pointer approach: walk from both ends of the char array inward, skip over spaces (leaving them exactly where they are), and swap non-space characters.</p>`,
+        code:{lang:"java", text:
+`public class ReverseKeepingSpaces {
+
+    public static String reverse(String input) {
+        char[] chars = input.toCharArray();
+        int left = 0, right = chars.length - 1;
+
+        while (left < right) {
+            if (chars[left] == ' ') {
+                left++;
+            } else if (chars[right] == ' ') {
+                right--;
+            } else {
+                char temp = chars[left];
+                chars[left] = chars[right];
+                chars[right] = temp;
+                left++;
+                right--;
+            }
+        }
+        return new String(chars);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(reverse("a b c")); // "c b a"
+        System.out.println(reverse("t e s t   c a s e")); // spaces stay put
+    }
+}`},
+        answer2:`<p>Time complexity O(n), space O(n) for the char array copy. Call out the edge cases if asked: empty string, string of only spaces, leading/trailing spaces.</p>`
+      },
+      {
+        name:"shouldAnswerSeleniumFundamentals",
+        q:"Selenium questions: findElement vs findElements, date pickers, reading input text, JS alerts, switching tabs, relative locators.",
+        why:"This block checks day-to-day Selenium fluency rather than theory — these are the exact situations that break naive automation scripts.",
+        answer:`<p><strong>findElement vs findElements</strong> — <code>findElement()</code> returns a single <code>WebElement</code> and throws <code>NoSuchElementException</code> if nothing matches. <code>findElements()</code> returns a <code>List&lt;WebElement&gt;</code> and returns an <em>empty list</em> (no exception) if nothing matches — which makes it the right tool for existence checks or counting, without wrapping everything in a try/catch.</p>
+<p><strong>Handling a date picker / calendar</strong> — three approaches, pick based on what the widget allows:</p>
+<ul>
+<li>If the input field is directly editable, just <code>sendKeys()</code> the date in the expected format.</li>
+<li>If it's a click-through calendar widget, navigate month/year via the picker's next/prev controls, then click the day cell, typically via a dynamic XPath like <code>//td[@class='day' and text()='15']</code>.</li>
+<li>For JS-heavy pickers (React/Angular date components) that ignore raw <code>sendKeys()</code>, set the value via <code>JavascriptExecutor</code> and manually dispatch an <code>input</code>/<code>change</code> event so the framework's state updates.</li>
+</ul>
+<p><strong>Reading text from an input field</strong> — use <code>getAttribute("value")</code>, not <code>getText()</code>. <code>getText()</code> reads the rendered visible text of an element (like a <code>&lt;div&gt;</code> or <code>&lt;span&gt;</code>); an <code>&lt;input&gt;</code>'s content lives in its <code>value</code> attribute, not as text content.</p>
+<p><strong>Handling JavaScript alerts</strong>:</p>`,
+        code:{lang:"java", text:
+`Alert alert = driver.switchTo().alert();
+String text = alert.getText();
+alert.sendKeys("optional input for a prompt");
+alert.accept();   // OK
+// alert.dismiss(); // Cancel`},
+        answer2:`<p><strong>Switching between browser tabs</strong>:</p>`,
+        code2:{lang:"java", text:
+`String originalTab = driver.getWindowHandle();
+Set<String> allTabs = driver.getWindowHandles();
+
+for (String handle : allTabs) {
+    if (!handle.equals(originalTab)) {
+        driver.switchTo().window(handle);
+        break;
+    }
+}
+// Selenium 4 can also open a fresh tab directly:
+driver.switchTo().newWindow(WindowType.TAB);`},
+        answer3:`<p><strong>Relative locators (Selenium 4)</strong> — locate an element relative to a known anchor element, using <code>above()</code>, <code>below()</code>, <code>toLeftOf()</code>, <code>toRightOf()</code>, and <code>near()</code>. Useful when an element has no stable id/class but has a predictable position relative to a labeled one.</p>`,
+        code3:{lang:"java", text:
+`WebElement usernameField = driver.findElement(By.id("username"));
+
+WebElement passwordField = driver.findElement(
+    RelativeLocator.with(By.tagName("input")).below(usernameField)
+);`}
+      },
+      {
+        name:"shouldDistinguishWaitStrategies",
+        q:"Difference between Implicit Wait, Explicit Wait, and Fluent Wait.",
+        why:"The single most common cause of flaky Selenium suites is misused waits — this checks whether you understand why, not just the three definitions.",
+        answer:`<ul>
+<li><strong>Implicit Wait</strong> — a single global timeout applied to <em>every</em> <code>findElement</code> call in the driver session. Selenium polls the DOM until the element appears or the timeout elapses. Set once: <code>driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10))</code>.</li>
+<li><strong>Explicit Wait</strong> — waits for a specific condition on a specific element before proceeding, using <code>WebDriverWait</code> + <code>ExpectedConditions</code> (e.g. <code>visibilityOf</code>, <code>elementToBeClickable</code>). Scoped to one interaction, not global.</li>
+<li><strong>Fluent Wait</strong> — the most configurable of the three: lets you set a custom polling interval and specify which exceptions to ignore while waiting (e.g. ignore <code>NoSuchElementException</code> while retrying). Built on the same underlying mechanism as <code>WebDriverWait</code>.</li>
+</ul>`,
+        code:{lang:"java", text:
+`Wait<WebDriver> fluentWait = new FluentWait<>(driver)
+    .withTimeout(Duration.ofSeconds(20))
+    .pollingEvery(Duration.ofMillis(500))
+    .ignoring(NoSuchElementException.class);
+
+WebElement el = fluentWait.until(d -> d.findElement(By.id("submit")));`},
+        answer2:`<p>Important caution to mention: <strong>never mix implicit and explicit waits</strong> in the same driver session — Selenium will apply both, and the interaction between the two can produce unpredictable, much longer effective wait times. Most mature frameworks disable implicit wait entirely and rely on explicit/fluent waits everywhere.</p>`
+      },
+      {
+        name:"shouldHandleXPathMatchingMultipleElements",
+        q:"What happens if an XPath matches multiple elements?",
+        why:"Tests whether you understand the silent-failure mode behind a lot of flaky tests — an XPath matching more than one element doesn't throw an error, it just quietly picks the wrong one.",
+        answer:`<p>If you call <code>findElement()</code> with an XPath that matches multiple elements, Selenium does <strong>not</strong> throw an error — it silently returns the <em>first</em> match in document order. That's dangerous: the test can pass while interacting with the wrong element, or start failing intermittently if the DOM order changes.</p>
+<p>How to handle it:</p>
+<ul>
+<li>Use <code>findElements()</code> to see how many matches exist, and index into the list deliberately if multiple are genuinely expected.</li>
+<li>Make the XPath more specific by adding attributes or a closer parent/ancestor context, so it uniquely identifies one element.</li>
+<li>Prefer stable attributes (<code>data-testid</code>, <code>id</code>) over positional or text-based XPath where possible, since those are far less likely to unintentionally match multiple nodes.</li>
+</ul>`
+      },
+      {
+        name:"shouldDistinguishSmokeAndSanityTesting",
+        q:"Difference between Smoke testing and Sanity testing.",
+        why:"Checks whether you know when to run a lightweight check vs a targeted one — relevant to how you'd gate a CI/CD pipeline.",
+        answer:`<ul>
+<li><strong>Smoke testing</strong> — broad but shallow: "is this build stable enough to test at all?" Run immediately after a new deployment/build, usually scripted and often automated as the first CI/CD gate. Covers critical happy-paths across the whole app, not depth in any one area.</li>
+<li><strong>Sanity testing</strong> — narrow but deep: after a specific bug fix or minor change, verify that the affected functionality now works correctly, without running the full regression suite. Usually unscripted/exploratory, focused only on the impacted area.</li>
+</ul>
+<p>Rule of thumb: smoke = build verification (breadth), sanity = change verification (depth, narrow scope).</p>`
+      },
+      {
+        name:"shouldDecideRegressionSuiteScope",
+        q:"How do you decide which test cases go into a Regression suite?",
+        why:"Checks test-strategy judgment — a bloated regression suite is a common real-world problem, and interviewers want to see you think about maintainability, not just coverage.",
+        answer:`<p>Criteria for inclusion:</p>
+<ul>
+<li><strong>Core business flows</strong> — login, checkout/payment, account creation — anything that breaks the product if it fails.</li>
+<li><strong>High defect-density areas</strong> — modules with a history of frequent bugs, based on defect tracking data.</li>
+<li><strong>High-traffic / high-risk modules</strong> — features used by the most users or carrying the most business/compliance risk (relevant in BFSI: reconciliation, statements, transaction processing).</li>
+<li><strong>Recently changed code</strong> — anything touched in the last few sprints is disproportionately likely to have introduced a regression.</li>
+<li><strong>Cross-module integration points</strong> — where a change in one service is most likely to silently break another.</li>
+</ul>
+<p>What to <em>exclude</em>: one-off exploratory cases, purely cosmetic UI checks, and rarely-used low-risk features — including everything bloats runtime and slows feedback without proportionate risk coverage. In TestNG this is usually managed with <code>groups</code> (<code>@Test(groups = "regression")</code>) so the suite can be sliced by priority and run selectively in CI.</p>`
+      },
+      {
+        name:"shouldDescribeMajorChallengeAndResolution",
+        q:"Explain one major challenge you faced in your project and how you solved it.",
+        why:"Behavioral/problem-solving check — the panel wants a structured story with a real technical decision in it, not just \"it was hard and I fixed it.\"",
+        answer:`<p>Use <strong>STAR</strong> (Situation, Task, Action, Result), and pick a story where the "Action" step involved a real technical trade-off you can defend under follow-up questions.</p>
+<p>Given your background, strong candidate stories include:</p>
+<ul>
+<li><strong>Kafka/Redis reconciliation testing</strong> — validating eventual consistency across an async pipeline, where naive assertions failed due to timing, and you had to design polling/retry-based verification instead of fixed sleeps.</li>
+<li><strong>mTLS/JKS/PKCS12 security testing at DBS</strong> — validating certificate-based auth flows, where the challenge was setting up a reliable test environment with valid short-lived certs without touching production security controls.</li>
+<li><strong>JMeter 300 TPS sign-off</strong> — where the initial test runs weren't hitting target throughput, and the fix involved JVM heap tuning, log-level reduction, and decoupling test data generation from the load-generation threads.</li>
+</ul>
+<p>Structure whichever one you tell as: (S) one sentence on context, (T) what you were specifically responsible for, (A) 2–3 concrete technical decisions you made — this is where most of your airtime should go, (R) a measurable or clearly-stated outcome. Avoid vague endings like "and it worked well" — end with a number or a concrete before/after if you can.</p>`
+      }
+    ]
+  },
+  {
+    round:2, roundLabel:"Round 2 · Techno-Managerial",
+    className:"FrameworkDesignTest",
+    icon:"layers",
+    methods:[
+      {
+        name:"shouldExplainAutomationFrameworkStructure",
+        q:"Explain your automation framework and its structure.",
+        why:"The centerpiece question of a techno-managerial round — they're evaluating architectural thinking and whether you can defend design decisions, not just list technologies you've used.",
+        answer:`<p>Describe it as layers, and be ready to justify each choice:</p>
+<ul>
+<li><strong>Build/dependency layer</strong> — Maven (or Gradle), managing Selenium/Playwright, TestNG, REST Assured, reporting libraries as dependencies.</li>
+<li><strong>Driver/config layer</strong> — a factory class that initializes the browser/driver per environment (local, Grid, cloud), reading environment-specific config from a properties/YAML/JSON file so nothing is hardcoded.</li>
+<li><strong>Page Object layer</strong> — one class per page/feature, exposing actions and assertions, hiding locators from the test layer entirely.</li>
+<li><strong>Test/step-definition layer</strong> — TestNG test classes, or Cucumber step definitions if BDD is in use, calling into page objects — never touching locators directly.</li>
+<li><strong>Data layer</strong> — externalized test data (Excel/JSON/DB) for data-driven runs, decoupled from test logic.</li>
+<li><strong>Reporting/logging layer</strong> — Extent Reports or Allure for HTML reports, Log4j for structured logs, screenshot-on-failure hooked into the listener.</li>
+<li><strong>CI layer</strong> — Jenkins/Azure Pipelines triggering suite runs, publishing results, gating merges on smoke/regression pass.</li>
+</ul>
+<p>If asked for specifics, you can point to concrete work: a Selenium framework built against a practice app with full page-object coverage, Docker/Grid support for parallel execution, and multiple TestNG suite XML configs for different run profiles (smoke/regression/full) — plus a newer Playwright/TypeScript framework you've been building to round out that skill alongside your Java-based Selenium stack.</p>`
+      },
+      {
+        name:"shouldDesignPageObjectsForLargeApp",
+        q:"How do you design Page Objects for a large application with many pages?",
+        why:"Scaling question — a Page Object pattern that works for 5 pages often collapses under 200, and they want to see you've thought about that failure mode.",
+        answer:`<ul>
+<li><strong>Organize by module/feature</strong>, not one flat folder — mirror the application's own navigation structure so a new page's home is obvious.</li>
+<li><strong>Introduce a BasePage class</strong> holding common behavior every page needs — generic waits, common header/footer/nav elements, a reusable <code>waitForPageLoad()</code>.</li>
+<li><strong>Extract repeated UI widgets into Component objects</strong> (e.g. a date picker, a data table, a modal) that are composed into multiple page objects, instead of duplicating locator logic across every page that happens to contain that widget.</li>
+<li><strong>Avoid the "God Page Object"</strong> — a single page class with 40+ locators and 30 methods is a maintenance trap; split by logical sub-section of the page if it's genuinely large.</li>
+<li><strong>Lazy element initialization</strong> — using <code>@FindBy</code> + <code>PageFactory.initElements()</code> (or an explicit-locator equivalent) so elements are located only when interacted with, not eagerly on page object construction, which avoids stale-element issues on SPA pages that re-render.</li>
+</ul>`
+      },
+      {
+        name:"shouldJustifyBddCucumberChoice",
+        q:"Why did you choose BDD Cucumber for your project?",
+        why:"Checks whether BDD was a deliberate architectural choice or just something you inherited — be ready to also name its downsides.",
+        answer:`<ul>
+<li><strong>Living documentation</strong> — Gherkin's Given-When-Then reads in plain English, so non-technical stakeholders (BAs, PMs) can review and validate scenarios without reading code.</li>
+<li><strong>Requirement traceability</strong> — feature files map directly to acceptance criteria, closing the gap between "what was specified" and "what was tested."</li>
+<li><strong>Reusable step definitions</strong> — common steps (login, navigation) get written once and reused across many scenarios, reducing duplication versus a plain TestNG suite.</li>
+<li><strong>Collaboration</strong> — supports a "three amigos" workflow (BA, dev, QA) writing scenarios together before development starts.</li>
+</ul>
+<p>Worth acknowledging the trade-off if pushed: BDD adds an abstraction layer (feature files + step definitions + underlying automation code) that's more overhead than plain TestNG for teams without genuine non-technical stakeholder involvement in scenario review — it's a good fit when that collaboration actually happens, not by default.</p>`
+      },
+      {
+        name:"shouldCaptureScreenshotsOnlyOnFailure",
+        q:"How do you capture screenshots only for failed test cases in TestNG?",
+        why:"Practical framework-plumbing question — checks familiarity with TestNG's listener architecture, which is core to any reporting setup.",
+        answer:`<p>Implement <code>ITestListener</code> and override <code>onTestFailure()</code>, using the <code>TakesScreenshot</code> interface to capture the driver's current state at the moment of failure:</p>`,
+        code:{lang:"java", text:
+`public class ScreenshotListener implements ITestListener {
+
+    @Override
+    public void onTestFailure(ITestResult result) {
+        WebDriver driver = DriverFactory.getDriver(); // your driver accessor
+        if (driver instanceof TakesScreenshot) {
+            File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            String fileName = result.getMethod().getMethodName() + ".png";
+            try {
+                FileUtils.copyFile(src, new File("test-output/screenshots/" + fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}`},
+        answer2:`<p>Register it either via <code>@Listeners(ScreenshotListener.class)</code> on the test class, or centrally in <code>testng.xml</code> under <code>&lt;listeners&gt;</code>, so it applies suite-wide without annotating every class. The key point to make: this only fires in <code>onTestFailure</code>, so passing tests never take the screenshot I/O hit.</p>`
+      },
+      {
+        name:"shouldRunSuiteViaJenkinsOrAzurePipelines",
+        q:"How do you run your automation suite using Jenkins or Azure pipelines?",
+        why:"Checks CI/CD integration experience — whether automation lives only on your laptop or is a real part of the delivery pipeline.",
+        answer:`<p><strong>Jenkins</strong> — either a Freestyle job or, more commonly now, a Pipeline job driven by a <code>Jenkinsfile</code>: checkout the repo, run <code>mvn test -Dsuite=regression.xml</code> (or similar), archive the Extent/Allure report as a build artifact, and configure post-build actions (email/Slack notification on failure). Triggers are typically SCM webhooks (run on every merge to main) plus a nightly CRON schedule for the full regression suite.</p>
+<p><strong>Azure Pipelines</strong> — defined in a YAML file (<code>azure-pipelines.yml</code>) with stages for build and test. An agent installs dependencies, runs the Maven/TestNG command, and a <code>PublishTestResults@2</code> task parses the TestNG/JUnit XML output so results show up natively in the Azure DevOps test dashboard rather than just as raw logs.</p>
+<p>The point interviewers are checking for: that you understand automation isn't complete until it's a <strong>gate</strong> in the pipeline (blocking or at least flagging bad merges), not a script someone runs manually before a release.</p>`
+      },
+      {
+        name:"shouldHandleElementClickIntercepted",
+        q:"What is ElementClickInterceptedException and how do you fix it?",
+        why:"One of the most common real-world Selenium flakiness causes — checks whether you've actually debugged this in a live framework, not just read about it.",
+        answer:`<p>Thrown when Selenium tries to click an element, but at the click's screen coordinates, a <em>different</em> element is actually receiving the click — commonly an overlay, a sticky header, a modal, a cookie-consent banner, or an ad that hasn't finished loading/dismissing. It can also fire if the target element is technically present in the DOM but scrolled out of the visible viewport.</p>
+<p>Fixes, roughly in order of preference:</p>
+<ul>
+<li>Explicitly wait for the intercepting element (overlay/modal) to become invisible before clicking, using <code>ExpectedConditions.invisibilityOf(...)</code>.</li>
+<li>Scroll the target element into view first: <code>((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);</code></li>
+<li>Wait for <code>elementToBeClickable</code> rather than just <code>visibilityOf</code> before attempting the click — clickable also checks the element isn't obscured.</li>
+<li>As a last resort, click via JavaScript (<code>arguments[0].click();</code>), which bypasses the interception check entirely — useful, but worth flagging that it also bypasses real-user click behavior, so it should be a deliberate fallback, not the default.</li>
+</ul>`
+      },
+      {
+        name:"shouldClearPostmanVariables",
+        q:"In Postman, how do you clear or remove variables after execution?",
+        why:"Checks API-testing hygiene — leftover variables between test runs are a common source of false positives/negatives in a Postman/Newman suite.",
+        answer:`<ul>
+<li><code>pm.environment.unset("varName")</code> — removes a single environment variable.</li>
+<li><code>pm.environment.clear()</code> — clears every variable in the active environment.</li>
+<li><code>pm.globals.unset("varName")</code> / <code>pm.globals.clear()</code> — the equivalent for global-scope variables.</li>
+<li><code>pm.collectionVariables.unset(...)</code> — for variables scoped to the collection rather than the environment.</li>
+</ul>
+<p>In practice, this is best added as a small <strong>teardown request</strong> at the end of a collection (Collection Runner executes requests top-to-bottom), running the clear calls in its "Tests" tab so a token or session variable set during the run doesn't leak into the next execution.</p>`
+      },
+      {
+        name:"shouldHandleApiAuthenticationInAutomation",
+        q:"How do you handle API authentication in automation?",
+        why:"Checks whether you can design a token lifecycle for a test suite, not just add a static header once and move on.",
+        answer:`<p>Depends on the scheme in use, but the pattern is the same: authenticate once, cache the credential, reuse it across the run.</p>
+<ul>
+<li><strong>Basic Auth</strong> — base64-encoded username:password in the <code>Authorization</code> header.</li>
+<li><strong>Bearer Token / OAuth2</strong> — fire a login/token request first, extract the token via JSON path, and inject it into an <code>Authorization: Bearer &lt;token&gt;</code> header for every subsequent call.</li>
+<li><strong>API Key</strong> — a static key sent as a header or query parameter, usually per-environment.</li>
+<li><strong>OAuth2 client-credentials flow</strong> — call the token endpoint with client id/secret, cache the token, and refresh it proactively before expiry rather than reacting to 401s mid-suite.</li>
+</ul>`,
+        code:{lang:"java", text:
+`RequestSpecification authSpec = new RequestSpecBuilder()
+    .setBaseUri(BASE_URL)
+    .setAuth(RestAssured.oauth2(getCachedOrFreshToken()))
+    .build();
+
+given().spec(authSpec)
+    .when().get("/accounts")
+    .then().statusCode(200);`},
+        answer2:`<p>In a parallel test suite, store the token in a <code>ThreadLocal</code> (or a shared cache with expiry checks) so concurrent threads don't race to re-authenticate or step on each other's session state.</p>`
+      },
+      {
+        name:"shouldExplainJmeterThreads",
+        q:"What are threads in JMeter and why are they important?",
+        why:"Performance-testing fundamentals — checks whether you understand what you're actually simulating, since this connects directly to load-test credibility.",
+        answer:`<p>A <strong>Thread Group</strong> in JMeter represents a pool of virtual users; each thread simulates one independent user executing the test plan concurrently with the others. The key configuration parameters:</p>
+<ul>
+<li><strong>Number of Threads (users)</strong> — how many concurrent virtual users to simulate.</li>
+<li><strong>Ramp-up Period</strong> — the time over which all threads are started. A short ramp-up on a high thread count creates an artificial connection spike that doesn't represent real traffic; a properly chosen ramp-up avoids that distortion.</li>
+<li><strong>Loop Count</strong> — how many times each thread repeats the test plan.</li>
+</ul>
+<p>Threads matter because they're what let you simulate realistic <strong>concurrency</strong> rather than sequential requests — measuring how the system behaves under simultaneous load (connection pool exhaustion, DB lock contention, response time degradation), which a single-threaded script can never surface. This is the same lever used to design a throughput sign-off test, e.g. tuning thread count and ramp-up to validate a target like 300 transactions/second.</p>`
+      },
+      {
+        name:"shouldExplainCaptchaAutomationLimits",
+        q:"Why CAPTCHAs cannot be automated and what alternatives are used.",
+        why:"Checks pragmatic judgment — a candidate who tries to \"solve\" CAPTCHA in automation is a red flag; the expected answer is knowing the right workaround instead.",
+        answer:`<p>CAPTCHA exists specifically to distinguish humans from automated agents — so reliably automating past it defeats its own purpose, typically violates the site's terms of service, and is a losing technical battle anyway: modern CAPTCHA (image challenges, audio challenges, behavioral scoring like reCAPTCHA v3) is actively engineered to detect and block scripted solvers, so any workaround is brittle and breaks the moment the vendor updates their model.</p>
+<p>The realistic alternatives used in test automation:</p>
+<ul>
+<li>Ask the dev team to <strong>disable CAPTCHA in test/QA environments</strong> via a feature flag, environment variable, or config toggle.</li>
+<li>Use a <strong>test-specific bypass token</strong> or whitelist test-environment IPs so CAPTCHA doesn't trigger for automated traffic.</li>
+<li>Use official <strong>test keys</strong> some CAPTCHA vendors provide for staging (e.g. Google's published reCAPTCHA test site/secret key pair, which always passes).</li>
+<li>Stub or mock the CAPTCHA verification service entirely in lower environments.</li>
+</ul>`
+      },
+      {
+        name:"shouldExplainCronInJenkins",
+        q:"What is the role of CRON expressions in Jenkins?",
+        why:"Basic CI scheduling knowledge — relevant to setting up nightly regression runs without manual triggering.",
+        answer:`<p>CRON expressions are used in Jenkins' <strong>"Build periodically"</strong> trigger to run a job on a time-based schedule — most commonly a nightly full regression run, or a weekly full-suite execution during low-traffic hours.</p>
+<p>Standard format is 5 fields: <code>MINUTE HOUR DAY-OF-MONTH MONTH DAY-OF-WEEK</code>. Jenkins adds one useful extension: <code>H</code> (hash), which spreads the exact trigger time across a range instead of firing every job at the literal same second — avoiding a "thundering herd" of jobs all hitting build agents simultaneously.</p>`,
+        code:{lang:"text", text:
+`H 2 * * *      # once daily, sometime near 2:00 AM (hashed offset)
+H/15 * * * *   # roughly every 15 minutes
+H 2 * * 1-5    # 2 AM, Monday through Friday only`}
+      },
+      {
+        name:"shouldDistinguishOverloadingAndOverriding",
+        q:"Difference between Method Overloading and Method Overriding.",
+        why:"Core OOP fundamentals — checks whether you understand compile-time vs runtime polymorphism, which comes up constantly in framework design discussions (e.g. Page Object method design).",
+        answer:`<ul>
+<li><strong>Overloading</strong> — same method name, different parameter list, within the same class (or a subclass adding a new variant). Resolved at <strong>compile time</strong> (static binding). Return type can differ, but the parameter list must.</li>
+<li><strong>Overriding</strong> — a subclass redefines a superclass method with the <em>exact same</em> signature. Resolved at <strong>runtime</strong> (dynamic binding / virtual dispatch), which is what enables polymorphism. The overriding method can't have a more restrictive access modifier, and <code>static</code>, <code>final</code>, and <code>private</code> methods can't be overridden.</li>
+</ul>`,
+        code:{lang:"java", text:
+`class Reporter {
+    // Overloading — same name, different params, compile-time resolved
+    void log(String msg) { System.out.println(msg); }
+    void log(String msg, int severity) { System.out.println(severity + ": " + msg); }
+}
+
+class BasePage {
+    void waitForLoad() { System.out.println("generic wait"); }
+}
+
+class LoginPage extends BasePage {
+    @Override
+    void waitForLoad() { System.out.println("wait for login form specifically"); } // Overriding
+}`}
+      },
+      {
+        name:"shouldDistinguishStaticAndDynamicBinding",
+        q:"Difference between Static Binding and Dynamic Binding.",
+        why:"Follows naturally from the overloading/overriding question — checks whether you understand the mechanism underneath, not just the vocabulary.",
+        answer:`<ul>
+<li><strong>Static binding</strong> — resolved at compile time, based on the <em>reference type</em>, not the actual object. Applies to <code>private</code>, <code>static</code>, and <code>final</code> methods, and to overload resolution.</li>
+<li><strong>Dynamic binding</strong> — resolved at runtime, based on the <em>actual object type</em>. Applies to overridden instance methods, via virtual method dispatch — this is what makes runtime polymorphism work.</li>
+</ul>`,
+        code:{lang:"java", text:
+`BasePage page = new LoginPage();
+page.waitForLoad();
+// Reference type is BasePage, but the JVM dispatches to LoginPage's
+// override at runtime -> prints "wait for login form specifically"
+// This is dynamic binding.`}
+      },
+      {
+        name:"shouldDistinguishComparableAndComparator",
+        q:"Difference between Comparable and Comparator.",
+        why:"Comes up in any sorting/reporting logic in a framework — checks whether you know when to modify a class vs when to keep sorting external to it.",
+        answer:`<ul>
+<li><strong>Comparable</strong> — implemented by the class itself, defines a single <strong>natural ordering</strong> via <code>compareTo(T o)</code>. A class can only have one natural order.</li>
+<li><strong>Comparator</strong> — a separate class or lambda, defines <strong>external, custom ordering</strong> via <code>compare(T o1, T o2)</code>. You can define as many comparators as you need without touching the original class, and they compose (<code>thenComparing</code>) for multi-field sorts.</li>
+</ul>`,
+        code:{lang:"java", text:
+`// Comparable — natural order baked into the class
+class Employee implements Comparable<Employee> {
+    int salary;
+    public int compareTo(Employee other) {
+        return Integer.compare(this.salary, other.salary);
+    }
+}
+
+// Comparator — external, multiple orderings possible
+List<Employee> employees = getEmployees();
+employees.sort(
+    Comparator.comparing((Employee e) -> e.department)
+              .thenComparing(e -> e.salary, Comparator.reverseOrder())
+);`}
+      },
+      {
+        name:"shouldListGoodTestCaseQualities",
+        q:"What are the key qualities of a good test case?",
+        why:"Fundamentals check on test design maturity — checks whether you write tests other people (and your future self) can actually maintain.",
+        answer:`<ul>
+<li><strong>Single objective</strong> — tests one thing, so a failure points unambiguously at one cause.</li>
+<li><strong>Clear, unique identifier and title</strong> — easy to reference in defect reports and traceability matrices.</li>
+<li><strong>Stated preconditions</strong> — exact starting state required, so it's reproducible by anyone.</li>
+<li><strong>Precise, reproducible steps</strong> — no ambiguity about what "do X" means.</li>
+<li><strong>Unambiguous expected result</strong> — a pass/fail call that doesn't require judgment.</li>
+<li><strong>Independent</strong> — doesn't rely on another test having run first or leaving specific state behind.</li>
+<li><strong>Traceable</strong> — maps back to a specific requirement or acceptance criterion.</li>
+<li><strong>Appropriately tagged</strong> — priority/severity, and grouped (smoke/sanity/regression) so it can be selectively run.</li>
+<li><strong>Covers both positive and negative/edge scenarios</strong> across the suite as a whole, not just the happy path.</li>
+</ul>`
+      },
+      {
+        name:"shouldDescribeEasyAndSafeLoginPage",
+        q:"What makes a Login page easy and safe for users?",
+        why:"Combines UX and security thinking in one question — checks whether you can reason about a feature from both a usability and a security-testing lens, which is exactly the SDET skillset.",
+        answer:`<p><strong>Easy (usability):</strong></p>
+<ul>
+<li>Clearly labeled fields with inline validation and specific, helpful error messages.</li>
+<li>A "show password" toggle and support for browser autofill (correct <code>autocomplete</code> attributes).</li>
+<li>A visible, working "Forgot password" link and an optional "Remember me."</li>
+<li>Minimal required fields, one clear primary call-to-action button, and clear loading/error states so the user always knows what's happening.</li>
+<li>Accessible: full keyboard navigation, proper ARIA labels, sufficient color contrast.</li>
+</ul>
+<p><strong>Safe (security) — this is where an SDET should go deeper than a typical UX answer:</strong></p>
+<ul>
+<li>Enforced HTTPS/TLS for the entire flow; password field always masked.</li>
+<li>No sensitive data ever passed via URL/GET parameters.</li>
+<li>Passwords stored hashed and salted (e.g. bcrypt) — never in plaintext or reversibly encrypted.</li>
+<li>Rate limiting / progressive delays / account lockout after repeated failed attempts, and CAPTCHA as a secondary control against automated credential stuffing.</li>
+<li>Optional MFA/2FA for an additional authentication factor.</li>
+<li>Secure session management — <code>HttpOnly</code> and <code>Secure</code> cookie flags, reasonable session timeout, CSRF protection on the login form.</li>
+<li><strong>Generic error messages</strong> — "invalid username or password," never "user not found," to avoid leaking which usernames exist (user enumeration).</li>
+<li>Server-side input validation/sanitization to prevent SQL injection and XSS through the login fields.</li>
+</ul>
+<p>As a test angle: this question is really an invitation to describe your login-page test charter — functional + accessibility + security in one answer signals senior-level breadth.</p>`
+      }
+    ]
+  },
+  {
+    round:3, roundLabel:"Bonus · API, Git & DevOps",
+    className:"ApiAndToolsTest",
+    icon:"code",
+    methods:[
+      {
+        name:"shouldDistinguishRestAndSoap",
+        q:"What is the difference between REST and SOAP APIs, and how does testing differ?",
+        why:"Checks API fundamentals beyond just knowing REST — some BFSI systems still run SOAP/XML services on the backend, so knowing both is a real differentiator.",
+        answer:`<ul>
+<li><strong>REST</strong> — architectural style over HTTP, resource-based URLs, typically JSON, stateless, uses standard HTTP verbs (GET/POST/PUT/DELETE) and status codes to convey meaning.</li>
+<li><strong>SOAP</strong> — a strict protocol, XML-only payloads wrapped in an envelope, has a formal contract (WSDL) defining every operation and data type, supports built-in standards for security (WS-Security) and transactions.</li>
+</ul>
+<p>Testing differs mainly in tooling and rigor: REST testing (Postman/REST Assured) validates JSON schema, status codes, and headers, and is comparatively lightweight to automate. SOAP testing (SoapUI, or REST Assured's XML support) validates against the WSDL contract, checks XML structure/namespaces, and often needs stricter schema (XSD) validation since the contract is far more rigid than REST's looser JSON conventions.</p>`
+      },
+      {
+        name:"shouldValidateJsonSchemaInRestAssured",
+        q:"How do you validate a JSON response schema in REST Assured?",
+        why:"Checks whether you validate structure and types, not just individual field values — schema validation catches breaking API changes that field-by-field assertions miss.",
+        answer:`<p>Use REST Assured's <code>matchesJsonSchemaInClasspath()</code>, backed by a JSON Schema file describing the expected structure, required fields, and types:</p>`,
+        code:{lang:"java", text:
+`given()
+    .when().get("/accounts/1001")
+    .then()
+    .statusCode(200)
+    .body(matchesJsonSchemaInClasspath("schemas/account-schema.json"));`},
+        answer2:`<p>This catches structural regressions — a field silently becoming nullable, a type changing from string to number, a required field disappearing — that individual <code>.body("field", equalTo(...))</code> assertions would miss entirely. Schema files are typically generated once from a known-good response and then version-controlled alongside the tests.</p>`
+      },
+      {
+        name:"shouldExplainHttpStatusCodesForTesting",
+        q:"What are common HTTP status codes and what do they mean for an API tester?",
+        why:"Basic but frequently asked — a surprising number of candidates can't cleanly explain the difference between a 401 and a 403, which are easy to conflate in test assertions.",
+        answer:`<ul>
+<li><strong>2xx Success</strong> — <code>200 OK</code> (successful GET/PUT), <code>201 Created</code> (successful POST that created a resource), <code>204 No Content</code> (success with no response body, common on DELETE).</li>
+<li><strong>3xx Redirection</strong> — <code>301</code>/<code>302</code> resource moved; relevant when testing redirects after login or deprecated endpoints.</li>
+<li><strong>4xx Client Error</strong> — <code>400 Bad Request</code> (malformed input), <code>401 Unauthorized</code> (missing/invalid authentication — you are not who you say you are), <code>403 Forbidden</code> (authenticated but not permitted — you are who you say you are, but can't do this), <code>404 Not Found</code>, <code>409 Conflict</code> (e.g. duplicate resource creation).</li>
+<li><strong>5xx Server Error</strong> — <code>500 Internal Server Error</code>, <code>502/503/504</code> gateway/availability issues — these should almost never appear in a healthy test run and are worth failing the build on.</li>
+</ul>
+<p>As a tester, the 401 vs 403 distinction specifically is worth being precise about in interviews — it's a very common trip-up.</p>`
+      },
+      {
+        name:"shouldHandleFlakyTestsInCiPipeline",
+        q:"How do you handle flaky tests in a CI pipeline?",
+        why:"Real operational maturity question — every automation lead eventually deals with this, and interviewers want a process answer, not just \"add more waits.\"",
+        answer:`<ul>
+<li><strong>Diagnose before retrying</strong> — check whether the flakiness is a genuine environment/timing issue (race condition, network latency) versus a real intermittent product bug; retrying blindly can hide real bugs.</li>
+<li><strong>Fix the root cause first</strong> — usually a missing explicit wait, a shared test data conflict, or a test-order dependency, not something a retry mechanism should paper over.</li>
+<li><strong>Quarantine, don't ignore</strong> — move a genuinely flaky test into a separate "quarantine" suite that doesn't block the pipeline but still runs and is tracked, rather than silently skipping it.</li>
+<li><strong>Controlled retry as a last resort</strong> — a bounded retry-on-failure (e.g. TestNG's <code>IRetryAnalyzer</code>, max 1–2 retries) for tests known to be environment-sensitive, with retry counts tracked and reported so silent flakiness doesn't accumulate unnoticed.</li>
+<li><strong>Track flakiness as a metric</strong> — a test that needs a retry to pass should still be visible in reporting, not treated identically to a clean pass.</li>
+</ul>`
+      },
+      {
+        name:"shouldExplainTestcontainersUsage",
+        q:"What is Testcontainers and why would you use it in automation?",
+        why:"Checks exposure to modern integration-testing practices — increasingly expected for SDETs validating services with real database/queue dependencies.",
+        answer:`<p><strong>Testcontainers</strong> is a Java library that spins up real, disposable Docker containers (a database, Kafka, Redis, etc.) programmatically for the duration of a test run, then tears them down automatically.</p>
+<p>Why it matters over mocking: it lets you test against a <em>real</em> Postgres/MySQL/Kafka instance instead of an in-memory fake or a shared, stateful test environment — catching real driver behavior, real SQL dialect issues, and real serialization behavior that a mock would never surface. It also makes integration tests reproducible and isolated: every test run gets a clean container, so there's no shared-state pollution between runs or between parallel test threads.</p>`,
+        code:{lang:"java", text:
+`@Testcontainers
+class AccountRepositoryTest {
+
+    @Container
+    static PostgreSQLContainer<?> postgres =
+        new PostgreSQLContainer<>("postgres:15").withDatabaseName("test_db");
+
+    @Test
+    void shouldPersistAccount() {
+        // JDBC URL/creds pulled from the running container
+        String jdbcUrl = postgres.getJdbcUrl();
+        // ... run real queries against a real, disposable Postgres instance
+    }
+}`}
+      },
+      {
+        name:"shouldExplainGitRebaseVsMerge",
+        q:"Explain git rebase vs git merge.",
+        why:"Git fluency is a common practical gap for SDETs — interviewers use this to check whether you understand history implications, not just the two commands.",
+        answer:`<ul>
+<li><strong>git merge</strong> — combines two branches by creating a new "merge commit" that has two parents. Preserves the full, true history of both branches exactly as it happened, including all the messy intermediate commits.</li>
+<li><strong>git rebase</strong> — replays your branch's commits one by one on top of the target branch's latest commit, producing a linear history with no merge commit. Rewrites commit hashes in the process.</li>
+</ul>
+<p>Trade-off: merge is safer (never rewrites history, safe on shared/pushed branches) but produces a noisier history with merge commits everywhere. Rebase gives a clean, linear, easy-to-read history — but because it rewrites commit hashes, you should <strong>never rebase a branch that others have already pulled from</strong>, since it forces everyone downstream to reconcile diverging histories.</p>
+<p>Common team convention: rebase your own feature branch on <code>main</code> before opening a PR (clean history), but merge (not rebase) when integrating the PR into <code>main</code> itself.</p>`
+      },
+      {
+        name:"shouldResolveMergeConflictDuringRebase",
+        q:"How do you resolve a merge conflict during a rebase?",
+        why:"Practical, hands-on Git question — checks whether you've actually done this under pressure, not just read the theory.",
+        answer:`<p>When <code>git rebase</code> hits a conflict, it pauses mid-replay on the specific commit that conflicts:</p>`,
+        code:{lang:"text", text:
+`git rebase main
+# CONFLICT (content): Merge conflict in LoginPage.java
+
+# 1. Open the conflicted file(s), resolve the <<<<<<< / ======= / >>>>>>> markers
+# 2. Stage the resolved file
+git add LoginPage.java
+
+# 3. Continue the rebase (repeats for each conflicting commit)
+git rebase --continue
+
+# If it goes badly, bail out entirely and return to the pre-rebase state:
+git rebase --abort`},
+        answer2:`<p>The key thing to explain: unlike a merge conflict (resolved once), a rebase can produce a conflict <em>per replayed commit</em>, since each commit is applied individually — so you may need to resolve the same logical conflict more than once if several commits touch the same lines.</p>`
+      },
+      {
+        name:"shouldDistinguishDockerImageAndContainer",
+        q:"Explain the difference between a Docker image and a container.",
+        why:"Basic containerization vocabulary — increasingly assumed knowledge for SDETs running Selenium Grid or Testcontainers-based suites.",
+        answer:`<ul>
+<li><strong>Image</strong> — a read-only, versioned template/blueprint: the filesystem, dependencies, and default configuration needed to run something, built in layers from a <code>Dockerfile</code>.</li>
+<li><strong>Container</strong> — a running (or stopped) <em>instance</em> of an image, with its own writable layer on top and its own process/network namespace. You can start many containers from the same image, each isolated from the others.</li>
+</ul>
+<p>Analogy-free way to put it in an interview: an image is like a compiled class, a container is like an object instantiated from it — one blueprint, many independent running instances.</p>`
+      },
+      {
+        name:"shouldTestMicroservicesEndToEnd",
+        q:"How would you test a microservices-based application end-to-end?",
+        why:"Architecture-aware testing strategy question — checks whether you know that true end-to-end testing of microservices is expensive and should be used sparingly, not as the default approach.",
+        answer:`<ul>
+<li><strong>Test each service in isolation first</strong> — unit and component-level tests per service, with its own dependencies mocked or run via Testcontainers.</li>
+<li><strong>Contract tests between service pairs</strong> — verify that a consumer and provider agree on the API shape, without needing every service running simultaneously (see contract testing below).</li>
+<li><strong>A thin layer of true end-to-end tests</strong> — a small number of critical business flows (e.g. "place an order" spanning inventory, payment, and notification services) run against a fully deployed environment, kept deliberately small because they're slow, expensive to maintain, and fail for reasons unrelated to the flow being tested (any one service being down breaks the whole test).</li>
+<li><strong>Reconciliation/async validation</strong> — for services communicating via events/queues (Kafka), validate eventual consistency with polling-based assertions rather than fixed sleeps.</li>
+</ul>
+<p>The core principle to state explicitly: push as much coverage as possible down to the service and contract level, and treat full end-to-end tests as an expensive last-mile check on a handful of critical journeys — this is the modern alternative to the old "test everything through the UI" approach.</p>`
+      },
+      {
+        name:"shouldExplainContractTesting",
+        q:"What is contract testing (e.g. Pact), and when would you use it over end-to-end tests?",
+        why:"More advanced microservices testing question — signals whether you're current on modern testing strategy for distributed systems, a strong senior-level differentiator.",
+        answer:`<p><strong>Contract testing</strong> verifies that a consumer service and a provider service agree on the shape of their API interaction — without either service needing the other actually running. A tool like <strong>Pact</strong> works by: the consumer team writes tests defining what they expect from the provider, generating a "contract" file; that contract is then replayed against the real provider in its own pipeline to verify it actually honors those expectations.</p>
+<p>Use it over full end-to-end tests when:</p>
+<ul>
+<li>You want to catch breaking API changes <strong>before</strong> deployment, without spinning up the entire system.</li>
+<li>Teams own services independently and can't easily run every dependency locally or in CI.</li>
+<li>You want fast feedback — contract tests run in seconds, not the minutes a full environment spin-up takes.</li>
+</ul>
+<p>It doesn't replace end-to-end tests entirely — it removes the need for most of them, leaving only a small number of true cross-service journey tests for what contract testing can't cover (actual business-logic correctness across the full flow).</p>`
+      }
+    ]
+  },
+  {
+    round:3, roundLabel:"Bonus · Java Internals & Practices",
+    className:"JavaAndPracticesTest",
+    icon:"layers",
+    methods:[
+      {
+        name:"shouldExplainSingletonPattern",
+        q:"Explain the Singleton design pattern and where you'd use it in a framework.",
+        why:"Design patterns come up constantly in framework-architecture discussions — Singleton specifically because it's the textbook pattern behind driver management.",
+        answer:`<p><strong>Singleton</strong> ensures a class has exactly one instance for the entire application/session, with a global access point to it. In an automation framework, the classic use case is the <strong>WebDriver instance</strong> — you don't want multiple driver objects fighting over the same browser session.</p>`,
+        code:{lang:"java", text:
+`public class DriverManager {
+    private static final ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+
+    private DriverManager() {} // prevent external instantiation
+
+    public static WebDriver getDriver() {
+        if (driver.get() == null) {
+            driver.set(new ChromeDriver());
+        }
+        return driver.get();
+    }
+
+    public static void quitDriver() {
+        if (driver.get() != null) {
+            driver.get().quit();
+            driver.remove();
+        }
+    }
+}`},
+        answer2:`<p>Worth noting in interview: a naive Singleton (one static driver field, no <code>ThreadLocal</code>) breaks under parallel execution, since every thread would share the same browser session. Pairing Singleton with <code>ThreadLocal</code> gives you "one driver per thread" instead of "one driver globally" — which is what real parallel Selenium frameworks need.</p>`
+      },
+      {
+        name:"shouldExplainFactoryPattern",
+        q:"Explain the Factory design pattern and its use in framework design.",
+        why:"Pairs naturally with the Singleton question — checks whether you understand object-creation patterns beyond just naming them.",
+        answer:`<p><strong>Factory</strong> centralizes object creation logic behind a method, so calling code asks for "a browser" or "a page" without knowing the concrete class being instantiated. In a framework, this is exactly how you support multiple browsers or environments without <code>if/else</code> chains scattered across every test.</p>`,
+        code:{lang:"java", text:
+`public class DriverFactory {
+    public static WebDriver createDriver(String browser) {
+        switch (browser.toLowerCase()) {
+            case "chrome":  return new ChromeDriver();
+            case "firefox": return new FirefoxDriver();
+            case "edge":    return new EdgeDriver();
+            default: throw new IllegalArgumentException("Unsupported browser: " + browser);
+        }
+    }
+}`},
+        answer2:`<p>Benefit: adding a new browser means changing one factory method, not every test that instantiates a driver directly. It also makes the framework config-driven — the browser name can come from a properties file or a CI parameter, and the factory resolves it at runtime.</p>`
+      },
+      {
+        name:"shouldExplainBuilderPattern",
+        q:"Explain the Builder pattern and its use in test data creation.",
+        why:"Test data setup is a real pain point in large suites — Builder is the standard fix for objects with many optional fields, and interviewers check if you've used it deliberately.",
+        answer:`<p><strong>Builder</strong> constructs a complex object step by step through chained method calls, instead of a constructor with a long, error-prone parameter list. It's especially useful for test data objects that have many optional fields, since each test can set only what it actually cares about.</p>`,
+        code:{lang:"java", text:
+`Customer testCustomer = new CustomerBuilder()
+    .withName("Jane Doe")
+    .withAccountType("SAVINGS")
+    .withCreditScore(720)
+    // fields not set here fall back to sensible defaults inside the builder
+    .build();`},
+        answer2:`<p>Why this matters for test data specifically: without a builder, every test that creates a <code>Customer</code> needs to know and pass every constructor argument, even ones irrelevant to what it's testing — a one-field requirement change then breaks dozens of call sites. A builder isolates that.</p>`
+      },
+      {
+        name:"shouldDistinguishEqualsOperatorAndMethod",
+        q:"What is the difference between == and .equals() in Java?",
+        why:"Extremely common Java fundamentals trip-up — checks whether you actually understand reference vs value comparison, not just that \"equals is for strings.\"",
+        answer:`<ul>
+<li><strong>==</strong> — compares references for objects (are these two variables pointing at the exact same object in memory?), and compares actual values for primitives.</li>
+<li><strong>.equals()</strong> — a method that compares logical/value equality, as defined by the class's own implementation. The default <code>Object.equals()</code> just falls back to <code>==</code> unless a class overrides it (as <code>String</code>, wrapper classes, and most well-designed domain classes do).</li>
+</ul>`,
+        code:{lang:"java", text:
+`String a = new String("test");
+String b = new String("test");
+
+System.out.println(a == b);       // false — different objects in memory
+System.out.println(a.equals(b));  // true  — same character sequence
+
+String c = "test";
+String d = "test";
+System.out.println(c == d);       // true — both point to the same interned literal in the String pool`}
+      },
+      {
+        name:"shouldExplainStringImmutability",
+        q:"Explain String immutability in Java and why it matters for performance.",
+        why:"Checks understanding of a core JVM design decision that most Java developers use daily without knowing why it exists.",
+        answer:`<p>A <code>String</code> object in Java, once created, can never be modified — any operation that looks like it's changing a string (concatenation, <code>replace()</code>, <code>substring()</code>) actually creates a <em>new</em> String object and leaves the original untouched.</p>
+<p>Why it matters for performance: this immutability is what enables the <strong>String pool (intern pool)</strong> — since a String can never change, the JVM can safely let multiple references share the exact same object for identical literal values (as shown in the <code>==</code> example above), saving significant memory for a language where strings are used constantly.</p>
+<p>The performance trade-off to mention: repeated concatenation in a loop (<code>result += item</code>) creates a new String object on every iteration, which is why <code>StringBuilder</code> (mutable, resizable internal buffer) is the correct tool for building a string incrementally rather than plain <code>String</code> concatenation.</p>`,
+        code:{lang:"java", text:
+`// Inefficient: creates a new String object on every loop iteration
+String result = "";
+for (String s : items) {
+    result += s;
+}
+
+// Efficient: mutates one internal buffer
+StringBuilder sb = new StringBuilder();
+for (String s : items) {
+    sb.append(s);
+}
+String result2 = sb.toString();`}
+      },
+      {
+        name:"shouldDistinguishArrayListAndLinkedList",
+        q:"What is the difference between ArrayList and LinkedList?",
+        why:"Common Collections follow-up to the HashMap/TreeMap question — checks whether you know when the underlying data structure actually matters for performance.",
+        answer:`<ul>
+<li><strong>ArrayList</strong> — backed by a resizable array. O(1) random access (<code>get(index)</code>), but O(n) insertion/removal in the middle (everything after the index has to shift).</li>
+<li><strong>LinkedList</strong> — backed by a doubly linked list of nodes. O(1) insertion/removal once you have a reference to the position, but O(n) random access (has to walk the list from an end).</li>
+</ul>
+<p>In practice: <code>ArrayList</code> is the right default for almost everything, including most automation test-data lists — you're usually iterating or indexing, not doing heavy midlist insertion. <code>LinkedList</code> only wins when you're frequently inserting/removing at arbitrary positions and rarely need random access, which is uncommon in typical test code.</p>`
+      },
+      {
+        name:"shouldExplainThreadLocalInParallelExecution",
+        q:"Explain multithreading challenges in parallel test execution, and how ThreadLocal helps.",
+        why:"Directly relevant to any framework claiming parallel execution — checks whether you actually understand the concurrency problem, not just that you enabled a TestNG parallel flag.",
+        answer:`<p>When TestNG (or any runner) executes tests in parallel, multiple threads run test methods simultaneously. The core challenge: if the framework has a single shared <code>WebDriver</code> instance (or any shared mutable state — a shared data map, a shared report writer), threads will interfere with each other — one thread navigating the browser while another thread is mid-assertion on a completely different page, causing intermittent, hard-to-reproduce failures.</p>
+<p><strong>ThreadLocal</strong> solves this by giving each thread its own independent copy of a variable — so instead of one shared <code>WebDriver</code>, each thread gets its own driver instance, invisible to and unaffected by the other threads.</p>`,
+        code:{lang:"java", text:
+`public class DriverManager {
+    private static final ThreadLocal<WebDriver> tlDriver =
+        ThreadLocal.withInitial(ChromeDriver::new);
+
+    public static WebDriver get() { return tlDriver.get(); }
+    public static void remove() { tlDriver.get().quit(); tlDriver.remove(); }
+}`},
+        answer2:`<p>Critical detail worth mentioning: you must call <code>.remove()</code> at the end of each test (e.g. in an <code>@AfterMethod</code>), otherwise the ThreadLocal value lingers when the thread is reused from a pool for a later test, leaking state between unrelated tests.</p>`
+      },
+      {
+        name:"shouldExplainIdempotencyInApis",
+        q:"What is idempotency in APIs, and why does it matter for testing PUT/DELETE?",
+        why:"API design fundamentals question — checks whether you design assertions around the actual HTTP contract rather than just checking a happy-path status code once.",
+        answer:`<p>An operation is <strong>idempotent</strong> if performing it multiple times has the exact same effect as performing it once. By HTTP specification: <code>GET</code>, <code>PUT</code>, and <code>DELETE</code> are supposed to be idempotent; <code>POST</code> and <code>PATCH</code> are not.</p>
+<p>Why it matters for testing:</p>
+<ul>
+<li><strong>PUT</strong> — calling it twice with the same payload should leave the resource in the same final state both times. A good test: call PUT, then call it again with identical data, and assert the response/resource is unchanged the second time, not that it errors or duplicates something.</li>
+<li><strong>DELETE</strong> — deleting an already-deleted resource should not cause an error or a different side effect the second time — many APIs correctly return <code>204</code> the first time and <code>404</code> the second, which is still consistent with idempotency (the end state — resource gone — is the same either way).</li>
+</ul>
+<p>A common bug this catches: a <code>POST</code>-like side effect hiding inside a nominally idempotent endpoint — e.g. a PUT that increments a counter or sends a duplicate notification on every call instead of just setting state — which only a repeat-call test will reveal.</p>`
+      },
+      {
+        name:"shouldTestForSqlInjectionAsQa",
+        q:"How do you test for SQL injection vulnerabilities as a QA engineer?",
+        why:"Security-testing awareness — checks whether you go beyond functional correctness into basic security validation, expected of a senior BFSI-domain SDET.",
+        answer:`<ul>
+<li><strong>Boundary/negative input testing</strong> — submit classic injection payloads into every input field and query parameter that reaches a database, e.g. <code>' OR '1'='1</code>, <code>'; DROP TABLE users;--</code>, and confirm the application rejects or safely escapes them rather than executing them.</li>
+<li><strong>Check for parameterized queries</strong> — where you have code visibility, verify the application uses prepared statements/parameterized queries (or an ORM) rather than raw string concatenation to build SQL.</li>
+<li><strong>Error-message inspection</strong> — a vulnerable app often leaks a raw SQL error (revealing table/column names) when fed malformed input; a well-secured app returns a generic error instead.</li>
+<li><strong>Automated scanning</strong> — tools like OWASP ZAP or Burp Suite can systematically fuzz endpoints with injection payloads as part of a security-testing pass, beyond manual spot-checks.</li>
+</ul>
+<p>Important scope note for an interview: functional QA typically <em>flags</em> this risk and does basic input-validation checks; deep penetration testing is usually a dedicated security team's responsibility — the SDET's job is knowing enough to catch the obvious gaps and escalate the rest.</p>`
+      },
+      {
+        name:"shouldExplainQaRoleInAgileScrum",
+        q:"What is the Agile Scrum process, and what's a QA's role in sprint ceremonies?",
+        why:"Process/soft-skills question in a techno-managerial round — checks whether you function well inside a team's delivery rhythm, not just whether you can write tests.",
+        answer:`<p>Scrum organizes work into fixed-length <strong>sprints</strong> (commonly 2 weeks), structured around a small set of ceremonies:</p>
+<ul>
+<li><strong>Sprint Planning</strong> — QA reviews upcoming stories for testability, flags missing/ambiguous acceptance criteria before commitment, and estimates test effort alongside dev estimates.</li>
+<li><strong>Daily Standup</strong> — QA reports test progress, blockers (e.g. environment down, a story not yet dev-complete enough to test), and coordinates on what's ready to test that day.</li>
+<li><strong>Backlog Refinement</strong> — QA helps clarify acceptance criteria and identify edge cases early, before a story even enters a sprint — the earlier ambiguity is caught, the cheaper it is to fix.</li>
+<li><strong>Sprint Review/Demo</strong> — QA may demo tested functionality or confirm what's genuinely "done" (tested, not just coded) versus still in progress.</li>
+<li><strong>Retrospective</strong> — QA raises process issues specific to testing — e.g. stories consistently arriving too late in the sprint to test properly, or automation debt accumulating — and proposes concrete process fixes.</li>
+</ul>
+<p>The larger point worth making explicitly: in a healthy Agile team, QA isn't a phase that happens after development — it's involved from planning through retro, shifting testing left rather than being a bottleneck at the end of the sprint.</p>`
+      }
+    ]
+  },
+  {
+    round:3, roundLabel:"Bonus · Framework & Test Design Deep-Dive",
+    className:"FrameworkInternalsTest",
+    icon:"grid",
+    methods:[
+      {
+        name:"shouldExplainTestNgDataProvider",
+        q:"Explain TestNG's DataProvider and how you'd use it for data-driven testing.",
+        why:"Checks whether you can decouple test logic from test data cleanly, rather than hardcoding values or duplicating near-identical test methods.",
+        answer:`<p><code>@DataProvider</code> is a TestNG annotation on a method that returns a 2D array (or an <code>Iterator</code>) of parameter sets. A test method referencing that provider via <code>@Test(dataProvider = "...")</code> runs once per row, with each row's values injected as method arguments — turning one test method into N test executions without duplicating code.</p>`,
+        code:{lang:"java", text:
+`@DataProvider(name = "loginData")
+public Object[][] loginData() {
+    return new Object[][] {
+        {"validUser", "correctPass", true},
+        {"validUser", "wrongPass", false},
+        {"", "correctPass", false}
+    };
+}
+
+@Test(dataProvider = "loginData")
+public void shouldValidateLogin(String user, String pass, boolean expectedSuccess) {
+    boolean result = loginPage.login(user, pass);
+    Assert.assertEquals(result, expectedSuccess);
+}`},
+        answer2:`<p>For larger data sets, the provider method typically reads from an external source (Excel/CSV/JSON) instead of hardcoding the array, keeping test data editable without touching code. <code>@DataProvider</code> also supports a <code>parallel = true</code> attribute to run each data row concurrently.</p>`
+      },
+      {
+        name:"shouldExplainTestngXmlPurpose",
+        q:"What is the purpose of testng.xml and what can you configure through it?",
+        why:"Checks whether you can orchestrate a real suite beyond individual @Test methods — this is where suite-level structure and CI parameters actually live.",
+        answer:`<p><code>testng.xml</code> is the suite definition file — it controls <em>what runs, how, and with what configuration</em>, separate from the test code itself. Common things configured through it:</p>
+<ul>
+<li><strong>Suite/test grouping</strong> — which classes and <code>&lt;groups&gt;</code> (e.g. smoke, regression) to include or exclude in a given run.</li>
+<li><strong>Parallel execution</strong> — <code>parallel="methods"</code> / <code>"classes"</code> / <code>"tests"</code> and <code>thread-count</code>, controlling concurrency at different granularities.</li>
+<li><strong>Listeners</strong> — registering suite-wide listeners (screenshot-on-failure, retry analyzers, reporting hooks) without annotating every class.</li>
+<li><strong>Parameters</strong> — passing environment or config values (base URL, browser) into tests via <code>&lt;parameter&gt;</code>, readable with <code>@Parameters</code> in test methods.</li>
+</ul>
+<p>In CI, different XML files (<code>smoke.xml</code>, <code>regression.xml</code>) are usually maintained so the same codebase can run different slices of the suite from the pipeline without changing any test code.</p>`
+      },
+      {
+        name:"shouldExplainPageFactoryVsManualLocators",
+        q:"Explain Page Factory (@FindBy) vs manual locators (driver.findElement) in Selenium.",
+        why:"Checks whether you understand the lazy-initialization mechanics behind Page Factory, not just that it's \"the annotation way\" of writing page objects.",
+        answer:`<ul>
+<li><strong>Manual locators</strong> — call <code>driver.findElement(By...)</code> directly inside each method, locating the element fresh every time it's used.</li>
+<li><strong>Page Factory (@FindBy)</strong> — declares locators as annotated fields, then <code>PageFactory.initElements(driver, this)</code> uses a dynamic proxy so the element is actually located lazily, the moment it's first interacted with — not at object construction time.</li>
+</ul>`,
+        code:{lang:"java", text:
+`public class LoginPage {
+    @FindBy(id = "username")
+    private WebElement usernameField;
+
+    public LoginPage(WebDriver driver) {
+        PageFactory.initElements(driver, this);
+    }
+
+    public void enterUsername(String user) {
+        usernameField.sendKeys(user); // located here, not at construction
+    }
+}`},
+        answer2:`<p>Practical trade-off worth stating: Page Factory's proxy-based laziness is convenient, but it re-locates the element on every interaction (so it self-heals after a page navigation), while a manually cached <code>WebElement</code> reference can go stale after a DOM refresh. Many modern frameworks (and most of Playwright's API) skip Page Factory in favor of explicit locator methods precisely to keep the "when is this element located" behavior fully visible and controllable.</p>`
+      },
+      {
+        name:"shouldHandleStaleElementReferenceException",
+        q:"What is a StaleElementReferenceException and how do you handle it?",
+        why:"One of the most common real-world Selenium exceptions — checks whether you understand *why* it happens, since the fix is different depending on the cause.",
+        answer:`<p>Thrown when a previously located <code>WebElement</code> reference no longer exists in the current DOM — the page (or just that part of it) was reloaded, re-rendered, or navigated away from after the element was found, so the old reference now points at nothing.</p>
+<p>Handling it:</p>
+<ul>
+<li><strong>Re-locate instead of caching</strong> — avoid storing a <code>WebElement</code> across actions that might trigger a DOM refresh (an AJAX reload, a SPA route change); re-find it right before use instead.</li>
+<li><strong>Wrap with an explicit wait + retry</strong> — wait for <code>ExpectedConditions.refreshed(ExpectedConditions.visibilityOfElementLocated(locator))</code>, which re-locates and re-checks in one step.</li>
+<li><strong>Prefer Page Factory or a "locate-on-use" pattern</strong> over holding long-lived element references across multiple actions, for exactly this reason.</li>
+</ul>`
+      },
+      {
+        name:"shouldPerformCrossBrowserTesting",
+        q:"How do you perform cross-browser testing, and what challenges come with it?",
+        why:"Checks practical experience running the same suite across multiple browser engines, not just \"I ran it in Chrome.\"",
+        answer:`<p>Typically implemented by parameterizing the browser choice — via the driver factory pattern — and running the same suite against Chrome, Firefox, Edge, and Safari, either sequentially or in parallel via a Selenium Grid or a cloud grid (BrowserStack/Sauce Labs) that provides many browser/OS combinations without maintaining local machines for each.</p>
+<p>Common challenges:</p>
+<ul>
+<li><strong>Locator/behavior inconsistencies</strong> — an XPath or CSS selector that works in Chrome may behave differently in Safari's rendering engine; date pickers and file uploads are especially inconsistent across browsers.</li>
+<li><strong>Timing differences</strong> — different browsers render and execute JS at different speeds, so a wait tuned for Chrome may be too short for Firefox — reinforces why explicit/fluent waits (not fixed sleeps) matter.</li>
+<li><strong>Driver/version management</strong> — keeping browser drivers in sync with actual installed browser versions, usually solved with a driver manager library (e.g. WebDriverManager) that auto-resolves the correct driver binary.</li>
+<li><strong>Grid infrastructure cost</strong> — running the full matrix on every commit is expensive; a common strategy is running the full cross-browser matrix only on a nightly/release build, and just the primary browser on every PR.</li>
+</ul>`
+      },
+      {
+        name:"shouldExplainMavenLifecyclePhases",
+        q:"What is the difference between Maven's test, package, and install lifecycle phases?",
+        why:"Basic build-tool fluency — checks whether you understand what actually happens when a CI job runs `mvn test` vs `mvn install`.",
+        answer:`<p>Maven phases run in a fixed sequence — invoking a later phase always runs every phase before it too:</p>
+<ul>
+<li><strong>test</strong> — compiles the code and runs unit/automation tests (via Surefire). This is the phase a CI pipeline typically runs to execute the automation suite.</li>
+<li><strong>package</strong> — everything <code>test</code> does, plus bundles the compiled code into a distributable artifact (a JAR/WAR).</li>
+<li><strong>install</strong> — everything <code>package</code> does, plus copies that artifact into the local <code>.m2</code> repository, making it available as a dependency for other local projects.</li>
+</ul>
+<p>For a pure test-automation project (not producing a library other projects depend on), <code>mvn test</code> is usually all a CI job needs — running <code>install</code> is unnecessary overhead unless something downstream actually consumes the built artifact.</p>`
+      },
+      {
+        name:"shouldExplainTestNgAnnotationScopes",
+        q:"Explain the difference between @BeforeMethod, @BeforeClass, and @BeforeSuite in TestNG.",
+        why:"Checks whether you place setup/teardown logic at the right granularity — a common source of slow or state-leaking suites is getting this wrong.",
+        answer:`<ul>
+<li><strong>@BeforeSuite</strong> — runs once before the entire suite (all classes in <code>testng.xml</code>). Used for expensive, truly global setup — e.g. starting a Selenium Grid hub, or a one-time environment health check.</li>
+<li><strong>@BeforeClass</strong> — runs once before the first test method in a given class. Used for setup shared by every test in that class — e.g. logging in once if every test in the class needs an authenticated session.</li>
+<li><strong>@BeforeMethod</strong> — runs before <em>every</em> individual <code>@Test</code> method. Used for per-test isolation — e.g. resetting to a known starting page, so tests don't depend on execution order or leak state into each other.</li>
+</ul>
+<p>Rule of thumb for the trade-off: the higher up you put shared setup (Suite > Class > Method), the faster the suite runs, but the more risk of one test's leftover state silently affecting another — @BeforeMethod is the safest default for true test independence, and you deliberately move setup higher only when you've confirmed it's genuinely stateless or read-only.</p>`
+      },
+      {
+        name:"shouldExplainStructuredLoggingImportance",
+        q:"What is Log4j and why is structured logging important in an automation framework?",
+        why:"Checks whether you think about debuggability of your own framework, not just of the application under test.",
+        answer:`<p><strong>Log4j</strong> (or Logback) is a Java logging library that lets a framework write leveled, structured log output (DEBUG/INFO/WARN/ERROR) to configurable destinations — console, file, or a log aggregation system — instead of scattering raw <code>System.out.println</code> calls through the code.</p>
+<p>Why it matters for an automation framework specifically: when a test fails in CI, you're rarely sitting in front of the browser watching it happen — a good log trail (which step executed, what locator was used, what the actual vs expected value was, timestamps) is often the only way to diagnose a failure after the fact, especially for intermittent/flaky failures that won't reproduce locally.</p>
+<p>Structured logging (consistent format, log levels, contextual fields like test name/thread id) also makes it possible to programmatically parse logs later — e.g. to correlate a specific failure with a specific thread in a parallel run, which plain <code>println</code> output makes nearly impossible to untangle.</p>`
+      },
+      {
+        name:"shouldExplainGraphQlTestingDifferences",
+        q:"Explain GraphQL and how testing it differs from testing REST.",
+        why:"Increasingly common in modern BFSI/fintech backends — checks whether your API testing knowledge extends past pure REST.",
+        answer:`<p><strong>GraphQL</strong> exposes a single endpoint where the client specifies exactly which fields it wants in a query, rather than the server dictating a fixed response shape per endpoint (as REST does).</p>
+<p>How testing differs:</p>
+<ul>
+<li><strong>Single endpoint, varying payloads</strong> — instead of testing many URLs, you're testing many different query/mutation <em>bodies</em> against one endpoint; status-code-based assertions matter less (GraphQL often returns <code>200</code> even for a query-level error, with the actual error inside the response body's <code>errors</code> array).</li>
+<li><strong>Over-fetching/under-fetching checks</strong> — verify the response contains exactly the fields requested, no more and no less — a schema mismatch here is a GraphQL-specific bug class.</li>
+<li><strong>Schema-driven validation</strong> — GraphQL has an introspectable schema; tests can validate a query against it directly, similar in spirit to REST JSON schema validation but built into the protocol itself.</li>
+<li><strong>Mutation testing</strong> — write operations are explicit "mutations" rather than implied by HTTP verbs, so test design has to explicitly map out which mutations exist and their side effects.</li>
+</ul>`
+      },
+      {
+        name:"shouldExplainGrpcTestingApproach",
+        q:"What is gRPC, and when would you test it differently from REST APIs?",
+        why:"Checks exposure to microservices-internal communication protocols — gRPC is common between backend services even when the public API is REST/GraphQL.",
+        answer:`<p><strong>gRPC</strong> is a high-performance RPC framework using Protocol Buffers (binary serialization) over HTTP/2, commonly used for internal service-to-service communication in a microservices architecture where speed and strict typing matter more than human-readability.</p>
+<p>How testing differs from REST:</p>
+<ul>
+<li><strong>No plain-text payload</strong> — you can't just read a JSON body in Postman; testing requires a gRPC-aware client (e.g. <code>grpcurl</code>, BloomRPC, or a generated client stub from the <code>.proto</code> file) rather than a generic HTTP tool.</li>
+<li><strong>Contract is the .proto file</strong> — the service contract is strictly typed and code-generated, so a "broken contract" bug looks different: it's usually a version mismatch between client and server stubs rather than a loose JSON field typo.</li>
+<li><strong>Streaming support</strong> — gRPC natively supports client/server/bidirectional streaming, which needs test patterns REST rarely requires (asserting on a stream of messages over time, not a single response).</li>
+</ul>`
+      }
+    ]
+  },
+  {
+    round:3, roundLabel:"Bonus · Non-Functional & Ops",
+    className:"NonFunctionalAndOpsTest",
+    icon:"code",
+    methods:[
+      {
+        name:"shouldDistinguishDeploymentStrategies",
+        q:"Explain blue-green deployment vs canary deployment and QA's role in each.",
+        why:"Checks DevOps-adjacent awareness expected at senior level — QA's testing strategy has to match how the release is actually being rolled out.",
+        answer:`<ul>
+<li><strong>Blue-Green deployment</strong> — two identical production environments ("blue" = current live, "green" = new version). Traffic is switched from blue to green all at once after the new version is verified. QA's role: run a full smoke/sanity pass against the green environment <em>before</em> the traffic switch, and have a fast rollback plan (switch back to blue) if post-switch monitoring shows issues.</li>
+<li><strong>Canary deployment</strong> — the new version is rolled out to a small percentage of real traffic first, then gradually increased if metrics stay healthy. QA's role shifts toward monitoring real production metrics (error rates, latency) on the canary slice, and defining the specific health thresholds that should trigger an automatic rollback.</li>
+</ul>
+<p>The key distinction to state clearly: blue-green is an all-or-nothing cutover with instant rollback capability; canary is a gradual, risk-limited exposure — QA's job shifts from purely pre-release testing (blue-green) toward post-release monitoring and go/no-go gating (canary).</p>`
+      },
+      {
+        name:"shouldTestMessageQueuesLikeKafka",
+        q:"How do you test message queues like Kafka (producer/consumer validation)?",
+        why:"Directly relevant to reconciliation-style testing on async systems — checks whether you can validate eventual consistency correctly, since naive assertions fail here.",
+        answer:`<ul>
+<li><strong>Producer-side validation</strong> — verify a message is published to the correct topic with the expected schema/payload, using a test consumer client to read it back and assert on structure and content.</li>
+<li><strong>Consumer-side validation</strong> — publish a known test message, then verify the consuming service processes it correctly (e.g. a DB row gets created/updated, a downstream event fires) — validated by polling the expected end state rather than a fixed sleep, since processing is asynchronous.</li>
+<li><strong>Ordering and partitioning checks</strong> — for topics where message order matters within a partition, verify order is preserved for messages sharing a partition key.</li>
+<li><strong>Failure/retry scenarios</strong> — test what happens on a malformed message (does it go to a dead-letter queue?), and on consumer restart (does it correctly resume from the last committed offset without reprocessing or dropping messages?).</li>
+</ul>
+<p>The core testing principle for any async system: replace fixed <code>Thread.sleep()</code> waits with a polling assertion (retry until condition true or timeout) — this is the single most important habit for reliably testing Kafka-based pipelines without flakiness.</p>`
+      },
+      {
+        name:"shouldDistinguishLoadStressSoakTesting",
+        q:"What is the difference between load testing, stress testing, and soak testing?",
+        why:"Performance-testing vocabulary check — each answers a genuinely different production risk, and conflating them is a common mistake.",
+        answer:`<ul>
+<li><strong>Load testing</strong> — validates system behavior under an <em>expected</em> production load (e.g. average or peak daily traffic), confirming response times and error rates stay within acceptable limits at that known volume.</li>
+<li><strong>Stress testing</strong> — pushes load <em>beyond</em> expected limits, deliberately, to find the actual breaking point and observe how the system fails (gracefully with clear errors, or catastrophically) — used to know your real ceiling, not just confirm the expected floor.</li>
+<li><strong>Soak testing</strong> (endurance testing) — runs a sustained, moderate load over an extended period (hours, sometimes days), looking for problems that only appear over time — memory leaks, connection pool exhaustion, log disk fill-up — that a short load test would never surface.</li>
+</ul>
+<p>All three are usually built from the same JMeter test plan, just with different thread/ramp-up/duration configuration — the distinction is in intent and duration, not tooling.</p>`
+      },
+      {
+        name:"shouldExplainAccessibilityTesting",
+        q:"Explain accessibility testing (WCAG) and how you'd validate it.",
+        why:"Checks awareness of a compliance-relevant testing dimension that's easy to overlook but frequently a real requirement, especially in regulated industries.",
+        answer:`<p><strong>Accessibility testing</strong> validates that an application is usable by people with disabilities, typically measured against the <strong>WCAG (Web Content Accessibility Guidelines)</strong> standard, with common compliance targets at levels A, AA, or AAA.</p>
+<p>What's checked in practice:</p>
+<ul>
+<li><strong>Keyboard navigation</strong> — every interactive element reachable and operable without a mouse, with a visible focus indicator.</li>
+<li><strong>Screen reader compatibility</strong> — proper semantic HTML and ARIA labels so assistive technology can correctly announce elements and their state.</li>
+<li><strong>Color contrast</strong> — text/background contrast ratios meeting WCAG minimums, so content is readable for users with low vision or color blindness.</li>
+<li><strong>Alt text</strong> on meaningful images, and correctly labeled form fields.</li>
+</ul>
+<p>Validation approach: automated scanning tools (axe-core, Lighthouse, WAVE) catch a large share of violations and can be wired into CI, but automated tools alone catch maybe half of real issues — genuine keyboard-only and screen-reader manual testing passes are still needed for full coverage, especially for complex interactive components like custom date pickers or modals.</p>`
+      },
+      {
+        name:"shouldExplainMutationTesting",
+        q:"What is mutation testing, and why would you use it?",
+        why:"Checks awareness of test-suite quality measurement beyond code coverage percentage — a senior-level distinction interviewers like to probe.",
+        answer:`<p><strong>Mutation testing</strong> deliberately introduces small, artificial bugs ("mutants") into the source code — e.g. flipping a <code>&gt;</code> to <code>&gt;=</code>, changing a <code>true</code> to <code>false</code> — then reruns the test suite against each mutant. If the suite still passes despite the injected bug, that mutant "survived," revealing a gap the tests don't actually catch.</p>
+<p>Why it matters over plain code coverage: code coverage only tells you a line was <em>executed</em> during a test run, not that the test actually <em>asserted</em> anything meaningful about it — a test can hit 100% coverage of a method while never actually checking its output. Mutation testing measures whether the tests would genuinely catch a real bug in that code, which is a much stronger signal of test-suite quality.</p>
+<p>Tools: PIT (Pitest) is the standard Java mutation testing tool. It's typically run periodically (not on every commit, since it's computationally expensive) to audit whether high-coverage areas of the codebase are actually well-tested or just well-executed.</p>`
+      },
+      {
+        name:"shouldExplainDefectMetrics",
+        q:"Explain the difference between defect leakage and defect density, and how they're used to measure QA effectiveness.",
+        why:"QA metrics/reporting question relevant to a techno-managerial round — checks whether you can talk about quality in terms a manager or client can act on.",
+        answer:`<ul>
+<li><strong>Defect density</strong> — number of defects found per unit of size (commonly per 1,000 lines of code, or per module/feature). Used to identify which parts of the codebase are disproportionately buggy and may need refactoring or extra test focus.</li>
+<li><strong>Defect leakage</strong> — the percentage of defects that escaped testing and were found in production (or a later stage) relative to the total defects found across all stages. Calculated roughly as: <code>production defects / (production defects + defects caught in testing)</code>. Used to measure how effective the testing phase itself was at catching issues before release.</li>
+</ul>
+<p>How they're used together: defect density tells you <em>where</em> quality problems concentrate; defect leakage tells you <em>how well your test process is catching them</em> before customers do. A team can have low defect density but high leakage — meaning the code isn't inherently that buggy, but the test suite is missing the specific bugs that matter, which points to a test-coverage gap rather than a code-quality problem.</p>`
+      },
+      {
+        name:"shouldEstimateTestingEffort",
+        q:"How do you estimate testing effort for a sprint or story?",
+        why:"Practical planning question for a senior/techno-managerial round — checks whether you can give a defensible number, not just \"it depends.\"",
+        answer:`<ul>
+<li><strong>Break the story into test scenarios first</strong> — positive, negative, edge cases, and any cross-module integration points — before estimating anything; estimating off the story title alone is where most bad estimates come from.</li>
+<li><strong>Factor in test type mix</strong> — manual exploratory time, automation script writing time (which is usually greater than manual execution time for a first pass, but pays off on regression), and any environment/data setup required.</li>
+<li><strong>Use relative sizing consistent with the team's own history</strong> — compare against similarly-scoped stories previously estimated and actually completed, rather than estimating in a vacuum.</li>
+<li><strong>Add explicit buffer for the unknowns that always show up</strong> — flaky environment issues, test data provisioning delays, and defect-fix-retest cycles — these routinely eat 20–30% of naive estimates if not planned for up front.</li>
+<li><strong>Separate "test design" from "test execution"</strong> effort in the estimate — a story can be fully test-designed before dev even finishes, which is useful information for planning.</li>
+</ul>`
+      },
+      {
+        name:"shouldExplainKubernetesPodRelevance",
+        q:"What is a Kubernetes Pod, and why would an SDET need to know about it?",
+        why:"Checks baseline container-orchestration literacy — increasingly assumed for SDETs supporting services deployed on Kubernetes, even without owning the infra.",
+        answer:`<p>A <strong>Pod</strong> is the smallest deployable unit in Kubernetes — one or more tightly-coupled containers (usually just one) that share the same network namespace and storage, scheduled together onto the same node.</p>
+<p>Why it matters for an SDET:</p>
+<ul>
+<li><strong>Debugging test failures</strong> — when a service under test behaves unexpectedly, knowing how to check pod logs (<code>kubectl logs</code>) and pod status (<code>kubectl get pods</code>, <code>kubectl describe pod</code>) is often the fastest way to tell whether a test failure is a real app bug or an infra/deployment issue (a pod crash-looping, not yet ready, or out of memory).</li>
+<li><strong>Test environment provisioning</strong> — automated test environments are frequently spun up as Kubernetes deployments; understanding readiness/liveness probes explains why a test suite sometimes needs to wait for a pod to report "ready" before hitting it.</li>
+<li><strong>Chaos/resilience testing</strong> — deliberately killing a pod (or a whole deployment) to verify the system recovers correctly is a common resilience test pattern in a Kubernetes-based architecture.</li>
+</ul>`
+      },
+      {
+        name:"shouldTestAuthenticationVsAuthorization",
+        q:"Explain the difference between authentication and authorization, and how you'd test each.",
+        why:"Security fundamentals frequently conflated even by experienced testers — checks precise understanding of two genuinely different failure modes.",
+        answer:`<ul>
+<li><strong>Authentication ("who are you?")</strong> — verifying identity: valid credentials, valid token, valid session. Testing focus: correct login/logout behavior, invalid credential handling, token expiry, session timeout, and that an unauthenticated request is correctly rejected with <code>401</code>.</li>
+<li><strong>Authorization ("what are you allowed to do?")</strong> — verifying permissions, assuming identity is already established. Testing focus: a correctly authenticated but under-privileged user attempting a restricted action should get <code>403</code>, not succeed — and critically, testing for <strong>privilege escalation</strong> (can User A access User B's data by just changing an ID in the URL/payload — an IDOR, Insecure Direct Object Reference, vulnerability) and <strong>role-boundary tests</strong> (a "viewer" role attempting an "admin" action).</li>
+</ul>
+<p>The distinction matters most at the boundary: a system can have perfect authentication (only real users get in) and still be badly broken on authorization (any logged-in user can see anyone else's account) — so both need to be tested as genuinely separate concerns, not treated as one "security testing" checkbox.</p>`
+      },
+      {
+        name:"shouldExplainCapTheoremRelevance",
+        q:"What is the CAP theorem, and why does it matter when testing distributed BFSI systems?",
+        why:"Advanced systems-thinking question for senior BFSI-domain candidates — checks whether you understand why some \"bugs\" you find in distributed systems are actually deliberate design trade-offs.",
+        answer:`<p>The <strong>CAP theorem</strong> states that a distributed data system can only guarantee two of these three properties at once, not all three, when a network partition occurs:</p>
+<ul>
+<li><strong>Consistency</strong> — every read gets the most recent write, everywhere.</li>
+<li><strong>Availability</strong> — every request gets a (non-error) response, even if it's not the latest data.</li>
+<li><strong>Partition tolerance</strong> — the system keeps working despite network failures between nodes.</li>
+</ul>
+<p>Since network partitions are a real possibility in any distributed system, partition tolerance is effectively non-negotiable — the actual design choice most systems make is between prioritizing consistency (reject/delay requests during a partition to stay correct) or availability (keep responding, and reconcile inconsistencies later).</p>
+<p>Why it matters for BFSI testing specifically: it explains <em>why</em> certain "bugs" you find (a balance update visible on one replica slightly before another, an async reconciliation delay between systems) may actually be a deliberate availability-favoring design choice rather than a defect — and it tells you what to actually test for: not "is the data always instantly consistent" (an unrealistic bar for many distributed designs), but "does the system converge to a correct, consistent state within its documented/expected window, and does it never silently lose or double-count a transaction in the meantime."</p>`
+      }
+    ]
+  }
+];
+
+// Split FrameworkDesignTest's mixed content into logical sub-classes for the sidebar,
+// while keeping the underlying round/category grouping meaningful.
+const CLASS_META = {
+  IntroductionTest: {icon:"user", label:"IntroductionTest", desc:"Warm-up & fundamentals"},
+  FrameworkDesignTest: {icon:"layers", label:"FrameworkDesignTest", desc:"Round 2 · full block"},
+  ApiAndToolsTest: {icon:"code", label:"ApiAndToolsTest", desc:"Bonus · API, Git & DevOps"},
+  JavaAndPracticesTest: {icon:"layers", label:"JavaAndPracticesTest", desc:"Bonus · Java internals & patterns"},
+  FrameworkInternalsTest: {icon:"grid", label:"FrameworkInternalsTest", desc:"Bonus · Framework & test design"},
+  NonFunctionalAndOpsTest: {icon:"code", label:"NonFunctionalAndOpsTest", desc:"Bonus · Non-functional & ops"}
+};
+
+// ---------------------------------------------------------------
+// Flatten into a single methods array carrying its class + round
+// ---------------------------------------------------------------
+let ALL = [];
+DATA.forEach(block => {
+  block.methods.forEach(m => {
+    ALL.push(Object.assign({}, m, {
+      round: block.round,
+      roundLabel: block.roundLabel,
+      className: block.className
+    }));
+  });
+});
+ALL.forEach((m,i) => m._id = "m" + i);
+
+let state = {
+  round: "all",
+  activeClass: "all",
+  query: "",
+  checked: new Set()
+};
+
+function classesForRound(round){
+  const set = [];
+  ALL.forEach(m=>{
+    if(round!=="all" && String(m.round)!==String(round)) return;
+    if(!set.includes(m.className)) set.push(m.className);
+  });
+  return set;
+}
+
+function filteredMethods(){
+  return ALL.filter(m=>{
+    if(state.round!=="all" && String(m.round)!==String(state.round)) return false;
+    if(state.activeClass!=="all" && m.className!==state.activeClass) return false;
+    if(state.query){
+      const hay = (m.q + " " + m.name + " " + (m.answer||"")).toLowerCase();
+      if(!hay.includes(state.query.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderCode(block){
+  if(!block) return "";
+  const escaped = escapeHtml(block.text);
+  return `<div class="codeblock">
+    <div class="codeblock-head"><span>${block.lang}</span><button class="copybtn" onclick="copyCode(this)">copy</button></div>
+    <pre><code>${escaped}</code></pre>
+  </div>`;
+}
+
+function renderSidebar(){
+  const sidebar = document.getElementById('sidebar');
+  const classes = classesForRound(state.round);
+  let html = '<div class="sidebar-title">Test Classes</div>';
+  html += classItemHtml("all", "All classes", classes.length ? countInClass("all") : {pass:0,total:0}, "grid");
+  classes.forEach(c=>{
+    html += classItemHtml(c, c, countInClass(c), CLASS_META[c] ? CLASS_META[c].icon : "code");
+  });
+  sidebar.innerHTML = html;
+  sidebar.querySelectorAll('.classitem').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.activeClass = el.dataset.cls; render(); });
+  });
+}
+
+function countInClass(cls){
+  const ms = ALL.filter(m=>{
+    if(state.round!=="all" && String(m.round)!==String(state.round)) return false;
+    if(cls!=="all" && m.className!==cls) return false;
+    return true;
+  });
+  const pass = ms.filter(m=>state.checked.has(m._id)).length;
+  return {pass, total: ms.length};
+}
+
+const ICONS = {
+  user:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>',
+  layers:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
+  grid:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+  code:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>'
+};
+
+function classItemHtml(cls, label, counts, icon){
+  const active = state.activeClass===cls ? "active":"";
+  const badgeClass = counts.total && counts.pass===counts.total ? "done":"";
+  return `<div class="classitem ${active}" data-cls="${cls}">
+    ${ICONS[icon]||ICONS.code}
+    <span>${label}</span>
+    <span class="badge ${badgeClass}">${counts.pass}/${counts.total}</span>
+  </div>`;
+}
+
+function render(){
+  renderSidebar();
+  const methods = filteredMethods();
+  const title = document.getElementById('panelTitle');
+  title.innerHTML = state.activeClass==="all" ? "All classes" : state.activeClass + " <span>(" + methods.length + " tests)</span>";
+  const roundLabels = {all:"round 1 + round 2 + bonus", "1":"round 1 · technical", "2":"round 2 · techno-managerial", "3":"bonus · extended prep"};
+  document.getElementById('panelRound').textContent = roundLabels[state.round];
+
+  const list = document.getElementById('methodList');
+  if(methods.length===0){
+    list.innerHTML = '<div class="empty">no tests match — try clearing the search or filters</div>';
+  } else {
+    list.innerHTML = methods.map(methodHtml).join('');
+    list.querySelectorAll('.method-head').forEach(h=>{
+      h.addEventListener('click', (e)=>{
+        if(e.target.closest('.check')) return;
+        h.closest('.method').classList.toggle('open');
+      });
+    });
+    list.querySelectorAll('.check').forEach(c=>{
+      c.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const id = c.dataset.id;
+        if(state.checked.has(id)) state.checked.delete(id); else state.checked.add(id);
+        render();
+      });
+    });
+  }
+  updateStats();
+}
+
+function methodHtml(m){
+  const checked = state.checked.has(m._id);
+  let body = `<div class="why"><b>Why they ask this:</b> ${m.why}</div><div class="answer">${m.answer||""}`;
+  if(m.code) body += renderCode(m.code);
+  if(m.answer2) body += m.answer2;
+  if(m.code2) body += renderCode(m.code2);
+  if(m.answer3) body += m.answer3;
+  if(m.code3) body += renderCode(m.code3);
+  body += `</div>`;
+  return `<div class="method ${checked?'':''}" id="${m._id}">
+    <div class="method-head">
+      <div class="check ${checked?'checked':''}" data-id="${m._id}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0e14" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="method-sig">
+        <span><span class="kw">@Test public void</span> <span class="name">${m.name}()</span></span>
+        <span class="qtext">${m.q}</span>
+      </div>
+      <span class="statuspill ${checked?'pass':''}">${checked?'PASS':'PENDING'}</span>
+      <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></span>
+    </div>
+    <div class="method-body">${body}</div>
+  </div>`;
+}
+
+function updateStats(){
+  const r1 = ALL.filter(m=>m.round===1).length;
+  const r2 = ALL.filter(m=>m.round===2).length;
+  const r3 = ALL.filter(m=>m.round===3).length;
+  document.getElementById('statR1').textContent = r1 + " tests";
+  document.getElementById('statR2').textContent = r2 + " tests";
+  document.getElementById('statR3').textContent = r3 + " tests";
+  document.getElementById('statPass').textContent = state.checked.size;
+  document.getElementById('statPending').textContent = ALL.length - state.checked.size;
+  document.getElementById('runlineCount').textContent = ALL.length;
+}
+
+function copyCode(btn){
+  const code = btn.closest('.codeblock').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    const old = btn.textContent;
+    btn.textContent = "copied";
+    setTimeout(()=>btn.textContent=old, 1200);
+  });
+}
+
+document.getElementById('searchBox').addEventListener('input', (e)=>{
+  state.query = e.target.value;
+  render();
+});
+
+document.getElementById('roundTabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.roundtab');
+  if(!btn) return;
+  document.querySelectorAll('.roundtab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  state.round = btn.dataset.round;
+  state.activeClass = "all";
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
