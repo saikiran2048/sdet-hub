@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SolarSquare_FrameworkRound.suite() — SDET Interview Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d1117;
+    --panel: #131a24;
+    --panel-2: #17202c;
+    --border: #253142;
+    --text: #cfd8e3;
+    --text-dim: #7c8aa0;
+    --text-bright: #f0f4f9;
+    --amber: #e8a33d;
+    --teal: #4fc3c9;
+    --pass: #5fd68d;
+    --pass-dim: #234636;
+    --code-bg: #0a0f16;
+    --radius: 6px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:15.5px;
+    line-height:1.65;
+  }
+  ::selection{background:var(--teal); color:#001217;}
+
+  /* ---------- Layout ---------- */
+  .shell{display:flex; min-height:100vh;}
+  .sidebar{
+    width:270px; flex-shrink:0;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    padding:22px 16px 40px;
+  }
+  .sidebar-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--text-dim); margin-bottom:14px; padding-left:6px;
+  }
+  .nav-item{
+    display:flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--text-dim);
+    padding:8px 8px; border-radius:4px;
+    cursor:pointer; text-decoration:none;
+    border-left:2px solid transparent;
+  }
+  .nav-item:hover{background:var(--panel-2); color:var(--text-bright);}
+  .nav-item .dot{
+    width:6px; height:6px; border-radius:50%; background:var(--pass); flex-shrink:0;
+  }
+  .nav-item .n{color:var(--text-dim); margin-right:2px;}
+
+  main{flex:1; min-width:0; padding:40px 48px 100px; max-width:920px;}
+  @media (max-width: 860px){
+    .sidebar{display:none;}
+    main{padding:28px 20px 80px;}
+  }
+
+  /* ---------- Hero / terminal ---------- */
+  .hero{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px 24px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    margin-bottom:36px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.2);
+  }
+  .hero .bar{display:flex; gap:6px; margin-bottom:14px;}
+  .hero .bar span{width:10px; height:10px; border-radius:50%; background:#33404f;}
+  .hero-line{color:var(--text-dim); white-space:pre-wrap;}
+  .hero-line .cmd{color:var(--teal);}
+  .hero-summary{margin-top:12px; color:var(--pass); font-weight:600;}
+  .hero-sub{color:var(--text-dim); font-weight:400;}
+  .cursor{display:inline-block; width:7px; height:14px; background:var(--teal); margin-left:2px; vertical-align:-2px; animation: blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  h1.page-title{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:22px; color:var(--text-bright); margin:0 0 6px;
+    letter-spacing:-.01em;
+  }
+  .page-sub{color:var(--text-dim); font-size:14px; margin-bottom:30px;}
+  .stack-tag{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:11.5px;
+    background:var(--panel-2); border:1px solid var(--border); color:var(--amber);
+    padding:3px 8px; border-radius:4px; margin-right:6px;
+  }
+
+  /* ---------- Test case accordion ---------- */
+  .test-case{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-bottom:14px;
+    overflow:hidden;
+    scroll-margin-top:20px;
+  }
+  .test-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 20px; cursor:pointer;
+    user-select:none;
+  }
+  .test-header:hover{background:var(--panel-2);}
+  .test-header-left{display:flex; align-items:center; gap:12px; min-width:0;}
+  .test-id{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--text-dim);
+    background:var(--code-bg); border:1px solid var(--border);
+    padding:3px 7px; border-radius:4px; flex-shrink:0;
+  }
+  .test-title{color:var(--text-bright); font-weight:600; font-size:15.5px;}
+  .status-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
+    color:var(--pass); background:var(--pass-dim);
+    border:1px solid #2f5c46; padding:3px 9px; border-radius:20px;
+    flex-shrink:0; letter-spacing:.04em;
+  }
+  .chevron{
+    color:var(--text-dim); font-family:'IBM Plex Mono',monospace;
+    margin-left:14px; transition:transform .2s ease; flex-shrink:0;
+  }
+  .test-case.open .chevron{transform:rotate(90deg); color:var(--teal);}
+
+  .test-body{
+    max-height:0; overflow:hidden; transition:max-height .28s ease;
+    border-top:1px solid transparent;
+  }
+  .test-case.open .test-body{border-top:1px solid var(--border);}
+  .test-body-inner{padding:20px 22px 24px;}
+
+  .test-body-inner h3{
+    font-size:13.5px; color:var(--teal); text-transform:uppercase; letter-spacing:.06em;
+    margin:22px 0 10px; font-family:'IBM Plex Mono', monospace;
+  }
+  .test-body-inner h3:first-child{margin-top:0;}
+  .test-body-inner p{margin:0 0 12px; color:var(--text);}
+  .test-body-inner ul, .test-body-inner ol{margin:0 0 14px; padding-left:22px;}
+  .test-body-inner li{margin-bottom:6px;}
+  .test-body-inner strong{color:var(--text-bright);}
+  .callout{
+    background:var(--panel-2); border-left:3px solid var(--amber);
+    padding:12px 16px; border-radius:4px; margin:14px 0; font-size:14.5px;
+    color:var(--text);
+  }
+  .callout b{color:var(--amber);}
+
+  /* tables */
+  table{
+    width:100%; border-collapse:collapse; margin:14px 0 18px;
+    font-size:13.8px; background:var(--code-bg); border-radius:6px; overflow:hidden;
+  }
+  th, td{
+    text-align:left; padding:9px 12px; border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  th{
+    background:var(--panel-2); color:var(--teal); font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;
+  }
+  tr:last-child td{border-bottom:none;}
+
+  /* code */
+  pre{
+    background:var(--code-bg); border:1px solid var(--border); border-radius:6px;
+    padding:16px 18px; overflow-x:auto; margin:14px 0;
+    font-family:'IBM Plex Mono', monospace; font-size:12.8px; line-height:1.6;
+    color:#b9c6d6;
+  }
+  code{
+    font-family:'IBM Plex Mono', monospace; background:var(--code-bg);
+    padding:1.5px 5px; border-radius:3px; font-size:.88em; color:var(--amber);
+    border:1px solid var(--border);
+  }
+  pre code{background:none; border:none; padding:0; color:inherit;}
+  .kw{color:#c586c0;} .str{color:#ce9178;} .cmt{color:#6a9955;}
+
+  footer{
+    margin-top:50px; padding-top:20px; border-top:1px solid var(--border);
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--text-dim);
+  }
+
+  .toolbar{display:flex; gap:10px; margin-bottom:24px;}
+  .toolbar button{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px;
+    background:var(--panel-2); border:1px solid var(--border); color:var(--text-dim);
+    padding:7px 12px; border-radius:5px; cursor:pointer;
+  }
+  .toolbar button:hover{color:var(--text-bright); border-color:var(--teal);}
+
+  /* --- Back to Hub button --- */
+  .back-to-hub {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px;
+    padding: 8px 14px;
+    background: #101b2d;
+    border: 1px solid #223252;
+    border-radius: 8px;
+    color: #4fd1e8;
+    text-decoration: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-to-hub:hover {
+    border-color: #4fd1e8;
+    transform: translateX(-2px);
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-to-hub">← Back to Hub</a>
+
+<div class="shell">
+  <nav class="sidebar">
+    <div class="sidebar-title">Test Suite / 50 cases</div>
+    <div id="nav-list"></div>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <div class="bar"><span></span><span></span><span></span></div>
+      <div class="hero-line"><span class="cmd">$</span> mvn test -Dsuite=SolarSquareFrameworkRound</div>
+      <div class="hero-line" id="hero-line-2" style="min-height:18px;"></div>
+      <div class="hero-summary" id="hero-summary" style="display:none;">Tests run: 50, Failures: 0, Skipped: 0 <span class="hero-sub">— BUILD SUCCESS</span></div>
+    </div>
+
+    <h1 class="page-title">Solar Square — SDET Interview: Framework Round</h1>
+    <p class="page-sub">Detailed answers, framework-design round.
+      <span class="stack-tag">Java</span><span class="stack-tag">TestNG</span><span class="stack-tag">REST Assured</span><span class="stack-tag">Appium</span><span class="stack-tag">Jenkins</span>
+    </p>
+
+    <div class="toolbar">
+      <button onclick="toggleAll(true)">Expand all</button>
+      <button onclick="toggleAll(false)">Collapse all</button>
+    </div>
+
+    <div id="cases"></div>
+
+    <footer>
+      // stack assumptions: Java + TestNG + REST Assured + Appium + JDBC + Maven + Jenkins — chosen as the most common, defensible enterprise BFSI setup.
+    </footer>
+  </main>
+</div>
+
+<script>
+const cases = [
+{
+  id: "Q1",
+  title: "End-to-end approach for testing a single microservice",
+  html: `
+    <p>Think of a microservice in layers — you don't test it as one blob, you test each layer and then the seams between layers.</p>
+
+    <h3>01 · Understand the service first</h3>
+    <ul>
+      <li>Read the API contract/spec (OpenAPI/Swagger), understand upstream/downstream dependencies, and data ownership (which DB tables it owns).</li>
+      <li>Identify the "type" of service — CRUD service, orchestrator, event-driven — because that changes the test strategy.</li>
+    </ul>
+
+    <h3>02 · Layered test strategy</h3>
+    <table>
+      <tr><th>Layer</th><th>What you test</th><th>Tooling</th></tr>
+      <tr><td>Unit (dev-owned, SDET reviews)</td><td>Business logic in isolation, mocked dependencies</td><td>JUnit / Mockito</td></tr>
+      <tr><td>API / Functional</td><td>Request/response contracts, status codes, headers, validation, error handling</td><td>REST Assured + TestNG</td></tr>
+      <tr><td>Data layer</td><td>DB writes/reads correct, no orphaned records, transactional integrity</td><td>JDBC assertions against schema</td></tr>
+      <tr><td>Contract</td><td>Producer–consumer compatibility (see Q3)</td><td>Pact</td></tr>
+      <tr><td>Integration</td><td>Service talks correctly to real/near-real dependencies</td><td>Testcontainers + WireMock</td></tr>
+      <tr><td>Non-functional</td><td>Latency, throughput under load</td><td>JMeter / Gatling</td></tr>
+      <tr><td>Security</td><td>AuthN/AuthZ, input sanitization, mTLS if applicable</td><td>OWASP ZAP + scripted checks</td></tr>
+      <tr><td>Resilience</td><td>Behavior on downstream timeout/failure — circuit breaker, retry, fallback</td><td>Chaos testing (Toxiproxy, fault injection)</td></tr>
+    </table>
+
+    <h3>03 · Environment & data</h3>
+    <p>Use an isolated test environment with seeded, deterministic test data — avoid depending on shared/mutable QA data. Testcontainers or a dedicated test schema keeps runs repeatable.</p>
+
+    <h3>04 · Negative and edge cases</h3>
+    <p>Invalid payloads, boundary values, missing/expired auth tokens, duplicate requests (idempotency), rate limiting.</p>
+
+    <h3>05 · Wrap it into CI</h3>
+    <p>Fast tests (unit + API smoke) run on every commit; heavier tests (integration, contract, performance) run on a schedule or pre-merge gate.</p>
+
+    <div class="callout"><b>Interviewer signal:</b> a microservice isn't tested only through its API — validate it in isolation, at its contract boundary, and in its integrated state.</div>
+  `
+},
+{
+  id: "Q2",
+  title: "From an automation perspective — how do you confirm everything is working fine?",
+  html: `
+    <p>This is really asking for your <em>definition of a healthy automation suite</em>, not just "does the app work." Two buckets:</p>
+
+    <h3>A · Application health (functional correctness)</h3>
+    <ul>
+      <li>All critical-path (P0/P1) tests pass consistently across environments.</li>
+      <li>API contract validation (schema, status codes) hasn't drifted.</li>
+      <li>DB state after execution matches expected state — no silent data corruption.</li>
+      <li>No unhandled exceptions / 5xx in logs during the run.</li>
+    </ul>
+
+    <h3>B · Automation / framework health (often missed)</h3>
+    <ul>
+      <li><strong>Test independence</strong> — no reliance on execution order or leftover state.</li>
+      <li><strong>Flakiness rate</strong> — track pass/fail trend, not a single green run (see Q9).</li>
+      <li><strong>Execution time</strong> — a sudden runtime increase is itself a signal (slow API, bad waits, resource contention).</li>
+      <li><strong>Reporting/observability</strong> — screenshots, request/response logs, stack traces on failure so it's diagnosable without re-running locally.</li>
+      <li><strong>Environment/config sanity</strong> — right base URL, test data set, and feature flags for the environment under test.</li>
+      <li><strong>CI pipeline health</strong> — no silently skipped stages, correct trigger, artifacts published.</li>
+    </ul>
+
+    <div class="callout"><b>Bottom line:</b> I don't just look at the green tick — I look at whether the green tick is <em>trustworthy</em>.</div>
+  `
+},
+{
+  id: "Q3",
+  title: "How do you do contract testing in microservices?",
+  html: `
+    <p><strong>Why it exists:</strong> integration testing spins up real dependent services — slow and brittle. Contract testing verifies a consumer and provider agree on the <em>shape</em> of their interaction, without either side needing the other running.</p>
+
+    <h3>Consumer-driven contract testing (Pact)</h3>
+    <ol>
+      <li><strong>Consumer side</strong> — the consumer team writes expectations of what it needs from the provider (request shape, expected response) as a Pact test, generating a contract file (JSON).</li>
+      <li><strong>Contract broker</strong> — the contract is published to a Pact Broker, a central registry.</li>
+      <li><strong>Provider side</strong> — the provider's CI pulls the contract(s) from the broker and replays them against the <em>real</em> provider service to verify it satisfies every consumer's expectation.</li>
+      <li><strong>Can-I-Deploy check</strong> — before deploying either side, query the broker: "can I deploy this version safely against what's currently in production?"</li>
+    </ol>
+
+    <h3>What it catches that API testing doesn't</h3>
+    <ul>
+      <li>A field the consumer depends on gets renamed/removed by the provider — caught at build time, not in staging or prod.</li>
+      <li>No need to spin up N dependent services just to test one integration point.</li>
+    </ul>
+
+    <div class="callout"><b>Where I'd apply it:</b> any two services owned by different teams with independent deploy cadences — exactly where contract drift silently breaks production.</div>
+  `
+},
+{
+  id: "Q4",
+  title: "Design a brand-new framework: unified API + Mobile + DB workflow",
+  html: `
+    <p><strong>Approach:</strong> treat it as a layered framework with a common core — not three separate tools glued together.</p>
+
+    <h3>Tech stack</h3>
+    <ul>
+      <li><strong>Language:</strong> Java — team standard, strong typing, huge enterprise QA ecosystem</li>
+      <li><strong>Build tool:</strong> Maven (or Gradle) — dependency management, environment profiles</li>
+      <li><strong>API layer:</strong> REST Assured</li>
+      <li><strong>Mobile layer:</strong> Appium (cross-platform) + <code>UiAutomator2</code> / <code>XCUITest</code></li>
+      <li><strong>DB layer:</strong> plain JDBC or a lightweight wrapper (JDBI)</li>
+      <li><strong>Runner/orchestration:</strong> TestNG (parallel execution, grouping, data providers), optionally Cucumber BDD on top</li>
+      <li><strong>Reporting:</strong> Allure or ExtentReports — unified report across all three layers</li>
+      <li><strong>CI/CD:</strong> Jenkins, declarative pipeline, parameterized per module</li>
+    </ul>
+
+    <h3>Structural design (Maven multi-module)</h3>
+    <pre><code>framework/
+ ├── core/                  <span class="cmt">// shared: config loader, logging, reporting hooks, driver/session mgmt</span>
+ ├── api-tests/
+ │    ├── clients/          <span class="cmt">// REST Assured request specs per service</span>
+ │    ├── models/           <span class="cmt">// POJOs for request/response (Jackson)</span>
+ │    └── tests/
+ ├── mobile-tests/
+ │    ├── pages/            <span class="cmt">// Page Object classes (Android + iOS variants)</span>
+ │    ├── drivers/          <span class="cmt">// Appium driver factory (per platform/device)</span>
+ │    └── tests/
+ ├── db-tests/
+ │    ├── queries/          <span class="cmt">// centralized SQL/queries</span>
+ │    └── validators/       <span class="cmt">// assertion helpers</span>
+ ├── testdata/               <span class="cmt">// JSON/YAML test data, environment configs</span>
+ └── resources/
+      ├── config-qa.properties
+      ├── config-stage.properties</code></pre>
+
+    <h3>Key design principles</h3>
+    <ol>
+      <li><strong>Single config layer</strong> — one <code>ConfigManager</code> reads environment-specific properties (API base URL, DB connection string, device capabilities), so switching environments never touches test code.</li>
+      <li><strong>Common test context/listener</strong> — a shared TestNG listener captures logs, screenshots, API request/response dumps, and DB query results into one unified report per test.</li>
+      <li><strong>Cross-layer flows</strong> — e.g. "place an order via API → verify on mobile app → verify DB row created" becomes one test method reusing all three modules.</li>
+      <li><strong>Driver/session abstraction</strong> — API client, Appium driver, and DB connection created/torn down through the same lifecycle hooks, so resources don't leak.</li>
+      <li><strong>Data-driven execution</strong> — TestNG <code>DataProvider</code> or external JSON/CSV/YAML, decoupled from test logic.</li>
+    </ol>
+
+    <div class="callout"><b>Result:</b> one framework, one report, one pipeline — each layer stays independently runnable (e.g. run just <code>api-tests</code> in a fast smoke pipeline).</div>
+  `
+},
+{
+  id: "Q5",
+  title: "How do you make this framework scalable?",
+  html: `
+    <p>Scalability means more tests, more platforms, more environments, more contributors — without the framework collapsing under its own weight.</p>
+
+    <h3>1 · Modular, plugin-style architecture</h3>
+    <p>Each layer is a separate Maven module with its own dependencies — a new layer (e.g. <code>web-tests</code>) can be added without touching existing ones.</p>
+
+    <h3>2 · Parallel execution at multiple levels</h3>
+    <ul>
+      <li>TestNG <code>parallel="methods"</code> / <code>parallel="classes"</code> with tuned thread counts.</li>
+      <li>Mobile: run against a device grid / cloud farm (BrowserStack App Automate, Sauce Labs, Firebase Test Lab) rather than a single local device — see Q7.</li>
+      <li>API: stateless, idempotent tests, safe to run concurrently.</li>
+    </ul>
+
+    <h3>3 · Environment abstraction</h3>
+    <p>Config-driven, not hardcoded — the same suite runs against dev/QA/stage with one parameter change (<code>-Denv=stage</code>).</p>
+
+    <h3>4 · Containerization</h3>
+    <p>Dockerize the framework so CI agents need no manual tool installs; DB/dependent services spin up via Testcontainers for integration-style runs.</p>
+
+    <h3>5 · Test selection & tiering</h3>
+    <p>Tag tests (<code>@smoke</code>, <code>@regression</code>, <code>@p1</code>) so CI runs a fast subset on every PR and the full suite nightly — scalability is "run the right subset at the right time," not just "run more."</p>
+
+    <h3>6 · Reusable utilities over copy-paste</h3>
+    <p>Shared assertion libraries, retry/wait utilities, data builders (Builder pattern) — so test #500 doesn't duplicate boilerplate from test #1.</p>
+
+    <h3>7 · Maintainability practices</h3>
+    <p>Page Object Model for mobile, Service Object pattern for API clients, centralized locators/queries — a UI or schema change means editing one file, not fifty tests.</p>
+
+    <div class="callout"><b>Mental model:</b> scalable = adding a new test, platform, or environment is a config/data change, not a framework redesign.</div>
+  `
+},
+{
+  id: "Q6",
+  title: "An API went from 3s to 30s response time — how do you debug it?",
+  html: `
+    <p>A systematic elimination exercise — narrow down which layer introduced the latency.</p>
+
+    <h3>Step 1 — Confirm and isolate</h3>
+    <p>Reproduce consistently (rule out a one-off blip). Hit the endpoint directly (Postman/curl) bypassing UI/mobile to confirm it's the API itself.</p>
+
+    <h3>Step 2 — Check what changed</h3>
+    <p>Correlate the regression with a timeline: recent deployment, config change, infra change, data volume growth. Check release/deploy logs around when the slowdown started.</p>
+
+    <h3>Step 3 — Break down where time is spent</h3>
+    <ul>
+      <li><strong>Application layer:</strong> APM traces (New Relic, Dynatrace, Datadog) or timestamped logs — is time spent in app code or waiting on something?</li>
+      <li><strong>DB layer:</strong> Run <code>EXPLAIN ANALYZE</code>. Common culprits: missing index, new N+1 query pattern, lock/blocking transaction, table growth without index maintenance.</li>
+      <li><strong>Downstream dependency:</strong> Does this API call another service? Distributed tracing (Jaeger/Zipkin) shows the full call chain and where cascading latency starts.</li>
+      <li><strong>Infra/resource layer:</strong> CPU/memory saturation, connection pool exhaustion, thread pool starvation, GC pauses (a long stop-the-world pause in Java can look exactly like this).</li>
+      <li><strong>Network:</strong> DNS delays, TLS handshake overhead, load balancer misconfig, noisy-neighbor effects.</li>
+    </ul>
+
+    <h3>Step 4 — Compare load conditions</h3>
+    <p>Check for a traffic/data volume spike; run a controlled load test (JMeter/Gatling) to see if it's load-dependent or happens even on a single request.</p>
+
+    <h3>Step 5 — Narrow with binary search</h3>
+    <p>For a multi-step API (DB → cache → external service), add/inspect timing logs around each step to pinpoint exactly which sub-call is the 27-second contributor.</p>
+
+    <div class="callout"><b>My role as SDET:</b> I don't fix the code — I provide the evidence (reproducible case, timing breakdown, before/after comparison) that lets dev/infra pinpoint root cause fast, and I'd add a <strong>performance regression check</strong> (baseline response-time assertion) into the pipeline so this doesn't silently reappear.</div>
+  `
+},
+{
+  id: "Q7",
+  title: "Run 200 test cases across 20 Android + 20 iOS devices in CI",
+  html: `
+    <p>You don't run this on physical/local devices manually — it needs a device grid + parallelization strategy.</p>
+
+    <h3>1 · Use a cloud device farm</h3>
+    <p>BrowserStack App Automate, Sauce Labs, or Firebase Test Lab give on-demand real Android/iOS devices without maintaining 40 physical devices in-house. Appium talks to these the same way it talks to a local device — point driver capabilities at the provider's remote URL/API key.</p>
+
+    <h3>2 · Parallelize execution</h3>
+    <p>TestNG parallel execution with a thread pool sized to available device sessions (20 Android + 20 iOS concurrently, each running a shard). Shard the 200 tests logically — e.g. by module/feature — so each device gets a manageable, independent chunk.</p>
+
+    <h3>3 · Data provider / device matrix</h3>
+    <p>Drive device capabilities (OS version, model) from a config/JSON file rather than hardcoding — the same test class runs against any device by changing the capability set.</p>
+
+    <h3>4 · CI orchestration (Jenkins)</h3>
+    <p>Use a Jenkins matrix/parameterized build or parallel stages in a declarative pipeline — one stage per device group/platform, so Android and iOS runs kick off concurrently. Aggregate results into a single consolidated report (Allure supports merging results from parallel runs).</p>
+
+    <h3>5 · Cost/time control</h3>
+    <p>Not every PR needs all 40 devices — run a smoke subset on 2–3 representative devices per platform on every commit, full 200×40 matrix on a nightly/pre-release gate.</p>
+
+    <h3>6 · Stability considerations</h3>
+    <p>Sensible timeouts and retries per device session — cloud sessions can be flakier than local (network to the farm, device queue availability).</p>
+  `
+},
+{
+  id: "Q8",
+  title: "How do you integrate your repo into a CI pipeline?",
+  html: `
+    <p>Reference: Jenkins, the most common enterprise choice.</p>
+    <ol>
+      <li><strong>Source control hook</strong> — a webhook (GitHub/GitLab/Bitbucket) triggers Jenkins on push/PR, or polling SCM as a fallback.</li>
+      <li><strong>Jenkinsfile (pipeline-as-code)</strong> — declarative stages, versioned in the repo itself.</li>
+    </ol>
+
+    <pre><code><span class="kw">pipeline</span> {
+  agent any
+  stages {
+    stage(<span class="str">'Checkout'</span>) { steps { git url: <span class="str">'&lt;repo-url&gt;'</span>, branch: <span class="str">'main'</span> } }
+    stage(<span class="str">'Build'</span>) { steps { sh <span class="str">'mvn clean compile'</span> } }
+    stage(<span class="str">'Static Checks'</span>) { steps { sh <span class="str">'mvn checkstyle:check'</span> } }
+    stage(<span class="str">'Test'</span>) { steps { sh <span class="str">'mvn test -Dgroups=smoke'</span> } }
+    stage(<span class="str">'Report'</span>) { steps { allure includeProperties: false, results: [[path: <span class="str">'target/allure-results'</span>]] } }
+  }
+  post {
+    always { junit <span class="str">'target/surefire-reports/*.xml'</span> }
+    failure { mail to: <span class="str">'team@company.com'</span>, subject: <span class="str">'Build Failed'</span>, body: <span class="str">'\${BUILD_URL}'</span> }
+  }
+}</code></pre>
+
+    <ol start="3">
+      <li><strong>Credentials/config management</strong> — environment URLs, API keys, DB credentials stored in Jenkins Credentials store, injected as env vars at runtime.</li>
+      <li><strong>Build agents</strong> — right tooling on agents (JDK, Maven, Appium server) — or run the pipeline inside a Docker container with everything pre-baked.</li>
+      <li><strong>Branch strategy</strong> — PR builds run smoke tests fast; merges to <code>main</code>/<code>release</code> trigger full regression.</li>
+      <li><strong>Artifact & report publishing</strong> — publish reports, logs, screenshots as Jenkins build artifacts so failures are diagnosable without re-running.</li>
+      <li><strong>Gate the merge</strong> — make the pipeline a required status check so a failing PR can't merge.</li>
+    </ol>
+  `
+},
+{
+  id: "Q9",
+  title: "Handling flaky tests — pass locally, fail intermittently in CI",
+  html: `
+    <p><strong>First — don't just add retries and move on.</strong> Retries hide the symptom; you still need the root cause.</p>
+
+    <h3>Step 1 — Classify the flakiness</h3>
+    <table>
+      <tr><th>Category</th><th>Symptom</th><th>Fix</th></tr>
+      <tr><td>Timing/sync</td><td>Element not found yet, API not yet responded</td><td>Replace <code>Thread.sleep()</code> with explicit/fluent waits, or polling assertions</td></tr>
+      <tr><td>Test data collision</td><td>Test depends on data a parallel test just modified</td><td>Isolated/unique data per run (UUID-based), rollback after test</td></tr>
+      <tr><td>Environment/infra</td><td>CI agent under resource pressure, latency differs from local</td><td>Right-size CI agent resources, sensible timeouts</td></tr>
+      <tr><td>Test order dependency</td><td>Test assumes state from a previous test</td><td>Enforce independence — own setup/teardown</td></tr>
+      <tr><td>Third-party dependency</td><td>Flaky downstream service, rate limiting</td><td>Mock/stub externals not under test</td></tr>
+      <tr><td>Race conditions (parallel)</td><td>Two tests hit the same shared resource</td><td>Per-thread data isolation, or mark non-parallel-safe</td></tr>
+    </table>
+
+    <h3>Step 2 — Get evidence before guessing</h3>
+    <p>Detailed logging/screenshots on CI failure specifically, so you can see the actual failure-time state. Track flaky tests over time — 1-in-20 is different from 1-in-3.</p>
+
+    <h3>Step 3 — Manage the ones you're actively fixing</h3>
+    <p>Quarantine known-flaky tests into a separate suite that doesn't block the build while root-causing them. Bounded retry (e.g. one retry via <code>IRetryAnalyzer</code>) as a stop-gap, not a permanent fix — track retry counts as a metric.</p>
+
+    <h3>Step 4 — Prevent recurrence</h3>
+    <p>Code review checklist: no hardcoded sleeps, no shared mutable test data, explicit waits only, idempotent setup/teardown. Periodically audit the quarantine list — it should shrink, not grow.</p>
+
+    <div class="callout"><b>Mindset:</b> flaky tests usually reveal a real synchronization or environment issue. Treating them as noise erodes trust in the whole suite — every flaky failure deserves a root cause, not just a re-run.</div>
+  `
+},
+{
+  id: "Q10",
+  title: "You find a critical bug 2 days before release — what do you do?",
+  html: `
+    <p>This is a triage-and-communicate problem as much as a testing one.</p>
+
+    <h3>1 · Confirm and scope it fast</h3>
+    <ul>
+      <li>Reproduce reliably, note exact steps, environment, and data conditions.</li>
+      <li>Determine blast radius — is it isolated to one flow, or does it touch a shared component (auth, payment, core data)?</li>
+      <li>Check if it's a regression (worked before, broke recently) or a pre-existing gap just now discovered — that changes urgency and root-cause direction.</li>
+    </ul>
+
+    <h3>2 · Classify severity vs. priority separately</h3>
+    <p>Severity = technical impact (data loss, security, crash). Priority = business impact given the release. A high-severity bug in a rarely-used admin screen may still ship with a documented workaround; a medium-severity bug on the login flow may block release.</p>
+
+    <h3>3 · Communicate immediately, don't sit on it</h3>
+    <p>Raise it to the release/triage owner (lead, PM, release manager) the moment it's confirmed — with reproduction steps, impact, and any workaround — rather than waiting until you've fully investigated. Let the team make the go/no-go call with current information.</p>
+
+    <h3>4 · Support the decision, don't make it alone</h3>
+    <table>
+      <tr><th>Option</th><th>When it fits</th></tr>
+      <tr><td>Fix and hotfix-verify before release</td><td>Fix is small, well-understood, testable in the remaining window</td></tr>
+      <tr><td>Feature-flag off / disable the broken path</td><td>Bug is isolated to one feature that can be safely toggled off</td></tr>
+      <tr><td>Delay release</td><td>Bug is on a critical path with no safe workaround</td></tr>
+      <tr><td>Ship with a documented known issue</td><td>Low business impact, workaround exists, fix already scheduled next cycle</td></tr>
+    </table>
+
+    <h3>5 · Add a regression test immediately</h3>
+    <p>Whatever the outcome, the gap that let this reach 2-days-before-release is itself a finding — add the missing test case to the suite so it's caught earlier next time.</p>
+
+    <div class="callout"><b>Key point interviewers probe for:</b> do you escalate early and let the business make the call, or do you sit on it trying to "solve" it alone until it's too late to act?</div>
+  `
+},
+{
+  id: "Q11",
+  title: "Testing an API that depends on a third-party service with rate limits",
+  html: `
+    <p>The core tension: you need realistic coverage without burning through the third party's quota or getting your test IP throttled/banned.</p>
+
+    <h3>1 · Don't hit the real third party for every test run</h3>
+    <ul>
+      <li>Use a <strong>service virtualization / mock layer</strong> (WireMock, MockServer) that mimics the third party's responses — success, error codes, timeouts, malformed payloads — for the bulk of functional test runs.</li>
+      <li>Record real responses once (contract snapshot) and replay them, so mocks stay realistic rather than hand-guessed.</li>
+    </ul>
+
+    <h3>2 · Reserve real calls for a small, deliberate subset</h3>
+    <ul>
+      <li>A scheduled (not per-commit) smoke suite that hits the actual third-party sandbox/staging endpoint, kept small enough to stay well under the rate limit.</li>
+      <li>If the third party offers a sandbox environment with generous limits, prefer that over production endpoints entirely.</li>
+    </ul>
+
+    <h3>3 · Respect the limit programmatically</h3>
+    <p>Build rate-limit awareness into the test client itself — read <code>429</code> responses and <code>Retry-After</code> headers, back off, and fail the test clearly as "rate limited" rather than a false "functional failure."</p>
+
+    <h3>4 · Test your own resilience to their limits</h3>
+    <p>Just as important as testing the happy path: does <em>your</em> service handle a 429 or timeout from the third party gracefully — retry with backoff, circuit breaker, fallback/cached response — rather than cascading the failure to your users?</p>
+
+    <div class="callout"><b>Where I'd draw the line:</b> mocks for coverage and speed, a thin slice of real calls for confidence, and explicit tests for how gracefully your own service degrades when the third party throttles you.</div>
+  `
+},
+{
+  id: "Q12",
+  title: "Your regression suite takes 6 hours — how do you cut it without losing coverage?",
+  html: `
+    <p>Long suites usually aren't slow because there's "too much" to test — they're slow because of avoidable inefficiency. Attack it in this order.</p>
+
+    <h3>1 · Measure before cutting</h3>
+    <p>Get a per-test/per-module timing breakdown first — don't guess which tests are the problem. A handful of slow tests (bad waits, unnecessary setup/teardown, sequential DB calls) often account for a disproportionate share of total time.</p>
+
+    <h3>2 · Parallelize</h3>
+    <p>If the suite is still running single-threaded, this is usually the single biggest win — TestNG parallel execution across threads/nodes, or splitting the suite across multiple CI agents/containers running concurrently.</p>
+
+    <h3>3 · Remove redundant coverage</h3>
+    <ul>
+      <li>Multiple tests validating the exact same path at different layers (e.g. a UI test re-verifying something already covered at API level) — collapse to the lowest layer that gives confidence.</li>
+      <li>Duplicate assertions across near-identical test data variations that don't add real signal.</li>
+    </ul>
+
+    <h3>4 · Tier the suite</h3>
+    <table>
+      <tr><th>Tier</th><th>Runs when</th><th>Scope</th></tr>
+      <tr><td>Smoke</td><td>Every commit/PR</td><td>Critical paths only, minutes not hours</td></tr>
+      <tr><td>Full regression</td><td>Nightly / pre-release</td><td>Everything, including slower integration/UI flows</td></tr>
+      <tr><td>Extended (perf, chaos, cross-device)</td><td>Weekly / on-demand</td><td>Expensive, lower-frequency-value tests</td></tr>
+    </table>
+
+    <h3>5 · Fix root causes, not just symptoms</h3>
+    <p>Replace hard sleeps with proper waits, reuse authentication/session setup instead of re-logging-in per test, use API calls to set up preconditions instead of driving the UI through them, and cache/seed test data instead of creating it fresh via slow flows each time.</p>
+
+    <div class="callout"><b>The goal:</b> not "run fewer tests" — it's "get the same confidence faster," by cutting waste, not coverage.</div>
+  `
+},
+{
+  id: "Q13",
+  title: "Reconciling Kafka events against DB state — how do you approach it?",
+  html: `
+    <p>This is about validating an asynchronous, eventually-consistent flow — the biggest trap is testing it like a synchronous API call.</p>
+
+    <h3>1 · Understand the flow end to end</h3>
+    <p>Producer publishes an event → consumer processes it → DB is updated. Know the expected transformation between the event payload and the resulting DB row(s), and any intermediate steps (dedup, ordering, retries).</p>
+
+    <h3>2 · Consume and assert on the event itself first</h3>
+    <p>Use a test consumer (or a library like Testcontainers-Kafka) to subscribe to the topic and assert the event schema, key fields, and ordering — independent of whether the DB side worked. This isolates producer-side correctness from consumer-side correctness.</p>
+
+    <h3>3 · Poll, don't sleep, for eventual consistency</h3>
+    <p>Never assert on DB state immediately after publishing — use a polling/await mechanism (e.g. Awaitility in Java) with a sane timeout, so the test waits exactly as long as needed and no longer, instead of a fixed sleep that's either too short (flaky) or too long (slow).</p>
+
+    <h3>4 · Reconciliation-specific checks</h3>
+    <ul>
+      <li><strong>Completeness:</strong> every published event resulted in exactly one corresponding DB update (no drops).</li>
+      <li><strong>Idempotency:</strong> replaying the same event (duplicate delivery) doesn't create duplicate DB rows or double-apply an update.</li>
+      <li><strong>Ordering:</strong> for out-of-order or partitioned delivery, confirm the DB reflects the correct final state, not just "last processed."</li>
+      <li><strong>Failure handling:</strong> a malformed event goes to a dead-letter queue rather than silently failing or crashing the consumer.</li>
+    </ul>
+
+    <h3>5 · Build a reusable reconciliation utility</h3>
+    <p>A shared assertion helper that takes "expected event" and "expected DB state" and polls until they match or times out — reused across every event-driven test rather than rewritten per test.</p>
+
+    <div class="callout"><b>Core principle:</b> test the event and the DB state as two separate, explicitly-linked assertions with a polling boundary between them — never assume synchronous timing in an async system.</div>
+  `
+},
+{
+  id: "Q14",
+  title: "How would you test idempotency of a payment API?",
+  html: `
+    <p>Idempotency here is safety-critical — a retried payment request must never double-charge. This deserves a dedicated, deliberate test design.</p>
+
+    <h3>1 · Understand the idempotency mechanism</h3>
+    <p>Most payment APIs use an <strong>idempotency key</strong> (client-generated UUID sent in a header) — the server should return the same result for repeated requests with the same key, without re-executing the charge.</p>
+
+    <h3>2 · Core test scenarios</h3>
+    <table>
+      <tr><th>Scenario</th><th>Expected behavior</th></tr>
+      <tr><td>Same request, same idempotency key, sent twice</td><td>Second response identical to first; only one charge in the ledger/DB</td></tr>
+      <tr><td>Same key, but a <em>different</em> payload</td><td>API should reject or flag — key reuse with different data is a conflict, not a valid retry</td></tr>
+      <tr><td>Concurrent duplicate requests (race condition)</td><td>Only one actually executes; the other waits/returns the first result — no double-processing under simultaneous hits</td></tr>
+      <tr><td>Client retries after a timeout (request succeeded server-side but response was lost)</td><td>Retry with same key returns the original success — no duplicate charge</td></tr>
+      <tr><td>No idempotency key provided</td><td>Confirm documented behavior — reject, or treat every request as unique (and document the risk)</td></tr>
+      <tr><td>Idempotency key expiry/reuse after TTL</td><td>Confirm expected behavior once the key's validity window has passed</td></tr>
+    </table>
+
+    <h3>3 · Validate at the data layer, not just the API response</h3>
+    <p>The API can return a 200 both times without proving idempotency — the real proof is a DB/ledger check confirming exactly one transaction record exists for that key.</p>
+
+    <h3>4 · Concurrency testing specifically</h3>
+    <p>Fire the same request from multiple threads simultaneously (not sequentially) to genuinely exercise the race condition — sequential retries alone won't catch a locking/concurrency bug in the idempotency implementation.</p>
+
+    <div class="callout"><b>Why this matters more than most test scenarios:</b> a missed idempotency bug in payments isn't a UI glitch — it's real money moved twice, so I'd treat this as a mandatory, not optional, part of the regression suite.</div>
+  `
+},
+{
+  id: "Q15",
+  title: "A legacy, manual-testing-heavy project — how do you introduce automation?",
+  html: `
+    <p>Dropping a full framework on day one usually fails — the approach is incremental, proving value early.</p>
+
+    <h3>1 · Understand before automating</h3>
+    <ul>
+      <li>Study the existing manual test cases, release cadence, and where most production bugs actually originate (that tells you where automation pays off fastest).</li>
+      <li>Identify what's currently most painful — repetitive regression before every release is usually the biggest, most obvious win.</li>
+    </ul>
+
+    <h3>2 · Start with high-value, low-volatility flows</h3>
+    <p>Automate the critical paths that are executed every release and change infrequently (login, core transaction flow) — not the newest, still-churning features where automation would need constant rewriting.</p>
+
+    <h3>3 · Prove value with a small, fast win</h3>
+    <p>A focused smoke suite (10-20 tests) covering the top critical paths, running in CI, delivered in weeks — not a "perfect framework" delivered in months. This builds stakeholder trust and buy-in for further investment.</p>
+
+    <h3>4 · Build the framework to scale from day one, even if starting small</h3>
+    <p>Reusable page objects/service clients, config-driven environments, and a reporting layer — so the framework naturally grows rather than needing a rewrite once it's proven.</p>
+
+    <h3>5 · Bring the manual testers along, don't sideline them</h3>
+    <p>Involve them in defining what "correct" looks like for each automated case — their domain knowledge of edge cases is the biggest asset in a legacy project, and framing automation as freeing them for exploratory/high-value testing (rather than replacing them) reduces resistance.</p>
+
+    <h3>6 · Track and report progress</h3>
+    <p>Coverage growth over time, defects caught by automation vs. escaped to production — concrete numbers that justify continued investment.</p>
+
+    <div class="callout"><b>Sequencing that matters:</b> smoke suite first for quick trust, then expand into regression, then layer in API/DB-level tests underneath the UI to reduce reliance on slower UI automation over time.</div>
+  `
+},
+{
+  id: "Q16",
+  title: "Handling test data for a banking app with PII — masking and synthetic data",
+  html: `
+    <p>In BFSI specifically, this isn't just a testing convenience — it's a compliance requirement (data protection regulations, internal InfoSec policy).</p>
+
+    <h3>1 · Never use real production PII in lower environments</h3>
+    <p>Even "just for QA" copies of production data are a common audit finding — the default assumption should be that raw prod data doesn't belong in test environments at all.</p>
+
+    <h3>2 · Two main approaches</h3>
+    <table>
+      <tr><th>Approach</th><th>How it works</th><th>When to use</th></tr>
+      <tr><td>Data masking/anonymization</td><td>Copy production-shaped data, then irreversibly scramble/replace PII fields (names, SSNs, account numbers) while preserving format and referential integrity</td><td>Need realistic data distribution/volume for performance or edge-case testing</td></tr>
+      <tr><td>Synthetic data generation</td><td>Generate fake-but-valid data from scratch (faker libraries, data builder patterns) matching schema and business rules</td><td>Functional/regression testing where exact production patterns aren't required</td></tr>
+    </table>
+
+    <h3>3 · Practical implementation</h3>
+    <ul>
+      <li>A shared test-data builder/factory in the framework that generates valid synthetic customers, accounts, and transactions on demand — deterministic enough to be repeatable, varied enough to cover edge cases.</li>
+      <li>For masking pipelines: consistent masking (the same real value always masks to the same fake value) preserves referential integrity across related tables without exposing the original.</li>
+      <li>Format-preserving masking for fields with validation logic (e.g. a masked account number still passes a Luhn/checksum check if the app validates it).</li>
+    </ul>
+
+    <h3>4 · Access control on top of masking</h3>
+    <p>Even masked/synthetic test environments should have access restricted to what's needed — masking reduces risk, it doesn't eliminate the need for environment access controls.</p>
+
+    <div class="callout"><b>Practical note from BFSI experience:</b> I've worked on data reconciliation testing where consistent, referentially-intact synthetic data across environments was what made cross-system validation possible at all — inconsistent masking breaks exactly the kind of DB/API cross-checks these frameworks rely on.</div>
+  `
+},
+{
+  id: "Q17",
+  title: "Two teams push conflicting DB schema changes and your CI tests break — how do you handle it?",
+  html: `
+    <p>This is both an immediate-fix and a process problem — solve the break, then close the gap that allowed it.</p>
+
+    <h3>1 · Triage first — don't assume it's a real bug</h3>
+    <ul>
+      <li>Check what actually changed — pull the recent migration/schema change history alongside the CI failure logs to see which change correlates with the break.</li>
+      <li>Distinguish a genuine regression (schema change broke an assumption the app/tests correctly relied on) from a stale test (test hardcodes an old schema assumption that was meant to change).</li>
+    </ul>
+
+    <h3>2 · Communicate across teams immediately</h3>
+    <p>Flag both teams owning the conflicting changes — schema conflicts are rarely a "just fix the test" situation; they usually mean the teams need to align on the actual target schema before anyone's tests (or code) should be "fixed."</p>
+
+    <h3>3 · Stop the bleeding in CI</h3>
+    <p>If this is blocking unrelated PRs, quarantine the specific broken tests (not the whole pipeline) with a tracked ticket, so other work isn't blocked while the schema conflict gets resolved.</p>
+
+    <h3>4 · Fix at the right layer</h3>
+    <ul>
+      <li>If tests hardcode schema assumptions (specific column names/types) instead of reading dynamically or via a shared schema/versioned migration reference, that's the underlying fragility — worth fixing regardless of this specific incident.</li>
+      <li>Update tests only once the schema conflict itself is resolved and the "true" schema is agreed — updating tests to match a change that itself gets reverted just creates more churn.</li>
+    </ul>
+
+    <h3>5 · Prevent recurrence</h3>
+    <p>Push for schema changes to go through a review process that includes a check against consuming tests/services (a shared schema registry or migration review step) — so conflicting changes are caught before merge, not after CI breaks.</p>
+
+    <div class="callout"><b>The trap to avoid:</b> reflexively "fixing" the test to make CI green again without understanding whether the schema change itself was even correct — that can quietly mask a real breaking change reaching other consumers.</div>
+  `
+},
+{
+  id: "Q18",
+  title: "Designing tests for a service with asynchronous, eventually-consistent behavior",
+  html: `
+    <p>Beyond the Kafka-specific case (Q13), this is the general pattern for any async system — message queues, webhooks, background jobs, cache invalidation delays.</p>
+
+    <h3>1 · Map the consistency boundary explicitly</h3>
+    <p>Know exactly which operations are synchronous (immediate response) vs. asynchronous (eventual effect) — document the expected maximum propagation delay if the system defines an SLA for it.</p>
+
+    <h3>2 · Never assert immediately after triggering an async action</h3>
+    <p>Use polling with a timeout (Awaitility, custom retry-with-backoff utility) rather than a fixed sleep — asserts the moment the condition becomes true, fails fast if it never does within the SLA window.</p>
+
+    <h3>3 · Test both directions</h3>
+    <ul>
+      <li><strong>Positive:</strong> the async effect eventually happens correctly (right data, right state).</li>
+      <li><strong>Negative:</strong> the async effect does <em>not</em> happen when it shouldn't (e.g. a cancelled action shouldn't still process minutes later) — this needs a "wait and confirm absence" pattern, trickier than confirming presence.</li>
+    </ul>
+
+    <h3>4 · Handle out-of-order and duplicate delivery</h3>
+    <p>Async systems commonly redeliver or reorder — test that the final state is correct regardless of delivery order/duplication, not just under the happy-path single-delivery case.</p>
+
+    <h3>5 · Observability over the async boundary</h3>
+    <p>When a test fails, "eventually didn't become true" isn't enough diagnostic information — capture what state the system was actually in (queue depth, consumer lag, last processed offset/timestamp) so failures are debuggable, not just red.</p>
+
+    <div class="callout"><b>Underlying principle:</b> design the assertion around the system's actual consistency model — polling with a bounded timeout — rather than forcing an inherently async system into synchronous-style test assertions.</div>
+  `
+},
+{
+  id: "Q19",
+  title: "Migrating an existing Selenium framework to Playwright without stopping ongoing work",
+  html: `
+    <p>A big-bang rewrite is risky — the team keeps shipping features and tests throughout, so the migration has to be incremental and coexist with the old framework.</p>
+
+    <h3>1 · Don't rewrite everything at once — run both frameworks in parallel</h3>
+    <p>Keep the existing Selenium suite running as-is (it's still the safety net) while building the Playwright suite alongside it in a separate module/directory, sharing common utilities (test data, config, reporting) where practical.</p>
+
+    <h3>2 · Prioritize migration order strategically</h3>
+    <ul>
+      <li>Start with tests that are cheapest to migrate and highest-value to speed up (Playwright's auto-waiting and speed advantages show up fastest here) — build team confidence early.</li>
+      <li>Migrate flaky/high-maintenance Selenium tests early — that's where Playwright's more reliable auto-wait mechanism directly pays off.</li>
+      <li>Leave stable, rarely-touched Selenium tests for later, or don't migrate them at all if they're working fine and low-maintenance.</li>
+    </ul>
+
+    <h3>3 · Retire Selenium tests only after their Playwright equivalent is proven</h3>
+    <p>Run both versions of a migrated test in CI for a short overlap period, compare results, and only remove the old Selenium test once the new one has demonstrated equal or better reliability across several runs — never delete the safety net before the replacement is trusted.</p>
+
+    <h3>4 · Keep new test authoring aligned during the transition</h3>
+    <p>Any brand-new tests written during the migration period go directly into Playwright, not Selenium — so the team isn't adding to the pile that still needs migrating.</p>
+
+    <h3>5 · CI pipeline handles both temporarily</h3>
+    <p>Two parallel stages (Selenium suite + Playwright suite) in the pipeline during the transition, collapsing to one once migration completes — with clear tracking (a simple migration-progress dashboard/ticket) of what's left.</p>
+
+    <div class="callout"><b>Why this order matters:</b> the team never loses coverage mid-migration, and effort is spent first where it has the highest payoff (flaky/slow tests) rather than mechanically working top-to-bottom through the file list.</div>
+  `
+},
+{
+  id: "Q20",
+  title: "How do you test a canary / blue-green deployment?",
+  html: `
+    <p>The testing goal shifts from "is the new version functionally correct" (already validated pre-deploy) to "is it safe to shift more/all production traffic to it."</p>
+
+    <h3>1 · Understand the deployment model first</h3>
+    <table>
+      <tr><th>Model</th><th>What's happening</th></tr>
+      <tr><td>Canary</td><td>A small % of production traffic routed to the new version, gradually increased if healthy</td></tr>
+      <tr><td>Blue-Green</td><td>Two full environments (old = blue, new = green); traffic is switched entirely once green is validated</td></tr>
+    </table>
+
+    <h3>2 · Pre-cutover validation (before real traffic hits it)</h3>
+    <p>Smoke and critical-path automated suite runs directly against the new (canary/green) environment in isolation, confirming it's healthy before any production traffic is exposed to it.</p>
+
+    <h3>3 · During canary — monitor, don't just re-run functional tests</h3>
+    <ul>
+      <li>Compare key metrics between old and new versions side-by-side: error rate, latency (p50/p95/p99), and business-critical metrics (e.g. transaction success rate) — not just "tests passed."</li>
+      <li>Automated health checks/synthetic monitoring hitting the canary continuously, not just a one-time test run.</li>
+      <li>Define clear rollback thresholds upfront (e.g. error rate exceeding X% triggers automatic rollback) rather than deciding reactively under pressure.</li>
+    </ul>
+
+    <h3>4 · Blue-green specific checks</h3>
+    <ul>
+      <li>Validate the green environment fully in isolation (same as canary pre-cutover) before the traffic switch.</li>
+      <li>Test the switch mechanism itself — DNS/load balancer cutover — including a rollback drill (can you switch back to blue quickly if green shows issues post-cutover?).</li>
+      <li>Data layer consideration: if both environments share a DB, confirm schema compatibility works for both versions during any overlap window; if they don't share a DB, confirm data sync/migration correctness.</li>
+    </ul>
+
+    <h3>5 · Post-cutover verification</h3>
+    <p>A final smoke pass against 100% production traffic once fully cut over, plus continued monitoring for a defined stabilization window before considering the deployment "done."</p>
+
+    <div class="callout"><b>Mindset shift:</b> this is as much about monitoring and safe-rollback readiness as it is about pre-written test cases — the automated suite proves correctness, but the deployment strategy itself is what limits blast radius if something's still wrong.</div>
+  `
+},
+{
+  id: "Q21",
+  title: "Tests pass, but a bug still slips to production — how do you investigate and prevent recurrence?",
+  html: `
+    <p>This is a test-gap analysis, not a "the test suite failed" conversation — a green suite and an escaped bug are two separate facts that both need explaining.</p>
+
+    <h3>1 · Reproduce the bug and trace it against existing coverage</h3>
+    <ul>
+      <li>Confirm the exact conditions that trigger it — specific data, sequence of actions, environment/config difference.</li>
+      <li>Check whether an existing test <em>should</em> have caught this and didn't (a real test gap or a broken/weak assertion), versus no test ever covered this scenario at all (a missing scenario).</li>
+    </ul>
+
+    <h3>2 · Classify the gap</h3>
+    <table>
+      <tr><th>Gap type</th><th>Example</th><th>Fix</th></tr>
+      <tr><td>Missing scenario</td><td>An edge case/combination never considered</td><td>Add new test case(s)</td></tr>
+      <tr><td>Weak assertion</td><td>Test ran the flow but only checked a 200 status, not the actual data correctness</td><td>Strengthen assertions</td></tr>
+      <tr><td>Environment mismatch</td><td>Bug only reproduces with production-scale data/config that test environments don't replicate</td><td>Closer prod-like test environment or targeted data-scale tests</td></tr>
+      <tr><td>Non-deterministic/timing issue</td><td>Race condition only surfaces under real concurrent production load</td><td>Concurrency-specific tests, load testing</td></tr>
+    </table>
+
+    <h3>3 · Add the regression test before considering it closed</h3>
+    <p>The bug isn't "resolved" from a QA standpoint until there's a test that would have caught it and now guards against it recurring — fixing the code without adding the test just leaves the same gap open for the next similar case.</p>
+
+    <h3>4 · Look for the pattern, not just the instance</h3>
+    <p>If this gap type (e.g. missing negative-path coverage, or thin production-scale testing) shows up more than once, that's a systemic gap in the test strategy worth addressing broadly, not just patching the one bug.</p>
+
+    <h3>5 · Feed it back into process</h3>
+    <p>If it's a recurring pattern, consider whether it belongs in a review checklist, a required test category for new features, or better production monitoring/alerting as a complementary safety net (since no test suite catches everything).</p>
+
+    <div class="callout"><b>What I avoid:</b> treating an escaped bug purely as "the automation failed" — a suite is a coverage tool, not a guarantee; the useful output of this exercise is a specific, addressable gap, not a vague "we need more tests."</div>
+  `
+},
+{
+  id: "Q22",
+  title: "Load/performance testing a loan origination API expecting month-end spike traffic",
+  html: `
+    <p>BFSI-specific pattern: predictable cyclical spikes (month-end, EMI due dates, campaign periods) mean the test needs to specifically validate behavior <em>at</em> the spike, not just average load.</p>
+
+    <h3>1 · Establish real traffic patterns first</h3>
+    <p>Get actual historical traffic data (or best estimates) for a normal day vs. a month-end day — peak requests/second, concurrent users, and how sharply traffic ramps (sudden spike vs. gradual build) rather than guessing numbers.</p>
+
+    <h3>2 · Define the test types needed</h3>
+    <table>
+      <tr><th>Test type</th><th>Purpose</th></tr>
+      <tr><td>Load test</td><td>Expected month-end peak load sustained — does the system hold up at realistic peak?</td></tr>
+      <tr><td>Stress test</td><td>Push beyond expected peak until it breaks — find the actual ceiling and how it fails (gracefully or catastrophically)</td></tr>
+      <tr><td>Spike test</td><td>Sudden sharp traffic increase (not gradual ramp) — validates auto-scaling/queuing response time</td></tr>
+      <tr><td>Soak/endurance test</td><td>Sustained moderate-high load over hours — catches memory leaks, connection pool exhaustion that only appear over time</td></tr>
+    </table>
+
+    <h3>3 · Tooling and approach</h3>
+    <p>JMeter or Gatling to script realistic request patterns (not just hammering one endpoint — mimic the real mix of loan-application, status-check, document-upload calls together), against a production-like environment (data volume and infra sizing matter — testing against an undersized environment gives misleading results).</p>
+
+    <h3>4 · Key metrics beyond "did it stay up"</h3>
+    <ul>
+      <li>Response time percentiles (p95/p99, not just average — averages hide the worst-experience users).</li>
+      <li>Error rate under load, and specifically what kind of errors (timeouts vs. 5xx vs. queue rejections).</li>
+      <li>Resource saturation — DB connection pool, thread pool, downstream dependency (credit bureau/KYC service) capacity, since loan origination typically fans out to several external checks.</li>
+      <li>Recovery behavior — once the spike passes, does the system return to normal, or does it stay degraded?</li>
+    </ul>
+
+    <h3>5 · Downstream dependency awareness</h3>
+    <p>A loan origination flow usually calls external bureaus/KYC/scoring services — these often have their own rate limits, so the load test needs to account for (and possibly mock, per Q11) these dependencies to isolate whether bottlenecks are internal or external.</p>
+
+    <div class="callout"><b>Why this is worth doing before month-end, not after an incident:</b> a predictable, known spike is exactly the kind of risk that's cheap to test for in advance and expensive to discover live — I'd push to make this a recurring pre-month-end validation, not a one-off exercise.</div>
+  `
+},
+{
+  id: "Q23",
+  title: "How do you decide what to automate vs. keep exploratory/manual?",
+  html: `
+    <p>Not everything should be automated — the decision is a cost/value trade-off, not a default toward "automate everything."</p>
+
+    <h3>Favor automation when:</h3>
+    <ul>
+      <li>The test is <strong>repetitive</strong> — run every release/regression cycle.</li>
+      <li>The expected result is <strong>deterministic and clearly verifiable</strong> — a pass/fail condition is unambiguous.</li>
+      <li>It covers a <strong>stable, critical path</strong> that doesn't churn frequently (high ROI on the automation investment).</li>
+      <li>It's <strong>data/combination-heavy</strong> — many input variations that would be tedious and error-prone to run manually every time.</li>
+      <li>It needs to run at a <strong>scale or speed</strong> a human can't match — load testing, cross-device/cross-browser matrices, large data validation.</li>
+    </ul>
+
+    <h3>Favor manual/exploratory when:</h3>
+    <ul>
+      <li>The feature is <strong>new and still changing</strong> — automating it now means rewriting the automation repeatedly as it evolves.</li>
+      <li>It requires <strong>human judgment</strong> — visual/UX quality, "does this feel right," ambiguous or subjective correctness.</li>
+      <li>It's a <strong>one-off or rarely-executed</strong> scenario — the automation investment wouldn't pay back its build/maintenance cost.</li>
+      <li>You're specifically trying to <strong>find unknown issues</strong> — exploratory testing is inherently about deviating from scripted paths, which is the opposite of what automation does well.</li>
+    </ul>
+
+    <h3>A practical framework</h3>
+    <p>I'd weigh it roughly as: <code>(frequency × stability × verification-clarity) vs. (build effort + ongoing maintenance cost)</code>. High frequency + stable + clear pass/fail almost always wins automation; anything scoring low on stability or verification-clarity is a flag to keep it manual, at least until it stabilizes.</p>
+
+    <div class="callout"><b>In practice:</b> automation and exploratory testing aren't competitors — a solid automated regression suite is what frees up time for meaningful exploratory testing on the new, risky, or ambiguous areas, rather than manual testers re-running the same scripted regression every cycle.</div>
+  `
+},
+{
+  id: "Q24",
+  title: "Keeping the automation suite maintainable as the team scales from 2 to 10 SDETs",
+  html: `
+    <p>What works for 2 people writing tests informally breaks down fast at 10 — the failure mode is usually inconsistency, not lack of skill.</p>
+
+    <h3>1 · Establish and enforce structural conventions early</h3>
+    <ul>
+      <li>A documented framework structure (where page objects, API clients, test data, and config live) that everyone follows — not "however each person prefers."</li>
+      <li>Naming conventions for tests, methods, and test data — so anyone can find and understand a test without asking its author.</li>
+    </ul>
+
+    <h3>2 · Code review for test code, same rigor as production code</h3>
+    <p>Automation code isn't exempt from review — enforce the same PR review process (structure, reusability, no hardcoded waits/sleeps, no duplicated logic) so quality doesn't erode as more people contribute.</p>
+
+    <h3>3 · Shared, centralized utilities — no reinventing per person</h3>
+    <p>Common wait helpers, API client wrappers, data builders, and assertion libraries live in one shared module. Without this, 10 SDETs end up with 10 slightly different ways of doing the same thing, and maintenance cost multiplies.</p>
+
+    <h3>4 · Ownership without silos</h3>
+    <p>Assign clear ownership of test modules/areas (so someone is accountable for a section's health) while keeping the framework itself a shared responsibility — avoid a structure where only the original 2 authors understand how the core framework works.</p>
+
+    <h3>5 · Onboarding material as a first-class deliverable</h3>
+    <p>A concise "how to add a test," "how to run locally," and "framework architecture" doc — without this, every new SDET either asks the same questions repeatedly or reverse-engineers conventions inconsistently.</p>
+
+    <h3>6 · Metrics to catch drift early</h3>
+    <ul>
+      <li>Growing flaky-test count or suite runtime often signals declining discipline before it becomes a crisis — track it, don't wait for it to become unmanageable.</li>
+      <li>Periodic framework health reviews (not just feature-test reviews) as the team and codebase grow.</li>
+    </ul>
+
+    <div class="callout"><b>Underlying principle:</b> a framework that scales with headcount is one where conventions and shared utilities do the consistency work — relying on "everyone just writes good tests" doesn't hold once you're past a handful of contributors.</div>
+  `
+},
+{
+  id: "Q25",
+  title: "Risk-based prioritization when you can't test everything before a release",
+  html: `
+    <p>When time is fixed and scope isn't, testing becomes a risk-allocation exercise, not a coverage checklist.</p>
+
+    <h3>1 · Score by risk, not by convenience</h3>
+    <p>Risk = impact × likelihood. Prioritize areas that are both high-impact if broken (payments, auth, core transaction flow) and higher-likelihood of being broken (recently changed code, complex logic, historically buggy modules) over low-risk, stable, rarely-touched areas.</p>
+
+    <h3>2 · Use concrete signals, not gut feel</h3>
+    <ul>
+      <li>Code churn/diff size for this release — bigger, more invasive changes get more scrutiny.</li>
+      <li>Historical defect density per module — areas that have produced bugs before are statistically more likely to again.</li>
+      <li>Business criticality — what actually loses money or trust if it breaks.</li>
+    </ul>
+
+    <h3>3 · Layer the coverage</h3>
+    <table>
+      <tr><th>Priority</th><th>Coverage</th></tr>
+      <tr><td>P0</td><td>Full regression + edge cases on changed, high-risk areas</td></tr>
+      <tr><td>P1</td><td>Smoke/critical-path only on unchanged but critical areas</td></tr>
+      <tr><td>P2</td><td>Spot-check or skip entirely if genuinely untouched and low-risk this cycle</td></tr>
+    </table>
+
+    <h3>4 · Make the trade-off visible</h3>
+    <p>Document explicitly what's not being tested this cycle and why, and surface it to the release owner — a conscious, communicated risk decision is very different from an accidental gap nobody signed off on.</p>
+
+    <div class="callout"><b>The discipline here:</b> risk-based testing isn't "test less carefully" — it's "spend the same rigor where it actually matters," and being explicit about what's deprioritized so it's a team decision, not a silent gap.</div>
+  `
+},
+{
+  id: "Q26",
+  title: "Testing a GraphQL API vs. a REST API — what changes in your approach",
+  html: `
+    <p>The fundamentals (contract validation, auth, error handling) carry over, but GraphQL's flexibility shifts where the real risk sits.</p>
+
+    <h3>Key differences</h3>
+    <table>
+      <tr><th>Aspect</th><th>REST</th><th>GraphQL</th></tr>
+      <tr><td>Endpoints</td><td>Many, each with fixed shape</td><td>Single endpoint; shape defined per-query by the client</td></tr>
+      <tr><td>Over/under-fetching</td><td>Common problem, hard to avoid</td><td>Client requests exactly what it needs — but that shifts risk to query correctness</td></tr>
+      <tr><td>Status codes</td><td>Meaningful (404, 400, 500...)</td><td>Usually 200 even on error — errors live in the response body</td></tr>
+      <tr><td>Schema</td><td>Loosely enforced (OpenAPI optional)</td><td>Strongly typed schema is core to the protocol</td></tr>
+    </table>
+
+    <h3>What to focus test effort on</h3>
+    <ul>
+      <li><strong>Query/mutation correctness per field combination</strong> — since clients can request arbitrary nested field sets, test realistic query shapes actual clients use, not just one canonical query.</li>
+      <li><strong>Error handling inside the response body</strong> — assert on the <code>errors</code> array and partial-success responses, not HTTP status, since a 200 can still carry a failed field.</li>
+      <li><strong>Schema validation</strong> — confirm the schema itself (types, required fields, deprecations) rather than assuming it from response shape alone; schema-diff checks in CI catch breaking changes early.</li>
+      <li><strong>N+1 query / performance risk</strong> — a single GraphQL query can trigger many backend resolver calls; test for performance regressions specifically around deeply nested queries.</li>
+      <li><strong>Authorization at the field level</strong> — GraphQL often needs per-field, not just per-endpoint, authorization checks (a user might see some fields of a type but not others).</li>
+    </ul>
+
+    <div class="callout"><b>Tooling:</b> REST Assured works for the transport layer, but I'd pair it with schema introspection checks and realistic query fixtures (rather than one canned query) to actually exercise GraphQL's flexibility.</div>
+  `
+},
+{
+  id: "Q27",
+  title: "Testing WebSocket / real-time streaming features",
+  html: `
+    <p>WebSocket testing breaks the request-response mental model — you're validating a persistent, bidirectional, stateful connection.</p>
+
+    <h3>1 · Connection lifecycle</h3>
+    <ul>
+      <li>Successful handshake/upgrade from HTTP, correct auth on connect (token in handshake, not just first message).</li>
+      <li>Graceful close, unexpected disconnect handling, and reconnect behavior — does the client resume state correctly, or does it silently miss messages during the gap?</li>
+    </ul>
+
+    <h3>2 · Message correctness</h3>
+    <ul>
+      <li>Message ordering — for features where order matters (e.g. a live price feed), confirm messages arrive and are processed in the correct sequence.</li>
+      <li>Message schema validation, same rigor as REST payload validation.</li>
+      <li>Duplicate/replay handling if the protocol allows redelivery.</li>
+    </ul>
+
+    <h3>3 · Concurrency and scale</h3>
+    <p>Open multiple concurrent connections (simulating many clients) and confirm messages are correctly scoped/broadcast to the right subscribers only — a common bug class is message leakage across sessions/tenants.</p>
+
+    <h3>4 · Tooling approach</h3>
+    <p>A test WebSocket client (Java has libraries like Tyrus, or a lightweight custom client) that connects, subscribes, and asserts on received messages with a timeout — similar polling/await pattern to async testing (Q18), since messages arrive on the server's schedule, not the test's.</p>
+
+    <h3>5 · Failure and edge cases</h3>
+    <p>Server restart mid-connection, slow consumer (client not reading fast enough — does the server buffer, drop, or backpressure?), and malformed incoming messages from a misbehaving client.</p>
+
+    <div class="callout"><b>Core shift from REST testing:</b> you're asserting on a stream of events over time with an open connection, not a single request/response pair — the test needs to actively listen and wait, not just call-and-check.</div>
+  `
+},
+{
+  id: "Q28",
+  title: "Testing distributed transactions across microservices (Saga pattern)",
+  html: `
+    <p>A Saga coordinates a multi-service transaction without a single ACID boundary — testing has to validate both the happy path and, critically, the compensation (rollback) logic.</p>
+
+    <h3>1 · Understand the saga's steps and compensations</h3>
+    <p>Map every step in the saga and its corresponding compensating action (e.g. "reserve inventory" ↔ "release inventory," "charge payment" ↔ "refund payment") before writing a single test — the compensations are usually where the real risk lives.</p>
+
+    <h3>2 · Happy path</h3>
+    <p>All steps succeed in order; confirm the final state across every participating service and DB is consistent — this is the easy 80% and least likely to hide bugs.</p>
+
+    <h3>3 · Failure-and-compensate scenarios (the important 20%)</h3>
+    <table>
+      <tr><th>Scenario</th><th>What to verify</th></tr>
+      <tr><td>Step 3 of 5 fails</td><td>Steps 1-2 are correctly compensated (rolled back), not left in a partial state</td></tr>
+      <tr><td>Compensation itself fails</td><td>System doesn't silently give up — retries, alerts, or lands in a recoverable "needs manual intervention" state rather than a silent inconsistency</td></tr>
+      <tr><td>Timeout mid-saga</td><td>Saga orchestrator correctly detects the timeout and triggers compensation rather than waiting indefinitely</td></tr>
+      <tr><td>Duplicate/retried step execution</td><td>Steps are idempotent — a retried step doesn't double-apply (same principle as Q14, applied per saga step)</td></tr>
+    </table>
+
+    <h3>4 · Validate eventual consistency, not just in-flight state</h3>
+    <p>After a saga completes (success or compensated), poll and confirm every participating service's data is in its correct final state — using the same await/polling pattern as any eventually-consistent system (Q13, Q18).</p>
+
+    <h3>5 · Observability for debugging</h3>
+    <p>Since a saga spans services, correlate logs/traces via a shared saga/correlation ID across every step — without this, diagnosing which step failed and why becomes very hard.</p>
+
+    <div class="callout"><b>Where I'd focus review time:</b> compensation logic gets written but rarely gets exercised in manual testing — it's exactly the kind of path that only automation reliably keeps validated over time.</div>
+  `
+},
+{
+  id: "Q29",
+  title: "Validating database migrations before they go to production",
+  html: `
+    <p>A bad migration in a live BFSI database is one of the highest-blast-radius failures possible — this deserves a dedicated validation process, not just "run it and see."</p>
+
+    <h3>1 · Test against a production-like copy, not a toy dataset</h3>
+    <p>Run the migration against a realistic data volume and shape (masked/synthetic production-scale data, per Q16) — a migration that runs instantly on 100 rows can behave very differently (locking, timeout) on 50 million.</p>
+
+    <h3>2 · Validate the migration itself</h3>
+    <ul>
+      <li>Schema change applies cleanly, correct types/constraints/indexes as intended.</li>
+      <li>Data transformation correctness — if the migration transforms existing data, spot-check and aggregate-validate (row counts, checksums, sample field-by-field comparison) before vs. after.</li>
+      <li>No unintended cascading effects — foreign key constraints, triggers, or dependent views that break silently.</li>
+    </ul>
+
+    <h3>3 · Test the rollback path explicitly</h3>
+    <p>Every migration should have a tested rollback/down-migration — verify it actually restores the prior state cleanly, not just that it exists on paper. This is the step most commonly skipped and most needed when something goes wrong live.</p>
+
+    <h3>4 · Application compatibility during the migration window</h3>
+    <p>For zero-downtime deployments, confirm the application still works correctly <em>during</em> the migration — e.g. old application code should tolerate a new nullable column being added before it starts writing to it (expand-contract migration pattern).</p>
+
+    <h3>5 · Performance impact of the migration itself</h3>
+    <p>Long-running migrations (large table alters) can lock tables and cause production timeouts — measure migration duration against realistic data volume and plan for online/non-locking migration strategies if needed.</p>
+
+    <div class="callout"><b>BFSI-specific weight:</b> given the reconciliation and data-integrity work this kind of role usually involves, I'd treat migration validation as seriously as any functional test suite — a silent data corruption from a bad migration is exactly the class of issue reconciliation testing exists to prevent.</div>
+  `
+},
+{
+  id: "Q30",
+  title: "Testing session/token expiry and refresh token flows",
+  html: `
+    <p>Auth token lifecycle bugs are high-impact and easy to under-test because the happy path (valid token, normal use) is what gets tested by default.</p>
+
+    <h3>Core scenarios to cover</h3>
+    <table>
+      <tr><th>Scenario</th><th>Expected behavior</th></tr>
+      <tr><td>Valid access token</td><td>Request succeeds normally</td></tr>
+      <tr><td>Expired access token, valid refresh token</td><td>Client (or API, depending on design) silently refreshes and retries — user isn't interrupted</td></tr>
+      <tr><td>Expired refresh token</td><td>User is forced to re-authenticate; no silent failure or infinite retry loop</td></tr>
+      <tr><td>Token used after logout/explicit revocation</td><td>Rejected immediately, even if not yet naturally expired</td></tr>
+      <tr><td>Concurrent requests during token refresh</td><td>No race condition where some requests fail because they used the old token mid-refresh</td></tr>
+      <tr><td>Token reuse detection (refresh token used twice)</td><td>Flagged as a potential compromise — ideally invalidates the whole token family, not just rejects the reuse</td></tr>
+      <tr><td>Clock skew between client and server</td><td>Reasonable tolerance so legitimate near-expiry tokens aren't rejected prematurely</td></tr>
+    </table>
+
+    <h3>Test design notes</h3>
+    <ul>
+      <li>Use short-lived tokens in the test environment (configurable expiry) so expiry scenarios are actually testable in seconds, not by waiting out a real 24-hour expiry.</li>
+      <li>Test at the API level directly (not just through UI) — set up the token state explicitly (expired, revoked, reused) rather than trying to organically trigger it through the app.</li>
+    </ul>
+
+    <div class="callout"><b>Why this deserves dedicated attention:</b> token lifecycle bugs tend to be invisible in normal QA cycles (testers rarely wait for natural expiry) and show up as real production incidents — deliberately engineering these states in tests is the only reliable way to catch them.</div>
+  `
+},
+{
+  id: "Q31",
+  title: "Testing a multi-tenant SaaS application for data isolation",
+  html: `
+    <p>The single most important thing to prove in multi-tenancy: Tenant A can never see, modify, or infer Tenant B's data — under any condition, not just the obvious ones.</p>
+
+    <h3>1 · Direct access attempts</h3>
+    <ul>
+      <li>Authenticated as Tenant A, attempt to access Tenant B's resource by ID (IDOR-style check) — should be rejected, not just "not found" if that itself leaks information about existence.</li>
+      <li>Test at every layer that exposes an identifier — API, direct DB query paths if exposed, exports/reports, search results.</li>
+    </ul>
+
+    <h3>2 · Indirect/aggregate leakage</h3>
+    <p>Search, autocomplete, analytics, or "count" endpoints can leak cross-tenant data even without direct access — e.g. a dashboard total that includes other tenants' records, or an autocomplete suggesting another tenant's data.</p>
+
+    <h3>3 · Shared infrastructure edge cases</h3>
+    <ul>
+      <li>Caching — a cache key that isn't tenant-scoped can serve Tenant A cached data to Tenant B.</li>
+      <li>Background jobs/batch processing — confirm scheduled jobs correctly scope operations per tenant rather than accidentally processing across tenants.</li>
+      <li>File storage — uploaded files/documents stored with tenant-scoped access controls, not just tenant-scoped in the UI.</li>
+    </ul>
+
+    <h3>4 · Test data design</h3>
+    <p>Always test with at least two tenants populated with distinct, identifiable data simultaneously — testing with only one tenant's data present can hide isolation bugs entirely, since there's nothing to leak.</p>
+
+    <h3>5 · Automate this as a standing regression category</h3>
+    <p>Cross-tenant isolation checks should run on every relevant release, not be a one-time audit — new features are exactly where new leakage paths get introduced.</p>
+
+    <div class="callout"><b>Where I'd invest most effort:</b> the indirect/aggregate leakage paths (search, analytics, caching) — direct-access isolation is usually well understood by dev teams, but these secondary paths are where isolation bugs most often slip through.</div>
+  `
+},
+{
+  id: "Q32",
+  title: "Testing localization/i18n — languages, currencies, date formats",
+  html: `
+    <p>i18n bugs are easy to miss because English/default-locale testing looks completely fine while everything else silently breaks.</p>
+
+    <h3>1 · Text and layout</h3>
+    <ul>
+      <li>String length variance — German/Finnish text can be significantly longer than English; confirm UI doesn't truncate or overflow.</li>
+      <li>Right-to-left languages (Arabic, Hebrew) if in scope — layout mirroring, not just text direction.</li>
+      <li>No hardcoded English strings slipping through in translated views (a common regression when new features ship faster than translation).</li>
+    </ul>
+
+    <h3>2 · Data formatting — the higher-risk category in BFSI</h3>
+    <table>
+      <tr><th>Element</th><th>Risk</th></tr>
+      <tr><td>Currency</td><td>Symbol placement, decimal separator (1.234,56 vs 1,234.56), and correct currency code — a misread decimal separator is a real-money bug</td></tr>
+      <tr><td>Dates</td><td>DD/MM/YYYY vs MM/DD/YYYY ambiguity — a classic source of transposed dates across locales</td></tr>
+      <tr><td>Numbers</td><td>Thousand separators differing by locale; parsing user input correctly per locale, not just displaying it correctly</td></tr>
+      <tr><td>Timezones</td><td>Stored in UTC, displayed correctly converted — a frequent source of "off by X hours" transaction-timestamp bugs</td></tr>
+    </table>
+
+    <h3>3 · Round-trip testing, not just display</h3>
+    <p>The higher-risk bugs are in <em>input parsing</em>, not display — enter a value in one locale's format, confirm it's stored/interpreted correctly, not just that it displays nicely.</p>
+
+    <h3>4 · Automate locale coverage as a parameterized suite</h3>
+    <p>Run critical financial-calculation and date-handling test cases across a representative set of locales via a data-driven test (locale as a parameter), rather than manually spot-checking a couple of languages once.</p>
+
+    <div class="callout"><b>BFSI-specific priority:</b> I'd weight currency and date-format correctness far above pure translation-text QA — a mistranslated label is a UX issue, a misparsed decimal separator in a transaction amount is a financial-integrity issue.</div>
+  `
+},
+{
+  id: "Q33",
+  title: "How do you test around API versioning and breaking changes?",
+  html: `
+    <p>The goal is proving old and new API consumers can coexist safely during a transition, not just that the new version works.</p>
+
+    <h3>1 · Classify the change first</h3>
+    <table>
+      <tr><th>Change type</th><th>Example</th><th>Breaking?</th></tr>
+      <tr><td>Additive</td><td>New optional field, new endpoint</td><td>No — existing consumers unaffected</td></tr>
+      <tr><td>Field removal/rename</td><td>Removing a field consumers may depend on</td><td>Yes</td></tr>
+      <tr><td>Type change</td><td>A field changes from string to number</td><td>Yes</td></tr>
+      <tr><td>Semantic change</td><td>Same field, different meaning/units</td><td>Yes — often the most dangerous, since it doesn't break schema validation, just correctness</td></tr>
+    </table>
+
+    <h3>2 · Test both versions concurrently during the deprecation window</h3>
+    <p>If old and new versions run side by side (e.g. <code>/v1/</code> and <code>/v2/</code>), maintain and run test coverage for both — the old version still needs to keep working correctly for consumers who haven't migrated yet.</p>
+
+    <h3>3 · Contract tests catch this earliest</h3>
+    <p>This is exactly where consumer-driven contract testing (Q3) earns its keep — a provider team can see, before deploying, which consumer contracts would break from a proposed change.</p>
+
+    <h3>4 · Test the deprecation signaling itself</h3>
+    <p>If the API returns deprecation warnings (headers, sunset dates), verify those are actually present and correct — consumers often rely on these to know when to migrate.</p>
+
+    <h3>5 · Test migration paths, not just endpoints in isolation</h3>
+    <p>If v1 and v2 have different request/response shapes for the same logical operation, verify a client can migrate incrementally without the backend getting into an inconsistent state (e.g. a v1 client and v2 client both writing to shared data correctly).</p>
+
+    <div class="callout"><b>The riskiest category to watch for:</b> semantic changes that don't trip schema validation — a field that's still called <code>amount</code> and still a number, but now means something subtly different, is the hardest kind of breaking change to catch without deliberate test design.</div>
+  `
+},
+{
+  id: "Q34",
+  title: "Testing encryption / mTLS between services",
+  html: `
+    <p>This overlaps with security testing but has a distinct SDET angle: proving the connection actually enforces what it claims to, not just that it "works."</p>
+
+    <h3>1 · Positive path</h3>
+    <p>Valid client certificate presented, valid server certificate returned, connection established, data flows correctly — confirms the happy path is functional.</p>
+
+    <h3>2 · Negative/enforcement path — the part often skipped</h3>
+    <table>
+      <tr><th>Scenario</th><th>Expected result</th></tr>
+      <tr><td>No client certificate presented</td><td>Connection rejected, not silently allowed through</td></tr>
+      <tr><td>Expired certificate</td><td>Rejected — confirms expiry is actually enforced, not just present in the cert</td></tr>
+      <tr><td>Certificate from an untrusted CA</td><td>Rejected</td></tr>
+      <tr><td>Revoked certificate (if CRL/OCSP is used)</td><td>Rejected — proves revocation checking actually works, not just configured</td></tr>
+      <tr><td>Weak/deprecated cipher suite attempted</td><td>Connection refused per policy, not silently downgraded</td></tr>
+    </table>
+
+    <h3>3 · Verify it's actually encrypted, not just "using HTTPS"</h3>
+    <p>Packet capture or a proxy tool to confirm payloads aren't visible in plaintext — a misconfigured setup can sometimes appear to work while actually falling back to an insecure channel.</p>
+
+    <h3>4 · Certificate rotation testing</h3>
+    <p>Confirm the system handles certificate rotation without downtime — old cert expiring while new cert is deployed shouldn't cause an outage if rotation is done correctly; this is worth testing deliberately rather than discovering it during a real rotation.</p>
+
+    <h3>5 · Where this fits my prior experience</h3>
+    <p>This maps closely to mTLS security testing I've done on the DBS Bank engagement — the enforcement/negative-path tests were consistently where real gaps showed up, not the happy path.</p>
+
+    <div class="callout"><b>Core principle:</b> encryption/mTLS testing is mostly about proving the negative paths are actually enforced — the happy path being green tells you almost nothing about whether the security boundary actually holds.</div>
+  `
+},
+{
+  id: "Q35",
+  title: "How would you introduce chaos engineering to validate system resilience?",
+  html: `
+    <p>Chaos engineering deliberately injects failure to prove the system degrades gracefully — it's an addition to the test pyramid, not a replacement for functional testing.</p>
+
+    <h3>1 · Start with a hypothesis, not random breakage</h3>
+    <p>Define what "resilient" means for the specific scenario first — e.g. "if the payment service is unreachable for 30 seconds, the checkout flow should show a retry message, not crash or lose the cart" — then design the experiment to prove or disprove that hypothesis.</p>
+
+    <h3>2 · Start small and controlled</h3>
+    <ul>
+      <li>Begin in a non-production, production-like environment before ever considering production chaos experiments.</li>
+      <li>Start with the least risky fault types — latency injection is safer to start with than full service kill.</li>
+      <li>Always have a clear, fast rollback/stop mechanism for the experiment itself.</li>
+    </ul>
+
+    <h3>3 · Common fault types to inject</h3>
+    <table>
+      <tr><th>Fault type</th><th>What it validates</th></tr>
+      <tr><td>Network latency/packet loss (Toxiproxy)</td><td>Timeout handling, retry/backoff logic</td></tr>
+      <tr><td>Service kill/unavailability</td><td>Circuit breaker, fallback, graceful degradation</td></tr>
+      <tr><td>Resource exhaustion (CPU/memory pressure)</td><td>Autoscaling, backpressure, no cascading failure</td></tr>
+      <tr><td>Dependency slow response</td><td>Timeout configuration is actually respected, not left at default/unbounded</td></tr>
+    </table>
+
+    <h3>4 · Automate and repeat</h3>
+    <p>Once proven safe, integrate a subset of chaos experiments into a scheduled (not per-commit) pipeline so resilience is continuously validated rather than tested once and assumed to hold forever as the system evolves.</p>
+
+    <h3>5 · Measure the right things</h3>
+    <p>Not just "did it crash" — measure recovery time, whether alerts fired correctly, and whether the user-facing experience degraded gracefully (clear error/retry messaging) vs. catastrophically.</p>
+
+    <div class="callout"><b>Where I'd introduce it first:</b> around the exact resilience patterns already claimed in the design (circuit breakers, retries, fallbacks per Q1) — chaos testing is how you prove those aren't just theoretical.</div>
+  `
+},
+{
+  id: "Q36",
+  title: "Testing feature flags / progressive rollout",
+  html: `
+    <p>Feature flags multiply the number of effective code paths — the testing challenge is combinatorial coverage without combinatorial explosion of test effort.</p>
+
+    <h3>1 · Test both states explicitly</h3>
+    <p>Flag ON and flag OFF are both real production states that need coverage — a common gap is only testing the "new" behavior and assuming the old (OFF) path still works untouched.</p>
+
+    <h3>2 · Test the flag mechanism itself</h3>
+    <ul>
+      <li>Flag correctly targets the intended segment (percentage rollout, specific user cohort, specific environment) — verify targeting logic, not just the feature behind it.</li>
+      <li>Flag change propagation — how quickly does a flag toggle actually take effect (cached config vs. real-time)?</li>
+      <li>Flag interaction — if multiple flags can be active simultaneously, test realistic combinations, not just each flag in isolation, since interaction bugs are common.</li>
+    </ul>
+
+    <h3>3 · Progressive rollout specifically</h3>
+    <p>Similar territory to canary testing (Q20) — monitor key metrics as rollout percentage increases, with a defined rollback trigger if the new behavior shows problems at a small percentage before it reaches 100%.</p>
+
+    <h3>4 · Test data/environment consistency</h3>
+    <p>Confirm flag state is consistent across all instances of the service during rollout — a partially-propagated flag state across a cluster can create inconsistent behavior for the same user across requests, which is a subtle and confusing bug class.</p>
+
+    <h3>5 · Cleanup discipline</h3>
+    <p>Track flags that have reached 100% rollout and been fully adopted — stale flags and their now-dead OFF-path code accumulate test maintenance burden and complexity if not retired. Flagging this to the dev team is itself a useful QA contribution.</p>
+
+    <div class="callout"><b>Where the real risk is:</b> not the flag's own logic (usually well-tested by the platform providing it), but the application code's behavior differences across states — that's where dedicated test coverage per flag state actually needs to live.</div>
+  `
+},
+{
+  id: "Q37",
+  title: "How do you approach accessibility (a11y) testing?",
+  html: `
+    <p>Accessibility spans automated checks (catches maybe 30-40% of real issues) and manual/assistive-technology testing (catches the rest) — treating it as purely automatable is the most common mistake.</p>
+
+    <h3>1 · Automated baseline</h3>
+    <ul>
+      <li>Tools like axe-core (integrable into Selenium/Playwright test runs) catch structural issues — missing alt text, insufficient color contrast, missing ARIA labels, improper heading hierarchy.</li>
+      <li>Run this as a standing check in CI on key pages — cheap to automate and catches regressions early.</li>
+    </ul>
+
+    <h3>2 · What automation can't catch — needs manual verification</h3>
+    <ul>
+      <li><strong>Keyboard navigation</strong> — can every interactive element be reached and operated using only a keyboard, in a logical tab order, with visible focus indicators?</li>
+      <li><strong>Screen reader experience</strong> — does the content actually make sense read aloud in order (NVDA/VoiceOver), not just technically have the right ARIA tags?</li>
+      <li><strong>Meaningful alt text</strong> — automation confirms alt text exists, not that it's actually descriptive/useful.</li>
+      <li><strong>Focus management in dynamic UI</strong> — modals, dropdowns, and async content updates need deliberate focus handling that's easy to get technically-present-but-practically-broken.</li>
+    </ul>
+
+    <h3>3 · Target a standard, not vague "be accessible"</h3>
+    <p>WCAG 2.1/2.2 AA is the common compliance bar — use it to define concrete, testable pass/fail criteria rather than subjective judgment.</p>
+
+    <h3>4 · Integrate into the regular workflow, not a separate audit</h3>
+    <p>Automated a11y checks as part of the standard CI suite alongside functional tests; manual a11y pass included in test planning for new/changed UI, not bolted on right before release.</p>
+
+    <div class="callout"><b>Honest framing for an interview:</b> automated a11y tooling is a good regression guard and a starting point, but claiming full accessibility coverage from axe-core alone overstates what it actually validates.</div>
+  `
+},
+{
+  id: "Q38",
+  title: "Visual regression testing — approach and tooling",
+  html: `
+    <p>Visual regression catches unintended UI changes that functional assertions (which check DOM/data, not appearance) miss entirely — a button can pass every functional test while rendering invisible or overlapping.</p>
+
+    <h3>1 · How it works</h3>
+    <p>Capture a baseline screenshot of a page/component in a known-good state, then on each run capture a new screenshot and diff it pixel-by-pixel (or via perceptual diffing) against the baseline, flagging visual differences above a tolerance threshold.</p>
+
+    <h3>2 · Tooling options</h3>
+    <table>
+      <tr><th>Tool</th><th>Notes</th></tr>
+      <tr><td>Percy / Applitools</td><td>Cloud-based, cross-browser rendering, smart perceptual diffing that ignores anti-aliasing noise</td></tr>
+      <tr><td>Playwright's built-in screenshot comparison</td><td>Lightweight, good if already on Playwright, less sophisticated diffing than dedicated tools</td></tr>
+      <tr><td>BackstopJS</td><td>Open-source, config-driven, good for teams wanting full control without a paid service</td></tr>
+    </table>
+
+    <h3>3 · Where to apply it — be selective</h3>
+    <p>Key, stable, high-visibility screens/components (checkout flow, dashboard, critical forms) — not every page, since visual tests are inherently more brittle (font rendering, OS differences, dynamic content) and expensive to maintain broadly.</p>
+
+    <h3>4 · Managing false positives</h3>
+    <ul>
+      <li>Mask or exclude genuinely dynamic regions (timestamps, ads, randomized content) from the diff rather than letting them cause constant false failures.</li>
+      <li>Run in a consistent, controlled environment (same browser/OS/viewport, ideally containerized) — rendering differences between environments are a major source of noise.</li>
+      <li>Deliberate baseline-update workflow when a change is intentional, reviewed by a human before accepting the new baseline — never auto-accept.</li>
+    </ul>
+
+    <div class="callout"><b>How I'd position it:</b> a complement to functional automation for the specific failure class it's good at (layout/rendering regressions) — not a replacement, and scoped narrowly to avoid becoming a maintenance burden that erodes trust in the suite.</div>
+  `
+},
+{
+  id: "Q39",
+  title: "Testing batch/scheduled jobs (e.g. an end-of-day reconciliation batch)",
+  html: `
+    <p>Batch jobs have no live request to assert against — testing shifts to triggering, observing, and validating a job's before/after effect, often at scale.</p>
+
+    <h3>1 · Understand the job's contract</h3>
+    <p>Input sources (files, DB tables, upstream feeds), transformation logic, output/side effects (updated records, generated reports, downstream notifications), schedule/trigger mechanism, and expected runtime window.</p>
+
+    <h3>2 · Trigger it in a controlled, on-demand way for testing</h3>
+    <p>Rather than waiting for the real schedule, trigger the job manually (via API/CLI/test hook) against a known, seeded dataset — so results are deterministic and tests aren't tied to wall-clock timing.</p>
+
+    <h3>3 · Core validation categories</h3>
+    <table>
+      <tr><th>Category</th><th>What to check</th></tr>
+      <tr><td>Correctness</td><td>Output matches expected transformation for known input — including edge cases (empty input, malformed records, boundary values)</td></tr>
+      <tr><td>Completeness</td><td>Every expected input record is processed — none silently dropped</td></tr>
+      <tr><td>Idempotency</td><td>Re-running the same batch (e.g. after a retry) doesn't duplicate or corrupt already-processed records</td></tr>
+      <tr><td>Partial-failure handling</td><td>If the batch fails midway, does it leave a consistent, resumable state, or a half-applied mess?</td></tr>
+      <tr><td>Performance/SLA</td><td>Completes within the required window at realistic (or peak, e.g. month-end) data volume</td></tr>
+    </table>
+
+    <h3>4 · Reconciliation-specific validation</h3>
+    <p>For an EOD reconciliation batch specifically: totals/counts before and after should tie out (source system total = reconciled total, with any known/expected discrepancies explicitly accounted for) — this is exactly the kind of cross-system checksum validation reconciliation frameworks are built around.</p>
+
+    <h3>5 · Failure/alerting validation</h3>
+    <p>Confirm the job actually alerts on failure (rather than failing silently overnight and being discovered the next morning) — testing the alerting path is as important as testing the job logic itself.</p>
+
+    <div class="callout"><b>Direct connection to my background:</b> this maps closely to the Kafka/Redis/DB reconciliation framework work — the same before/after checksum and completeness validation pattern applies whether the trigger is an event stream or a scheduled batch.</div>
+  `
+},
+{
+  id: "Q40",
+  title: "Testing decimal/currency precision in financial calculations",
+  html: `
+    <p>Floating-point and rounding bugs in money calculations are silent, cumulative, and can be legally/audit significant — this deserves explicit, deliberate test design, not incidental coverage.</p>
+
+    <h3>1 · Know what representation the system uses</h3>
+    <p>Confirm the application uses a proper decimal type for money (e.g. Java's <code>BigDecimal</code>) rather than <code>float</code>/<code>double</code> — floating-point binary representation cannot exactly represent most decimal fractions, which is a classic source of off-by-a-fraction-of-a-cent bugs at scale.</p>
+
+    <h3>2 · Core test scenarios</h3>
+    <ul>
+      <li><strong>Rounding rules</strong> — confirm the specific rounding mode used (half-up, half-even/banker's rounding, truncation) matches the documented business rule, tested at exact boundary values (e.g. exactly .005) where different modes diverge.</li>
+      <li><strong>Multi-step calculations</strong> — interest, fees, and taxes applied in sequence; verify rounding is applied at the correct step (rounding too early vs. too late in a calculation chain produces different, both "plausible-looking," results).</li>
+      <li><strong>Currency conversion</strong> — exchange rate precision and rounding, especially for currencies with different decimal conventions (e.g. JPY has no minor unit, unlike USD/EUR).</li>
+      <li><strong>Aggregate consistency</strong> — sum of line-item amounts should reconcile exactly to the displayed total; a common bug is individually-rounded line items not summing to a separately-rounded total.</li>
+      <li><strong>Large-scale accumulation</strong> — run a calculation across a large volume of transactions and confirm no cumulative drift versus an independently-calculated expected total.</li>
+    </ul>
+
+    <h3>3 · Test data design</h3>
+    <p>Deliberately include boundary and awkward values (repeating decimals, exact half-cent cases, very large and very small amounts) rather than only round, convenient test numbers that wouldn't expose rounding-mode differences.</p>
+
+    <div class="callout"><b>Why I'd flag this as high priority in a BFSI context:</b> a rounding discrepancy of fractions of a cent, multiplied across millions of transactions, becomes a real, auditable financial discrepancy — this is precisely the class of bug that reconciliation-style testing is designed to surface.</div>
+  `
+},
+{
+  id: "Q41",
+  title: "Testing disaster recovery / failover",
+  html: `
+    <p>DR testing validates a claim that's rarely exercised in normal operation — the only way to know a failover actually works is to test it deliberately, not assume the runbook is correct.</p>
+
+    <h3>1 · Know the DR strategy and target metrics</h3>
+    <p>RTO (Recovery Time Objective — how long recovery is allowed to take) and RPO (Recovery Point Objective — how much data loss is acceptable) define what "success" means for the test; without these, "did failover work" has no measurable bar.</p>
+
+    <h3>2 · Test types by invasiveness</h3>
+    <table>
+      <tr><th>Type</th><th>What it validates</th></tr>
+      <tr><td>Tabletop/walkthrough</td><td>Team knows the runbook and roles — lowest risk, good starting point</td></tr>
+      <tr><td>Simulated failover in a non-prod environment</td><td>The actual mechanics (DB failover, DNS switch, traffic reroute) work technically</td></tr>
+      <tr><td>Live failover drill (controlled, scheduled)</td><td>Real production failover under controlled conditions — highest confidence, highest risk, needs careful planning</td></tr>
+    </table>
+
+    <h3>3 · What to actually validate during a failover test</h3>
+    <ul>
+      <li>Data consistency after failover — confirm no data loss beyond the accepted RPO, and no corruption from an incomplete replication catch-up.</li>
+      <li>Application functional correctness against the failed-over environment — not just "the DB is up," but that the application actually works end-to-end against it.</li>
+      <li>Actual time taken vs. RTO target — measured, not estimated.</li>
+      <li>Failback path — can the system return to the primary once it's healthy again, cleanly, without a second incident?</li>
+    </ul>
+
+    <h3>4 · Automate what's safe to automate</h3>
+    <p>Health-check and smoke-test scripts that run automatically against the DR environment post-failover, so validation doesn't rely entirely on manual checking under drill/incident pressure.</p>
+
+    <div class="callout"><b>Why this can't just be "assumed to work":</b> DR mechanisms are exactly the kind of infrastructure that silently rot — config drift, expired credentials, or an outdated runbook step only surfaces when actually exercised, which is the whole argument for scheduled drills rather than one-time setup validation.</div>
+  `
+},
+{
+  id: "Q42",
+  title: "An API you depend on breaks unexpectedly mid-sprint — how do you handle it?",
+  html: `
+    <p>A cross-team dependency breaking is common in a multi-team BFSI setup — the response needs to unblock your own work while giving the owning team what they need to fix it fast.</p>
+
+    <h3>1 · Confirm it's really their break, not your side</h3>
+    <p>Reproduce independently — check recent changes on both sides, confirm the request being sent is actually valid per the last known-good contract, before escalating.</p>
+
+    <h3>2 · Raise it with evidence, immediately</h3>
+    <p>Report to the owning team with exact reproduction steps, request/response captured, timestamp, and environment — a vague "it's broken" wastes both teams' time; a precise report gets it fixed faster.</p>
+
+    <h3>3 · Check if it's a genuine break or an undocumented intentional change</h3>
+    <p>Sometimes what looks like a break is an intentional change that wasn't communicated — worth confirming before assuming it's a bug, since the fix differs (their rollback vs. your adaptation).</p>
+
+    <h3>4 · Unblock your own work in parallel</h3>
+    <ul>
+      <li>If a contract test (Q3) exists for this dependency, that's exactly the tool to fall back on — mock the last-known-good contract so your team's tests and development aren't blocked waiting on their fix.</li>
+      <li>If no contract exists, quickly stub the expected response based on documentation/last known behavior so your pipeline stays green and development continues.</li>
+    </ul>
+
+    <h3>5 · Track it, don't let it go silent</h3>
+    <p>A ticket with clear severity/impact, and a check-in cadence with the owning team until resolved — especially important if this is blocking a release-critical path.</p>
+
+    <h3>6 · Close the loop afterward</h3>
+    <p>If this wasn't caught by a contract test, that's the gap worth raising — either proposing one gets added, or flagging to the platform/architecture team if this keeps happening across multiple dependencies.</p>
+
+    <div class="callout"><b>What this question is really probing:</b> do you escalate with evidence and keep moving in parallel, or do you block entirely on someone else's timeline — the mock/stub fallback is what separates a blocked sprint from a productive one.</div>
+  `
+},
+{
+  id: "Q43",
+  title: "Reporting test results/quality status to non-technical stakeholders",
+  html: `
+    <p>The failure mode here is reporting raw test-tool output (pass/fail counts, stack traces) to an audience that needs a business-risk answer, not a QA-tool dashboard.</p>
+
+    <h3>1 · Answer the question they actually have</h3>
+    <p>A release owner/PM isn't asking "how many tests passed" — they're asking "are we safe to ship, and what's the risk if we do." Frame the report around that, using test results as supporting evidence, not the headline.</p>
+
+    <h3>2 · Structure by risk, not by test suite</h3>
+    <table>
+      <tr><th>Instead of</th><th>Report as</th></tr>
+      <tr><td>"142/150 API tests passed"</td><td>"Core payment and login flows fully verified; 3 known issues in the reporting module, none release-blocking, tracked for next sprint"</td></tr>
+      <tr><td>Raw flaky-test counts</td><td>"Suite stability is at X%; investigating Y intermittent failures, not currently masking a real defect"</td></tr>
+    </table>
+
+    <h3>3 · Be explicit about what wasn't tested and why</h3>
+    <p>Especially under time pressure (Q25) — stakeholders making a release decision need to know the deliberate coverage trade-offs, not discover them after an incident.</p>
+
+    <h3>4 · Use a consistent, simple visual format</h3>
+    <p>A short status (Red/Amber/Green per critical area) with one-line context beats a wall of numbers — makes the report scannable for someone without QA background, and comparable release over release.</p>
+
+    <h3>5 · Keep the technical detail available, not absent</h3>
+    <p>Link to the full detailed report/dashboard for anyone who wants to dig in — the summary is a front door, not a replacement for the underlying data.</p>
+
+    <div class="callout"><b>Test for a good report:</b> could someone who's never opened Allure or Jenkins read it and correctly understand both the current risk level and what's being done about any open issues?</div>
+  `
+},
+{
+  id: "Q44",
+  title: "What does shift-left testing mean, and how do you implement it?",
+  html: `
+    <p>Shift-left means moving quality activities earlier in the development lifecycle — catching issues at design/code time instead of after the fact in a dedicated test phase.</p>
+
+    <h3>1 · What it looks like in practice, by stage</h3>
+    <table>
+      <tr><th>Stage</th><th>Shift-left activity</th></tr>
+      <tr><td>Requirements/design</td><td>QA involved in reviewing requirements/API contracts before code is written — catching ambiguity and missing edge cases on paper, not in a bug report</td></tr>
+      <tr><td>Development</td><td>Unit tests and static analysis run as part of the dev loop; SDET pairs with devs on testability of new code</td></tr>
+      <tr><td>Pull request</td><td>Automated checks (linting, unit tests, contract tests, security scans) gate the PR before merge, not after</td></tr>
+      <tr><td>Pre-merge</td><td>Fast, targeted automated regression on the affected area runs automatically</td></tr>
+    </table>
+
+    <h3>2 · SDET's specific role in shift-left</h3>
+    <ul>
+      <li>Reviewing acceptance criteria/API specs for testability and completeness before implementation starts — often surfaces missing edge-case definitions early, when they're cheap to fix.</li>
+      <li>Building/maintaining the fast-feedback automation (contract tests, API-level smoke tests) that developers can run locally before ever pushing code.</li>
+      <li>Advocating for testable design — e.g. flagging when a new service doesn't expose a way to set up test preconditions cleanly.</li>
+    </ul>
+
+    <h3>3 · Why it's worth the upfront investment</h3>
+    <p>The cost of fixing a defect grows sharply the later it's found — a requirements-stage ambiguity caught in review costs a conversation; the same gap found in production costs an incident, a hotfix, and lost trust.</p>
+
+    <h3>4 · Common failure mode to avoid</h3>
+    <p>Shift-left isn't "developers do all the testing now" — it's QA/SDET expertise applied earlier in the process, still in close collaboration with dev, not QA stepping back once developers own unit tests.</p>
+
+    <div class="callout"><b>How I'd describe my own practice of this:</b> reviewing API contracts and reconciliation logic before implementation, and building contract/API-level tests that run in the dev loop rather than only in a later dedicated QA phase.</div>
+  `
+},
+{
+  id: "Q45",
+  title: "Measuring automation ROI/effectiveness beyond code coverage %",
+  html: `
+    <p>Code coverage tells you what code executed during a test run — it says nothing about whether the test actually verified correct behavior. Effectiveness needs different metrics.</p>
+
+    <h3>Coverage % alone is misleading because</h3>
+    <p>A test can execute a line of code with a weak or missing assertion and still count toward "coverage" — 100% coverage with shallow assertions catches far fewer bugs than 70% coverage with rigorous ones.</p>
+
+    <h3>Better metrics to track</h3>
+    <table>
+      <tr><th>Metric</th><th>What it actually tells you</th></tr>
+      <tr><td>Defect escape rate</td><td>Bugs found in production vs. caught pre-release — the most direct measure of whether the suite is actually protective</td></tr>
+      <tr><td>Defect detection point</td><td>How early in the pipeline bugs are caught (unit vs. integration vs. UAT vs. prod) — earlier is cheaper and signals shift-left is working</td></tr>
+      <tr><td>Time-to-feedback</td><td>How long from a code change to a developer knowing if it broke something — directly affects how useful the suite is day to day</td></tr>
+      <tr><td>Flaky test rate / suite stability</td><td>A suite nobody trusts because of flakiness delivers close to zero real ROI, regardless of coverage</td></tr>
+      <tr><td>Mean time to detect vs. mean time to fix a broken build</td><td>Operational health of the whole quality pipeline, not just the tests themselves</td></tr>
+      <tr><td>Mutation testing score (see Q48)</td><td>Directly measures whether tests would actually catch introduced bugs, not just execute code</td></tr>
+    </table>
+
+    <h3>Tie it back to business impact when reporting up</h3>
+    <p>"Automation caught X production-severity defects before release this quarter, reducing hotfixes by Y%" is a far more persuasive ROI story to leadership than a coverage percentage on its own.</p>
+
+    <div class="callout"><b>The mindset shift:</b> coverage answers "did we run this code," effectiveness answers "would we have caught it if it broke" — the second question is the one that actually matters, and it needs different, deliberately chosen metrics to answer.</div>
+  `
+},
+{
+  id: "Q46",
+  title: "Handling test environment downtime or instability",
+  html: `
+    <p>Environment instability quietly destroys trust in the whole automation suite — failures get misattributed to "flaky tests" when the real cause is infrastructure, so this needs a distinct diagnosis path.</p>
+
+    <h3>1 · Distinguish environment issues from real test/app failures fast</h3>
+    <ul>
+      <li>A health-check step at the start of the pipeline (ping key services, DB connectivity, dependency availability) that fails fast and clearly labels "environment unavailable" before running the full suite against a broken environment and generating a wall of misleading red.</li>
+      <li>Correlate failure patterns — if many unrelated tests fail simultaneously, that's an environment signal, not 40 independent test bugs.</li>
+    </ul>
+
+    <h3>2 · Immediate handling during an outage</h3>
+    <p>Pause/skip the affected pipeline runs rather than letting them run and record misleading failures; communicate status to the team so people aren't independently debugging what's actually a known outage.</p>
+
+    <h3>3 · Reduce single points of failure where practical</h3>
+    <ul>
+      <li>Containerized, on-demand environments (Docker/Testcontainers) that spin up fresh per run reduce dependency on a shared, potentially unstable persistent test environment.</li>
+      <li>For genuinely shared environments, monitoring/alerting on environment health itself, not just discovered indirectly through failed test runs.</li>
+    </ul>
+
+    <h3>4 · Track environment reliability as its own metric</h3>
+    <p>If a shared QA environment is down or degraded frequently enough to regularly disrupt CI, that's a concrete, quantifiable case to bring to infra/platform teams for investment — "environment was unavailable X% of the time this month" is a much stronger argument than anecdotal complaints.</p>
+
+    <h3>5 · Document and communicate clearly</h3>
+    <p>A known-issues/status channel so environment downtime doesn't get rediscovered and re-debugged by every team member independently.</p>
+
+    <div class="callout"><b>Why this matters as much as flaky-test handling (Q9):</b> if environment instability isn't separated out and tracked, it gets folded into "flaky tests" and mis-diagnosed — fixing test code won't fix an infrastructure problem, and the real issue never gets addressed.</div>
+  `
+},
+{
+  id: "Q47",
+  title: "Safely upgrading a core dependency across the framework (e.g. Selenium 3→4, or a Java version bump)",
+  html: `
+    <p>A core dependency upgrade risks breaking the entire suite at once — this needs a deliberate, staged approach, not a direct swap on the main branch.</p>
+
+    <h3>1 · Read the migration guide and changelog first</h3>
+    <p>Understand breaking changes, deprecated APIs, and behavioral differences (e.g. Selenium 4's W3C WebDriver protocol changes vs. Selenium 3's JSON Wire Protocol) before touching code — this tells you where to expect the real impact.</p>
+
+    <h3>2 · Upgrade on an isolated branch, run the full suite before merging</h3>
+    <p>Never upgrade a core dependency directly on the main branch — a separate branch lets you run the complete suite, compare pass/fail against the pre-upgrade baseline, and catch regressions before they affect the team.</p>
+
+    <h3>3 · Expect and triage failure categories separately</h3>
+    <table>
+      <tr><th>Failure type</th><th>Handling</th></tr>
+      <tr><td>Compilation/API breaking changes</td><td>Fix directly per the migration guide — usually mechanical</td></tr>
+      <tr><td>Behavioral differences (e.g. changed default waits/timeouts)</td><td>Requires actual investigation — may reveal tests that were relying on old, non-standard behavior</td></tr>
+      <tr><td>Genuinely new flakiness introduced by the upgrade</td><td>Needs root-cause investigation before accepting as "just how the new version behaves"</td></tr>
+    </table>
+
+    <h3>4 · Update shared utilities once, not scattered per test</h3>
+    <p>If driver setup, wait helpers, or capability config live in a shared core module (per the framework design in Q4), the bulk of the upgrade work concentrates there — this is exactly why that shared-core structure matters for maintainability.</p>
+
+    <h3>5 · Roll out gradually if the team/codebase is large</h3>
+    <p>For a large suite, consider running old and new versions in parallel briefly (similar to the Playwright migration approach in Q19) to build confidence before fully cutting over, rather than a single big-bang switch.</p>
+
+    <div class="callout"><b>Why this is worth doing carefully rather than quickly:</b> a rushed core dependency upgrade that breaks the suite for the whole team erodes trust in automation fast — the isolated-branch, full-suite-comparison approach costs more time upfront but avoids a multi-day team-wide disruption.</div>
+  `
+},
+{
+  id: "Q48",
+  title: "What is mutation testing, and would you use it?",
+  html: `
+    <p>Mutation testing directly answers the question code coverage can't: would your tests actually catch a bug if one were introduced?</p>
+
+    <h3>How it works</h3>
+    <ol>
+      <li>A mutation testing tool (e.g. PIT for Java) automatically introduces small deliberate bugs ("mutants") into the code — flipping a conditional, changing a boundary (<code>&lt;</code> to <code>&lt;=</code>), negating a return value.</li>
+      <li>The full test suite runs against each mutant.</li>
+      <li>If a test fails, the mutant is "killed" — the suite successfully caught the injected bug.</li>
+      <li>If all tests still pass, the mutant "survives" — meaning that specific bug would have shipped undetected.</li>
+    </ol>
+
+    <h3>Why it's more informative than code coverage</h3>
+    <p>A test can execute (cover) a line without actually asserting anything meaningful about it — mutation testing exposes exactly this gap, since a surviving mutant proves the assertion was too weak, missing, or testing the wrong thing entirely.</p>
+
+    <h3>Where I'd apply it — selectively, not everywhere</h3>
+    <ul>
+      <li>High-risk, logic-heavy code — financial calculations, business rule engines, validation logic — where a subtle logic bug has real consequences.</li>
+      <li>Not the entire codebase — mutation testing is computationally expensive (runs the suite many times over) and most valuable where test quality genuinely matters most.</li>
+    </ul>
+
+    <h3>Practical limitations to be upfront about</h3>
+    <ul>
+      <li>Slow — running the full suite per mutant doesn't scale to every commit; typically run on a schedule or targeted at specific modules, not as a per-PR gate.</li>
+      <li>Some surviving mutants are "equivalent mutants" — semantically identical to the original code despite the syntactic change — these need human judgment to filter out, not blind chasing of a 100% kill rate.</li>
+    </ul>
+
+    <div class="callout"><b>How I'd introduce it:</b> as a periodic health check on the highest-risk modules (financial calculation logic especially) rather than a standing CI gate — using it to find and fix genuinely weak assertions, not to chase a mutation-score number for its own sake.</div>
+  `
+},
+{
+  id: "Q49",
+  title: "Strategy for browser/OS/device compatibility testing",
+  html: `
+    <p>Testing every possible combination is neither feasible nor useful — the strategy is picking a defensible, risk-weighted matrix, not exhaustive coverage.</p>
+
+    <h3>1 · Base the matrix on real usage data, not assumption</h3>
+    <p>Pull actual analytics (browser/OS/device breakdown of real users) — testing effort should map to where real users actually are, not an arbitrary "test everything" list or outdated assumptions about market share.</p>
+
+    <h3>2 · Tier the matrix</h3>
+    <table>
+      <tr><th>Tier</th><th>Coverage</th><th>Frequency</th></tr>
+      <tr><td>Tier 1 (majority of real traffic)</td><td>Full functional + visual regression</td><td>Every release</td></tr>
+      <tr><td>Tier 2 (meaningful but smaller segment)</td><td>Critical-path smoke only</td><td>Every release</td></tr>
+      <tr><td>Tier 3 (long tail, low usage)</td><td>Spot-checked periodically, not every release</td><td>Scheduled/on-demand</td></tr>
+    </table>
+
+    <h3>3 · Separate "logic" testing from "rendering" testing</h3>
+    <p>Business logic correctness doesn't usually vary by browser — validate that once thoroughly on a primary browser. Cross-browser/device testing should focus specifically on rendering, layout, and browser-specific API behavior differences, not re-running the entire functional suite N times per browser unnecessarily.</p>
+
+    <h3>4 · Use cloud device/browser farms for breadth</h3>
+    <p>BrowserStack/Sauce Labs (same tools as the mobile device-grid approach in Q7) for running the tiered matrix in parallel rather than maintaining physical devices/browser VMs in-house.</p>
+
+    <h3>5 · Revisit the matrix periodically</h3>
+    <p>Device/browser usage shifts over time — the matrix should be reviewed against fresh analytics periodically (e.g. quarterly), not set once and left stale for years.</p>
+
+    <div class="callout"><b>Guiding principle:</b> the matrix should be defensible with data ("this covers X% of real users") — not "we test on Chrome, Firefox, Safari because that's the default list," which often doesn't match actual usage.</div>
+  `
+},
+{
+  id: "Q50",
+  title: "Onboarding a new SDET onto an existing complex framework",
+  html: `
+    <p>A good onboarding process is itself a signal of framework health — if it takes weeks of shadowing to become productive, that's usually a framework/documentation problem, not a people problem.</p>
+
+    <h3>1 · Start with the "why," not just the "how"</h3>
+    <p>Walk through the framework's architecture and design decisions (why layered this way, why this reporting tool, why this config approach) before diving into individual test files — understanding intent makes every subsequent detail make sense faster than memorizing structure blind.</p>
+
+    <h3>2 · Get them running and green on day one</h3>
+    <p>A clear, tested "clone, install, run" path that works without tribal knowledge — if setup requires undocumented steps only existing team members know, that's a documentation gap worth fixing regardless of this specific onboarding.</p>
+
+    <h3>3 · Structured, hands-on ramp-up</h3>
+    <ul>
+      <li>First task: fix or extend an existing simple test — forces reading real code in context rather than abstract documentation.</li>
+      <li>Second: write one new test end-to-end following existing conventions, reviewed closely — surfaces gaps in understanding while they're still cheap to correct.</li>
+      <li>Pair on a moderately complex task (e.g. a cross-layer test per the Q4 framework design) once fundamentals are solid.</li>
+    </ul>
+
+    <h3>4 · Point to living documentation, not just verbal knowledge transfer</h3>
+    <p>Architecture doc, conventions guide, and a "common gotchas" reference (per the maintainability practices from Q24) — if this doesn't already exist, building it as part of onboarding benefits every future hire, not just this one.</p>
+
+    <h3>5 · Set explicit checkpoints, not open-ended shadowing</h3>
+    <p>Concrete milestones (running the suite locally by day 1, first merged PR by week 1, independently owning a test area by week 3-4) give both the new SDET and the team a clear signal of progress rather than an ambiguous "let me know when you feel ready."</p>
+
+    <div class="callout"><b>What I'd treat as the real success metric:</b> not just "did they eventually become productive," but how much of that ramp-up depended on someone's memory versus the framework's own documentation and structure — the gap between those two is exactly what onboarding should be closing for the next person too.</div>
+  `
+}
+];
+
+const navList = document.getElementById('nav-list');
+const casesEl = document.getElementById('cases');
+
+cases.forEach((c, i) => {
+  // sidebar nav
+  const a = document.createElement('a');
+  a.className = 'nav-item';
+  a.href = '#' + c.id;
+  a.innerHTML = `<span class="dot"></span><span class="n">${c.id}</span> ${c.title.length > 34 ? c.title.slice(0,34)+'…' : c.title}`;
+  a.onclick = (e) => { e.preventDefault(); openCase(i, true); };
+  navList.appendChild(a);
+
+  // test case block
+  const div = document.createElement('div');
+  div.className = 'test-case';
+  div.id = c.id;
+  div.innerHTML = `
+    <div class="test-header" onclick="toggleCase(${i})">
+      <div class="test-header-left">
+        <span class="test-id">${c.id}</span>
+        <span class="test-title">${c.title}</span>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <span class="status-badge">PASS</span>
+        <span class="chevron">›</span>
+      </div>
+    </div>
+    <div class="test-body">
+      <div class="test-body-inner">${c.html}</div>
+    </div>
+  `;
+  casesEl.appendChild(div);
+});
+
+function toggleCase(i){
+  const el = cases[i]._el || (cases[i]._el = document.getElementById(cases[i].id));
+  const body = el.querySelector('.test-body');
+  const isOpen = el.classList.contains('open');
+  if(isOpen){
+    body.style.maxHeight = null;
+    el.classList.remove('open');
+  } else {
+    el.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+function openCase(i, scroll){
+  const el = document.getElementById(cases[i].id);
+  const body = el.querySelector('.test-body');
+  el.classList.add('open');
+  body.style.maxHeight = body.scrollHeight + 'px';
+  if(scroll) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function toggleAll(open){
+  cases.forEach((c,i) => {
+    const el = document.getElementById(c.id);
+    const body = el.querySelector('.test-body');
+    if(open){
+      el.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    } else {
+      el.classList.remove('open');
+      body.style.maxHeight = null;
+    }
+  });
+}
+
+// open first case by default
+openCase(0, false);
+
+// hero typing effect
+const line2 = document.getElementById('hero-line-2');
+const msg = "Discovered 50 test cases in FrameworkRound suite...";
+let idx = 0;
+function typeLine(){
+  if(idx <= msg.length){
+    line2.innerHTML = msg.slice(0, idx) + '<span class="cursor"></span>';
+    idx++;
+    setTimeout(typeLine, 18);
+  } else {
+    line2.innerHTML = msg;
+    document.getElementById('hero-summary').style.display = 'block';
+  }
+}
+typeLine();
+</script>
+</body>
+</html>
