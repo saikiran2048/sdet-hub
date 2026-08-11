@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Birlasoft SDET/QA Automation — Interview Prep</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c232c; --border:#2a3340;
+    --text:#c9d1d9; --muted:#8b949e; --accent:#58a6ff; --accent2:#7ee787;
+    --warn:#f0883e; --pink:#d2a8ff; --code-bg:#0a0e14;
+  }
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif;
+    margin:0; padding:0; line-height:1.6;
+  }
+  header{
+    background:linear-gradient(135deg,#161b22,#1c2530); padding:32px 24px;
+    border-bottom:1px solid var(--border); text-align:center;
+  }
+  header h1{margin:0 0 8px; color:var(--accent2); font-size:1.6em;}
+  header p{margin:4px 0; color:var(--muted); font-size:0.95em;}
+  .badges{margin-top:14px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+  .badge{background:var(--panel2); border:1px solid var(--border); color:var(--pink);
+    padding:5px 12px; border-radius:20px; font-size:0.8em;}
+  .container{max-width:920px; margin:0 auto; padding:24px 16px 80px;}
+  .round-title{
+    font-size:1.3em; color:var(--accent); margin:36px 0 16px; padding-bottom:8px;
+    border-bottom:2px solid var(--border); display:flex; align-items:center; gap:10px;
+  }
+  .round-title .count{font-size:0.6em; color:var(--muted); font-weight:normal;}
+  .qcard{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    margin-bottom:14px; overflow:hidden;
+  }
+  .qhead{
+    padding:16px 18px; cursor:pointer; display:flex; justify-content:space-between;
+    align-items:center; gap:12px; user-select:none;
+  }
+  .qhead:hover{background:var(--panel2);}
+  .qtext{font-weight:600; color:var(--text); font-size:0.98em;}
+  .qnum{color:var(--accent); margin-right:8px;}
+  .chevron{color:var(--muted); transition:transform 0.25s ease; flex-shrink:0;}
+  .qcard.open .chevron{transform:rotate(90deg);}
+  .qbody{
+    max-height:0; overflow:hidden; transition:max-height 0.4s ease;
+    padding:0 18px; border-top:1px solid transparent;
+  }
+  .qcard.open .qbody{
+    max-height:12000px; padding:4px 18px 20px; border-top:1px solid var(--border);
+  }
+  .section-label{
+    color:var(--accent2); font-size:0.78em; text-transform:uppercase; letter-spacing:0.06em;
+    margin:16px 0 6px; font-weight:700;
+  }
+  .section-label:first-child{margin-top:14px;}
+  p, li{color:var(--text); font-size:0.94em;}
+  ul{margin:6px 0; padding-left:22px;}
+  li{margin-bottom:5px;}
+  .analogy{
+    background:#1a2233; border-left:3px solid var(--pink); padding:10px 14px;
+    border-radius:4px; font-size:0.9em; color:var(--pink); margin:8px 0;
+  }
+  .analogy b{color:#e6c6ff;}
+  .edge{
+    background:#241a13; border-left:3px solid var(--warn); padding:10px 14px;
+    border-radius:4px; font-size:0.9em; margin:8px 0;
+  }
+  .edge b{color:var(--warn);}
+  pre{
+    background:var(--code-bg); border:1px solid var(--border); border-radius:8px;
+    padding:14px; overflow-x:auto; font-size:0.78em; margin:8px 0;
+    white-space:pre-wrap; word-break:break-word;
+  }
+  code{font-family:'Consolas','Monaco',monospace; color:#e6edf3;}
+  .kw{color:#ff7b72;} .str{color:#a5d6ff;} .cmt{color:#8b949e;} .cls{color:#ffa657;} .fn{color:#d2a8ff;}
+  .toc{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    padding:16px 20px; margin-bottom:24px;
+  }
+  .toc-title{color:var(--accent); font-weight:700; margin-bottom:10px; font-size:0.95em;}
+  .toc a{color:var(--muted); text-decoration:none; font-size:0.85em; display:block; padding:3px 0;}
+  .toc a:hover{color:var(--accent2);}
+  .controls{display:flex; gap:10px; margin-bottom:16px;}
+  .controls button{
+    background:var(--panel2); border:1px solid var(--border); color:var(--text);
+    padding:8px 14px; border-radius:6px; cursor:pointer; font-size:0.85em;
+  }
+  .controls button:hover{border-color:var(--accent);}
+  footer{text-align:center; color:var(--muted); font-size:0.8em; padding:20px; border-top:1px solid var(--border);}
+
+  /* --- Back to Hub button --- */
+  .back-to-hub {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px;
+    padding: 8px 14px;
+    background: #101b2d;
+    border: 1px solid #223252;
+    border-radius: 8px;
+    color: #4fd1e8;
+    text-decoration: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-to-hub:hover {
+    border-color: #4fd1e8;
+    transform: translateX(-2px);
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-to-hub">← Back to Hub</a>
+
+<header>
+  <h1>Birlasoft — SDET / QA Automation Interview Prep</h1>
+  <p>3–6 Years · API Automation · REST Assured · TestNG/JUnit · SQL</p>
+  <div class="badges">
+    <span class="badge">₹12–15 LPA</span>
+    <span class="badge">Round 1: API Automation</span>
+    <span class="badge">Round 2: Automation + SQL</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="controls">
+    <button onclick="toggleAll(true)">Expand All</button>
+    <button onclick="toggleAll(false)">Collapse All</button>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Jump to a question</div>
+    <div id="tocList"></div>
+  </div>
+
+  <div class="round-title">Round 1 — API Automation <span class="count">(12 questions)</span></div>
+  <div id="round1"></div>
+
+  <div class="round-title">Round 2 — Automation + SQL <span class="count">(6 questions)</span></div>
+  <div id="round2"></div>
+
+</div>
+
+<footer>Personal interview prep reference · Java + REST Assured focused</footer>
+
+<script>
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function highlight(code){
+  code = esc(code);
+  const stash = [];
+  const put = (html) => { stash.push(html); return '\u0000' + (stash.length - 1) + '\u0001'; };
+
+  // 1. Comments first (protected from further matching)
+  code = code.replace(/(\/\/.*$)/gm, m => put('<span class="cmt">' + m + '</span>'));
+  // 2. Strings (protected from keyword matching so inserted class="str" attrs are never re-scanned)
+  code = code.replace(/"([^"]*)"/g, (m, p1) => put('<span class="str">"' + p1 + '"</span>'));
+  // 3. Keywords (safe now — string/comment spans are stashed placeholders, not literal text)
+  code = code.replace(/\b(public|private|static|void|class|new|import|return|if|else|for|while|try|catch|finally|throws|extends|implements|final|int|long|double|boolean|String|null|true|false|synchronized|volatile|interface|enum|@Test|@BeforeClass|@BeforeMethod|@DataProvider)\b/g, '<span class="kw">$1</span>');
+  // 4. Restore stashed comment/string spans
+  code = code.replace(/\u0000(\d+)\u0001/g, (m, i) => stash[Number(i)]);
+  return code;
+}
+
+const round1 = [
+{
+  q: "How do you execute API tests in parallel using TestNG/JUnit?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>Parallelism in TestNG is configured at the <b>suite XML</b> level using the <code>parallel</code> and <code>thread-count</code> attributes. TestNG can parallelize at the level of <code>methods</code>, <code>classes</code>, <code>tests</code>, or <code>instances</code>. Each thread gets its own execution context, so REST Assured calls made from parallel threads don't block each other.</p>
+
+<div class="section-label">testng.xml configuration</div>
+<pre><code>${highlight(`<suite name="APISuite" parallel="methods" thread-count="5">
+  <test name="APITests">
+    <classes>
+      <class name="com.birlasoft.tests.UserApiTest"/>
+      <class name="com.birlasoft.tests.OrderApiTest"/>
+    </classes>
+  </test>
+</suite>`)}</code></pre>
+
+<div class="section-label">The critical trap: shared state</div>
+<p>The #1 interview follow-up here is: <b>"What breaks when you parallelize?"</b> Answer: anything <code>static</code> or shared as an instance field on a test class, because TestNG reuses one instance of the test class across threads by default (unless you also set <code>parallel="instances"</code> or use <code>@Test(dataProvider=..., parallel=true)</code> combined with instance-level isolation).</p>
+<ul>
+  <li>Never store <code>RequestSpecification</code> as a mutable static field that gets modified per test — build it fresh per test or use <code>ThreadLocal</code>.</li>
+  <li>Use <code>ThreadLocal&lt;RequestSpecification&gt;</code> or <code>ThreadLocal&lt;Response&gt;</code> when you need per-thread state shared across setup/teardown methods.</li>
+  <li>Avoid shared mutable test data (e.g., a static counter used to generate unique emails) — use <code>AtomicInteger</code> or UUID-based data instead.</li>
+</ul>
+<pre><code>${highlight(`public class ApiTestBase {
+    private static ThreadLocal<RequestSpecification> spec =
+        ThreadLocal.withInitial(() ->
+            RestAssured.given().baseUri(ConfigReader.getBaseUrl()));
+
+    protected RequestSpecification spec() {
+        return spec.get();
+    }
+}`)}</code></pre>
+
+<div class="section-label">JUnit 5 equivalent</div>
+<p>JUnit 5 needs the <code>junit-platform-console-standalone</code> parallel execution config in <code>junit-platform.properties</code>:</p>
+<pre><code>${highlight(`junit.jupiter.execution.parallel.enabled=true
+junit.jupiter.execution.parallel.mode.default=concurrent
+junit.jupiter.execution.parallel.config.strategy=fixed
+junit.jupiter.execution.parallel.config.fixed.parallelism=5`)}</code></pre>
+
+<div class="analogy"><b>Analogy:</b> think of each thread as a separate teller window at a bank. If all tellers share the same one ledger book (a static field) without coordination, you get corrupted balances. ThreadLocal gives each teller their own ledger.</div>
+
+<div class="edge"><b>Edge cases they may probe:</b>
+<ul>
+<li>Rate-limited APIs — parallel execution can trigger 429s that don't happen serially. Be ready to mention this connects to the backoff question later in the round.</li>
+<li>Test reporting (Extent/Allure) must also be thread-safe — use <code>ThreadLocal</code> for report objects too, or the report gets interleaved/corrupted.</li>
+<li>DB state — if tests share a DB, parallel writes can cause flaky failures; isolate test data per thread (e.g., unique keys).</li>
+</ul>
+</div>
+`
+},
+{
+  q: "How do you switch dynamically between Dev, QA and Production environments?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>Never hardcode base URLs. Drive environment selection through a config layer that reads a system property or environment variable at runtime, with environment-specific property files as the source of truth.</p>
+
+<div class="section-label">Approach: environment-specific properties + a ConfigReader</div>
+<pre><code>${highlight(`// config/dev.properties, config/qa.properties, config/prod.properties
+// each contains: base.url=https://qa-api.birlasoft.com
+
+public class ConfigReader {
+    private static Properties props = new Properties();
+
+    static {
+        String env = System.getProperty("env", "qa"); // default = qa
+        try (InputStream in = ConfigReader.class
+                .getResourceAsStream("/config/" + env + ".properties")) {
+            props.load(in);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load config for env: " + env, e);
+        }
+    }
+
+    public static String getBaseUrl() {
+        return props.getProperty("base.url");
+    }
+}`)}</code></pre>
+
+<div class="section-label">Triggering it</div>
+<pre><code>${highlight(`mvn test -Denv=qa
+mvn test -Denv=prod -DsuiteXmlFile=testng-smoke.xml`)}</code></pre>
+
+<ul>
+<li>Maven profiles can wrap this so <code>-Pprod</code> also injects prod credentials from a secrets manager rather than a plain properties file.</li>
+<li>In CI/CD (Jenkins/GitHub Actions), the environment is usually a pipeline parameter mapped to <code>-Denv=</code>.</li>
+</ul>
+
+<div class="edge"><b>Interview follow-up to expect:</b> "How do you avoid running destructive tests against Production?" — Answer: tag tests (<code>@Test(groups={"smoke"})</code>) and restrict the Prod pipeline to run only read-only/smoke-tagged groups; never run full regression (with POST/DELETE) against Prod. Also mention secrets for Prod should come from a vault (Azure Key Vault/AWS Secrets Manager), never checked into properties files.</div>
+`
+},
+{
+  q: "How do you validate dynamic/nested JSON structures?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>Use REST Assured's <b>JsonPath</b> (built on GPath syntax) for dynamic assertions, and <b>JSON Schema validation</b> for structural/shape validation that doesn't care about exact values. For deeply nested or unpredictable structures, combine both: schema for shape, JsonPath for specific business-critical values.</p>
+
+<div class="section-label">JsonPath for nested extraction</div>
+<pre><code>${highlight(`Response response = given().spec(spec())
+        .when().get("/orders/1001")
+        .then().statusCode(200).extract().response();
+
+JsonPath jp = response.jsonPath();
+String customerCity = jp.getString("customer.address.city");
+List<String> itemNames = jp.getList("items.name");
+double totalAmount = jp.getDouble("summary.total.amount");
+
+// nested array filtering with GPath
+List<Map<String,Object>> expensiveItems =
+    jp.getList("items.findAll { it.price > 100 }");`)}</code></pre>
+
+<div class="section-label">JSON Schema validation (structure, types, required fields)</div>
+<pre><code>${highlight(`given().spec(spec())
+    .when().get("/orders/1001")
+    .then().statusCode(200)
+    .body(matchesJsonSchemaInClasspath("schemas/order-schema.json"));`)}</code></pre>
+<p>Requires <code>json-schema-validator</code> dependency. The schema itself is generated once (tools like <code>jsonschema.net</code> or IntelliJ plugins can bootstrap it from a sample payload) and then hand-refined for required fields, types, and enums.</p>
+
+<div class="section-label">Recursive/unknown-depth validation</div>
+<p>For truly dynamic trees (e.g., a category tree with arbitrary nesting), write a recursive helper that walks a <code>Map&lt;String,Object&gt;</code>/<code>List&lt;Object&gt;</code> structure rather than hardcoding paths:</p>
+<pre><code>${highlight(`void assertNoNullLeaf(Object node) {
+    if (node instanceof Map<?,?> map) {
+        map.values().forEach(this::assertNoNullLeaf);
+    } else if (node instanceof List<?> list) {
+        list.forEach(this::assertNoNullLeaf);
+    } else {
+        Assert.assertNotNull(node, "Found unexpected null leaf value");
+    }
+}`)}</code></pre>
+
+<div class="edge"><b>Edge cases:</b>
+<ul>
+<li>Optional/nullable fields — schema should mark them nullable rather than the test failing on absence.</li>
+<li>Arrays that can legitimately be empty — assert <code>notNullValue()</code> rather than a hardcoded size, unless the size is a contract.</li>
+<li>Field ordering in JSON is never guaranteed — never assert on raw string equality of the whole payload.</li>
+</ul>
+</div>
+`
+},
+{
+  q: "How do you extract specific values from a JSON array?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>REST Assured's GPath expressions support array indexing, filtering (<code>findAll</code>/<code>find</code>), and projection (extracting one field across all elements) in a single expression — this is usually faster to write than manual Java loops.</p>
+
+<pre><code>${highlight(`Response resp = given().spec(spec()).get("/products").then().extract().response();
+JsonPath jp = resp.jsonPath();
+
+// 1. By index
+String firstProductName = jp.getString("products[0].name");
+
+// 2. Projection — get all values of one field
+List<String> allSkus = jp.getList("products.sku");
+
+// 3. Filter by condition
+List<Map<String,Object>> inStockOnly =
+    jp.getList("products.findAll { it.stock > 0 }");
+
+// 4. Find first match
+Map<String,Object> firstElectronics =
+    jp.getMap("products.find { it.category == 'Electronics' }");
+
+// 5. Aggregate — sum a field across the array
+double totalStockValue = jp.getList("products.price", Double.class)
+        .stream().mapToDouble(Double::doubleValue).sum();`)}</code></pre>
+
+<p>For assertions directly in the <code>.then()</code> chain (Hamcrest style):</p>
+<pre><code>${highlight(`given().spec(spec()).get("/products").then()
+    .body("products.findAll { it.category == 'Electronics' }.sku",
+          everyItem(startsWith("ELEC-")));`)}</code></pre>
+
+<div class="edge"><b>Edge case:</b> when the array can be empty, <code>find{}</code> returns <code>null</code> — always null-check before chaining further extraction, or the test throws an NPE that masks the real assertion failure.</div>
+`
+},
+{
+  q: "How do you validate APIs returning different data types?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>This usually comes up in two flavors: (1) the same field can return different types depending on state (e.g., <code>discount</code> is a number or <code>null</code> or the string <code>"N/A"</code>), and (2) you must assert the correct Java/JSON type, not just the value.</p>
+
+<div class="section-label">Type-safe extraction with generics</div>
+<pre><code>${highlight(`JsonPath jp = response.jsonPath();
+
+Integer id = jp.getInt("id");
+String name = jp.getString("name");
+Boolean active = jp.getBoolean("isActive");
+Double price = jp.getDouble("price");
+List<Integer> ids = jp.getList("orderIds", Integer.class);
+
+// Generic object when type is genuinely variable
+Object discount = jp.get("discount");
+if (discount instanceof Number) {
+    // numeric discount path
+} else if (discount == null) {
+    // no discount applied
+} else {
+    Assert.fail("Unexpected type for discount: " + discount.getClass());
+}`)}</code></pre>
+
+<div class="section-label">Hamcrest type matchers</div>
+<pre><code>${highlight(`then().body("age", instanceOf(Integer.class))
+      .body("email", instanceOf(String.class))
+      .body("tags", instanceOf(List.class));`)}</code></pre>
+
+<div class="section-label">Schema-driven type validation (preferred at scale)</div>
+<p>Rather than asserting types field-by-field in every test, a JSON Schema with a strict <code>"type"</code> per property enforces this once, consistently, across every response — this is the answer that signals framework-design maturity in an interview.</p>
+<pre><code>${highlight(`{
+  "properties": {
+    "price": { "type": "number" },
+    "discount": { "type": ["number", "null"] },
+    "sku": { "type": "string" }
+  },
+  "required": ["price", "sku"]
+}`)}</code></pre>
+
+<div class="edge"><b>Common trap:</b> a field that's an integer in QA data but comes back as a float/double in Prod due to different DB precision — brittle type assertions (e.g. <code>instanceOf(Integer.class)</code>) fail even though the API contract is fine. Prefer <code>Number.class</code> when only numeric-ness matters, not the exact numeric subtype.</div>
+`
+},
+{
+  q: "How do you validate paginated API responses?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>Pagination testing has two layers: (1) validating the pagination <b>metadata contract</b> (page, size, totalElements, totalPages, hasNext) and (2) validating <b>data correctness across pages</b> — no duplicates, no gaps, correct ordering, and that total counts reconcile.</p>
+
+<div class="section-label">Metadata validation</div>
+<pre><code>${highlight(`given().spec(spec())
+    .queryParam("page", 0).queryParam("size", 20)
+    .when().get("/orders")
+    .then().statusCode(200)
+    .body("page.number", equalTo(0))
+    .body("page.size", equalTo(20))
+    .body("content.size()", lessThanOrEqualTo(20))
+    .body("page.totalElements", greaterThanOrEqualTo(0));`)}</code></pre>
+
+<div class="section-label">Walking all pages and asserting no duplicates / correct total</div>
+<pre><code>${highlight(`Set<Integer> allIds = new HashSet<>();
+int page = 0, totalPages;
+int fetchedCount = 0;
+
+do {
+    Response resp = given().spec(spec())
+        .queryParam("page", page).queryParam("size", 50)
+        .get("/orders").then().statusCode(200).extract().response();
+
+    List<Integer> ids = resp.jsonPath().getList("content.id", Integer.class);
+    totalPages = resp.jsonPath().getInt("page.totalPages");
+
+    for (Integer id : ids) {
+        Assert.assertTrue(allIds.add(id), "Duplicate id across pages: " + id);
+    }
+    fetchedCount += ids.size();
+    page++;
+} while (page < totalPages);
+
+int reportedTotal = given().spec(spec()).get("/orders?page=0&size=1")
+        .then().extract().jsonPath().getInt("page.totalElements");
+Assert.assertEquals(fetchedCount, reportedTotal, "Fetched count mismatches totalElements");`)}</code></pre>
+
+<div class="section-label">Sort-stability check</div>
+<p>If the API sorts by a field (e.g., <code>createdDate</code>), assert consecutive pages remain in sorted order, and re-fetch page 1 to confirm it's stable (no records re-appear or vanish) when data isn't mutated between calls.</p>
+
+<div class="edge"><b>Edge cases:</b>
+<ul>
+<li>Boundary pages: page beyond <code>totalPages</code> should return an empty <code>content</code> array, not a 400/500 — confirm the actual contract.</li>
+<li>Concurrent writes during pagination — real systems can shift records between pages; only assert this strictly on read-only/static test data.</li>
+<li><code>size=0</code> or negative page numbers — negative testing for input validation.</li>
+</ul>
+</div>
+`
+},
+{
+  q: "How would you implement exponential backoff for rate limits?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>Exponential backoff means: on a retryable failure (typically HTTP 429 or 503), wait progressively longer between retries — <code>base * 2^attempt</code> — usually with <b>jitter</b> (a small random offset) added so multiple parallel clients don't retry in lockstep and re-trigger the rate limit together.</p>
+
+<pre><code>${highlight(`public Response callWithBackoff(Supplier<Response> apiCall, int maxRetries) {
+    int attempt = 0;
+    long baseDelayMs = 500;
+
+    while (true) {
+        Response response = apiCall.get();
+        int status = response.getStatusCode();
+
+        if (status != 429 && status != 503) {
+            return response; // success or non-retryable error
+        }
+        if (attempt >= maxRetries) {
+            throw new RuntimeException("Max retries exceeded, last status: " + status);
+        }
+
+        long delay = (long) (baseDelayMs * Math.pow(2, attempt));
+        long jitter = ThreadLocalRandom.current().nextLong(0, baseDelayMs);
+        long sleepTime = delay + jitter;
+
+        // Honor Retry-After header if the API provides one
+        String retryAfter = response.getHeader("Retry-After");
+        if (retryAfter != null) {
+            sleepTime = Long.parseLong(retryAfter) * 1000L;
+        }
+
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
+        attempt++;
+    }
+}
+
+// usage
+Response resp = callWithBackoff(
+    () -> given().spec(spec()).get("/orders"), 5);`)}</code></pre>
+
+<div class="section-label">Library alternative</div>
+<p>In a real framework, hand-rolling this is fine to demonstrate understanding, but mention that libraries like <b>Resilience4j</b> (<code>RetryConfig</code> + <code>Retry</code>) or <b>Failsafe</b> give you backoff, jitter, and circuit-breaking out of the box and are what you'd actually wire into a production framework.</p>
+
+<div class="analogy"><b>Analogy:</b> it's like a kid asking "are we there yet?" — pestering every second gets you punished (rate limited harder); waiting longer each time you ask, plus randomizing exactly when you ask, gets you an answer without annoying the driver.</div>
+
+<div class="edge"><b>Follow-up they'll likely ask:</b> "What's the difference between backoff and a circuit breaker?" — Backoff retries the same failing call with increasing delay; a circuit breaker stops calling entirely for a cool-down window once failures cross a threshold, to protect the downstream service and fail fast for the caller.</div>
+`
+},
+{
+  q: "How do you make automation resilient to HTTP 429?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>This is the applied, framework-level version of the backoff question. "Resilient" means the framework treats 429 as an <b>expected, handled</b> condition — not a hard failure — and the retry logic lives in one reusable place, not copy-pasted into every test.</p>
+
+<div class="section-label">Centralizing retry via a REST Assured Filter</div>
+<p>The cleanest way in REST Assured is a custom <code>Filter</code> that intercepts every response and retries transparently, so individual test methods stay clean.</p>
+<pre><code>${highlight(`public class RetryFilter implements Filter {
+    private final int maxRetries;
+
+    public RetryFilter(int maxRetries) { this.maxRetries = maxRetries; }
+
+    @Override
+    public Response filter(FilterableRequestSpecification reqSpec,
+                            FilterableResponseSpecification resSpec,
+                            FilterContext ctx) {
+        Response response = ctx.next(reqSpec, resSpec);
+        int attempt = 0;
+
+        while (response.getStatusCode() == 429 && attempt < maxRetries) {
+            long waitMs = (long) (1000 * Math.pow(2, attempt));
+            try { Thread.sleep(waitMs); } catch (InterruptedException ignored) {}
+            response = ctx.next(reqSpec, resSpec);
+            attempt++;
+        }
+        return response;
+    }
+}
+
+// registered once on the base spec
+RequestSpecification spec = new RequestSpecBuilder()
+        .setBaseUri(ConfigReader.getBaseUrl())
+        .addFilter(new RetryFilter(4))
+        .build();`)}</code></pre>
+
+<div class="section-label">Other resilience measures worth naming</div>
+<ul>
+<li><b>Throttle test concurrency</b> — cap parallel thread-count for suites hitting rate-limited endpoints specifically, separate from the general parallel suite.</li>
+<li><b>Test-specific API keys/quotas</b> — request a higher rate limit tier for the automation service account so tests don't compete with real traffic.</li>
+<li><b>Distinguish "expected 429" tests from "resilience broke" failures</b> in reporting — if a negative test intentionally triggers rate limiting to assert the 429 contract, that test should NOT go through the retry filter (use a separate spec without the filter for it).</li>
+</ul>
+
+<div class="edge"><b>Edge case:</b> if you retry blindly on 429 even for a test that's specifically validating the 429 behavior/error body, you'll never see the assertion — keep a raw, non-retrying spec for negative/contract tests around rate limiting itself.</div>
+`
+},
+{
+  q: "How do you validate asynchronous APIs that return a Job/Task ID?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>Async APIs typically respond <code>202 Accepted</code> with a <code>jobId</code>/<code>Location</code> header, and you must <b>poll</b> a status endpoint until the job reaches a terminal state (<code>COMPLETED</code>/<code>FAILED</code>), then validate the final result. The key design decisions: poll interval, timeout ceiling, and what counts as terminal.</p>
+
+<pre><code>${highlight(`public JsonPath pollUntilComplete(String jobId, Duration timeout, Duration interval) {
+    Instant deadline = Instant.now().plus(timeout);
+
+    while (Instant.now().isBefore(deadline)) {
+        Response resp = given().spec(spec())
+            .when().get("/jobs/{jobId}", jobId)
+            .then().statusCode(200).extract().response();
+
+        String status = resp.jsonPath().getString("status");
+
+        if ("COMPLETED".equals(status)) {
+            return resp.jsonPath();
+        }
+        if ("FAILED".equals(status)) {
+            throw new AssertionError("Job failed: " + resp.jsonPath().getString("error"));
+        }
+        // else PENDING/RUNNING — keep polling
+        try { Thread.sleep(interval.toMillis()); }
+        catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+    }
+    throw new AssertionError("Job " + jobId + " did not complete within " + timeout);
+}
+
+// usage
+String jobId = given().spec(spec()).body(payload)
+    .post("/reports/generate").then()
+    .statusCode(202).extract().jsonPath().getString("jobId");
+
+JsonPath result = pollUntilComplete(jobId, Duration.ofSeconds(30), Duration.ofSeconds(2));
+Assert.assertEquals(result.getString("reportUrl") != null, true);`)}</code></pre>
+
+<div class="section-label">A more elegant option: Awaitility</div>
+<p>In real frameworks, <b>Awaitility</b> replaces the manual polling loop and reads far more cleanly — worth naming even if you'd hand-roll it for a take-home.</p>
+<pre><code>${highlight(`await().atMost(30, SECONDS).pollInterval(2, SECONDS)
+    .until(() -> given().spec(spec()).get("/jobs/" + jobId)
+              .jsonPath().getString("status"), equalTo("COMPLETED"));`)}</code></pre>
+
+<div class="edge"><b>Edge cases to mention proactively:</b>
+<ul>
+<li>Terminal-state ambiguity — some APIs also have a <code>CANCELLED</code> or <code>PARTIAL_SUCCESS</code> state; the poller must treat every terminal state explicitly, not just success/fail.</li>
+<li>Timeout is a real assertion failure, not an infra flake — don't silently swallow it.</li>
+<li>Idempotency — re-triggering the same job twice shouldn't create duplicate side effects; worth a dedicated negative test.</li>
+</ul>
+</div>
+`
+},
+{
+  q: "How do you test multipart/form-data APIs?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>Multipart requests (file upload endpoints, forms mixing files + text fields) use REST Assured's <code>.multiPart()</code> method instead of <code>.body()</code>, and the content-type is set to <code>multipart/form-data</code> automatically.</p>
+
+<pre><code>${highlight(`File file = new File("src/test/resources/testdata/sample.pdf");
+
+given().spec(spec())
+    .multiPart("file", file, "application/pdf")
+    .multiPart("description", "Q3 invoice upload")
+    .multiPart("category", "invoices")
+    .when()
+    .post("/documents/upload")
+    .then()
+    .statusCode(201)
+    .body("fileName", equalTo("sample.pdf"))
+    .body("sizeBytes", equalTo((int) file.length()));`)}</code></pre>
+
+<div class="section-label">Uploading from an in-memory byte stream (no physical file dependency)</div>
+<pre><code>${highlight(`byte[] content = "test file content".getBytes(StandardCharsets.UTF_8);
+
+given().spec(spec())
+    .multiPart("file", "note.txt", content, "text/plain")
+    .post("/documents/upload")
+    .then().statusCode(201);`)}</code></pre>
+
+<div class="section-label">What to actually test (beyond happy path)</div>
+<ul>
+<li><b>File type validation</b> — upload a disallowed extension, expect 400 with a clear error.</li>
+<li><b>File size limits</b> — upload something just over the max size boundary.</li>
+<li><b>Missing required part</b> — omit the file part entirely, or omit a required text field.</li>
+<li><b>Malformed/corrupt file</b> — a .pdf renamed .jpg, to check content-sniffing vs extension-trusting behavior.</li>
+<li><b>Post-upload verification</b> — if there's a download/GET endpoint, round-trip the file and compare checksums (MD5/SHA-256) to confirm no corruption in transit or storage.</li>
+</ul>
+<pre><code>${highlight(`String uploadedHash = DigestUtils.sha256Hex(Files.readAllBytes(file.toPath()));
+byte[] downloaded = given().spec(spec()).get("/documents/{id}/download", docId)
+        .then().statusCode(200).extract().asByteArray();
+String downloadedHash = DigestUtils.sha256Hex(downloaded);
+Assert.assertEquals(downloadedHash, uploadedHash, "File corrupted in round trip");`)}</code></pre>
+
+<div class="edge"><b>Edge case:</b> some gateways/load balancers cap multipart body size independently of the app — a large-file test failing with a generic 413 from a proxy (not your app) is a good thing to recognize and mention as "not a bug, it's infra config" during triage.</div>
+`
+},
+{
+  q: "How would you simulate 1000 concurrent users?",
+  body: `
+<div class="section-label">First, the honest framing</div>
+<p>This is the interview's way of checking you know the boundary between <b>functional/API test tooling</b> (REST Assured, TestNG) and <b>load/performance test tooling</b> (JMeter, Gatling, k6, Locust). REST Assured is not built for load generation — it's fine for a handful of parallel threads to test concurrency-correctness (e.g., race conditions), but simulating 1000 real concurrent users belongs in a dedicated load tool.</p>
+
+<div class="section-label">Two different goals, two different tools</div>
+<ul>
+<li><b>Concurrency-correctness testing</b> (does the API behave correctly under simultaneous access — e.g., no double-booking, no lost updates): a small thread pool (10-50 threads) using Java's <code>ExecutorService</code> + REST Assured is enough, and lets you assert business outcomes directly in Java.</li>
+<li><b>Load/performance testing</b> (can the system sustain 1000 concurrent users with acceptable latency/error rate): this is JMeter/Gatling territory — they're built for ramp-up profiles, connection pooling at scale, and generating proper load-test reports (throughput, p95/p99 latency, error %).</li>
+</ul>
+
+<div class="section-label">Java-side concurrency-correctness example</div>
+<pre><code>${highlight(`int threads = 50;
+ExecutorService executor = Executors.newFixedThreadPool(threads);
+CountDownLatch latch = new CountDownLatch(threads);
+AtomicInteger successCount = new AtomicInteger();
+
+for (int i = 0; i < threads; i++) {
+    executor.submit(() -> {
+        try {
+            Response resp = given().spec(spec())
+                .body(Map.of("seatId", "A1", "userId", UUID.randomUUID().toString()))
+                .post("/seats/book");
+            if (resp.getStatusCode() == 200) successCount.incrementAndGet();
+        } finally {
+            latch.countDown();
+        }
+    });
+}
+latch.await(30, TimeUnit.SECONDS);
+executor.shutdown();
+
+// only ONE of these 50 concurrent booking attempts on the same seat should succeed
+Assert.assertEquals(successCount.get(), 1, "Race condition allowed double booking!");`)}</code></pre>
+
+<div class="section-label">For actual 1000-user load</div>
+<p>Answer honestly: "I'd hand this to Gatling/JMeter, and my role as SDET is often to help design the scenario (ramp-up curve, think time, realistic data variance) and interpret results alongside the perf team — not to build the load generator itself in REST Assured."</p>
+
+<div class="edge"><b>This question is also testing judgment</b> — an interviewer is wary of a candidate who says "I'd just spin up 1000 threads in REST Assured," because that ignores connection pool limits, client-side bottlenecks, and the fact you'd be measuring your own test machine's limits, not the server's.</div>
+`
+},
+{
+  q: "How would you integrate REST Assured with JMeter/Gatling?",
+  body: `
+<div class="section-label">Core idea</div>
+<p>REST Assured and JMeter/Gatling solve different problems, but they do integrate in a few concrete ways worth naming precisely:</p>
+
+<div class="section-label">1. Reusing REST Assured request logic to seed JMeter test data</div>
+<p>A common pattern: use a REST Assured-based Java program (or TestNG suite) to prepare test data via API calls (create test users, orders, etc.) before a JMeter load test runs, then have JMeter hit the already-seeded endpoints. This keeps data-setup logic in one maintainable Java codebase instead of duplicating it in JMeter's UI/Groovy scripts.</p>
+
+<div class="section-label">2. Gatling + Java/Scala DSL as a "REST-Assured-like" load tool</div>
+<p>Gatling's newer Java DSL reads similarly to REST Assured's fluent syntax, which makes it approachable if you're already comfortable with REST Assured:</p>
+<pre><code>${highlight(`ScenarioBuilder scn = scenario("Order API Load")
+    .exec(http("Get Orders")
+        .get("/orders")
+        .check(status().is(200)));
+
+setUp(scn.injectOpen(rampUsers(1000).during(60)))
+    .protocols(http.baseUrl(ConfigReader.getBaseUrl()));`)}</code></pre>
+
+<div class="section-label">3. JMeter's Java Request sampler / BeanShell hook</div>
+<p>JMeter supports a "Java Request" sampler where you can drop in custom Java code (potentially reusing REST Assured-built request specs converted to raw HTTP calls) for complex request logic JMeter's UI can't easily express — used sparingly since it couples load tests to app-side Java.</p>
+
+<div class="section-label">4. Shared assertions/schema validation across both</div>
+<p>The JSON schema files used for REST Assured's <code>matchesJsonSchemaInClasspath()</code> can be reused in JMeter's JSON Assertion or a Groovy post-processor, so functional and load tests validate the same contract instead of drifting apart.</p>
+
+<div class="section-label">5. CI/CD pipeline orchestration</div>
+<p>Practically, "integration" often just means: functional REST Assured suite runs first in the pipeline as a gate; if it passes, the pipeline triggers the JMeter/Gatling load stage against the same environment — sequencing them rather than technically wiring their code together.</p>
+
+<div class="edge"><b>Be ready for:</b> "Have you personally done this?" — if you haven't wired them together directly, it's fine to be honest and pivot to describing the CI/CD sequencing pattern, which is the most common real-world "integration" anyway.</div>
+`
+}
+];
+
+const round2 = [
+{
+  q: "Negative API testing for authentication & authorization",
+  body: `
+<div class="section-label">Core distinction: AuthN vs AuthZ</div>
+<p><b>Authentication</b> = "who are you?" (401 territory). <b>Authorization</b> = "are you allowed to do this?" (403 territory). Interviewers specifically listen for whether you keep these separate, because conflating them is a very common junior mistake.</p>
+
+<div class="section-label">Authentication negative cases</div>
+<pre><code>${highlight(`// No token at all
+given().baseUri(baseUrl).get("/orders")
+    .then().statusCode(401);
+
+// Malformed / garbage token
+given().baseUri(baseUrl).header("Authorization", "Bearer garbage.token.value")
+    .get("/orders").then().statusCode(401);
+
+// Expired token
+given().baseUri(baseUrl).header("Authorization", "Bearer " + expiredToken)
+    .get("/orders").then().statusCode(401)
+    .body("error", equalTo("token_expired"));
+
+// Wrong auth scheme
+given().baseUri(baseUrl).header("Authorization", "Basic abc123")
+    .get("/orders").then().statusCode(401);`)}</code></pre>
+
+<div class="section-label">Authorization negative cases</div>
+<pre><code>${highlight(`// Valid token, but role lacks permission (e.g., regular user hitting an admin endpoint)
+given().spec(userSpec).delete("/admin/users/55")
+    .then().statusCode(403);
+
+// IDOR check — user A tries to access user B's private resource
+given().spec(userASpec).get("/orders/{orderIdBelongingToUserB}", 9001)
+    .then().statusCode(403); // or 404, depending on the app's info-leak policy`)}</code></pre>
+
+<div class="section-label">The IDOR check deserves emphasis</div>
+<p>Insecure Direct Object Reference — asserting that swapping an ID in the URL/payload while authenticated as a <i>different, unrelated</i> user doesn't leak another user's data — is one of the highest-value security-adjacent tests an SDET can own, and interviewers at 3-6 YOE level often specifically probe whether you know this term and pattern.</p>
+
+<div class="section-label">Token lifecycle edge cases</div>
+<ul>
+<li>Token revoked mid-session (user logged out elsewhere) — subsequent calls with the old token should 401.</li>
+<li>Refresh token flow — expired access token + valid refresh token should silently re-auth; expired refresh token should force full re-login.</li>
+<li>Privilege escalation via payload tampering — e.g., a PATCH request trying to change one's own <code>"role": "admin"</code> field should be rejected server-side, not silently accepted.</li>
+</ul>
+
+<div class="edge"><b>Watch for:</b> whether 403 vs 404 is used consistently for "you don't have access" vs "resource doesn't exist" — some APIs intentionally return 404 for both to avoid confirming a resource exists to unauthorized users. Validate whichever your app's actual contract is, and be ready to explain the security reasoning either way.</div>
+`
+},
+{
+  q: "SQL Joins",
+  body: `
+<div class="section-label">Core idea</div>
+<p>A JOIN combines rows from two or more tables based on a related column. As an SDET, joins come up constantly for backend/DB validation — reconciling what the API returned against what multiple tables actually store.</p>
+
+<div class="section-label">The main join types</div>
+<pre><code>${highlight(`-- INNER JOIN: only matching rows in both tables
+SELECT s.student_name, c.course_name
+FROM students s
+INNER JOIN enrollments e ON s.student_id = e.student_id
+INNER JOIN courses c ON e.course_id = c.course_id;
+
+-- LEFT (OUTER) JOIN: all rows from left table, matched rows from right (NULL if no match)
+SELECT s.student_name, e.course_id
+FROM students s
+LEFT JOIN enrollments e ON s.student_id = e.student_id;
+
+-- RIGHT (OUTER) JOIN: all rows from right table, matched rows from left
+SELECT s.student_name, e.course_id
+FROM students s
+RIGHT JOIN enrollments e ON s.student_id = e.student_id;
+
+-- FULL OUTER JOIN: all rows from both, NULLs where no match on either side
+SELECT s.student_name, e.course_id
+FROM students s
+FULL OUTER JOIN enrollments e ON s.student_id = e.student_id;
+
+-- SELF JOIN: a table joined to itself (e.g., employee-manager hierarchy)
+SELECT e.name AS employee, m.name AS manager
+FROM employees e
+LEFT JOIN employees m ON e.manager_id = m.employee_id;
+
+-- CROSS JOIN: cartesian product, every row of A with every row of B (rare, use deliberately)
+SELECT s.size_label, c.color_name
+FROM sizes s CROSS JOIN colors c;`)}</code></pre>
+
+<div class="analogy"><b>Analogy:</b> INNER JOIN is a Venn diagram intersection — only the overlap. LEFT JOIN keeps the entire left circle and fills in blanks (NULL) for whatever doesn't overlap on the right.</div>
+
+<div class="edge"><b>QA-specific angle:</b> a very common data-reconciliation test is "find orders in the orders table with no matching row in payments" — that's a LEFT JOIN with a <code>WHERE right_table.id IS NULL</code> filter (an "anti-join" pattern), used constantly to catch orphaned records or missed inserts.</div>
+<pre><code>${highlight(`SELECT o.order_id
+FROM orders o
+LEFT JOIN payments p ON o.order_id = p.order_id
+WHERE p.payment_id IS NULL;  -- orders with no payment record at all`)}</code></pre>
+`
+},
+{
+  q: "INNER JOIN vs OUTER JOIN",
+  body: `
+<div class="section-label">The direct comparison</div>
+<table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:0.9em;">
+<tr style="background:#1c232c;"><th style="text-align:left; padding:8px; border:1px solid #2a3340;">Aspect</th><th style="text-align:left; padding:8px; border:1px solid #2a3340;">INNER JOIN</th><th style="text-align:left; padding:8px; border:1px solid #2a3340;">OUTER JOIN (LEFT/RIGHT/FULL)</th></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">Rows returned</td><td style="padding:8px; border:1px solid #2a3340;">Only rows with a match in both tables</td><td style="padding:8px; border:1px solid #2a3340;">Includes unmatched rows from one or both sides</td></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">Unmatched columns</td><td style="padding:8px; border:1px solid #2a3340;">N/A — unmatched rows excluded entirely</td><td style="padding:8px; border:1px solid #2a3340;">Filled with NULL</td></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">Typical use</td><td style="padding:8px; border:1px solid #2a3340;">"Give me only complete, related data"</td><td style="padding:8px; border:1px solid #2a3340;">"Show me everything, including gaps/orphans"</td></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">QA use case</td><td style="padding:8px; border:1px solid #2a3340;">Validating fully-linked records (e.g., completed orders with payment)</td><td style="padding:8px; border:1px solid #2a3340;">Finding data integrity gaps (orphaned rows, missing FK references)</td></tr>
+</table>
+
+<pre><code>${highlight(`-- INNER: only students who ARE enrolled in something
+SELECT s.student_name, e.course_id
+FROM students s INNER JOIN enrollments e ON s.student_id = e.student_id;
+
+-- LEFT OUTER: ALL students, including those enrolled in nothing (course_id = NULL)
+SELECT s.student_name, e.course_id
+FROM students s LEFT JOIN enrollments e ON s.student_id = e.student_id;`)}</code></pre>
+
+<div class="analogy"><b>Analogy:</b> INNER JOIN is a strict guest list check-in — only people on both the invite list and the RSVP list get in. LEFT JOIN is the invite list attendance sheet — everyone invited shows up on the sheet, with "did not respond" (NULL) next to the names who never RSVP'd.</div>
+
+<div class="edge"><b>Common interview trap:</b> "Which JOIN would you use to find students with NO enrollments?" — Answer: LEFT JOIN + <code>WHERE e.student_id IS NULL</code>, NOT INNER JOIN (which would exclude them entirely, giving you zero rows to even inspect).</div>
+`
+},
+{
+  q: "Primary Key vs Foreign Key",
+  body: `
+<div class="section-label">Definitions</div>
+<ul>
+<li><b>Primary Key (PK):</b> uniquely identifies each row in its own table. Must be unique and NOT NULL. A table has exactly one primary key (which can be a composite of multiple columns).</li>
+<li><b>Foreign Key (FK):</b> a column (or set of columns) in one table that references the Primary Key of another table, enforcing referential integrity — i.e., you can't insert a FK value that doesn't exist in the referenced table's PK.</li>
+</ul>
+
+<pre><code>${highlight(`CREATE TABLE students (
+    student_id INT PRIMARY KEY,
+    student_name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE enrollments (
+    enrollment_id INT PRIMARY KEY,
+    student_id INT,
+    course_id INT,
+    CONSTRAINT fk_student FOREIGN KEY (student_id)
+        REFERENCES students(student_id)
+);`)}</code></pre>
+
+<div class="section-label">Key behavioral differences</div>
+<table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:0.9em;">
+<tr style="background:#1c232c;"><th style="text-align:left; padding:8px; border:1px solid #2a3340;">Aspect</th><th style="text-align:left; padding:8px; border:1px solid #2a3340;">Primary Key</th><th style="text-align:left; padding:8px; border:1px solid #2a3340;">Foreign Key</th></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">Uniqueness</td><td style="padding:8px; border:1px solid #2a3340;">Must be unique</td><td style="padding:8px; border:1px solid #2a3340;">Can have duplicates (multiple enrollments per student)</td></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">Nullability</td><td style="padding:8px; border:1px solid #2a3340;">Never NULL</td><td style="padding:8px; border:1px solid #2a3340;">Can be NULL (if the relationship is optional)</td></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">Count per table</td><td style="padding:8px; border:1px solid #2a3340;">Exactly one</td><td style="padding:8px; border:1px solid #2a3340;">Can have several (referencing different parent tables)</td></tr>
+<tr><td style="padding:8px; border:1px solid #2a3340;">Purpose</td><td style="padding:8px; border:1px solid #2a3340;">Identity of this row</td><td style="padding:8px; border:1px solid #2a3340;">Relationship to another table's row</td></tr>
+</table>
+
+<div class="section-label">Why this matters directly for SDET work</div>
+<ul>
+<li>Referential integrity constraints are exactly what stop "orphaned record" bugs — if the FK constraint is missing or disabled, you can insert an enrollment for a student_id that doesn't exist, which is a real data-integrity bug worth flagging in DB schema review.</li>
+<li>Cascade behavior (<code>ON DELETE CASCADE</code> vs <code>ON DELETE RESTRICT</code>) is a common negative-test target: deleting a parent record should behave exactly per the defined cascade rule — test both that cascading deletes work when expected, and that restricted deletes correctly fail/block when they shouldn't cascade.</li>
+</ul>
+
+<div class="edge"><b>Trap question to expect:</b> "Can a Foreign Key reference a non-primary-key column?" — Yes, technically a FK can reference any column with a UNIQUE constraint, not strictly the PK, though referencing the PK is by far the most common pattern.</div>
+`
+},
+{
+  q: "SQL query to retrieve records where a roll number is even",
+  body: `
+<div class="section-label">The query</div>
+<pre><code>${highlight(`SELECT *
+FROM students
+WHERE roll_number % 2 = 0;`)}</code></pre>
+<p>The modulo operator <code>%</code> (or <code>MOD(roll_number, 2)</code> — the function form, which some dialects like older Oracle prefer) returns the remainder of division by 2. A remainder of 0 means even.</p>
+
+<div class="section-label">Dialect variations worth knowing</div>
+<pre><code>${highlight(`-- Oracle (both work in modern Oracle, MOD() is the classic form)
+SELECT * FROM students WHERE MOD(roll_number, 2) = 0;
+
+-- MySQL / PostgreSQL / SQL Server — % works directly
+SELECT * FROM students WHERE roll_number % 2 = 0;`)}</code></pre>
+
+<div class="section-label">For odd numbers (the natural follow-up)</div>
+<pre><code>${highlight(`SELECT * FROM students WHERE roll_number % 2 <> 0;
+-- or: WHERE roll_number % 2 = 1  (only safe if roll_number is guaranteed non-negative)`)}</code></pre>
+
+<div class="edge"><b>Edge case worth mentioning proactively:</b> if <code>roll_number</code> can be negative in some system (unusual, but worth flagging), <code>%</code> behavior on negatives differs by DB — in most dialects <code>-3 % 2 = -1</code>, not <code>1</code>, so <code>roll_number % 2 = 1</code> would incorrectly exclude negative odd numbers. Using <code>&lt;&gt; 0</code> for "odd" sidesteps that entirely.</div>
+`
+},
+{
+  q: "SQL query to fetch distinct student names",
+  body: `
+<div class="section-label">The query</div>
+<pre><code>${highlight(`SELECT DISTINCT student_name
+FROM students;`)}</code></pre>
+<p><code>DISTINCT</code> removes duplicate rows from the result set based on the selected column(s) — here, any repeated <code>student_name</code> value appears only once in the output.</p>
+
+<div class="section-label">Distinct across multiple columns</div>
+<p>A subtlety worth stating clearly in an interview: <code>DISTINCT</code> applied to multiple columns treats the <i>combination</i> as the uniqueness key, not each column independently.</p>
+<pre><code>${highlight(`-- unique (student_name, class) PAIRS — two "Rahul"s in different classes both appear
+SELECT DISTINCT student_name, class
+FROM students;`)}</code></pre>
+
+<div class="section-label">DISTINCT vs GROUP BY</div>
+<p>Functionally similar for a simple "unique values" query, but they diverge once aggregation enters the picture:</p>
+<pre><code>${highlight(`-- Equivalent for pure uniqueness
+SELECT DISTINCT student_name FROM students;
+SELECT student_name FROM students GROUP BY student_name;
+
+-- GROUP BY additionally supports aggregates — DISTINCT alone cannot do this
+SELECT student_name, COUNT(*) AS enrollment_count
+FROM enrollments
+GROUP BY student_name;`)}</code></pre>
+
+<div class="edge"><b>Performance note worth mentioning:</b> <code>DISTINCT</code> requires the DB to sort/hash the full result set to de-duplicate, which can be expensive on large tables — if you actually need counts or grouping logic alongside uniqueness, <code>GROUP BY</code> is usually the more idiomatic and often better-optimized choice, and knowing when to reach for which signals real SQL fluency rather than rote syntax recall.</div>
+`
+}
+];
+
+function buildCard(item, idx, prefix){
+  const id = prefix + idx;
+  return `
+  <div class="qcard" id="card-${id}">
+    <div class="qhead" onclick="toggleCard('${id}')">
+      <div class="qtext"><span class="qnum">Q${idx+1}.</span>${item.q}</div>
+      <div class="chevron">▶</div>
+    </div>
+    <div class="qbody">${item.body}</div>
+  </div>`;
+}
+
+function toggleCard(id){
+  document.getElementById('card-' + id).classList.toggle('open');
+}
+
+function toggleAll(open){
+  document.querySelectorAll('.qcard').forEach(c=>{
+    if(open) c.classList.add('open'); else c.classList.remove('open');
+  });
+}
+
+function render(){
+  document.getElementById('round1').innerHTML = round1.map((it,i)=>buildCard(it,i,'r1-')).join('');
+  document.getElementById('round2').innerHTML = round2.map((it,i)=>buildCard(it,i,'r2-')).join('');
+
+  let toc = '';
+  round1.forEach((it,i)=>{ toc += `<a href="#card-r1-${i}" onclick="openAndScroll('r1-${i}')">R1.${i+1} — ${it.q}</a>`; });
+  round2.forEach((it,i)=>{ toc += `<a href="#card-r2-${i}" onclick="openAndScroll('r2-${i}')">R2.${i+1} — ${it.q}</a>`; });
+  document.getElementById('tocList').innerHTML = toc;
+}
+
+function openAndScroll(id){
+  document.getElementById('card-'+id).classList.add('open');
+}
+
+render();
+</script>
+</body>
+</html>
