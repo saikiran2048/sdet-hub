@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selenium WebDriver — SDET Interview Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #10131A;
+    --surface: #171C25;
+    --surface-2: #1E2530;
+    --border: #2A323F;
+    --text: #E7EAEF;
+    --text-dim: #8B93A3;
+    --teal: #4FD8C4;
+    --amber: #F2B84B;
+    --red: #EE6F62;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(79,216,196,0.08), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(242,184,75,0.06), transparent 35%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .terminal{
+    max-width:920px;
+    margin:32px auto 0;
+    padding:0 20px;
+  }
+  .term-bar{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px 10px 0 0;
+    padding:10px 16px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .dot.r{background:#EE6F62;} .dot.y{background:#F2B84B;} .dot.g{background:#4FD8C4;}
+  .term-title{margin-left:8px;font-family:var(--mono);font-size:12.5px;color:var(--text-dim);}
+  .term-body{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-top:none;
+    border-radius:0 0 10px 10px;
+    padding:22px 24px 26px;
+    font-family:var(--mono);
+  }
+  .prompt-line{font-size:14px;color:var(--text-dim);}
+  .prompt-line .sym{color:var(--teal);}
+  .prompt-line .cmd{color:var(--text);}
+  .cursor{display:inline-block;width:8px;height:16px;background:var(--teal);margin-left:2px;vertical-align:-3px;animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  h1{
+    font-family:var(--mono);
+    font-size:clamp(24px,4vw,34px);
+    margin:14px 0 4px;
+    letter-spacing:-0.5px;
+  }
+  h1 span{color:var(--teal);}
+  .subtitle{color:var(--text-dim);font-size:14px;margin-bottom:0;}
+  .meta-row{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text-dim);font-family:var(--mono);}
+  .meta-row b{color:var(--amber);}
+
+  .controls{
+    max-width:920px;margin:22px auto 0;padding:0 20px;
+    display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+  }
+  #search{
+    flex:1;min-width:200px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:13.5px;
+    padding:11px 14px;
+    border-radius:8px;
+    outline:none;
+  }
+  #search::placeholder{color:var(--text-dim);}
+  #search:focus{border-color:var(--teal);}
+  .tag-filter{
+    display:flex;gap:6px;flex-wrap:wrap;
+  }
+  .tag-btn{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    font-family:var(--mono);
+    font-size:11.5px;
+    padding:8px 11px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .15s ease;
+    white-space:nowrap;
+  }
+  .tag-btn:hover{border-color:var(--teal);color:var(--text);}
+  .tag-btn.active{background:rgba(79,216,196,0.14);border-color:var(--teal);color:var(--teal);}
+
+  .list{max-width:920px;margin:18px auto 0;padding:0 20px;display:flex;flex-direction:column;gap:10px;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    transition:border-color .15s ease;
+  }
+  .card.open{border-color:rgba(79,216,196,0.4);}
+  .card-head{
+    padding:16px 18px;
+    cursor:pointer;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+  }
+  .qid{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--teal);
+    background:rgba(79,216,196,0.1);
+    border:1px solid rgba(79,216,196,0.25);
+    padding:3px 8px;
+    border-radius:5px;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .card-title-wrap{flex:1;}
+  .card-q{font-size:15px;font-weight:600;line-height:1.45;}
+  .card-tag{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:var(--amber);
+    margin-top:6px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+  }
+  .chevron{
+    font-family:var(--mono);
+    color:var(--text-dim);
+    transition:transform .2s ease;
+    margin-top:2px;
+    flex-shrink:0;
+  }
+  .card.open .chevron{transform:rotate(90deg);color:var(--teal);}
+  .card-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .card-body-inner{
+    padding:0 18px 20px 18px;
+    border-top:1px solid var(--border);
+    padding-top:16px;
+    font-size:14px;
+    line-height:1.65;
+    color:#D3D8E0;
+  }
+  .card-body-inner p{margin:0 0 12px;}
+  .card-body-inner ul{margin:0 0 12px;padding-left:20px;}
+  .card-body-inner li{margin-bottom:6px;}
+  .card-body-inner strong{color:var(--text);}
+  code.inline{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--amber);
+    padding:2px 6px;
+    border-radius:4px;
+    font-family:var(--mono);
+    font-size:12.5px;
+  }
+  pre{
+    background:#0D1016;
+    border:1px solid var(--border);
+    border-left:3px solid var(--teal);
+    border-radius:6px;
+    padding:14px 16px;
+    overflow-x:auto;
+    font-family:var(--mono);
+    font-size:12.5px;
+    line-height:1.6;
+    color:#CBD3DE;
+    margin:10px 0 14px;
+  }
+  pre .kw{color:#F2B84B;}
+  pre .str{color:#4FD8C4;}
+  pre .cm{color:#6B7385;font-style:italic;}
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin:8px 0 14px;
+  }
+  @media(max-width:600px){.compare{grid-template-columns:1fr;}}
+  .compare-col{
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:12px 14px;
+  }
+  .compare-col h4{
+    margin:0 0 8px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--teal);
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+  }
+  .compare-col.warn h4{color:var(--red);}
+  .compare-col p{margin:0;font-size:13px;}
+  .no-results{
+    text-align:center;
+    color:var(--text-dim);
+    font-family:var(--mono);
+    font-size:13px;
+    padding:40px 0;
+  }
+  .footer-note{
+    max-width:920px;margin:26px auto 0;padding:0 20px;
+    font-family:var(--mono);font-size:11.5px;color:var(--text-dim);
+  }
+
+  /* --- Back to Hub button --- */
+  .back-to-hub {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px;
+    padding: 8px 14px;
+    background: #101b2d;
+    border: 1px solid #223252;
+    border-radius: 8px;
+    color: #4fd1e8;
+    text-decoration: none;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .back-to-hub:hover {
+    border-color: #4fd1e8;
+    transform: translateX(-2px);
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" class="back-to-hub">← Back to Hub</a>
+
+
+<div class="terminal">
+  <div class="term-bar">
+    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+    <div class="term-title">sai@sdet-prep: ~/selenium-2026</div>
+  </div>
+  <div class="term-body">
+    <div class="prompt-line"><span class="sym">$</span> <span class="cmd">run interview-prep.sh --topic=selenium-webdriver --year=2026</span><span class="cursor"></span></div>
+    <h1><span>100</span> Most-Asked Selenium WebDriver Questions</h1>
+    <p class="subtitle">Answers geared to Java automation — SDET interview round</p>
+    <div class="meta-row">
+      <span>STACK: <b>Java · Selenium 4.x</b></span>
+      <span>FOCUS: <b>Waits · Locators · Grid · CI/CD · BDD · Mobile · Framework Design</b></span>
+      <span>MODE: <b>expand to reveal</b></span>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <input id="search" type="text" placeholder="Search questions… e.g. 'frame', 'dropdown', 'SSL'">
+</div>
+<div class="controls" style="margin-top:8px;">
+  <div class="tag-filter" id="tagFilter"></div>
+</div>
+
+<div class="list" id="list"></div>
+<div class="no-results" id="noResults" style="display:none;">No matches — try a different keyword or clear the filter.</div>
+
+<div class="footer-note">Tap any card to expand · code samples in Java</div>
+
+<script>
+const DATA = [
+{
+  id:"Q01", tag:"Locators & API",
+  q:"What does getDomProperty() and getDomAttribute() do? What's the difference?",
+  a:`
+    <p>Both replaced the old ambiguous <code class="inline">getAttribute()</code> behavior in Selenium 4, splitting it into two explicit, honest methods.</p>
+    <div class="compare">
+      <div class="compare-col">
+        <h4>getDomAttribute(name)</h4>
+        <p>Returns the value exactly as written in the HTML source (the static markup). It's a snapshot of what the server sent — doesn't reflect anything JavaScript changed at runtime. Returns <code class="inline">null</code> if the attribute isn't present in the source.</p>
+      </div>
+      <div class="compare-col">
+        <h4>getDomProperty(name)</h4>
+        <p>Returns the current live value of the DOM object's JS property — reflects real-time state, including changes made by scripts or user interaction (e.g. a checkbox's current <code class="inline">checked</code> state).</p>
+      </div>
+    </div>
+    <p><strong>Rule of thumb:</strong> use <code class="inline">getDomAttribute</code> for static config baked into HTML (like a hardcoded <code class="inline">data-testid</code>); use <code class="inline">getDomProperty</code> for anything that changes at runtime (checkbox/radio state, current input value, class toggles after JS interaction).</p>
+    <pre>String staticAttr = element.getDomAttribute("value");   <span class="cm">// as written in HTML</span>
+String liveValue  = element.getDomProperty("value");    <span class="cm">// current live state</span></pre>
+  `
+},
+{
+  id:"Q02", tag:"Links & Validation",
+  q:"How do you fetch all broken links with their name and URL?",
+  a:`
+    <p>Selenium itself can't tell you an HTTP status code — it only knows the DOM. So the pattern is: use Selenium to <strong>collect</strong> the links, then use plain Java HTTP calls to <strong>check</strong> each one.</p>
+    <pre><span class="kw">List</span>&lt;WebElement&gt; links = driver.findElements(By.tagName("a"));
+<span class="kw">List</span>&lt;String&gt; brokenLinks = <span class="kw">new</span> ArrayList&lt;&gt;();
+
+<span class="kw">for</span> (WebElement link : links) {
+    String name = link.getText();
+    String url  = link.getDomAttribute("href");
+
+    <span class="kw">if</span> (url == <span class="kw">null</span> || url.isEmpty() || url.startsWith("javascript")) <span class="kw">continue</span>;
+
+    <span class="kw">try</span> {
+        HttpURLConnection conn = (HttpURLConnection) <span class="kw">new</span> URL(url).openConnection();
+        conn.setRequestMethod("HEAD");
+        conn.connect();
+        <span class="kw">int</span> code = conn.getResponseCode();
+        <span class="kw">if</span> (code &gt;= 400) {
+            brokenLinks.add(name + " -&gt; " + url + " [" + code + "]");
+        }
+    } <span class="kw">catch</span> (Exception e) {
+        brokenLinks.add(name + " -&gt; " + url + " [UNREACHABLE]");
+    }
+}
+brokenLinks.forEach(System.out::println);</pre>
+    <p><strong>Why HEAD, not GET:</strong> HEAD returns just the status code without downloading the response body — much faster across dozens/hundreds of links.</p>
+  `
+},
+{
+  id:"Q03", tag:"Waits & Exceptions",
+  q:"How can you bypass 'Element Not Found' without try/catch, throws, or custom exceptions?",
+  a:`
+    <p>Two mechanics do this for you without any exception handling in your test code:</p>
+    <ul>
+      <li><strong>findElements() (plural)</strong> never throws <code class="inline">NoSuchElementException</code> — if nothing matches, it returns an <em>empty list</em>. So instead of asking "does this element exist?" and catching a failure, you ask "is the list size &gt; 0?"</li>
+      <li><strong>WebDriverWait / FluentWait</strong> already ignore <code class="inline">NoSuchElementException</code> internally while polling — that's built into <code class="inline">ExpectedConditions</code>, so you never need your own try/catch around the wait itself.</li>
+    </ul>
+    <pre>WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(10));
+
+<span class="kw">boolean</span> isPresent = wait.until(d -&gt;
+    d.findElements(By.id("promoBanner")).size() &gt; 0
+);
+
+<span class="kw">if</span> (isPresent) {
+    driver.findElement(By.id("promoBanner")).click();
+}</pre>
+    <p>This reads almost like checking a light switch instead of bracing for it to explode — you just poll a condition, no exception ever gets thrown in the first place.</p>
+  `
+},
+{
+  id:"Q04", tag:"Windows & Frames",
+  q:"What happens with multiple browser windows open — how do you switch between them?",
+  a:`
+    <p>Each window/tab gets a unique handle. Selenium keeps focus on exactly one at a time — actions target only the "active" handle, even if three windows are open.</p>
+    <pre>String parentHandle = driver.getWindowHandle();
+<span class="kw">Set</span>&lt;String&gt; allHandles = driver.getWindowHandles();
+
+<span class="kw">for</span> (String handle : allHandles) {
+    <span class="kw">if</span> (!handle.equals(parentHandle)) {
+        driver.switchTo().window(handle);
+        <span class="kw">if</span> (driver.getTitle().contains("Checkout")) {
+            <span class="kw">break</span>; <span class="cm">// stay on the one we want</span>
+        }
+    }
+}
+<span class="cm">// ... do work on the new window ...</span>
+driver.switchTo().window(parentHandle); <span class="cm">// return to original</span></pre>
+    <p><strong>Gotcha:</strong> <code class="inline">getWindowHandles()</code> returns a <code class="inline">Set</code>, so order isn't guaranteed — always match by title/URL, never assume the "second" handle is the new tab.</p>
+  `
+},
+{
+  id:"Q05", tag:"Selenium vs Playwright",
+  q:"Can you use the same locators in Selenium WebDriver and Playwright? If not, what's your strategy in Playwright?",
+  a:`
+    <p><strong>Partially.</strong> Plain <code class="inline">CSS selectors</code> and <code class="inline">XPath</code> strings are portable — both engines understand them the same way. But Selenium's <code class="inline">By</code> strategies (<code class="inline">By.id</code>, <code class="inline">By.name</code>, <code class="inline">By.linkText</code>) are Selenium-API sugar, not a shared standard — Playwright has no direct equivalent for those convenience wrappers.</p>
+    <div class="compare">
+      <div class="compare-col warn">
+        <h4>Portable</h4>
+        <p>CSS selectors, XPath expressions — work unchanged in both tools.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Not portable</h4>
+        <p>By.id/name/linkText/className helper methods, Selenium's implicit wait model, Actions class chains.</p>
+      </div>
+    </div>
+    <p><strong>Playwright strategy:</strong> don't just port XPath over — lean into Playwright's built-in, auto-waiting locators, which are more resilient to markup changes and read closer to how a user finds things:</p>
+    <pre>page.getByRole("button", <span class="kw">new</span> Page.GetByRoleOptions().setName("Submit"));
+page.getByLabel("Email address");
+page.getByText("Order confirmed");
+page.getByTestId("checkout-btn");</pre>
+    <p>These auto-wait for actionability (visible, enabled, stable) without any explicit <code class="inline">WebDriverWait</code>-style code — that's the real strategic shift, not just a locator swap.</p>
+  `
+},
+{
+  id:"Q06", tag:"Interactions",
+  q:"When should you use sendKeys() vs sendKeys() from the Actions class?",
+  a:`
+    <div class="compare">
+      <div class="compare-col">
+        <h4>WebElement.sendKeys()</h4>
+        <p>Requires a located element reference. Selenium auto-scrolls to it and waits for it to be interactable before typing. Use for standard, simple text-field input.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Actions.sendKeys()</h4>
+        <p>Sends keys to whatever element currently has focus — no element reference required. Needed for key combinations (CTRL+A, SHIFT+TAB) or when chaining with other actions in one fluent sequence.</p>
+      </div>
+    </div>
+    <pre><span class="cm">// standard field</span>
+driver.findElement(By.id("username")).sendKeys("sai.dasari");
+
+<span class="cm">// key combo / focus already elsewhere — no element handle needed</span>
+<span class="kw">new</span> Actions(driver)
+    .keyDown(Keys.CONTROL)
+    .sendKeys("a")
+    .keyUp(Keys.CONTROL)
+    .sendKeys(Keys.DELETE)
+    .perform();</pre>
+    <p>Use <code class="inline">Actions</code> whenever typing is one step inside a larger gesture (click → hold key → type → release), not a standalone action on one field.</p>
+  `
+},
+{
+  id:"Q07", tag:"Waits",
+  q:"How does WebDriverWait's urlToBe() differ from titleIs()?",
+  a:`
+    <p>Mechanically identical — both are <code class="inline">ExpectedConditions</code> that poll until an <strong>exact string match</strong> is found, then return true. The only difference is <em>what</em> they compare:</p>
+    <pre>wait.until(ExpectedConditions.urlToBe("https://app.example.com/dashboard"));
+<span class="cm">// checks: driver.getCurrentUrl().equals(expectedUrl)</span>
+
+wait.until(ExpectedConditions.titleIs("Dashboard | Example"));
+<span class="cm">// checks: driver.getTitle().equals(expectedTitle)</span></pre>
+    <p>Both have "contains" siblings — <code class="inline">urlContains()</code> and <code class="inline">titleContains()</code> — for partial matches, useful when a URL carries a dynamic query param or session ID you can't predict exactly.</p>
+  `
+},
+{
+  id:"Q08", tag:"Browser Config",
+  q:"How do you handle SSL certificate errors using Selenium WebDriver?",
+  a:`
+    <p>Tell the browser upfront to accept insecure/self-signed certs instead of blocking navigation with a warning page — set this on the relevant Options object before creating the driver.</p>
+    <pre><span class="cm">// Chrome</span>
+ChromeOptions chromeOptions = <span class="kw">new</span> ChromeOptions();
+chromeOptions.setAcceptInsecureCerts(<span class="kw">true</span>);
+WebDriver driver = <span class="kw">new</span> ChromeDriver(chromeOptions);
+
+<span class="cm">// Firefox</span>
+FirefoxOptions ffOptions = <span class="kw">new</span> FirefoxOptions();
+ffOptions.setAcceptInsecureCerts(<span class="kw">true</span>);
+WebDriver driver2 = <span class="kw">new</span> FirefoxDriver(ffOptions);</pre>
+    <p>Common on QA/staging environments running self-signed certs — this is a test-environment convenience, not something you'd want silently enabled against production.</p>
+  `
+},
+{
+  id:"Q09", tag:"Dropdowns",
+  q:"How do you handle dynamic dropdowns and select options in Selenium WebDriver?",
+  a:`
+    <p>First checkpoint: is it a real <code class="inline">&lt;select&gt;</code> tag? If yes, the <code class="inline">Select</code> class handles it directly. Most "dynamic" dropdowns are actually a <code class="inline">&lt;div&gt;</code>/<code class="inline">&lt;ul&gt;</code> built with JS — for those, <code class="inline">Select</code> won't work at all.</p>
+    <pre><span class="cm">// custom (non-&lt;select&gt;) dropdown</span>
+driver.findElement(By.id("countryDropdown")).click(); <span class="cm">// opens the list</span>
+
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(8));
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("option-list")));
+
+<span class="kw">List</span>&lt;WebElement&gt; options = driver.findElements(By.cssSelector(".option-list li"));
+<span class="kw">for</span> (WebElement opt : options) {
+    <span class="kw">if</span> (opt.getText().equalsIgnoreCase("India")) {
+        opt.click();
+        <span class="kw">break</span>;
+    }
+}</pre>
+    <p>For type-ahead/search-filtered dropdowns, add a <code class="inline">sendKeys()</code> step before the loop to narrow the list first, then wait for the filtered options to stabilize before clicking.</p>
+  `
+},
+{
+  id:"Q10", tag:"Autofill",
+  q:"How do you manage autofill fields and validate the options listed?",
+  a:`
+    <p>Autofill/autocomplete widgets are essentially a dynamic dropdown triggered by typing. The validation angle is what makes this different from Q9 — you're not just picking an option, you're asserting the <em>suggestion list itself</em> is correct.</p>
+    <pre>WebElement input = driver.findElement(By.id("cityInput"));
+input.sendKeys("Hyd");
+
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(6));
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("suggestions")));
+
+<span class="kw">List</span>&lt;String&gt; suggestions = driver.findElements(By.cssSelector(".suggestions li"))
+        .stream().map(WebElement::getText).collect(Collectors.toList());
+
+Assert.assertTrue(suggestions.contains("Hyderabad"));
+Assert.assertTrue(suggestions.stream().allMatch(s -&gt; s.toLowerCase().startsWith("hyd")));
+
+driver.findElement(By.xpath("//li[text()='Hyderabad']")).click();</pre>
+    <p>Validate both <strong>relevance</strong> (every suggestion actually matches the typed prefix) and <strong>selection behavior</strong> (clicking populates the input field correctly).</p>
+  `
+},
+{
+  id:"Q11", tag:"Links & Validation",
+  q:"When should you find a URL and validate its existence on a page? What are hidden links?",
+  a:`
+    <p><strong>When to validate URL existence:</strong> footer/legal links, before-release regression sweeps, SEO/accessibility audits, and any link that lives behind a hover menu or collapsed accordion that a normal click-path test wouldn't naturally exercise.</p>
+    <p><strong>Hidden links</strong> are anchor tags that exist in the DOM (so Selenium can find them and read their <code class="inline">href</code>) but aren't visually rendered — via <code class="inline">display:none</code>, <code class="inline">visibility:hidden</code>, off-screen positioning, or collapsed parent menus. They're common in mega-menus, mobile hamburger navs, and tooltips.</p>
+    <pre><span class="kw">List</span>&lt;WebElement&gt; hiddenLinks = driver.findElements(By.cssSelector("a"))
+    .stream()
+    .filter(el -&gt; !el.isDisplayed())
+    .collect(Collectors.toList());</pre>
+    <p><code class="inline">isDisplayed()</code> is the key differentiator here — a link can be <code class="inline">present</code> in the DOM but not <code class="inline">displayed</code>, and broken-link audits should still crawl these since real users (or screen readers) may still reach them.</p>
+  `
+},
+{
+  id:"Q12", tag:"Windows & Frames",
+  q:"Explain how you switch back from a frame.",
+  a:`
+    <p>Two options depending on how deep you've gone:</p>
+    <ul>
+      <li><code class="inline">driver.switchTo().defaultContent()</code> — jumps straight back to the top-level document, regardless of how many nested frames you were inside.</li>
+      <li><code class="inline">driver.switchTo().parentFrame()</code> — steps up exactly <strong>one</strong> level, useful when frames are nested and you only want to go back to the immediate parent, not all the way out.</li>
+    </ul>
+    <pre>driver.switchTo().frame("paymentFrame");
+<span class="cm">// ... interact inside the frame ...</span>
+
+driver.switchTo().defaultContent(); <span class="cm">// back to the main page entirely</span>
+<span class="cm">// vs.</span>
+driver.switchTo().parentFrame();    <span class="cm">// back one level, if nested</span></pre>
+    <p>Think of frames as folders you <code class="inline">cd</code> into — <code class="inline">parentFrame()</code> is <code class="inline">cd ..</code>, <code class="inline">defaultContent()</code> is <code class="inline">cd ~</code>.</p>
+  `
+},
+{
+  id:"Q13", tag:"Browser Config",
+  q:"What different ChromeOptions have you used, and why?",
+  a:`
+    <p>The set that comes up most in day-to-day and CI test runs:</p>
+    <pre>ChromeOptions options = <span class="kw">new</span> ChromeOptions();
+
+options.addArguments("--headless=new");        <span class="cm">// run without a visible UI, faster in CI</span>
+options.addArguments("--disable-gpu");         <span class="cm">// avoids rendering issues in headless/CI</span>
+options.addArguments("--no-sandbox");          <span class="cm">// required in most Docker/CI containers</span>
+options.addArguments("--disable-dev-shm-usage"); <span class="cm">// avoids /dev/shm crashes in containers</span>
+options.addArguments("--window-size=1920,1080"); <span class="cm">// consistent viewport for screenshots</span>
+options.addArguments("--incognito");           <span class="cm">// clean session, no cached state</span>
+options.addArguments("--disable-notifications"); <span class="cm">// blocks browser permission popups</span>
+options.setAcceptInsecureCerts(<span class="kw">true</span>);      <span class="cm">// staging/self-signed certs</span>
+
+options.setExperimentalOption("excludeSwitches",
+    <span class="kw">new</span> String[]{"enable-automation"});  <span class="cm">// hides the "Chrome is being controlled" banner</span></pre>
+    <p><strong>Why it matters in interviews:</strong> this question is really testing whether you've run Selenium in CI/Docker, not just locally — <code class="inline">--no-sandbox</code> and <code class="inline">--disable-dev-shm-usage</code> specifically signal that experience.</p>
+  `
+},
+{
+  id:"Q14", tag:"Locators & API",
+  q:"What are Relative Locators in Selenium 4 (above, below, toLeftOf, toRightOf, near)?",
+  a:`
+    <p>Relative locators let you find an element based on its <strong>visual position</strong> relative to another element already on the page — useful when an element has no stable ID/class but sits in a predictable spot next to one that does.</p>
+    <pre>WebElement passwordField = driver.findElement(
+    RelativeLocator.with(By.tagName("input")).below(usernameField)
+);
+
+WebElement submitBtn = driver.findElement(
+    RelativeLocator.with(By.tagName("button")).toRightOf(By.id("cancelBtn"))
+);
+
+WebElement nearbyLabel = driver.findElement(
+    RelativeLocator.with(By.tagName("span")).near(usernameField)
+);</pre>
+    <p><strong>Caveat:</strong> these locators are resolved using the rendered pixel geometry, so they're brittle across responsive breakpoints/screen sizes — treat them as a fallback for genuinely locator-less markup, not a first choice over a good CSS selector.</p>
+  `
+},
+{
+  id:"Q15", tag:"Waits & Exceptions",
+  q:"What is StaleElementReferenceException and how do you handle it?",
+  a:`
+    <p>Selenium keeps an internal reference (like a memory pointer) to a DOM node the moment you locate it. If the page re-renders that node afterward — a React re-render, an AJAX refresh, a DOM rebuild — the old reference now points at nothing, and any action on it throws <code class="inline">StaleElementReferenceException</code>.</p>
+    <p>It's like holding a claim ticket for a coat that's already been swapped out for a new one on the same hook — the ticket number no longer matches what's hanging there.</p>
+    <pre><span class="kw">public</span> WebElement waitForFreshElement(WebDriver driver, By locator) {
+    <span class="kw">return new</span> WebDriverWait(driver, Duration.ofSeconds(10))
+        .until(ExpectedConditions.refreshed(
+            ExpectedConditions.visibilityOfElementLocated(locator)
+        ));
+}</pre>
+    <p><strong>Fix pattern:</strong> re-locate the element right before interacting with it (don't cache WebElements across steps that trigger re-renders), and use <code class="inline">ExpectedConditions.refreshed()</code> to wrap the wait so Selenium retries the lookup, not just the staleness check.</p>
+  `
+},
+{
+  id:"Q16", tag:"Waits",
+  q:"Implicit wait vs explicit wait — and why shouldn't you mix them?",
+  a:`
+    <div class="compare">
+      <div class="compare-col">
+        <h4>Implicit Wait</h4>
+        <p>Set once globally on the driver. Applies to <em>every</em> <code class="inline">findElement</code> call for the whole session — polls up to the timeout before throwing <code class="inline">NoSuchElementException</code>.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Explicit Wait</h4>
+        <p>Scoped to a single condition on a single element (<code class="inline">WebDriverWait</code> + <code class="inline">ExpectedConditions</code>). More precise — you wait for exactly the state you need (clickable, visible, text present).</p>
+      </div>
+    </div>
+    <pre><span class="cm">// implicit — global, set once</span>
+driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+<span class="cm">// explicit — local, per-condition</span>
+<span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(15))
+    .until(ExpectedConditions.elementToBeClickable(By.id("submit")));</pre>
+    <p><strong>Why not mix them:</strong> Selenium's polling behavior becomes unpredictable — an explicit wait can end up silently waiting for <em>up to the sum</em> of both timeouts in some driver/condition combinations, which turns a 15s wait into a mysterious 25s stall. Pick one strategy (explicit is the modern default) and keep implicit wait at 0.</p>
+  `
+},
+{
+  id:"Q17", tag:"Interactions",
+  q:"How do you perform drag and drop using the Actions class?",
+  a:`
+    <pre>WebElement source = driver.findElement(By.id("draggable"));
+WebElement target = driver.findElement(By.id("dropzone"));
+
+<span class="kw">new</span> Actions(driver)
+    .dragAndDrop(source, target)
+    .perform();
+
+<span class="cm">// more reliable on modern JS-heavy drag libraries: step through manually</span>
+<span class="kw">new</span> Actions(driver)
+    .clickAndHold(source)
+    .moveToElement(target)
+    .pause(Duration.ofMillis(200))
+    .release()
+    .perform();</pre>
+    <p><strong>Common gotcha:</strong> <code class="inline">dragAndDrop()</code> often fails silently on modern frameworks (React DnD, SortableJS) because they listen for granular <code class="inline">mousedown → mousemove → mouseup</code> events, not one jump. The manual <code class="inline">clickAndHold → moveToElement → pause → release</code> chain simulates that more faithfully. If it still fails, drop to a JS-based dispatch of HTML5 drag events via <code class="inline">JavascriptExecutor</code>.</p>
+  `
+},
+{
+  id:"Q18", tag:"Alerts & Dialogs",
+  q:"How do you handle web-based alerts vs native JavaScript alerts?",
+  a:`
+    <div class="compare">
+      <div class="compare-col">
+        <h4>Native JS alert (alert/confirm/prompt)</h4>
+        <p>A real browser-level dialog, outside the DOM. Handled via <code class="inline">driver.switchTo().alert()</code>.</p>
+      </div>
+      <div class="compare-col warn">
+        <h4>Web-based "alert" (a styled div/modal)</h4>
+        <p>Just a DOM element — treat it exactly like any other element, no <code class="inline">switchTo()</code> involved.</p>
+      </div>
+    </div>
+    <pre><span class="cm">// native JS alert</span>
+Alert alert = driver.switchTo().alert();
+System.out.println(alert.getText());
+alert.accept();   <span class="cm">// or alert.dismiss();</span>
+
+<span class="cm">// JS prompt with text entry</span>
+alert.sendKeys("SDET");
+alert.accept();
+
+<span class="cm">// web-based modal (just DOM)</span>
+driver.findElement(By.cssSelector(".modal .confirm-btn")).click();</pre>
+    <p>Mixing these up is a classic junior-level mistake — calling <code class="inline">switchTo().alert()</code> on a styled div throws <code class="inline">NoAlertPresentException</code> because there's no real browser dialog to switch into.</p>
+  `
+},
+{
+  id:"Q19", tag:"File Handling",
+  q:"How do you handle file uploads without interacting with the native OS dialog?",
+  a:`
+    <p>Most upload inputs are a plain <code class="inline">&lt;input type="file"&gt;</code> — even though clicking it in a real browser opens the OS file picker, Selenium never needs to touch that dialog. You send the absolute file path directly to the input element.</p>
+    <pre>WebElement fileInput = driver.findElement(By.cssSelector("input[type='file']"));
+fileInput.sendKeys("/Users/sai/test-data/resume.pdf");</pre>
+    <p><strong>If the input is hidden</strong> (common when a styled "Upload" button triggers a hidden native input via JS), you may need to first make it interactable:</p>
+    <pre>((JavascriptExecutor) driver).executeScript(
+    "arguments[0].style.display='block';", fileInput
+);
+fileInput.sendKeys(filePath);</pre>
+    <p>For true OS-level dialogs that aren't backed by a file input at all (rare — mostly legacy Flash/Java applets), Selenium genuinely can't reach them; that needs an OS automation tool like Sikuli or AutoIT alongside Selenium.</p>
+  `
+},
+{
+  id:"Q20", tag:"File Handling",
+  q:"How do you handle file downloads and verify the downloaded file?",
+  a:`
+    <p>Two parts: get the browser to download silently (no "Save As" dialog), then verify on the filesystem with plain Java.</p>
+    <pre><span class="cm">// Chrome: force silent downloads to a known folder</span>
+Map&lt;String, Object&gt; prefs = <span class="kw">new</span> HashMap&lt;&gt;();
+prefs.put("download.default_directory", "/Users/sai/downloads-test");
+prefs.put("download.prompt_for_download", <span class="kw">false</span>);
+
+ChromeOptions options = <span class="kw">new</span> ChromeOptions();
+options.setExperimentalOption("prefs", prefs);
+
+<span class="cm">// after triggering the download, poll until the file exists</span>
+File expectedFile = <span class="kw">new</span> File("/Users/sai/downloads-test/invoice.pdf");
+<span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(15))
+    .until(d -&gt; expectedFile.exists());
+
+Assert.assertTrue(expectedFile.length() &gt; 0);</pre>
+    <p>Verification can go deeper than "does it exist" — read its content (Apache PDFBox for PDFs, Apache POI for Excel) and assert on actual data, not just presence.</p>
+  `
+},
+{
+  id:"Q21", tag:"Framework Design",
+  q:"What is the Page Object Model, and why use @FindBy / PageFactory?",
+  a:`
+    <p>POM is a design pattern where each web page (or component) gets its own class holding its locators and the actions you can perform on it — tests then read as business steps, not raw Selenium calls.</p>
+    <pre><span class="kw">public class</span> LoginPage {
+    WebDriver driver;
+
+    @FindBy(id = "username") WebElement usernameField;
+    @FindBy(id = "password") WebElement passwordField;
+    @FindBy(id = "loginBtn")  WebElement loginButton;
+
+    <span class="kw">public</span> LoginPage(WebDriver driver) {
+        <span class="kw">this</span>.driver = driver;
+        PageFactory.initElements(driver, <span class="kw">this</span>);
+    }
+
+    <span class="kw">public</span> DashboardPage login(String user, String pass) {
+        usernameField.sendKeys(user);
+        passwordField.sendKeys(pass);
+        loginButton.click();
+        <span class="kw">return new</span> DashboardPage(driver);
+    }
+}</pre>
+    <p><code class="inline">PageFactory.initElements()</code> initializes all <code class="inline">@FindBy</code> fields using lazy proxies — the actual <code class="inline">findElement</code> call only fires the moment you interact with the field, not at object construction. This keeps page objects cheap to instantiate and locators re-resolved fresh on every use (reduces stale element issues from Q15).</p>
+    <p><strong>Why bother:</strong> one locator change (say, a rebrand renaming an ID) means editing one page class instead of hunting through every test file that clicked that button.</p>
+  `
+},
+{
+  id:"Q22", tag:"Browser Config",
+  q:"Difference between driver.close() and driver.quit()?",
+  a:`
+    <div class="compare">
+      <div class="compare-col">
+        <h4>driver.close()</h4>
+        <p>Closes only the <strong>current focused window/tab</strong>. If other windows are still open, the WebDriver session stays alive — you can switch to another handle and keep working.</p>
+      </div>
+      <div class="compare-col warn">
+        <h4>driver.quit()</h4>
+        <p>Closes <strong>every</strong> window/tab tied to that session and ends the WebDriver process (kills the browser driver executable too). Nothing is left running afterward.</p>
+      </div>
+    </div>
+    <pre>driver.close();  <span class="cm">// only kills the active tab — session may still be usable</span>
+driver.quit();   <span class="cm">// kills everything — always call this in @AfterMethod/@AfterSuite</span></pre>
+    <p><strong>Common bug:</strong> using <code class="inline">close()</code> in teardown instead of <code class="inline">quit()</code> — this leaks orphaned driver processes over a long CI run, since the underlying chromedriver/geckodriver process never actually terminates.</p>
+  `
+},
+{
+  id:"Q23", tag:"JavaScript Executor",
+  q:"How do you execute JavaScript with JavascriptExecutor, and what are 2–3 real use cases?",
+  a:`
+    <pre>JavascriptExecutor js = (JavascriptExecutor) driver;
+
+<span class="cm">// 1. scroll an element into view (fixes "not interactable" clicks)</span>
+js.executeScript("arguments[0].scrollIntoView(true);", element);
+
+<span class="cm">// 2. click an element Selenium's native click can't reach (overlay/covered)</span>
+js.executeScript("arguments[0].click();", element);
+
+<span class="cm">// 3. read a value straight from the JS object, bypassing DOM quirks</span>
+String value = (String) js.executeScript("return arguments[0].value;", inputField);
+
+<span class="cm">// 4. highlight an element for debugging (visual proof in screenshots)</span>
+js.executeScript("arguments[0].style.border='3px solid red'", element);</pre>
+    <p><strong>Caution:</strong> a JS click bypasses Selenium's actionability checks (visible, enabled, not obscured) — it'll "succeed" even against an element a real user could never actually click. Use it as a deliberate escape hatch for known framework quirks, not a default replacement for <code class="inline">.click()</code>.</p>
+  `
+},
+{
+  id:"Q24", tag:"Locators & API",
+  q:"How do you handle Shadow DOM elements in Selenium?",
+  a:`
+    <p>Shadow DOM encapsulates a component's markup so normal <code class="inline">findElement</code> calls can't see inside it — the shadow tree is deliberately isolated from the main document. Selenium 4 added native support via <code class="inline">getShadowRoot()</code>.</p>
+    <pre>WebElement host = driver.findElement(By.cssSelector("custom-datepicker"));
+SearchContext shadowRoot = host.getShadowRoot();
+
+WebElement dayCell = shadowRoot.findElement(By.cssSelector(".day-15"));
+dayCell.click();</pre>
+    <p>For nested shadow roots (a shadow root inside another shadow root — common in design-system components), you chain <code class="inline">getShadowRoot()</code> calls the same way you'd drill into nested frames. If the app uses <strong>closed</strong> shadow roots, they're intentionally unreachable from outside JS entirely — the only workaround is coordinating with dev to expose test hooks or switch that component to open mode for test builds.</p>
+  `
+},
+{
+  id:"Q25", tag:"Architecture",
+  q:"What changed in Selenium 4's architecture (W3C protocol) vs Selenium 3?",
+  a:`
+    <div class="compare">
+      <div class="compare-col warn">
+        <h4>Selenium 3</h4>
+        <p>Used the JSON Wire Protocol — a non-standardized, Selenium-specific format. Every browser vendor had to build a custom driver that translated it, causing subtle cross-browser inconsistencies.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Selenium 4</h4>
+        <p>Fully implements the <strong>W3C WebDriver standard</strong> — the same protocol browsers themselves implement natively. Commands now talk directly to the browser with no translation layer, which is why Selenium 4 feels noticeably more stable.</p>
+      </div>
+    </div>
+    <p>Other notable Selenium 4 architectural shifts: a redesigned Grid (better routing, native Docker/Kubernetes support), native relative locators (Q14), native Shadow DOM support (Q24), and the emerging <strong>WebDriver BiDi</strong> protocol for two-way browser communication (Q40).</p>
+  `
+},
+{
+  id:"Q26", tag:"Browser Config",
+  q:"What is Selenium Manager, and how does it remove manual driver management?",
+  a:`
+    <p>Before Selenium 4.6, you had to manually download the right chromedriver/geckodriver binary version to match your installed browser — a constant source of "SessionNotCreatedException: version mismatch" failures whenever Chrome auto-updated.</p>
+    <pre><span class="cm">// that's it — no WebDriverManager library, no manual binary path needed</span>
+WebDriver driver = <span class="kw">new</span> ChromeDriver();</pre>
+    <p>Selenium Manager is a small Rust binary bundled inside the Selenium Java client. Before launching, it detects your installed browser version, checks if a matching driver binary is already cached locally, and downloads the correct one automatically if not — all silently before your test even calls <code class="inline">new ChromeDriver()</code>.</p>
+    <p>This made third-party tools like <code class="inline">WebDriverManager</code> (Bonigarcia) largely optional for local runs — though many teams still keep it for finer control over driver caching in CI.</p>
+  `
+},
+{
+  id:"Q27", tag:"Reporting & CI",
+  q:"How do you automatically capture a screenshot on test failure?",
+  a:`
+    <p>Hook into your test framework's failure event (TestNG's <code class="inline">ITestListener</code>) rather than adding manual screenshot calls to every test — one listener covers the whole suite.</p>
+    <pre><span class="kw">public class</span> ScreenshotListener <span class="kw">implements</span> ITestListener {
+
+    @Override
+    <span class="kw">public void</span> onTestFailure(ITestResult result) {
+        WebDriver driver = ((BaseTest) result.getInstance()).getDriver();
+        <span class="kw">File</span> src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        <span class="kw">try</span> {
+            FileUtils.copyFile(src, <span class="kw">new</span> File(
+                "screenshots/" + result.getName() + "_" + System.currentTimeMillis() + ".png"
+            ));
+        } <span class="kw">catch</span> (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}</pre>
+    <p>Register it via <code class="inline">@Listeners(ScreenshotListener.class)</code> on the test class, or globally in <code class="inline">testng.xml</code>. This is also exactly where you'd attach the screenshot to an Extent/Allure report for CI visibility.</p>
+  `
+},
+{
+  id:"Q28", tag:"Waits & Exceptions",
+  q:"ElementClickInterceptedException vs ElementNotInteractableException — causes and fixes.",
+  a:`
+    <div class="compare">
+      <div class="compare-col warn">
+        <h4>ElementClickInterceptedException</h4>
+        <p>The element is visible and enabled, but something else is physically <strong>on top of it</strong> — a sticky header, a loading overlay, a cookie banner — intercepting the click coordinates.</p>
+      </div>
+      <div class="compare-col warn">
+        <h4>ElementNotInteractableException</h4>
+        <p>The element itself is in a state that can't be interacted with — hidden, zero-size, disabled, or off-screen and not scrolled into view.</p>
+      </div>
+    </div>
+    <p><strong>Fixes, in order of preference:</strong></p>
+    <ul>
+      <li>Wait for the blocking overlay to disappear: <code class="inline">wait.until(ExpectedConditions.invisibilityOfElementLocated(overlayLocator))</code></li>
+      <li>Scroll the target into view: <code class="inline">((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView(true);", el)</code></li>
+      <li>As a last resort, JS-click to bypass the intercept (see Q23) — but treat this as a smell to investigate, not a permanent fix, since it can mask a real UX bug.</li>
+    </ul>
+  `
+},
+{
+  id:"Q29", tag:"Web Tables",
+  q:"How do you handle dynamic web tables — validate a specific row/column, or count rows?",
+  a:`
+    <p>Locate rows and cells with relative XPath built off the table structure, then loop and match on cell text rather than hardcoding row indexes (which shift as data changes).</p>
+    <pre><span class="cm">// total row count (excluding header)</span>
+<span class="kw">List</span>&lt;WebElement&gt; rows = driver.findElements(By.xpath("//table[@id='orders']/tbody/tr"));
+<span class="kw">int</span> rowCount = rows.size();
+
+<span class="cm">// find the row where "Order ID" column == "ORD-1042", read its "Status" cell</span>
+WebElement statusCell = driver.findElement(By.xpath(
+    "//table[@id='orders']//tr[td[1][text()='ORD-1042']]/td[4]"
+));
+Assert.assertEquals(statusCell.getText(), "Shipped");</pre>
+    <p>For large or paginated tables, wrap the row-count/search logic in a loop that clicks "Next page" until either the target row is found or pagination ends — never assume the whole dataset is on page 1.</p>
+  `
+},
+{
+  id:"Q30", tag:"Locators & API",
+  q:"Explain XPath axes (following-sibling, ancestor, parent) with a real use case.",
+  a:`
+    <p>Axes let you navigate <em>relative</em> to an element you can already locate reliably, instead of writing one long absolute path — the classic case is finding an input by the visible label text next to it, when neither has a stable ID.</p>
+    <pre><span class="cm">// find the input immediately after a label containing "Email"</span>
+//label[contains(text(),'Email')]/following-sibling::input
+
+<span class="cm">// climb up to the row containing a "Delete" link, from deep inside a cell</span>
+//a[text()='Delete']/ancestor::tr
+
+<span class="cm">// go up exactly one level</span>
+//span[@class='error-msg']/parent::div
+
+<span class="cm">// all sibling &lt;td&gt; cells in the same row as a matched cell</span>
+//td[text()='ORD-1042']/following-sibling::td</pre>
+    <ul>
+      <li><strong>following-sibling / preceding-sibling</strong> — move sideways at the same tree level.</li>
+      <li><strong>ancestor</strong> — climb up any number of levels to the nearest match.</li>
+      <li><strong>parent</strong> — climb up exactly one level.</li>
+    </ul>
+    <p>These come up constantly on dynamic-ID forms where the only stable anchor is visible text, and you need to reach a nearby input/button from it.</p>
+  `
+},
+{
+  id:"Q31", tag:"Locators & API",
+  q:"Absolute XPath vs relative XPath — why is relative preferred?",
+  a:`
+    <div class="compare">
+      <div class="compare-col warn">
+        <h4>Absolute XPath</h4>
+        <p><code class="inline">/html/body/div[2]/div/form/input[1]</code> — starts from the document root and hardcodes every level. Breaks the instant one <code class="inline">&lt;div&gt;</code> gets added or removed anywhere above the target.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Relative XPath</h4>
+        <p><code class="inline">//input[@name='email']</code> — starts anywhere in the document and matches by attribute/text, ignoring everything else in the tree structure above it.</p>
+      </div>
+    </div>
+    <p>Absolute paths are essentially a snapshot of today's exact markup structure — any refactor of the surrounding layout (even unrelated to your target element) silently breaks every absolute XPath under it. Relative XPath is the practical default in every real framework; absolute XPath mostly shows up as an anti-pattern from record-and-playback tools.</p>
+  `
+},
+{
+  id:"Q32", tag:"CI/CD",
+  q:"What's your approach to integrating Selenium tests into a CI/CD pipeline (e.g. Jenkins)?",
+  a:`
+    <p>The core idea: the pipeline should run the exact same Maven/Gradle command a developer runs locally — CI just automates <em>when</em> and <em>where</em> it runs, and captures artifacts afterward.</p>
+    <pre><span class="cm">// Jenkinsfile — declarative pipeline sketch</span>
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps { sh 'mvn clean compile' }
+        }
+        stage('Test') {
+            steps { sh 'mvn test -Dbrowser=chrome -Denv=staging' }
+        }
+        stage('Report') {
+            steps {
+                junit 'target/surefire-reports/*.xml'
+                archiveArtifacts 'screenshots/**, target/extent-report/**'
+            }
+        }
+    }
+    post {
+        always { cleanWs() }
+    }
+}</pre>
+    <p>Practical checklist points that come up in interviews: run headless in CI (Q13), use Selenium Grid/Docker so CI agents don't need real browsers pre-installed (Q34), fail the build on test failure but still publish reports, and trigger on both PR merges and a nightly schedule for a fuller regression pass.</p>
+  `
+},
+{
+  id:"Q33", tag:"Parallel Execution",
+  q:"How do you run Selenium tests in parallel using TestNG?",
+  a:`
+    <p>TestNG controls parallelism at the suite/class/method level via <code class="inline">testng.xml</code> — the key is making sure your WebDriver instance is <strong>thread-safe</strong>, since multiple tests will run against different driver instances simultaneously.</p>
+    <pre>&lt;suite name="RegressionSuite" parallel="methods" thread-count="4"&gt;
+    &lt;test name="ChromeTests"&gt;
+        &lt;classes&gt;
+            &lt;class name="tests.LoginTest"/&gt;
+            &lt;class name="tests.CheckoutTest"/&gt;
+        &lt;/classes&gt;
+    &lt;/test&gt;
+&lt;/suite&gt;</pre>
+    <pre><span class="cm">// thread-safe driver — one instance per thread, not shared</span>
+<span class="kw">public class</span> DriverManager {
+    <span class="kw">private static</span> ThreadLocal&lt;WebDriver&gt; driver = <span class="kw">new</span> ThreadLocal&lt;&gt;();
+
+    <span class="kw">public static</span> WebDriver getDriver() {
+        <span class="kw">if</span> (driver.get() == <span class="kw">null</span>) driver.set(<span class="kw">new</span> ChromeDriver());
+        <span class="kw">return</span> driver.get();
+    }
+}</pre>
+    <p><strong>The interview trap here</strong> is forgetting <code class="inline">ThreadLocal</code> — a plain static <code class="inline">WebDriver driver</code> field shared across parallel threads causes tests to randomly interact with the wrong browser session.</p>
+  `
+},
+{
+  id:"Q34", tag:"Grid & Infrastructure",
+  q:"What is Selenium Grid, and how does it differ from running tests locally?",
+  a:`
+    <p>Selenium Grid distributes test execution across multiple machines/browsers/OS combinations instead of running everything sequentially on your one laptop. It has a <strong>Hub</strong> (or in Grid 4, a router) that receives test requests and routes them to available <strong>Nodes</strong> registered with matching browser capabilities.</p>
+    <pre>WebDriver driver = <span class="kw">new</span> RemoteWebDriver(
+    <span class="kw">new</span> URL("http://grid-hub:4444/wd/hub"),
+    <span class="kw">new</span> ChromeOptions()
+);</pre>
+    <div class="compare">
+      <div class="compare-col">
+        <h4>Local execution</h4>
+        <p>One browser, one OS, sequential — fast to set up, doesn't scale, doesn't cover cross-browser/OS matrix.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Grid execution</h4>
+        <p>Tests fan out across many nodes in parallel — real cross-browser/OS coverage, but adds network hops and infra to maintain (often run via Docker containers today).</p>
+      </div>
+    </div>
+    <p>In practice, Grid + TestNG parallel (Q33) is the combination that gets you both breadth (browsers/OS) and speed (parallel threads) at once.</p>
+  `
+},
+{
+  id:"Q35", tag:"Framework Design",
+  q:"How do you implement a retry mechanism for flaky tests?",
+  a:`
+    <p>TestNG's <code class="inline">IRetryAnalyzer</code> re-runs a failed test up to a fixed number of times before marking it truly failed — useful for genuinely environment-flaky steps (slow third-party widgets, network blips), <strong>not</strong> a substitute for fixing real synchronization bugs.</p>
+    <pre><span class="kw">public class</span> RetryAnalyzer <span class="kw">implements</span> IRetryAnalyzer {
+    <span class="kw">private int</span> count = 0;
+    <span class="kw">private static final int</span> MAX_RETRY = 2;
+
+    @Override
+    <span class="kw">public boolean</span> retry(ITestResult result) {
+        <span class="kw">if</span> (count &lt; MAX_RETRY) {
+            count++;
+            <span class="kw">return true</span>;
+        }
+        <span class="kw">return false</span>;
+    }
+}
+
+<span class="cm">// applied per test method</span>
+@Test(retryAnalyzer = RetryAnalyzer.class)
+<span class="kw">public void</span> checkoutFlowTest() { ... }</pre>
+    <p>For a suite-wide default (so you don't annotate every method), implement <code class="inline">IAnnotationTransformer</code> to inject the retry analyzer automatically across all <code class="inline">@Test</code> methods.</p>
+    <p><strong>Interview follow-up to expect:</strong> "isn't retrying just hiding flaky tests?" — good answer: retries buy short-term CI stability, but every retried failure should still be logged/tracked so genuinely flaky tests get root-caused, not just silently re-run forever.</p>
+  `
+},
+{
+  id:"Q36", tag:"Assertions",
+  q:"Hard assertion vs soft assertion — when do you use each?",
+  a:`
+    <div class="compare">
+      <div class="compare-col warn">
+        <h4>Hard Assertion (Assert)</h4>
+        <p>Fails and <strong>stops the test immediately</strong> on the first failed check. Use when a later step depends on this one being true (e.g., login must succeed before you can test the dashboard).</p>
+      </div>
+      <div class="compare-col">
+        <h4>Soft Assertion (SoftAssert)</h4>
+        <p>Records failures but <strong>keeps executing</strong> the rest of the test — you see every failed check in one run instead of one-at-a-time. Requires an explicit <code class="inline">assertAll()</code> at the end to actually fail the test.</p>
+      </div>
+    </div>
+    <pre>SoftAssert softAssert = <span class="kw">new</span> SoftAssert();
+softAssert.assertEquals(page.getTitle(), "Dashboard");
+softAssert.assertTrue(page.isLogoDisplayed());
+softAssert.assertEquals(page.getUserName(), "Sai Dasari");
+softAssert.assertAll(); <span class="cm">// reports ALL failures together, not just the first</span></pre>
+    <p><strong>Practical rule:</strong> soft assertions are great for validating multiple independent UI elements on one page in a single pass (form field labels, header links); hard assertions belong on anything that gates whether the rest of the test can meaningfully continue.</p>
+  `
+},
+{
+  id:"Q37", tag:"File Handling",
+  q:"How do you validate a downloaded PDF's content using Selenium and Java?",
+  a:`
+    <p>Selenium hands off after the file lands on disk (see Q20) — content validation is pure Java using a PDF-parsing library like Apache PDFBox.</p>
+    <pre>PDDocument document = PDDocument.load(<span class="kw">new</span> File("/downloads/invoice.pdf"));
+PDFTextStripper stripper = <span class="kw">new</span> PDFTextStripper();
+String text = stripper.getText(document);
+document.close();
+
+Assert.assertTrue(text.contains("Invoice #INV-2026-0091"));
+Assert.assertTrue(text.contains("Total: $249.00"));</pre>
+    <p>For metadata checks (page count, author, creation date) rather than body text, PDFBox exposes <code class="inline">document.getDocumentInformation()</code> and <code class="inline">document.getNumberOfPages()</code> directly — useful for validating generated reports/invoices without hardcoding fragile text-position assertions.</p>
+  `
+},
+{
+  id:"Q38", tag:"Browser Config",
+  q:"How do you handle browser cookies in Selenium?",
+  a:`
+    <pre><span class="cm">// add a cookie</span>
+Cookie cookie = <span class="kw">new</span> Cookie("sessionToken", "abc123xyz");
+driver.manage().addCookie(cookie);
+
+<span class="cm">// read a specific cookie</span>
+Cookie session = driver.manage().getCookieNamed("sessionToken");
+System.out.println(session.getValue());
+
+<span class="cm">// read all cookies</span>
+<span class="kw">Set</span>&lt;Cookie&gt; allCookies = driver.manage().getCookies();
+
+<span class="cm">// delete one, or all</span>
+driver.manage().deleteCookieNamed("sessionToken");
+driver.manage().deleteAllCookies();</pre>
+    <p><strong>Common real use case:</strong> injecting a pre-authenticated session cookie to skip the login UI entirely on every test (login once via API, capture the token, inject it as a cookie before navigating) — a major speed win across a large suite where login itself isn't what's under test.</p>
+  `
+},
+{
+  id:"Q39", tag:"Test Strategy",
+  q:"How do you handle CAPTCHA in automated testing?",
+  a:`
+    <p>You don't try to solve it programmatically — CAPTCHA exists specifically to block automated interaction, and defeating it in a real test environment is both unreliable and, against most sites' terms of service, not something to attempt.</p>
+    <ul>
+      <li><strong>Ask for a test-environment bypass</strong> — most teams disable CAPTCHA (or swap in a fixed test key) on staging/QA environments via a feature flag or environment variable, specifically so automation can run.</li>
+      <li><strong>Whitelist test traffic</strong> — services like reCAPTCHA support a test site key that always passes, configured server-side for non-prod environments.</li>
+      <li><strong>Skip and stub</strong> — if neither is possible, test everything up to the CAPTCHA via automation, and cover the CAPTCHA step itself with manual/exploratory testing instead.</li>
+    </ul>
+    <p>This is as much a conversation with dev/product as it is a Selenium question — the right answer signals you know the limits of UI automation, not just the mechanics of it.</p>
+  `
+},
+{
+  id:"Q40", tag:"Architecture",
+  q:"What is the WebDriver BiDi protocol in Selenium 4, and what does it newly enable?",
+  a:`
+    <p>Classic WebDriver (even the W3C-standardized version from Q25) is <strong>one-directional</strong> — your test sends a command, the browser responds, done. It can't push events to you unprompted. <strong>BiDi (Bi-Directional)</strong> opens a persistent two-way channel, letting the browser proactively notify Selenium of things happening in real time.</p>
+    <ul>
+      <li><strong>Console log capture</strong> — stream browser console errors/warnings directly into your test output, instead of guessing why a JS error silently broke a feature.</li>
+      <li><strong>Network interception</strong> — observe or even mock network requests/responses (similar to what Playwright/Cypress have offered for a while), without a separate proxy tool.</li>
+      <li><strong>Real-time DOM/JS exception events</strong> — get notified the instant an uncaught JS exception fires, rather than inferring failure only from a broken UI state afterward.</li>
+    </ul>
+    <pre><span class="cm">// conceptual — BiDi APIs are still actively expanding across Selenium releases</span>
+driver.script().addConsoleMessageHandler(msg -&gt;
+    System.out.println("Browser console: " + msg.text())
+);</pre>
+    <p>This is one of the most current 2026 interview angles — it's the feature area actively closing Selenium's long-standing gap with Playwright/Cypress on network mocking and console visibility.</p>
+  `
+},
+{
+  id:"Q41", tag:"Data-Driven Testing",
+  q:"How do you implement data-driven testing using TestNG's @DataProvider?",
+  a:`
+    <p><code class="inline">@DataProvider</code> feeds the same test method multiple sets of input data — TestNG runs the method once per row, reporting each as a separate test result.</p>
+    <pre>@DataProvider(name = "loginData")
+<span class="kw">public</span> Object[][] getLoginData() {
+    <span class="kw">return new</span> Object[][] {
+        {"sai.dasari", "Valid@123", <span class="kw">true</span>},
+        {"sai.dasari", "wrongpass", <span class="kw">false</span>},
+        {"",           "Valid@123", <span class="kw">false</span>}
+    };
+}
+
+@Test(dataProvider = "loginData")
+<span class="kw">public void</span> loginTest(String user, String pass, <span class="kw">boolean</span> expectedSuccess) {
+    <span class="kw">boolean</span> result = loginPage.login(user, pass).isLoginSuccessful();
+    Assert.assertEquals(result, expectedSuccess);
+}</pre>
+    <p>For larger datasets, don't hardcode the array — read from an Excel/CSV file (Apache POI) inside the <code class="inline">@DataProvider</code> method instead, so non-technical teammates can add test cases without touching Java code.</p>
+  `
+},
+{
+  id:"Q42", tag:"BDD",
+  q:"How do you integrate Selenium with Cucumber for BDD-style testing?",
+  a:`
+    <p>Cucumber lets you write test scenarios in plain-English Gherkin syntax, which stakeholders (BA/PM) can read and review, while the actual Selenium code lives separately in step-definition classes that implement each line.</p>
+    <pre><span class="cm"># login.feature</span>
+Feature: User Login
+  Scenario: Successful login with valid credentials
+    Given the user is on the login page
+    When the user enters valid credentials
+    Then the user should see the dashboard</pre>
+    <pre><span class="kw">public class</span> LoginSteps {
+    WebDriver driver = DriverManager.getDriver();
+    LoginPage loginPage;
+
+    @Given("the user is on the login page")
+    <span class="kw">public void</span> onLoginPage() {
+        driver.get("https://app.example.com/login");
+        loginPage = <span class="kw">new</span> LoginPage(driver);
+    }
+
+    @When("the user enters valid credentials")
+    <span class="kw">public void</span> enterValidCreds() {
+        loginPage.login("sai.dasari", "Valid@123");
+    }
+
+    @Then("the user should see the dashboard")
+    <span class="kw">public void</span> verifyDashboard() {
+        Assert.assertTrue(<span class="kw">new</span> DashboardPage(driver).isLoaded());
+    }
+}</pre>
+    <p>The value here isn't "prettier syntax" — it's that the <code class="inline">.feature</code> file becomes shared, living documentation that a BA can verify matches actual requirements, decoupled entirely from the Selenium implementation underneath it.</p>
+  `
+},
+{
+  id:"Q43", tag:"Test Strategy",
+  q:"What's your strategy for hybrid API + UI testing?",
+  a:`
+    <p>The core idea: use the fastest reliable layer for each part of the test — API calls to set up state, UI automation only for the thing you're actually verifying. This cuts runtime dramatically versus doing every step through the browser.</p>
+    <pre><span class="cm">// 1. seed data fast via REST-assured, skip clicking through 5 screens</span>
+Response response = given()
+    .header("Authorization", "Bearer " + token)
+    .body(orderPayload)
+    .post("/api/orders");
+
+String orderId = response.jsonPath().getString("orderId");
+
+<span class="cm">// 2. now verify the ONE thing that's actually under test — the UI</span>
+driver.get("https://app.example.com/orders/" + orderId);
+Assert.assertEquals(orderStatusLabel.getText(), "Pending Confirmation");</pre>
+    <p><strong>Where to draw the line:</strong> anything that's just "getting to the starting point" (login, seeding test data, cleanup) belongs in API calls; anything that's the actual behavior being validated (a workflow, a visual state, an interaction) belongs in UI automation. A suite that does everything through the UI is usually slow for no testing benefit.</p>
+  `
+},
+{
+  id:"Q44", tag:"Test Strategy",
+  q:"How do you perform database validation as part of UI test automation?",
+  a:`
+    <p>After a UI action that's expected to persist data (place an order, update a profile), query the backend database directly via JDBC and assert the row actually matches what the UI claims happened — catches bugs where the UI shows success but the write silently failed or wrote wrong data.</p>
+    <pre><span class="kw">public</span> String getOrderStatusFromDB(String orderId) <span class="kw">throws</span> SQLException {
+    <span class="kw">String</span> query = "SELECT status FROM orders WHERE order_id = ?";
+    <span class="kw">try</span> (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, orderId);
+        <span class="kw">ResultSet</span> rs = stmt.executeQuery();
+        <span class="kw">return</span> rs.next() ? rs.getString("status") : <span class="kw">null</span>;
+    }
+}
+
+<span class="cm">// combine UI assertion with DB assertion for the same fact</span>
+Assert.assertEquals(uiOrderStatusLabel.getText(), "Shipped");
+Assert.assertEquals(getOrderStatusFromDB(orderId), "SHIPPED");</pre>
+    <p>Keep DB checks read-only in most suites — writing directly to the DB to fake state defeats the point of end-to-end testing and can drift out of sync with what the application layer would actually produce.</p>
+  `
+},
+{
+  id:"Q45", tag:"Waits",
+  q:"How do you handle toast/notification messages that appear and disappear quickly?",
+  a:`
+    <p>Toasts are a classic timing trap — by the time a naive <code class="inline">findElement</code> runs, the element may have already faded out and been removed from the DOM. The fix is racing an explicit wait against the toast's appearance, not waiting a fixed delay and hoping.</p>
+    <pre>WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(5));
+
+WebElement toast = wait.until(
+    ExpectedConditions.visibilityOfElementLocated(By.className("toast-message"))
+);
+String toastText = toast.getText();
+Assert.assertEquals(toastText, "Changes saved successfully");
+
+<span class="cm">// optionally confirm it disappears on its own (auto-dismiss behavior)</span>
+wait.until(ExpectedConditions.invisibilityOf(toast));</pre>
+    <p><strong>Timing tip:</strong> trigger the action and start the wait <em>immediately</em> — any delay between the click and the wait call shrinks your real window to catch a toast that might only live 2–3 seconds on screen.</p>
+  `
+},
+{
+  id:"Q46", tag:"Interactions",
+  q:"How do you handle date pickers / calendar widgets?",
+  a:`
+    <p>Two approaches depending on the widget: if the underlying input accepts direct text, just <code class="inline">sendKeys()</code> the formatted date and skip the calendar UI entirely. If it's a click-only calendar (common on modern component libraries), you have to navigate the widget.</p>
+    <pre><span class="cm">// approach 1 — fastest, if the input allows typed dates</span>
+dateInput.sendKeys("08/16/2026");
+
+<span class="cm">// approach 2 — click-driven calendar widget</span>
+dateInput.click();
+<span class="kw">while</span> (!calendarHeader.getText().equals("August 2026")) {
+    nextMonthButton.click();
+}
+driver.findElement(By.xpath(
+    "//div[@class='calendar-day' and text()='16']"
+)).click();</pre>
+    <p><strong>Common gotcha:</strong> some pickers render a fresh set of day <code class="inline">&lt;div&gt;</code>s on every month change — reusing a cached day-cell reference after clicking "next month" throws <code class="inline">StaleElementReferenceException</code> (Q15). Always re-locate the day cell after the calendar re-renders.</p>
+  `
+},
+{
+  id:"Q47", tag:"Visual Testing",
+  q:"How do you approach visual/screenshot comparison testing?",
+  a:`
+    <p>Selenium's native <code class="inline">getScreenshotAs()</code> only captures a raw image — it has no built-in concept of "did this visually change." Visual testing needs a pixel-diffing layer on top, either a dedicated tool or a lightweight manual comparison.</p>
+    <pre><span class="cm">// capture</span>
+File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+FileUtils.copyFile(screenshot, <span class="kw">new</span> File("actual/dashboard.png"));
+
+<span class="cm">// compare against a stored baseline (e.g. using AShot's image comparison)</span>
+ImageDiff diff = <span class="kw">new</span> ImageDiffer().makeDiff(
+    ImageIO.read(<span class="kw">new</span> File("baseline/dashboard.png")),
+    ImageIO.read(<span class="kw">new</span> File("actual/dashboard.png"))
+);
+Assert.assertFalse(diff.hasDiff());</pre>
+    <p>For production-grade visual regression, dedicated platforms (Applitools, Percy) handle the hard parts natively: ignoring anti-aliasing noise, dynamic content regions (timestamps, ads), and responsive-breakpoint baselines — reimplementing that diffing logic by hand rarely scales past a handful of pages.</p>
+  `
+},
+{
+  id:"Q48", tag:"Test Strategy",
+  q:"What's your strategy for cross-browser testing?",
+  a:`
+    <p>Running every test against every browser on every commit is rarely worth the cost — the practical strategy is layered coverage based on risk, not blanket repetition.</p>
+    <ul>
+      <li><strong>Smoke suite</strong> — a small, critical-path subset (login, checkout) runs across the full browser/OS matrix on every build.</li>
+      <li><strong>Full regression</strong> — the complete suite runs against one primary browser (usually Chrome) on every build, since it catches the vast majority of real functional bugs.</li>
+      <li><strong>Nightly/scheduled cross-browser pass</strong> — the full suite runs against Firefox, Safari, Edge, and mobile viewports on a schedule (nightly/weekly), not on every commit.</li>
+    </ul>
+    <pre><span class="cm">// parameterize browser choice, don't hardcode ChromeDriver everywhere</span>
+WebDriver driver = <span class="kw">switch</span> (browserParam) {
+    <span class="kw">case</span> "firefox" -&gt; <span class="kw">new</span> FirefoxDriver();
+    <span class="kw">case</span> "edge"    -&gt; <span class="kw">new</span> EdgeDriver();
+    <span class="kw">default</span>       -&gt; <span class="kw">new</span> ChromeDriver();
+};</pre>
+    <p>Run the matrix through Selenium Grid (Q34) or a cloud grid (BrowserStack/Sauce Labs) rather than maintaining physical machines for each OS/browser combination.</p>
+  `
+},
+{
+  id:"Q49", tag:"Grid & Infrastructure",
+  q:"How do you set up Selenium Grid using Docker?",
+  a:`
+    <p>Docker removes the pain of manually installing and version-matching browsers/drivers on every Grid node — each node is just a disposable container with a browser baked in.</p>
+    <pre><span class="cm"># docker-compose.yml — minimal Grid setup</span>
+version: "3"
+services:
+  hub:
+    image: selenium/hub:4.20
+    ports: ["4442:4442", "4443:4443", "4444:4444"]
+
+  chrome-node:
+    image: selenium/node-chrome:4.20
+    depends_on: [hub]
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    shm_size: 2gb
+
+  firefox-node:
+    image: selenium/node-firefox:4.20
+    depends_on: [hub]
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443</pre>
+    <pre>docker-compose up -d --scale chrome-node=3</pre>
+    <p><code class="inline">shm_size: 2gb</code> matters specifically for Chrome — the default Docker shared-memory size (64MB) is too small and causes Chrome to crash mid-test on anything but the simplest pages. Scaling nodes (<code class="inline">--scale chrome-node=3</code>) is how you add parallel capacity without touching test code — just point <code class="inline">RemoteWebDriver</code> at the hub URL (Q34) and the Grid handles distribution.</p>
+  `
+},
+{
+  id:"Q50", tag:"Framework Design",
+  q:"How do you write a custom ExpectedCondition when the built-in ones don't cover your case?",
+  a:`
+    <p><code class="inline">ExpectedCondition&lt;T&gt;</code> is just a functional interface with one method: <code class="inline">apply(WebDriver driver)</code>. Anything you can express as "check something, return non-null/true when ready" can become a custom wait condition, usable with the exact same <code class="inline">WebDriverWait.until()</code> API as the built-ins.</p>
+    <pre><span class="cm">// wait until an element's text stops changing (useful for animated counters/loaders)</span>
+<span class="kw">public static</span> ExpectedCondition&lt;Boolean&gt; textToStabilize(WebElement element) {
+    <span class="kw">return new</span> ExpectedCondition&lt;Boolean&gt;() {
+        <span class="kw">private</span> String lastText = <span class="kw">null</span>;
+
+        @Override
+        <span class="kw">public</span> Boolean apply(WebDriver driver) {
+            String currentText = element.getText();
+            <span class="kw">boolean</span> stable = currentText.equals(lastText);
+            lastText = currentText;
+            <span class="kw">return</span> stable;
+        }
+    };
+}
+
+<span class="cm">// usage — reads exactly like a built-in condition</span>
+<span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(10))
+    .until(textToStabilize(loadingCounter));</pre>
+    <p>Other common custom conditions built this way: waiting for a specific number of elements to appear, waiting for an attribute value to reach a target, or waiting for a JS variable (via <code class="inline">JavascriptExecutor</code>) to flip to a ready state. This question is really checking whether you understand <code class="inline">ExpectedConditions</code> as a pattern you can extend, not just a fixed list to memorize.</p>
+  `
+},
+{
+  id:"Q51", tag:"Windows & Frames",
+  q:"How do you handle nested iframes (a frame within a frame)?",
+  a:`
+    <p>You switch into frames one level at a time — there's no "jump straight to the innermost frame" shortcut. Each <code class="inline">switchTo().frame()</code> call moves your context one level deeper.</p>
+    <pre>driver.switchTo().frame("outerFrame");
+driver.switchTo().frame("innerFrame");   <span class="cm">// now nested two levels deep</span>
+
+driver.findElement(By.id("submitBtn")).click();
+
+driver.switchTo().parentFrame();   <span class="cm">// back to outerFrame</span>
+driver.switchTo().defaultContent(); <span class="cm">// back to the top-level page</span></pre>
+    <p>If frame names/IDs aren't stable, switch by the <code class="inline">WebElement</code> instead: <code class="inline">driver.switchTo().frame(driver.findElement(By.cssSelector("iframe.payment")))</code> — more resilient than relying on a name that might be auto-generated.</p>
+  `
+},
+{
+  id:"Q52", tag:"Windows & Frames",
+  q:"How do you open and switch to a new tab programmatically (not user-triggered)?",
+  a:`
+    <pre><span class="cm">// Selenium 4 — open a new tab directly, no JS needed</span>
+driver.switchTo().newWindow(WindowType.TAB);
+driver.get("https://app.example.com/reports");
+
+<span class="cm">// older approach — via JS, then switch to the newly created handle</span>
+((JavascriptExecutor) driver).executeScript("window.open('https://app.example.com/reports','_blank');");
+<span class="kw">Set</span>&lt;String&gt; handles = driver.getWindowHandles();
+String newHandle = handles.stream().reduce((first, second) -&gt; second).orElseThrow();
+driver.switchTo().window(newHandle);</pre>
+    <p><code class="inline">WindowType.TAB</code> vs <code class="inline">WindowType.WINDOW</code> in Selenium 4's <code class="inline">newWindow()</code> lets you choose whether it opens as a tab in the same browser process or a fully separate window — useful when a test specifically needs to validate window-vs-tab behavior (e.g. a "open in new window" link).</p>
+  `
+},
+{
+  id:"Q53", tag:"Navigation",
+  q:"How do you handle browser navigation — back(), forward(), refresh()?",
+  a:`
+    <pre>driver.navigate().back();     <span class="cm">// like clicking the browser's back button</span>
+driver.navigate().forward();  <span class="cm">// like clicking forward</span>
+driver.navigate().refresh();  <span class="cm">// reloads the current page</span>
+driver.navigate().to("https://app.example.com/settings"); <span class="cm">// like driver.get(), but tracked in history</span></pre>
+    <p><strong>Interview trap:</strong> after <code class="inline">navigate().back()</code>, any previously-located <code class="inline">WebElement</code> references are almost certainly stale (Q15) — the DOM was torn down and rebuilt, even if it visually looks identical to before. Always re-locate elements after any navigation call.</p>
+  `
+},
+{
+  id:"Q54", tag:"Browser Config",
+  q:"How do you maximize or resize the browser window, and why does size matter for tests?",
+  a:`
+    <pre>driver.manage().window().maximize();
+driver.manage().window().setSize(<span class="kw">new</span> Dimension(1366, 768));
+driver.manage().window().fullscreen();</pre>
+    <p><strong>Why it matters:</strong> responsive layouts render completely differently at different widths — elements that are visible and clickable at 1920px can be hidden behind a hamburger menu at 768px. A test that "flakily" fails to find an element in CI but passes locally is very often a window-size mismatch, not a real locator bug — CI environments often default to a small headless viewport unless you explicitly set one.</p>
+  `
+},
+{
+  id:"Q55", tag:"Interactions",
+  q:"How do you perform mouse hover actions and verify hover-triggered menus?",
+  a:`
+    <pre>WebElement menuTrigger = driver.findElement(By.id("accountMenu"));
+
+<span class="kw">new</span> Actions(driver)
+    .moveToElement(menuTrigger)
+    .perform();
+
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(5));
+WebElement dropdown = wait.until(
+    ExpectedConditions.visibilityOfElementLocated(By.className("hover-dropdown"))
+);
+Assert.assertTrue(dropdown.findElement(By.linkText("Sign Out")).isDisplayed());</pre>
+    <p>Hover-revealed elements are frequently <code class="inline">display:none</code> until the <code class="inline">:hover</code> CSS state fires — a plain <code class="inline">findElement</code> without the preceding <code class="inline">moveToElement</code> will find the element in the DOM but it won't be interactable yet, since hover hasn't been simulated.</p>
+  `
+},
+{
+  id:"Q56", tag:"Interactions",
+  q:"How do you perform a right-click (context click) and handle the resulting context menu?",
+  a:`
+    <pre><span class="kw">new</span> Actions(driver)
+    .contextClick(driver.findElement(By.id("fileItem")))
+    .perform();
+
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(5));
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("context-menu")));
+
+driver.findElement(By.xpath("//li[text()='Rename']")).click();</pre>
+    <p><strong>Note:</strong> this only works for <em>custom, app-rendered</em> context menus (a styled <code class="inline">&lt;div&gt;</code> the app draws on right-click). The browser's own native OS-level right-click menu (the one with "Inspect", "Save Image As") is outside the DOM entirely and, like native alerts (Q18) but worse, isn't reachable by Selenium at all — most apps call <code class="inline">event.preventDefault()</code> on <code class="inline">contextmenu</code> specifically to suppress it and show their own.</p>
+  `
+},
+{
+  id:"Q57", tag:"Interactions",
+  q:"How do you perform a double-click action?",
+  a:`
+    <pre><span class="kw">new</span> Actions(driver)
+    .doubleClick(driver.findElement(By.id("editableCell")))
+    .perform();</pre>
+    <p>Common real scenarios: entering inline-edit mode on a spreadsheet-style table cell, selecting a word of text, or triggering a "maximize" on a draggable panel. If a single <code class="inline">.click()</code> is silently not producing the expected effect, check whether the app is actually listening for <code class="inline">dblclick</code> instead — a quick look at the dev tools event listeners tab settles it faster than guessing.</p>
+  `
+},
+{
+  id:"Q58", tag:"Waits",
+  q:"Thread.sleep() vs WebDriverWait — why is Thread.sleep() considered an anti-pattern?",
+  a:`
+    <div class="compare">
+      <div class="compare-col warn">
+        <h4>Thread.sleep()</h4>
+        <p>Pauses for a <strong>fixed</strong> duration no matter what — if the page is ready in 200ms, you still wait the full 5000ms; if the page takes 6 seconds under load, your 5-second sleep fails anyway.</p>
+      </div>
+      <div class="compare-col">
+        <h4>WebDriverWait</h4>
+        <p><strong>Polls</strong> a condition every ~500ms and returns the moment it's true — as fast as possible when things are quick, and resilient up to the timeout when things are slow.</p>
+      </div>
+    </div>
+    <pre><span class="cm">// bad — always costs 5s, and still isn't guaranteed to be long enough</span>
+Thread.sleep(5000);
+element.click();
+
+<span class="cm">// good — costs only as long as actually needed, up to a safe ceiling</span>
+<span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(10))
+    .until(ExpectedConditions.elementToBeClickable(element))
+    .click();</pre>
+    <p>Across a suite of hundreds of tests, sprinkled <code class="inline">Thread.sleep()</code> calls compound into massive, wasted runtime — and they still don't fix genuine flakiness, since a fixed guess can always be wrong in either direction.</p>
+  `
+},
+{
+  id:"Q59", tag:"Test Strategy",
+  q:"How do you handle a WebSocket-based real-time UI update in your tests?",
+  a:`
+    <p>WebSocket-pushed UI changes (live chat, stock tickers, real-time notifications) are, from Selenium's point of view, just DOM changes that happen on their own schedule — the same explicit-wait approach used for AJAX applies, you just can't predict the exact timing at all.</p>
+    <pre><span class="cm">// trigger the action that causes a server-pushed update</span>
+otherUserSendsMessageViaAPI();
+
+<span class="cm">// wait for the DOM to reflect it, don't guess a fixed delay</span>
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(10));
+wait.until(ExpectedConditions.textToBePresentInElementLocated(
+    By.className("chat-messages"), "New message received"
+));</pre>
+    <p>For deeper verification (confirming the actual WebSocket frames, not just the resulting DOM), that typically moves outside Selenium entirely — a dedicated WS client library or browser DevTools Protocol network capture, since Selenium has no native visibility into the socket traffic itself (this is part of what BiDi's network features, Q40, are starting to close).</p>
+  `
+},
+{
+  id:"Q60", tag:"Framework Design",
+  q:"What is the Fluent Page Object pattern, and how does it differ from classic POM?",
+  a:`
+    <p>Classic POM (Q21) methods return <code class="inline">void</code> or the next page object. The <strong>Fluent</strong> variant returns <code class="inline">this</code> (the same page) from action methods, letting you chain multiple actions on one page into a single readable statement.</p>
+    <pre><span class="kw">public class</span> LoginPage {
+    <span class="kw">public</span> LoginPage enterUsername(String user) {
+        usernameField.sendKeys(user);
+        <span class="kw">return this</span>;   <span class="cm">// fluent — enables chaining</span>
+    }
+    <span class="kw">public</span> LoginPage enterPassword(String pass) {
+        passwordField.sendKeys(pass);
+        <span class="kw">return this</span>;
+    }
+    <span class="kw">public</span> DashboardPage clickLogin() {
+        loginButton.click();
+        <span class="kw">return new</span> DashboardPage(driver);  <span class="cm">// navigates away — different page type</span>
+    }
+}
+
+<span class="cm">// test reads like a sentence</span>
+DashboardPage dashboard = <span class="kw">new</span> LoginPage(driver)
+    .enterUsername("sai.dasari")
+    .enterPassword("Valid@123")
+    .clickLogin();</pre>
+    <p>The pattern is purely about readability at the call site — functionally it's still POM underneath. It works well for multi-field forms; less so for pages with many independent unrelated actions, where forced chaining starts to feel artificial.</p>
+  `
+},
+{
+  id:"Q61", tag:"Framework Design",
+  q:"How do you manage test data across environments (dev/QA/staging)?",
+  a:`
+    <p>Keep environment-specific values out of test logic entirely — externalize them into per-environment config files, and select the right one at runtime via a system property or CI parameter.</p>
+    <pre><span class="cm">// config/qa.properties</span>
+base.url=https://qa.app.example.com
+db.host=qa-db.internal
+test.user=qa_automation_user
+
+<span class="cm">// config/staging.properties</span>
+base.url=https://staging.app.example.com
+db.host=staging-db.internal
+test.user=staging_automation_user</pre>
+    <pre><span class="kw">public class</span> ConfigReader {
+    <span class="kw">public static</span> Properties load() <span class="kw">throws</span> IOException {
+        String env = System.getProperty("env", "qa"); <span class="cm">// default to qa</span>
+        Properties props = <span class="kw">new</span> Properties();
+        props.load(<span class="kw">new</span> FileInputStream("config/" + env + ".properties"));
+        <span class="kw">return</span> props;
+    }
+}
+
+<span class="cm">// run with: mvn test -Denv=staging</span></pre>
+    <p>Never hardcode credentials in these files for anything beyond a disposable test account — pull real secrets from a vault/CI secret store and inject them as environment variables at runtime instead.</p>
+  `
+},
+{
+  id:"Q62", tag:"Framework Design",
+  q:"How do you structure a Maven-based Selenium framework? What goes in pom.xml?",
+  a:`
+    <pre>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+        &lt;artifactId&gt;selenium-java&lt;/artifactId&gt;
+        &lt;version&gt;4.24.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.testng&lt;/groupId&gt;
+        &lt;artifactId&gt;testng&lt;/artifactId&gt;
+        &lt;version&gt;7.10.2&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+            &lt;configuration&gt;
+                &lt;suiteXmlFiles&gt;
+                    &lt;suiteXmlFile&gt;testng.xml&lt;/suiteXmlFile&gt;
+                &lt;/suiteXmlFiles&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</pre>
+    <p>Typical folder layout: <code class="inline">src/main/java</code> for page objects and framework utilities, <code class="inline">src/test/java</code> for actual test classes, <code class="inline">src/test/resources</code> for config/data files, and the <code class="inline">testng.xml</code> at the project root driving suite composition. Surefire is the plugin that actually lets Maven trigger TestNG suites from <code class="inline">mvn test</code> — without it, Maven has no idea your TestNG suite XML exists.</p>
+  `
+},
+{
+  id:"Q63", tag:"Framework Design",
+  q:"How do you implement logging in a Selenium framework using Log4j2?",
+  a:`
+    <pre><span class="kw">public class</span> LoginTest {
+    <span class="kw">private static final</span> Logger log = LogManager.getLogger(LoginTest.<span class="kw">class</span>);
+
+    @Test
+    <span class="kw">public void</span> loginTest() {
+        log.info("Navigating to login page");
+        driver.get(baseUrl + "/login");
+
+        log.debug("Entering credentials for user: {}", testUser);
+        loginPage.login(testUser, testPass);
+
+        <span class="kw">if</span> (!dashboardPage.isLoaded()) {
+            log.error("Login failed — dashboard did not load");
+        }
+    }
+}</pre>
+    <p>Logging isn't just for debugging locally — in CI, the console output (or a persisted <code class="inline">log4j2.xml</code>-configured file appender) is often the <em>only</em> record of what happened step-by-step during a failure, especially when the screenshot alone doesn't explain the "why." Use log levels deliberately: <code class="inline">INFO</code> for major test steps, <code class="inline">DEBUG</code> for granular data values, <code class="inline">ERROR</code> for actual failures.</p>
+  `
+},
+{
+  id:"Q64", tag:"Reporting & CI",
+  q:"How do you generate an Extent or Allure report for a test run?",
+  a:`
+    <pre><span class="cm">// Extent Reports — typically wired via a TestNG listener</span>
+<span class="kw">public class</span> ExtentReportListener <span class="kw">implements</span> ITestListener {
+    <span class="kw">static</span> ExtentReports extent = <span class="kw">new</span> ExtentReports();
+    <span class="kw">static</span> ExtentTest test;
+
+    @Override
+    <span class="kw">public void</span> onTestStart(ITestResult result) {
+        test = extent.createTest(result.getMethod().getMethodName());
+    }
+    @Override
+    <span class="kw">public void</span> onTestFailure(ITestResult result) {
+        test.fail(result.getThrowable());
+        test.addScreenCaptureFromPath("screenshots/" + result.getName() + ".png");
+    }
+    @Override
+    <span class="kw">public void</span> onFinish(ITestContext context) {
+        extent.flush();
+    }
+}</pre>
+    <p><strong>Allure</strong> takes a different approach — instead of manual listener wiring, you annotate tests with <code class="inline">@Step</code>/<code class="inline">@Description</code> and it auto-generates a rich HTML report from a CLI command (<code class="inline">allure serve</code>) reading structured result files TestNG/JUnit already produce. Allure tends to win for CI dashboards with history/trend graphs across runs; Extent is often simpler to fully customize for a single-run report.</p>
+  `
+},
+{
+  id:"Q65", tag:"Test Strategy",
+  q:"What is the Test Pyramid, and where does Selenium UI automation fit in it?",
+  a:`
+    <p>The Test Pyramid is a shape argument for <em>how much</em> of each test type you should have: lots of fast, cheap unit tests at the bottom; a moderate number of integration/API tests in the middle; a small number of slow, expensive end-to-end UI tests at the top.</p>
+    <ul>
+      <li><strong>Unit tests (base, most numerous)</strong> — written by devs, milliseconds each, test single functions/classes in isolation.</li>
+      <li><strong>API/integration tests (middle)</strong> — verify service contracts and business logic without a browser; faster and far less flaky than UI tests.</li>
+      <li><strong>UI/E2E tests via Selenium (top, fewest)</strong> — validate real user workflows end-to-end through the actual rendered browser; slowest, most brittle, most expensive to maintain — reserved for critical user journeys, not exhaustive coverage of every edge case.</li>
+    </ul>
+    <p><strong>The interview signal here:</strong> a strong SDET answer isn't "automate everything through the UI" — it's recognizing that pushing coverage down the pyramid (more API tests, fewer redundant UI tests covering the same logic) produces a faster, more stable suite overall.</p>
+  `
+},
+{
+  id:"Q66", tag:"Test Strategy",
+  q:"How do you diagnose the root cause of a flaky test, beyond just retrying it?",
+  a:`
+    <ul>
+      <li><strong>Check the failure pattern</strong> — does it fail only in CI, only in parallel runs, only at a certain time of day (data/environment dependency), or truly at random?</li>
+      <li><strong>Read the actual exception</strong>, not just "test failed" — <code class="inline">StaleElementReferenceException</code> points to a re-render timing issue; <code class="inline">ElementClickIntercepted</code> points to an overlay race; a timeout points to a genuinely slow backend call.</li>
+      <li><strong>Look for shared state</strong> — is this test order-dependent, or reading data another parallel test just modified?</li>
+      <li><strong>Reproduce locally under the same conditions</strong> — same browser version, same network throttling, same parallel thread count as CI, not just running it alone on a fast local machine.</li>
+      <li><strong>Check for missing waits</strong> around anything asynchronous — the single most common root cause behind "flaky" UI tests is a synchronization gap, not true randomness.</li>
+    </ul>
+    <p>Retrying (Q35) is a mitigation for CI stability, not a diagnosis — the interview answer they're listening for is that you treat every flaky failure as a lead to investigate, with a bias toward finding the missing wait or shared-state bug rather than accepting "flaky" as a permanent label.</p>
+  `
+},
+{
+  id:"Q67", tag:"Accessibility",
+  q:"How do you run basic accessibility (WCAG/ARIA) checks using Selenium + axe-core?",
+  a:`
+    <p><code class="inline">axe-core</code> is a JS accessibility-rules engine; you inject and run it inside the page Selenium already has open, then read back structured violation data.</p>
+    <pre>AxeBuilder axeBuilder = <span class="kw">new</span> AxeBuilder();
+Results results = axeBuilder.analyze(driver);
+
+<span class="kw">List</span>&lt;Rule&gt; violations = results.getViolations();
+Assert.assertEquals(violations.size(), 0,
+    "Accessibility violations found: " + violations);</pre>
+    <p>Typical violations it catches: missing <code class="inline">alt</code> text on images, insufficient color contrast, form inputs without associated <code class="inline">&lt;label&gt;</code> elements, and missing <code class="inline">aria-label</code>/<code class="inline">role</code> attributes on custom interactive components. This gets bolted onto an existing Selenium suite as an additional assertion per page — it doesn't replace a real accessibility audit (screen-reader testing, keyboard-only navigation) but catches the most common structural gaps automatically on every regression run.</p>
+  `
+},
+{
+  id:"Q68", tag:"Performance",
+  q:"How do you capture page load performance metrics using Selenium?",
+  a:`
+    <pre>JavascriptExecutor js = (JavascriptExecutor) driver;
+
+<span class="kw">Long</span> loadTime = (Long) js.executeScript(
+    "return window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;"
+);
+System.out.println("Page load time: " + loadTime + "ms");
+
+<span class="cm">// modern equivalent using the Navigation Timing Level 2 API</span>
+<span class="kw">Map</span>&lt;String, Object&gt; timing = (Map&lt;String, Object&gt;) js.executeScript(
+    "return performance.getEntriesByType('navigation')[0].toJSON();"
+);</pre>
+    <p>This gives rough, directional numbers useful for regression tracking ("did this page get slower after the last deploy?") — for real performance testing (load under concurrent users, backend bottleneck analysis), that's a separate discipline entirely, typically JMeter/Gatling/k6, not something Selenium is built for. The honest interview answer distinguishes "Selenium can flag a client-side regression" from "Selenium is not a load-testing tool."</p>
+  `
+},
+{
+  id:"Q69", tag:"Browser Config",
+  q:"How do you handle browser permission prompts (camera, location, notifications)?",
+  a:`
+    <p>The right approach is preemptive — configure the browser to auto-grant or auto-deny the permission before the prompt would ever appear, rather than trying to click a native OS-level permission dialog (which, like native alerts, Selenium can't reach directly).</p>
+    <pre>Map&lt;String, Object&gt; prefs = <span class="kw">new</span> HashMap&lt;&gt;();
+prefs.put("profile.default_content_setting_values.notifications", 1); <span class="cm">// 1 = allow, 2 = block</span>
+prefs.put("profile.default_content_setting_values.geolocation", 1);
+prefs.put("profile.default_content_setting_values.media_stream_camera", 1);
+
+ChromeOptions options = <span class="kw">new</span> ChromeOptions();
+options.setExperimentalOption("prefs", prefs);</pre>
+    <p>Setting these before the driver launches means the browser behaves as if the user already answered the prompt — the test never has to deal with a modal that's outside the DOM in the first place.</p>
+  `
+},
+{
+  id:"Q70", tag:"Browser Config",
+  q:"How do you test geolocation-based features using Selenium?",
+  a:`
+    <p>Chrome DevTools Protocol (exposed via Selenium 4's <code class="inline">DevTools</code> interface) lets you override the browser's reported coordinates directly — no need for a real GPS or VPN trick.</p>
+    <pre>ChromeDriver driver = <span class="kw">new</span> ChromeDriver();
+DevTools devTools = driver.getDevTools();
+devTools.createSession();
+
+devTools.send(Emulation.setGeolocationOverride(
+    Optional.of(17.3850),   <span class="cm">// latitude — Hyderabad</span>
+    Optional.of(78.4867),   <span class="cm">// longitude</span>
+    Optional.of(1)
+));</pre>
+    <p>Combine this with the permission auto-grant from Q69 (<code class="inline">geolocation: 1</code>) so the page's <code class="inline">navigator.geolocation</code> call succeeds immediately with your overridden coordinates instead of hanging on a permission prompt.</p>
+  `
+},
+{
+  id:"Q71", tag:"Browser Config",
+  q:"How do you run tests in an Incognito/Private browsing window?",
+  a:`
+    <pre>ChromeOptions options = <span class="kw">new</span> ChromeOptions();
+options.addArguments("--incognito");
+WebDriver driver = <span class="kw">new</span> ChromeDriver(options);
+
+<span class="cm">// Firefox equivalent</span>
+FirefoxOptions ffOptions = <span class="kw">new</span> FirefoxOptions();
+ffOptions.addArguments("-private");</pre>
+    <p><strong>Why it's useful beyond "just privacy":</strong> incognito guarantees a completely clean session — no cached cookies, local storage, or previously saved form data bleeding into your test from a prior run. It's a lightweight alternative to explicitly clearing cookies/cache between tests, and it's the natural way to test "new/anonymous visitor" flows like first-time signup banners that only show to users without existing session data.</p>
+  `
+},
+{
+  id:"Q72", tag:"Localization",
+  q:"How do you handle internationalization (i18n) / multi-locale testing?",
+  a:`
+    <pre><span class="cm">// force the browser's locale via ChromeOptions</span>
+ChromeOptions options = <span class="kw">new</span> ChromeOptions();
+options.addArguments("--lang=fr-FR");
+
+Map&lt;String, Object&gt; prefs = <span class="kw">new</span> HashMap&lt;&gt;();
+prefs.put("intl.accept_languages", "fr-FR");
+options.setExperimentalOption("prefs", prefs);
+
+WebDriver driver = <span class="kw">new</span> ChromeDriver(options);
+driver.get("https://app.example.com");
+
+Assert.assertEquals(welcomeHeader.getText(), "Bienvenue"); <span class="cm">// French UI text</span></pre>
+    <p>For a full i18n suite, drive the locale as a parameter (like browser choice in Q48) and loop the same core scenarios across each supported locale — the goal is confirming translated strings actually render (no missing-key placeholders like <code class="inline">"welcome.header"</code> showing literally) and that layout doesn't break for languages with longer text (German) or right-to-left scripts (Arabic, Hebrew).</p>
+  `
+},
+{
+  id:"Q73", tag:"Localization",
+  q:"How do you validate date and currency formats across locales?",
+  a:`
+    <p>Use Java's own <code class="inline">Locale</code>-aware formatters to compute the <em>expected</em> string for a given locale, then assert the UI matches it — never hardcode the expected format per locale manually, since that duplicates logic the app itself should be getting from the same standard library.</p>
+    <pre>Locale frLocale = Locale.FRANCE;
+NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(frLocale);
+String expectedPrice = currencyFormat.format(249.00); <span class="cm">// "249,00 €"</span>
+
+Assert.assertEquals(priceLabel.getText(), expectedPrice);
+
+DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(frLocale);
+String expectedDate = LocalDate.of(2026, 8, 16).format(dateFormatter); <span class="cm">// "16 août 2026"</span>
+Assert.assertEquals(orderDateLabel.getText(), expectedDate);</pre>
+    <p>This catches a very real class of bugs — a US-formatted date (<code class="inline">08/16/2026</code>) shown to a European user who reads day-first, or a currency symbol placed on the wrong side of the number for that locale's convention.</p>
+  `
+},
+{
+  id:"Q74", tag:"Browser Config",
+  q:"How do you avoid bot-detection systems blocking your headless Selenium tests?",
+  a:`
+    <p>Many sites detect automation via signals like <code class="inline">navigator.webdriver === true</code>, missing browser plugins, or an unusual user-agent string in headless mode — and respond by silently blocking or serving a CAPTCHA (Q39).</p>
+    <pre>ChromeOptions options = <span class="kw">new</span> ChromeOptions();
+options.addArguments("--headless=new");
+options.addArguments("--disable-blink-features=AutomationControlled"); <span class="cm">// hides the automation flag</span>
+options.setExperimentalOption("excludeSwitches", <span class="kw">new</span> String[]{"enable-automation"});
+
+WebDriver driver = <span class="kw">new</span> ChromeDriver(options);
+((JavascriptExecutor) driver).executeScript(
+    "Object.defineProperty(navigator, 'webdriver', {get: () =&gt; undefined})"
+);</pre>
+    <p><strong>Important caveat for the interview:</strong> this is legitimate and common when testing your <em>own</em> application (which shouldn't be blocking your own QA traffic in the first place — usually the fix is really "whitelist the test environment," same spirit as Q39). Using these techniques against third-party sites without permission crosses into scraping/ToS-violation territory, which is a different conversation entirely.</p>
+  `
+},
+{
+  id:"Q75", tag:"Test Strategy",
+  q:"How do you mock/stub backend API responses during UI testing?",
+  a:`
+    <p>Point the frontend at a stub server instead of the real backend for specific endpoints — lets you test UI states that are hard to reproduce naturally (server errors, empty states, specific edge-case data) deterministically.</p>
+    <pre><span class="cm">// intercept and rewrite a network response via Chrome DevTools Protocol (Selenium 4)</span>
+DevTools devTools = ((ChromeDriver) driver).getDevTools();
+devTools.createSession();
+devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+
+devTools.addListener(Network.requestIntercepted(), intercepted -&gt; {
+    <span class="kw">if</span> (intercepted.getRequest().getUrl().contains("/api/orders")) {
+        devTools.send(Fetch.fulfillRequest(
+            intercepted.getRequestId(), 200,
+            Optional.empty(), Optional.empty(),
+            Optional.of("{\\"orders\\": []}"), <span class="cm">// force an empty-state response</span>
+            Optional.empty()
+        ));
+    }
+});</pre>
+    <p>In practice, most teams reach for a dedicated tool (Q76) instead of hand-rolling CDP interception for every test — but knowing Selenium 4 <em>can</em> do this natively (thanks to the BiDi/CDP work from Q40) is a strong signal in interviews.</p>
+  `
+},
+{
+  id:"Q76", tag:"Test Strategy",
+  q:"What is WireMock, and how do you integrate it with a Selenium test?",
+  a:`
+    <p>WireMock is a standalone HTTP mock server — you configure it to return canned responses for specific request patterns, then point your application's API base URL at it (usually only in a dedicated test config) instead of the real backend.</p>
+    <pre>WireMockServer wireMockServer = <span class="kw">new</span> WireMockServer(8089);
+wireMockServer.start();
+
+wireMockServer.stubFor(get(urlEqualTo("/api/orders"))
+    .willReturn(aResponse()
+        .withStatus(200)
+        .withHeader("Content-Type", "application/json")
+        .withBody("{\\"orders\\": []}")));
+
+<span class="cm">// app under test is configured to call http://localhost:8089/api/orders</span>
+driver.get("https://app.example.com/orders");
+Assert.assertTrue(emptyStateMessage.isDisplayed());
+
+wireMockServer.stop();</pre>
+    <p><strong>Why prefer this over CDP interception (Q75):</strong> it's simpler to set up, works across any browser, and the stub definitions are readable declarative code rather than event-listener plumbing — CDP interception is more useful when you need to mock a call the app makes that you can't otherwise redirect (hardcoded production URLs, third-party SDKs).</p>
+  `
+},
+{
+  id:"Q77", tag:"Test Strategy",
+  q:"How do you validate a JSON API response schema in a hybrid framework?",
+  a:`
+    <pre><span class="cm">// using REST-assured's built-in schema validation (json-schema-validator module)</span>
+given()
+    .when().get("/api/orders/1042")
+    .then()
+    .body(matchesJsonSchemaInClasspath("schemas/order-schema.json"));</pre>
+    <pre><span class="cm">// order-schema.json — defines required fields and types</span>
+{
+  "type": "object",
+  "required": ["orderId", "status", "total"],
+  "properties": {
+    "orderId": { "type": "string" },
+    "status":  { "type": "string", "enum": ["Pending", "Shipped", "Delivered"] },
+    "total":   { "type": "number" }
+  }
+}</pre>
+    <p>Schema validation catches a category of bug that individual field assertions miss — a backend change that silently renames a field, changes its type, or drops it entirely breaks the schema check immediately, even for fields your specific test didn't think to assert on directly.</p>
+  `
+},
+{
+  id:"Q78", tag:"Interactions",
+  q:"How do you handle a canvas-based element (e.g. a chart or signature pad) in Selenium?",
+  a:`
+    <p>A <code class="inline">&lt;canvas&gt;</code> is a single opaque element from the DOM's perspective — Selenium can locate the canvas tag itself, but has no visibility into whatever is drawn inside it (no sub-elements to click by locator).</p>
+    <pre><span class="cm">// simulate drawing on a signature pad via coordinate-based actions</span>
+WebElement canvas = driver.findElement(By.id("signaturePad"));
+Actions actions = <span class="kw">new</span> Actions(driver);
+
+actions.moveToElement(canvas, -50, 0)
+       .clickAndHold()
+       .moveByOffset(20, 10)
+       .moveByOffset(20, -10)
+       .release()
+       .perform();
+
+<span class="cm">// verification is usually visual/pixel-based, not locator-based</span>
+File screenshot = canvas.getScreenshotAs(OutputType.FILE);</pre>
+    <p><strong>For chart libraries specifically</strong> (D3, Chart.js, Highcharts), check first whether they render as actual SVG/DOM elements rather than raw canvas pixels — many do, in which case normal locators work fine on individual bars/points. True canvas-rendered charts genuinely can't be asserted on by locator; verification has to fall back to pixel comparison (Q47) or, better, asserting on the underlying data the chart was fed rather than its pixels.</p>
+  `
+},
+{
+  id:"Q79", tag:"Interactions",
+  q:"How do you test drag-to-resize elements or sliders?",
+  a:`
+    <pre>WebElement slider = driver.findElement(By.id("volumeSlider"));
+
+<span class="cm">// drag a slider handle by a pixel offset</span>
+<span class="kw">new</span> Actions(driver)
+    .clickAndHold(slider)
+    .moveByOffset(40, 0)   <span class="cm">// move 40px right</span>
+    .release()
+    .perform();
+
+<span class="cm">// verify via the resulting value, not pixel position</span>
+Assert.assertEquals(slider.getDomAttribute("aria-valuenow"), "70");</pre>
+    <p><strong>More reliable alternative</strong> when the slider is keyboard-accessible (most well-built ones are, for accessibility): click to focus it, then use arrow keys, which sidesteps unpredictable pixel-to-value math entirely.</p>
+    <pre>slider.click();
+<span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 7; i++) {
+    slider.sendKeys(Keys.ARROW_RIGHT);
+}</pre>
+  `
+},
+{
+  id:"Q80", tag:"Framework Design",
+  q:"How do you implement environment-based configuration using YAML instead of properties files?",
+  a:`
+    <pre><span class="cm"># config/qa.yml</span>
+baseUrl: https://qa.app.example.com
+timeout: 15
+browsers:
+  - chrome
+  - firefox
+credentials:
+  username: qa_automation_user
+  password: ${'$'}{QA_TEST_PASSWORD}   <span class="cm"># pulled from env var, never hardcoded</span></pre>
+    <pre><span class="kw">public class</span> ConfigLoader {
+    <span class="kw">public static</span> Config load(String env) <span class="kw">throws</span> IOException {
+        Yaml yaml = <span class="kw">new</span> Yaml(<span class="kw">new</span> Constructor(Config.<span class="kw">class</span>, <span class="kw">new</span> LoaderOptions()));
+        InputStream input = <span class="kw">new</span> FileInputStream("config/" + env + ".yml");
+        <span class="kw">return</span> yaml.load(input);
+    }
+}</pre>
+    <p><strong>YAML vs .properties:</strong> YAML naturally supports nested structures and lists (like the <code class="inline">browsers</code> array above) without the flat, dotted-key workarounds properties files need — worth it once your config grows beyond a handful of flat key-value pairs.</p>
+  `
+},
+{
+  id:"Q81", tag:"Framework Design",
+  q:"What is the Builder design pattern, and how have you used it for test data creation?",
+  a:`
+    <p>Builder solves the "telescoping constructor" problem — instead of a constructor with ten parameters (most of which a given test doesn't care about), you set only the fields relevant to that specific test and let sensible defaults fill the rest.</p>
+    <pre><span class="kw">public class</span> UserBuilder {
+    <span class="kw">private</span> String name = "Default User";
+    <span class="kw">private</span> String email = "default@test.com";
+    <span class="kw">private</span> String role = "STANDARD";
+
+    <span class="kw">public</span> UserBuilder withName(String name) { <span class="kw">this</span>.name = name; <span class="kw">return this</span>; }
+    <span class="kw">public</span> UserBuilder withRole(String role) { <span class="kw">this</span>.role = role; <span class="kw">return this</span>; }
+    <span class="kw">public</span> User build() { <span class="kw">return new</span> User(name, email, role); }
+}
+
+<span class="cm">// test only specifies what actually matters for THIS scenario</span>
+User adminUser = <span class="kw">new</span> UserBuilder().withRole("ADMIN").build();</pre>
+    <p>This pairs naturally with the fluent chaining style from Q60 — same underlying idea (method chaining returning <code class="inline">this</code>), applied to test-data objects instead of page interactions. It also keeps test files readable: a reader immediately sees which fields matter for that specific test case, instead of a wall of unrelated default values.</p>
+  `
+},
+{
+  id:"Q82", tag:"Framework Design",
+  q:"How do you implement a Singleton WebDriver factory, and what are its risks in parallel execution?",
+  a:`
+    <pre><span class="cm">// naive singleton — DANGEROUS in parallel execution</span>
+<span class="kw">public class</span> DriverFactory {
+    <span class="kw">private static</span> WebDriver driver;
+
+    <span class="kw">public static</span> WebDriver getDriver() {
+        <span class="kw">if</span> (driver == <span class="kw">null</span>) {
+            driver = <span class="kw">new</span> ChromeDriver();
+        }
+        <span class="kw">return</span> driver;
+    }
+}</pre>
+    <p><strong>The risk:</strong> a plain static field is shared across every thread. In a parallel TestNG run (Q33), two tests executing simultaneously on different threads will both grab the <em>same</em> driver instance — one test's <code class="inline">.get()</code> call navigates away from underneath another test mid-execution, causing bizarre, hard-to-reproduce cross-test interference.</p>
+    <pre><span class="cm">// correct — thread-safe "singleton per thread"</span>
+<span class="kw">public class</span> DriverFactory {
+    <span class="kw">private static</span> ThreadLocal&lt;WebDriver&gt; driver = ThreadLocal.withInitial(ChromeDriver::<span class="kw">new</span>);
+
+    <span class="kw">public static</span> WebDriver getDriver() {
+        <span class="kw">return</span> driver.get();
+    }
+}</pre>
+    <p>This is the same fix from Q33's parallel execution answer — worth recognizing they're really the same underlying concept asked from two different angles.</p>
+  `
+},
+{
+  id:"Q83", tag:"JavaScript Executor",
+  q:"How do you capture browser console/network errors as part of test validation?",
+  a:`
+    <pre><span class="cm">// classic Selenium logging API (being phased toward BiDi, Q40, but still widely used)</span>
+LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
+
+<span class="kw">for</span> (LogEntry entry : logs) {
+    <span class="kw">if</span> (entry.getLevel().equals(Level.SEVERE)) {
+        System.out.println("Console error: " + entry.getMessage());
+    }
+}
+
+<span class="cm">// assert the page didn't throw any JS errors during the test</span>
+<span class="kw">boolean</span> hasErrors = logs.getAll().stream()
+    .anyMatch(e -&gt; e.getLevel().equals(Level.SEVERE));
+Assert.assertFalse(hasErrors, "Unexpected console errors detected");</pre>
+    <p>This turns Selenium into a lightweight regression net for JS errors that don't visibly break the UI but indicate something is silently wrong — a failed analytics call, a caught-and-swallowed exception that still logs to console. Requires enabling browser logging capabilities on the driver (via <code class="inline">LoggingPreferences</code>) before the session starts.</p>
+  `
+},
+{
+  id:"Q84", tag:"Test Strategy",
+  q:"How do you test a multi-step wizard/form with conditional steps?",
+  a:`
+    <p>Model each step as its own page object (or a shared wizard class with step-specific methods), and drive the test with explicit data per branch rather than one giant linear script — conditional wizards need dedicated test cases per path, not one test trying to cover every branch.</p>
+    <pre><span class="kw">public class</span> OnboardingWizard {
+    <span class="kw">public</span> OnboardingWizard selectAccountType(String type) {
+        driver.findElement(By.xpath("//input[@value='" + type + "']")).click();
+        nextButton.click();
+        <span class="kw">return this</span>;
+    }
+    <span class="kw">public</span> OnboardingWizard fillBusinessDetails(String companyName) {
+        <span class="cm">// only reachable if "Business" was selected — a conditional step</span>
+        companyNameField.sendKeys(companyName);
+        nextButton.click();
+        <span class="kw">return this</span>;
+    }
+}
+
+@Test
+<span class="kw">public void</span> businessAccountFlow() {
+    <span class="kw">new</span> OnboardingWizard(driver)
+        .selectAccountType("business")
+        .fillBusinessDetails("Acme Corp") <span class="cm">// this step only exists on this path</span>
+        .completeSetup();
+}
+
+@Test
+<span class="kw">public void</span> personalAccountFlow() {
+    <span class="kw">new</span> OnboardingWizard(driver)
+        .selectAccountType("personal")
+        .completeSetup(); <span class="cm">// skips the business-only step entirely</span>
+}</pre>
+    <p>Also validate the wizard's own state management — that "Back" preserves previously entered data, and that skipped conditional steps don't leave stale data behind if the user changes their initial selection mid-flow.</p>
+  `
+},
+{
+  id:"Q85", tag:"Test Strategy",
+  q:"How do you verify email functionality (e.g. a verification link) in automated tests?",
+  a:`
+    <p>Selenium has no access to an inbox — email verification needs a test mailbox you can query programmatically, typically via IMAP or a disposable-email API (Mailtrap, Mailosaur, or a dedicated test Gmail account with IMAP access).</p>
+    <pre><span class="kw">public</span> String getVerificationLink(String testEmailAddress) <span class="kw">throws</span> Exception {
+    Properties props = <span class="kw">new</span> Properties();
+    props.put("mail.store.protocol", "imaps");
+    Session session = Session.getDefaultInstance(props);
+    Store store = session.getStore("imaps");
+    store.connect("imap.mailtrap.io", testEmailAddress, apiToken);
+
+    Folder inbox = store.getFolder("INBOX");
+    inbox.open(Folder.READ_ONLY);
+    Message latest = inbox.getMessages()[inbox.getMessageCount() - 1];
+
+    String body = latest.getContent().toString();
+    Matcher matcher = Pattern.compile("https://app\\\\.example\\\\.com/verify\\\\?token=\\\\S+").matcher(body);
+    <span class="kw">return</span> matcher.find() ? matcher.group() : <span class="kw">null</span>;
+}
+
+<span class="cm">// then drive it through Selenium like any other URL</span>
+driver.get(getVerificationLink(testEmailAddress));
+Assert.assertTrue(accountVerifiedBanner.isDisplayed());</pre>
+    <p>Poll with a wait rather than a fixed delay before checking the inbox — email delivery timing is itself variable, so wrap the mailbox check in a retry loop up to a reasonable timeout.</p>
+  `
+},
+{
+  id:"Q86", tag:"Test Strategy",
+  q:"How do you handle OTP-based login flows in automation?",
+  a:`
+    <ul>
+      <li><strong>Best option — ask for a test bypass</strong> — many apps support a fixed test OTP (e.g. <code class="inline">000000</code>) for whitelisted test accounts in non-prod environments, avoiding the whole problem cleanly.</li>
+      <li><strong>SMS-based OTP</strong> — use a virtual number provider with an API to read received SMS programmatically (similar pattern to the email approach in Q85), then extract the code via regex.</li>
+      <li><strong>TOTP-based (authenticator-app style) OTP</strong> — if the app uses a shared secret + time-based algorithm (Google Authenticator style), generate the code directly in Java with a TOTP library instead of reading any external message at all.</li>
+    </ul>
+    <pre><span class="cm">// TOTP — generate the code yourself, no external message needed</span>
+GoogleAuthenticator gAuth = <span class="kw">new</span> GoogleAuthenticator();
+<span class="kw">int</span> code = gAuth.getTotpPassword(sharedSecretKey);
+otpInputField.sendKeys(String.valueOf(code));</pre>
+    <p>The TOTP path is by far the most reliable when available — it's synchronous and instant, with no network dependency on an actual SMS/email arriving in time.</p>
+  `
+},
+{
+  id:"Q87", tag:"Test Strategy",
+  q:"How do you validate responsive design / mobile viewport behavior with Selenium?",
+  a:`
+    <pre><span class="cm">// resize the actual desktop browser window to simulate breakpoints</span>
+driver.manage().window().setSize(<span class="kw">new</span> Dimension(375, 812)); <span class="cm">// iPhone-ish width</span>
+Assert.assertTrue(hamburgerMenuIcon.isDisplayed());
+Assert.assertFalse(desktopNavBar.isDisplayed());
+
+driver.manage().window().setSize(<span class="kw">new</span> Dimension(1440, 900)); <span class="cm">// desktop width</span>
+Assert.assertTrue(desktopNavBar.isDisplayed());</pre>
+    <pre><span class="cm">// closer-to-real mobile emulation via Chrome DevTools device metrics</span>
+Map&lt;String, Object&gt; mobileEmulation = <span class="kw">new</span> HashMap&lt;&gt;();
+mobileEmulation.put("deviceName", "iPhone 14 Pro");
+ChromeOptions options = <span class="kw">new</span> ChromeOptions();
+options.setExperimentalOption("mobileEmulation", mobileEmulation);</pre>
+    <p><strong>Distinction worth naming in an interview:</strong> resizing the desktop Chrome window tests your CSS breakpoints, but it's still desktop Chrome underneath — it won't catch real mobile-Safari-specific rendering quirks or touch-event-only interactions. True mobile browser testing (not just responsive layout) needs Appium (Q88) against a real device or emulator.</p>
+  `
+},
+{
+  id:"Q88", tag:"Mobile Testing",
+  q:"What's the difference between Selenium WebDriver and Appium, and when would you use Appium?",
+  a:`
+    <div class="compare">
+      <div class="compare-col">
+        <h4>Selenium WebDriver</h4>
+        <p>Automates <strong>web browsers</strong> — desktop Chrome/Firefox/Safari/Edge, or a browser inside a mobile emulator/device (mobile web).</p>
+      </div>
+      <div class="compare-col">
+        <h4>Appium</h4>
+        <p>Automates <strong>native and hybrid mobile apps</strong> (iOS/Android) — built on the WebDriver protocol itself, so the API feels familiar, but it drives real app UI elements, not a browser DOM.</p>
+      </div>
+    </div>
+    <p><strong>Use Appium when</strong> testing a real installed app (a native iOS/Android app from the App Store/Play Store) rather than a site accessed through a mobile browser. Since Appium implements the same WebDriver protocol Selenium does, a lot of SDET skills transfer directly — locator strategies, explicit waits, Page Object structure all carry over conceptually, even though the underlying driver (<code class="inline">AndroidDriver</code>/<code class="inline">IOSDriver</code>) and locator syntax (accessibility IDs, UiAutomator selectors) differ from browser-based Selenium.</p>
+  `
+},
+{
+  id:"Q89", tag:"Framework Design",
+  q:"How do you organize a test suite using TestNG groups (smoke, regression, sanity)?",
+  a:`
+    <pre>@Test(groups = {"smoke", "regression"})
+<span class="kw">public void</span> loginTest() { ... }
+
+@Test(groups = {"regression"})
+<span class="kw">public void</span> detailedCheckoutValidationTest() { ... }
+
+@Test(groups = {"sanity"})
+<span class="kw">public void</span> homepageLoadsTest() { ... }</pre>
+    <pre>&lt;suite name="SmokeSuite"&gt;
+    &lt;test name="SmokeOnly"&gt;
+        &lt;groups&gt;
+            &lt;run&gt;
+                &lt;include name="smoke"/&gt;
+            &lt;/run&gt;
+        &lt;/groups&gt;
+        &lt;classes&gt;
+            &lt;class name="tests.LoginTest"/&gt;
+            &lt;class name="tests.CheckoutTest"/&gt;
+        &lt;/classes&gt;
+    &lt;/test&gt;
+&lt;/suite&gt;</pre>
+    <p>This is what powers the "layered coverage" strategy from Q48 — a single test method can belong to multiple groups (a critical-path test is both <code class="inline">smoke</code> and part of full <code class="inline">regression</code>), and CI simply picks which group to run based on the trigger (every commit runs <code class="inline">smoke</code>; nightly runs <code class="inline">regression</code>).</p>
+  `
+},
+{
+  id:"Q90", tag:"Reporting & CI",
+  q:"What is a TestNG Listener, and what listeners have you implemented besides screenshot-on-failure?",
+  a:`
+    <p>Listeners are hooks TestNG calls automatically at key lifecycle points (test start, pass, fail, suite finish) — you implement an interface and register it, and TestNG invokes your methods without you calling them manually anywhere in test code.</p>
+    <ul>
+      <li><strong>ITestListener</strong> — <code class="inline">onTestStart</code>, <code class="inline">onTestFailure</code>, <code class="inline">onTestSuccess</code>: used for screenshots (Q27), Extent/Allure reporting hooks (Q64).</li>
+      <li><strong>ISuiteListener</strong> — <code class="inline">onStart</code>/<code class="inline">onFinish</code> at the whole-suite level: useful for starting/stopping a Selenium Grid session or sending a Slack notification when the full run completes.</li>
+      <li><strong>IAnnotationTransformer</strong> — modify test annotations at runtime, e.g. injecting the retry analyzer (Q35) into every <code class="inline">@Test</code> automatically instead of annotating each one by hand.</li>
+      <li><strong>IInvokedMethodListener</strong> — fires before/after <em>every</em> method invocation, including configuration methods, useful for fine-grained timing/logging.</li>
+    </ul>
+    <p>Registering multiple listeners together (screenshot + Extent + retry-transformer) is the normal pattern in a mature framework — each one handles one concern, kept out of the actual test logic.</p>
+  `
+},
+{
+  id:"Q91", tag:"Windows & Frames",
+  q:"How do you handle pop-up windows that open as separate processes (e.g. a payment gateway pop-up)?",
+  a:`
+    <p>From Selenium's perspective, even a "separate process" pop-up (common for third-party payment gateways like PayPal) is still just another window handle, as long as it's a genuine browser window/tab — the handling is the same mechanism as Q4/Q52.</p>
+    <pre>String mainWindow = driver.getWindowHandle();
+payButton.click(); <span class="cm">// triggers the payment gateway pop-up</span>
+
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(10));
+wait.until(d -&gt; d.getWindowHandles().size() &gt; 1);
+
+<span class="kw">for</span> (String handle : driver.getWindowHandles()) {
+    <span class="kw">if</span> (!handle.equals(mainWindow)) {
+        driver.switchTo().window(handle);
+        <span class="kw">break</span>;
+    }
+}
+
+<span class="cm">// complete payment on the gateway's page...</span>
+payAmountField.sendKeys("249.00");
+confirmPaymentButton.click();
+
+<span class="cm">// gateway closes itself, or you switch back manually</span>
+driver.switchTo().window(mainWindow);</pre>
+    <p><strong>Real-world catch:</strong> some payment gateways close their own window automatically after completion — trying to interact with a handle after it's already closed throws <code class="inline">NoSuchWindowException</code>. Wait for the handle count to drop back to 1 before assuming you're safely back on the main window.</p>
+  `
+},
+{
+  id:"Q92", tag:"Interactions",
+  q:"How do you validate tooltips that appear only on hover?",
+  a:`
+    <pre><span class="kw">new</span> Actions(driver)
+    .moveToElement(infoIcon)
+    .perform();
+
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(5));
+WebElement tooltip = wait.until(
+    ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".tooltip-content"))
+);
+Assert.assertEquals(tooltip.getText(), "This field is required for tax reporting");</pre>
+    <p><strong>Alternative for native <code class="inline">title</code> attribute tooltips</strong> (the plain browser-rendered kind, not a custom styled div): these never actually appear in the DOM as a visible element at all — read the attribute value directly instead of trying to hover-and-wait for something the browser renders outside the DOM entirely.</p>
+    <pre>String tooltipText = infoIcon.getDomAttribute("title");
+Assert.assertEquals(tooltipText, "This field is required for tax reporting");</pre>
+  `
+},
+{
+  id:"Q93", tag:"Waits",
+  q:"How do you test infinite scroll or lazy-loaded content?",
+  a:`
+    <pre><span class="kw">int</span> previousHeight = 0;
+JavascriptExecutor js = (JavascriptExecutor) driver;
+
+<span class="kw">while</span> (<span class="kw">true</span>) {
+    <span class="kw">int</span> currentHeight = ((Long) js.executeScript("return document.body.scrollHeight")).intValue();
+    <span class="kw">if</span> (currentHeight == previousHeight) <span class="kw">break</span>; <span class="cm">// no new content loaded — reached the end</span>
+
+    js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+    previousHeight = currentHeight;
+
+    <span class="kw">new</span> WebDriverWait(driver, Duration.ofSeconds(5))
+        .until(d -&gt; ((Long) js.executeScript("return document.body.scrollHeight")).intValue() &gt; previousHeight
+                     || <span class="kw">true</span>); <span class="cm">// wait briefly for new items to render</span>
+}
+
+<span class="kw">List</span>&lt;WebElement&gt; loadedItems = driver.findElements(By.className("feed-item"));
+System.out.println("Total items loaded: " + loadedItems.size());</pre>
+    <p><strong>Key insight:</strong> the loop condition isn't "scroll N times" (arbitrary and brittle) — it's "keep scrolling until the page height genuinely stops growing," which adapts automatically regardless of how much content the feed actually has.</p>
+  `
+},
+{
+  id:"Q94", tag:"File Handling",
+  q:"How do you verify a downloaded file's checksum/hash to confirm integrity?",
+  a:`
+    <pre><span class="kw">public</span> String getFileChecksum(File file) <span class="kw">throws</span> Exception {
+    MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    <span class="kw">byte</span>[] fileBytes = Files.readAllBytes(file.toPath());
+    <span class="kw">byte</span>[] hashBytes = digest.digest(fileBytes);
+
+    StringBuilder sb = <span class="kw">new</span> StringBuilder();
+    <span class="kw">for</span> (<span class="kw">byte</span> b : hashBytes) {
+        sb.append(String.format("%02x", b));
+    }
+    <span class="kw">return</span> sb.toString();
+}
+
+<span class="cm">// compare against a known-good baseline hash</span>
+String actualHash = getFileChecksum(<span class="kw">new</span> File("downloads/report.pdf"));
+Assert.assertEquals(actualHash, expectedHash, "Downloaded file integrity check failed");</pre>
+    <p>This goes a level beyond "file exists and has non-zero size" (Q20) — it confirms the <em>exact bytes</em> match a known-good version, catching subtle corruption or a wrong-file-served bug that a simple existence check would miss entirely.</p>
+  `
+},
+{
+  id:"Q95", tag:"Team Practices",
+  q:"What branching strategy do you use for a test automation repository?",
+  a:`
+    <p>Mirror the same discipline used for production code — automation code is real code, and treating it casually is exactly how a suite becomes unmaintainable over time.</p>
+    <ul>
+      <li><strong>main/master</strong> — always green, only merges from reviewed, passing PRs; this is what CI runs on every scheduled/nightly run.</li>
+      <li><strong>feature branches per new test suite/framework change</strong> — e.g. <code class="inline">feature/checkout-regression-suite</code>, kept short-lived to avoid painful merges.</li>
+      <li><strong>PR review required</strong> — a second SDET reviews locator choices, wait strategy, and assertion quality before merge, same as any application code review.</li>
+      <li><strong>CI gate on the PR itself</strong> — the new/changed tests must actually pass in CI before merge, not just "pass on my machine."</li>
+    </ul>
+    <p>The interview signal here is treating the automation repo as a first-class engineering artifact with the same rigor as production code — not a side project that skips review because "it's just tests."</p>
+  `
+},
+{
+  id:"Q96", tag:"Test Design",
+  q:"How do you apply equivalence partitioning and boundary value analysis when designing test cases?",
+  a:`
+    <p>Both are classic test-design techniques for picking a <em>small, high-value</em> set of inputs instead of exhaustively testing every possible value — directly relevant to deciding what your Selenium/data-driven tests (Q41) should actually cover.</p>
+    <div class="compare">
+      <div class="compare-col">
+        <h4>Equivalence Partitioning</h4>
+        <p>Group inputs into classes that should behave the same way, then test <strong>one representative</strong> from each class. E.g. an age field accepting 18–65: one valid value (30), one below-range value (10), one above-range value (90) — no need to test every age from 18 to 65 individually.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Boundary Value Analysis</h4>
+        <p>Bugs cluster at the <strong>edges</strong> of a valid range, not the middle. For 18–65: test exactly <code class="inline">17, 18, 65, 66</code> — the boundary and just-outside values, where off-by-one errors actually live.</p>
+      </div>
+    </div>
+    <p>In an automated suite, this translates directly to your <code class="inline">@DataProvider</code> rows (Q41) — a well-designed data-driven test has a handful of deliberately chosen boundary/partition values, not fifty near-duplicate "valid" inputs that all exercise the exact same code path.</p>
+  `
+},
+{
+  id:"Q97", tag:"Test Strategy",
+  q:"How do you decide what to automate vs what to leave for manual/exploratory testing?",
+  a:`
+    <ul>
+      <li><strong>Automate:</strong> stable, repetitive, high-value regression paths — login, checkout, core CRUD flows — anything run often enough that manual repetition wastes real time.</li>
+      <li><strong>Automate:</strong> anything prone to human error when checked by hand — precise numeric calculations, date/currency formatting (Q73), data consistency across UI/DB (Q44).</li>
+      <li><strong>Leave manual/exploratory:</strong> genuinely new features still churning in design — automating against a UI that's still changing weekly is wasted maintenance effort.</li>
+      <li><strong>Leave manual/exploratory:</strong> subjective visual/UX quality, first-impression usability, anything requiring human judgment about "does this feel right," not just "does this match an expected value."</li>
+      <li><strong>Leave manual/exploratory:</strong> one-off edge cases so rare that the cost of writing and maintaining automation exceeds the cost of occasionally checking it by hand.</li>
+    </ul>
+    <p>The underlying principle ties back to the Test Pyramid (Q65) and ROI: automation is an investment with an ongoing maintenance cost, so it should go where it's run often enough, and is stable enough, to pay that cost back.</p>
+  `
+},
+{
+  id:"Q98", tag:"Team Practices",
+  q:"What does good code review etiquette look like specifically for test automation code?",
+  a:`
+    <ul>
+      <li><strong>Check locator resilience first</strong> — flag brittle absolute XPath (Q31) or index-based locators (<code class="inline">div[3]/span[2]</code>) that will break on any layout change.</li>
+      <li><strong>Check wait strategy</strong> — flag any <code class="inline">Thread.sleep()</code> (Q58) sneaking in, and confirm explicit waits target the right condition, not just "wait and hope."</li>
+      <li><strong>Check assertion quality</strong> — a test that only checks "no exception was thrown" isn't actually verifying the intended behavior; push for assertions on the specific expected state.</li>
+      <li><strong>Check for test independence</strong> — does this test rely on a specific run order, or leftover state from another test? Flag hidden coupling.</li>
+      <li><strong>Check readability over cleverness</strong> — test code is read far more often than it's written; a reviewer should be able to understand what scenario is being validated without reverse-engineering framework internals.</li>
+    </ul>
+    <p>The tone matters as much as the checklist — automation reviews should feel like the same collaborative, non-defensive process as application code review, not a lower-stakes rubber stamp.</p>
+  `
+},
+{
+  id:"Q99", tag:"Framework Design",
+  q:"How do you handle session/browser context isolation when simulating multiple concurrent users?",
+  a:`
+    <p>Each simulated user needs its own fully independent browser session — sharing a single driver instance (or even just sharing cookies/local storage) between "users" causes one user's login to silently overwrite another's session.</p>
+    <pre><span class="cm">// each user gets its own driver instance entirely</span>
+WebDriver userADriver = <span class="kw">new</span> ChromeDriver();
+WebDriver userBDriver = <span class="kw">new</span> ChromeDriver();
+
+userADriver.get("https://app.example.com/login");
+loginAs(userADriver, "userA", "passA");
+
+userBDriver.get("https://app.example.com/login");
+loginAs(userBDriver, "userB", "passB");
+
+<span class="cm">// now drive a real-time interaction test between them, e.g. chat</span>
+sendMessage(userADriver, "Hello from A");
+WebDriverWait wait = <span class="kw">new</span> WebDriverWait(userBDriver, Duration.ofSeconds(10));
+wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("chat"), "Hello from A"));</pre>
+    <p>This is the standard approach for testing genuinely multi-user features — chat, collaborative editing, notifications between users — where a single-session test physically cannot represent two people interacting at once. Combine with <code class="inline">ThreadLocal</code> (Q33/Q82) if these run inside the same parallel test suite rather than sequentially.</p>
+  `
+},
+{
+  id:"Q100", tag:"Selenium vs Playwright",
+  q:"What are the key differences between Selenium, Playwright, and Cypress you'd cite when choosing a tool for a new project?",
+  a:`
+    <div class="compare">
+      <div class="compare-col">
+        <h4>Selenium</h4>
+        <p>Broadest browser/language support (Java, Python, C#, JS, Ruby...), mature ecosystem, W3C-standard protocol (Q25), works with real Grid infrastructure at scale. Weaker native support for network mocking and auto-waiting compared to newer tools.</p>
+      </div>
+      <div class="compare-col">
+        <h4>Playwright</h4>
+        <p>Built-in auto-waiting, native network interception/mocking, multi-tab/multi-context support out of the box, fast execution. Newer ecosystem, fewer language bindings than Selenium (though Java/Python/C#/JS all supported).</p>
+      </div>
+      <div class="compare-col">
+        <h4>Cypress</h4>
+        <p>Excellent developer experience (time-travel debugging, real-time reload), but historically JS/TS-only and runs <em>inside</em> the browser process — meaning true multi-tab and cross-origin testing is more limited than Selenium/Playwright.</p>
+      </div>
+    </div>
+    <p><strong>Practical decision factors:</strong> team's existing language stack (a Java-heavy team leans Selenium or Playwright-Java, not Cypress), whether you need broad legacy-browser coverage (Selenium still wins here), and whether network mocking/interception is a core requirement (Playwright/Cypress are ahead, though BiDi, Q40, is narrowing that gap for Selenium). For a brand-new Java SDET project today, Selenium 4 with its Grid maturity and BiDi improvements remains a very defensible choice — the "old vs new" framing undersells how much Selenium has closed the gap.</p>
+  `
+}
+];
+
+const listEl = document.getElementById('list');
+const searchEl = document.getElementById('search');
+const tagFilterEl = document.getElementById('tagFilter');
+const noResultsEl = document.getElementById('noResults');
+
+let activeTag = 'All';
+
+const tags = ['All', ...new Set(DATA.map(d => d.tag))];
+tags.forEach(t => {
+  const btn = document.createElement('button');
+  btn.className = 'tag-btn' + (t === 'All' ? ' active' : '');
+  btn.textContent = t;
+  btn.addEventListener('click', () => {
+    activeTag = t;
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  });
+  tagFilterEl.appendChild(btn);
+});
+
+function render(){
+  const term = searchEl.value.trim().toLowerCase();
+  listEl.innerHTML = '';
+  let count = 0;
+
+  DATA.forEach(item => {
+    const matchesTag = activeTag === 'All' || item.tag === activeTag;
+    const matchesTerm = !term || item.q.toLowerCase().includes(term) || item.tag.toLowerCase().includes(term) || item.a.toLowerCase().includes(term);
+    if(!matchesTag || !matchesTerm) return;
+    count++;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="qid">${item.id}</div>
+        <div class="card-title-wrap">
+          <div class="card-q">${item.q}</div>
+          <div class="card-tag">${item.tag}</div>
+        </div>
+        <div class="chevron">›</div>
+      </div>
+      <div class="card-body"><div class="card-body-inner">${item.a}</div></div>
+    `;
+    const head = card.querySelector('.card-head');
+    const body = card.querySelector('.card-body');
+    head.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      if(isOpen){
+        card.classList.remove('open');
+        body.style.maxHeight = null;
+      } else {
+        card.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+    listEl.appendChild(card);
+  });
+
+  noResultsEl.style.display = count === 0 ? 'block' : 'none';
+}
+
+searchEl.addEventListener('input', render);
+render();
+</script>
+</body>
+</html>
