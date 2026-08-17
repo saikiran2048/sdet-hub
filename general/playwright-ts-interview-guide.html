@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright + TypeScript SDET Interview Guide — Q01-Q100</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0a1220;
+    --bg-panel:#101b2d;
+    --bg-card:#0d1826;
+    --border:#223252;
+    --border-hover:#2c405f;
+    --teal:#4fd1e8;
+    --amber:#f5b661;
+    --text:#c9d6e8;
+    --text-dim:#7c8db0;
+    --text-bright:#eaf2ff;
+    --green:#5fd68e;
+    --red:#f27878;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(79,209,232,0.06), transparent 40%),
+      radial-gradient(circle at 85% 20%, rgba(245,182,97,0.05), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  code, pre, .mono{ font-family:'JetBrains Mono',monospace; }
+
+  /* Sticky back button */
+  .back-hub{
+    position:sticky; top:14px; left:14px; display:inline-flex; align-items:center; gap:6px;
+    margin:14px 0 0 14px; padding:8px 14px;
+    background:#101b2d; border:1px solid #223252; border-radius:8px;
+    color:#4fd1e8; font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+    text-decoration:none; z-index:50; transition:all .18s ease;
+    width:fit-content;
+  }
+  .back-hub:hover{ border-color:#4fd1e8; transform:translateX(-2px); }
+
+  header.top{
+    text-align:center; padding:18px 20px 26px;
+  }
+  header.top .kicker{
+    color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:12px;
+    letter-spacing:3px; text-transform:uppercase; margin-bottom:10px;
+  }
+  header.top h1{
+    font-size:clamp(22px,4vw,34px); margin:0 0 8px; color:var(--text-bright);
+    font-weight:700; letter-spacing:-0.5px;
+  }
+  header.top p.sub{ color:var(--text-dim); font-size:14px; max-width:640px; margin:0 auto; }
+
+  .stats-row{
+    display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:18px;
+  }
+  .stat-chip{
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:20px;
+    padding:6px 14px; font-size:12px; color:var(--text-dim); font-family:'JetBrains Mono',monospace;
+  }
+  .stat-chip b{ color:var(--teal); }
+
+  .controls{
+    max-width:920px; margin:24px auto 10px; padding:0 16px;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  #searchBox{
+    width:100%; padding:12px 16px; background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:10px; color:var(--text-bright); font-family:'JetBrains Mono',monospace; font-size:14px;
+    outline:none; transition:border-color .15s;
+  }
+  #searchBox:focus{ border-color:var(--teal); }
+  #searchBox::placeholder{ color:var(--text-dim); }
+
+  .tag-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag-btn{
+    background:var(--bg-panel); border:1px solid var(--border); color:var(--text-dim);
+    padding:6px 12px; border-radius:16px; font-size:12px; font-family:'JetBrains Mono',monospace;
+    cursor:pointer; transition:all .15s; user-select:none;
+  }
+  .tag-btn:hover{ border-color:var(--border-hover); color:var(--text); }
+  .tag-btn.active{ background:rgba(79,209,232,0.12); border-color:var(--teal); color:var(--teal); }
+
+  #countLine{
+    max-width:920px; margin:6px auto 0; padding:0 16px; color:var(--text-dim);
+    font-size:12px; font-family:'JetBrains Mono',monospace;
+  }
+
+  #cardWrap{ max-width:920px; margin:14px auto 0; padding:0 16px; display:flex; flex-direction:column; gap:10px; }
+
+  .card{
+    background:var(--bg-card); border:1px solid var(--border); border-radius:10px;
+    overflow:hidden; transition:border-color .15s;
+  }
+  .card:hover{ border-color:var(--border-hover); }
+  .card-head{
+    display:flex; align-items:center; gap:12px; padding:14px 16px; cursor:pointer;
+    user-select:none;
+  }
+  .qid{
+    font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--amber);
+    background:rgba(245,182,97,0.1); border:1px solid rgba(245,182,97,0.3);
+    padding:3px 8px; border-radius:6px; flex-shrink:0;
+  }
+  .qtitle{ flex:1; font-size:14.5px; color:var(--text-bright); font-weight:500; line-height:1.4; }
+  .qmeta{ display:flex; gap:6px; flex-shrink:0; }
+  .badge{
+    font-size:10px; font-family:'JetBrains Mono',monospace; padding:3px 8px; border-radius:10px;
+    border:1px solid var(--border); color:var(--text-dim); white-space:nowrap;
+  }
+  .badge.diff-Basic{ color:var(--green); border-color:rgba(95,214,142,0.35); }
+  .badge.diff-Intermediate{ color:var(--teal); border-color:rgba(79,209,232,0.35); }
+  .badge.diff-Advanced{ color:var(--red); border-color:rgba(242,120,120,0.35); }
+  .chevron{ color:var(--text-dim); transition:transform .2s; flex-shrink:0; }
+  .card.open .chevron{ transform:rotate(90deg); color:var(--teal); }
+
+  .card-body{
+    max-height:0; overflow:hidden; transition:max-height .25s ease;
+    border-top:1px solid transparent;
+  }
+  .card.open .card-body{ border-top:1px solid var(--border); }
+  .card-body-inner{ padding:16px 18px 20px; font-size:13.8px; line-height:1.65; color:var(--text); }
+  .card-body-inner p{ margin:0 0 10px; }
+  .card-body-inner ul{ margin:0 0 10px; padding-left:20px; }
+  .card-body-inner li{ margin-bottom:4px; }
+  .card-body-inner strong{ color:var(--text-bright); }
+  .card-body-inner pre{
+    background:#070d17; border:1px solid var(--border); border-radius:8px;
+    padding:12px 14px; overflow-x:auto; margin:10px 0; font-size:12.6px; line-height:1.55;
+  }
+  .card-body-inner code{ color:#a9e8f5; }
+  .card-body-inner .kw{ color:var(--amber); }
+
+  .nav-strip{
+    max-width:920px; margin:20px auto 0; padding:0 16px; display:flex; justify-content:center; gap:10px;
+  }
+  .nav-link{
+    background:var(--bg-panel); border:1px solid var(--border); color:var(--text-dim);
+    padding:6px 14px; border-radius:16px; font-size:12px; font-family:'JetBrains Mono',monospace;
+    text-decoration:none;
+  }
+
+  footer{
+    text-align:center; margin-top:40px; color:var(--text-dim); font-size:12px; font-family:'JetBrains Mono',monospace;
+  }
+  #emptyState{ text-align:center; padding:40px 20px; color:var(--text-dim); display:none; }
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back-hub">&larr; Back to Hub</a>
+
+<header class="top">
+  <div class="kicker">SDET // Automation Interview Prep</div>
+  <h1>Playwright + TypeScript Interview Guide</h1>
+  <p class="sub">Q01&ndash;Q100, basics through advanced. Built for a Selenium/Java SDET transitioning into the Playwright + TypeScript stack.</p>
+  <div class="stats-row">
+    <div class="stat-chip">Questions: <b id="totalCount">100</b></div>
+    <div class="stat-chip">Range: <b>Q01&ndash;Q100</b></div>
+  </div>
+</header>
+
+<div class="controls">
+  <input type="text" id="searchBox" placeholder="&#9654; search questions, code, keywords...">
+  <div class="tag-row" id="tagRow"></div>
+</div>
+<div id="countLine"></div>
+
+<div id="cardWrap"></div>
+<div id="emptyState">No questions match your filter. Try clearing the search or tag.</div>
+
+<footer>Q01&ndash;Q100 &middot; tap a card to expand &middot; search or filter by category above</footer>
+
+<script>
+const DATA = [
+{id:"Q01",cat:"Architecture",diff:"Basic",q:"What is Playwright and how does its architecture differ fundamentally from Selenium WebDriver?",a:`<p>Playwright is a Node.js-first (with Python/Java/.NET ports) end-to-end testing and browser automation library from Microsoft. The core architectural difference from Selenium is <strong>how the test process talks to the browser</strong>.</p>
+<ul>
+<li><strong>Selenium</strong> talks to the browser over the <strong>WebDriver protocol (HTTP/JSON wire)</strong>. Each command is a round-trip HTTP request to a driver executable (chromedriver, geckodriver) which then talks to the browser.</li>
+<li><strong>Playwright</strong> talks directly to the browser over a <strong>persistent WebSocket connection using each browser's native automation protocol</strong> (CDP for Chromium, and patched versions of Firefox/WebKit). There's no intermediate driver executable and no HTTP round-trip per command.</li>
+</ul>
+<p>Because Playwright drives the browser with the same protocol DevTools uses, it gets real-time events for network, DOM, and console &mdash; which is why auto-waiting and network interception are first-class rather than bolted on.</p>`},
+{id:"Q02",cat:"Architecture",diff:"Basic",q:"Playwright vs Selenium vs Cypress &mdash; how would you decide which to use for a new project?",a:`<p>All three solve overlapping problems but trade off differently:</p>
+<ul>
+<li><strong>Selenium</strong>: widest browser/language support (Java, Python, C#, Ruby, JS), largest ecosystem, mature grid/cloud support. Best when the team is heavily Java-invested, needs real device labs via Selenium Grid/BrowserStack, or must test legacy browsers.</li>
+<li><strong>Cypress</strong>: runs inside the browser's own run-loop (JS-only), excellent DX and debugging, but historically single-tab/single-origin limited, and only JS/TS. Good for frontend-heavy teams doing component + E2E testing in one tool.</li>
+<li><strong>Playwright</strong>: multi-browser (Chromium, Firefox, WebKit) out of the box, multi-tab/multi-context native, built-in auto-waiting, network mocking, and parallelism. Best when you need true cross-browser coverage, multi-user/session scenarios, and fast, flake-resistant execution with a modern language (TS/JS/Python/.NET/Java).</li>
+</ul>
+<p>In a BFSI context with multi-user workflows (payer/payee, dual-approval), Playwright's native multi-context support is usually the deciding factor over Cypress.</p>`},
+{id:"Q03",cat:"Core API",diff:"Basic",q:"Explain the Playwright object hierarchy: Browser &rarr; BrowserContext &rarr; Page &rarr; Frame.",a:`<p>Playwright models a browser session as nested objects:</p>
+<ul>
+<li><strong>Browser</strong>: one launched browser process (Chromium/Firefox/WebKit). Expensive to create; typically one per worker.</li>
+<li><strong>BrowserContext</strong>: an isolated, incognito-like session inside a browser &mdash; its own cookies, storage, cache, permissions. Cheap to create/destroy; this is Playwright's unit of test isolation.</li>
+<li><strong>Page</strong>: a single tab within a context. A context can hold many pages (multi-tab scenarios).</li>
+<li><strong>Frame</strong>: a page can contain nested iframes; each is a Frame object with its own locator/navigation methods.</li>
+</ul>
+<pre><code><span class="kw">const</span> browser = <span class="kw">await</span> chromium.launch();
+<span class="kw">const</span> context = <span class="kw">await</span> browser.newContext();
+<span class="kw">const</span> page = <span class="kw">await</span> context.newPage();
+<span class="kw">const</span> frame = page.frameLocator(<span class="kw">'#billing-frame'</span>);</code></pre>`},
+{id:"Q04",cat:"Core API",diff:"Basic",q:"What are Playwright fixtures and how do they differ from Selenium's @Before/@After (TestNG) hooks?",a:`<p>Fixtures are Playwright Test's dependency-injection mechanism. Instead of imperative setup/teardown methods, you declare what a test <em>needs</em> (e.g. <code>page</code>, <code>context</code>, <code>request</code>) and Playwright constructs and tears it down automatically, scoped per test or per worker.</p>
+<ul>
+<li>Built-in fixtures: <code>page</code>, <code>context</code>, <code>browser</code>, <code>request</code>, <code>browserName</code>.</li>
+<li>Custom fixtures extend <code>test</code> via <code>test.extend()</code>, letting you inject things like a logged-in page, a POM object, or test data &mdash; automatically resolved only when referenced.</li>
+</ul>
+<p>Compared to TestNG's <code>@BeforeMethod</code>/<code>@AfterMethod</code>, fixtures are <strong>composable and lazily resolved</strong> &mdash; a test only pays the setup cost for fixtures it actually uses, and fixtures can depend on other fixtures.</p>
+<pre><code><span class="kw">import</span> { test <span class="kw">as</span> base } <span class="kw">from</span> <span class="kw">'@playwright/test'</span>;
+
+<span class="kw">export const</span> test = base.extend&lt;{ loggedInPage: Page }&gt;({
+  loggedInPage: <span class="kw">async</span> ({ page }, use) =&gt; {
+    <span class="kw">await</span> page.goto(<span class="kw">'/login'</span>);
+    <span class="kw">await</span> page.getByLabel(<span class="kw">'Username'</span>).fill(<span class="kw">'qa_user'</span>);
+    <span class="kw">await</span> page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Sign in'</span> }).click();
+    <span class="kw">await</span> use(page);
+  },
+});</code></pre>`},
+{id:"Q05",cat:"Core API",diff:"Basic",q:"What is auto-waiting in Playwright and which actionability checks does it perform before an action?",a:`<p>Auto-waiting means Playwright automatically waits for an element to be <strong>actionable</strong> before performing an action like click/fill, without you writing explicit waits. Before most actions it checks the element is:</p>
+<ul>
+<li><strong>Attached</strong> to the DOM</li>
+<li><strong>Visible</strong> (has non-empty bounding box, no <code>visibility:hidden</code>)</li>
+<li><strong>Stable</strong> (not animating/moving between two consecutive frames)</li>
+<li><strong>Enabled</strong> (not disabled)</li>
+<li><strong>Receives events</strong> (not obscured by another element on top of it)</li>
+<li>For fill/type: also <strong>editable</strong></li>
+</ul>
+<p>If a check fails, Playwright retries until timeout instead of throwing immediately &mdash; this is the biggest single reason Playwright suites are less flaky than raw Selenium suites that only wait for presence/visibility.</p>`},
+{id:"Q06",cat:"Waiting",diff:"Intermediate",q:"How does Playwright's auto-wait differ from Selenium's explicit WebDriverWait/ExpectedConditions?",a:`<p>In Selenium, waiting is <strong>opt-in</strong>: you must wrap almost every interaction in <code>WebDriverWait</code> + an <code>ExpectedCondition</code> (visibilityOf, elementToBeClickable, etc.), or you get flaky <code>ElementNotInteractableException</code>/<code>StaleElementReferenceException</code> errors.</p>
+<p>In Playwright, waiting is <strong>built into every action and every locator-based assertion</strong> by default. <code>page.click()</code> internally retries the actionability checks (Q05) until the element is ready or the timeout (default 30s, configurable) elapses &mdash; no separate wait statement needed.</p>
+<p>Playwright still supports explicit waits for non-actionability conditions:</p>
+<pre><code><span class="kw">await</span> page.waitForSelector(<span class="kw">'.spinner'</span>, { state: <span class="kw">'hidden'</span> });
+<span class="kw">await</span> page.waitForLoadState(<span class="kw">'networkidle'</span>);
+<span class="kw">await</span> expect(page.getByText(<span class="kw">'Order confirmed'</span>)).toBeVisible();</code></pre>
+<p>The key mindset shift: in Playwright you rarely write a "wait" &mdash; you write the assertion or action, and the retry-until-timeout behavior is automatic.</p>`},
+{id:"Q07",cat:"Core API",diff:"Basic",q:"What is Playwright Trace Viewer and what does a trace capture?",a:`<p>Trace Viewer is Playwright's post-mortem debugging tool. When tracing is enabled, Playwright records, for the whole test run:</p>
+<ul>
+<li>A full DOM snapshot before/after every action (so you can time-travel through the test visually)</li>
+<li>Network requests/responses</li>
+<li>Console logs</li>
+<li>Screenshots and video (if configured)</li>
+<li>Source code location of each step</li>
+</ul>
+<pre><code><span class="kw">// playwright.config.ts</span>
+use: { trace: <span class="kw">'on-first-retry'</span> }</code></pre>
+<p>You open it with <code>npx playwright show-trace trace.zip</code> or via the CI artifact viewer. It's especially valuable in CI where you can't reproduce a flaky failure locally &mdash; the trace gives a DOM-accurate replay without re-running anything.</p>`},
+{id:"Q08",cat:"Core API",diff:"Basic",q:"What is Playwright Codegen and how would you use it as a senior SDET (not just for raw script generation)?",a:`<p><code>npx playwright codegen &lt;url&gt;</code> opens a browser and a paired inspector window; every action you perform (click, fill, navigate) is recorded as Playwright code in real time, including suggested locators.</p>
+<p>As a senior SDET I don't ship codegen output as-is &mdash; I use it for:</p>
+<ul>
+<li><strong>Locator discovery</strong>: codegen prefers role/text/label-based locators, which is a good sanity check against locators I'd have picked manually.</li>
+<li><strong>Fast prototyping</strong> of a new flow before refactoring it into POM classes and fixtures.</li>
+<li><strong>Selector debugging</strong> mid-test via <code>page.pause()</code>, which opens the inspector at that point in a running script.</li>
+</ul>
+<p>It's a starting point for structure/locators, not a substitute for a maintainable framework.</p>`},
+{id:"Q09",cat:"Locators",diff:"Basic",q:"What is a Playwright Locator and how is it different from an ElementHandle or a Selenium WebElement?",a:`<p>A <code>Locator</code> is a <strong>lazy, re-resolving reference</strong> to element(s) matching a selector &mdash; it does not query the DOM until an action or assertion is performed on it, and it re-queries every single time.</p>
+<p>A Selenium <code>WebElement</code> (or Playwright's older <code>ElementHandle</code>) is a <strong>pointer to one specific DOM node at the moment it was found</strong>. If the DOM re-renders (React re-mount, list re-sort), that reference can go stale (<code>StaleElementReferenceException</code>).</p>
+<pre><code><span class="kw">const</span> row = page.getByRole(<span class="kw">'row'</span>, { name: <span class="kw">'Invoice #4521'</span> });
+<span class="kw">await</span> row.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Approve'</span> }).click();
+<span class="kw">// even if the table re-renders between definition and click, this re-resolves fresh</span></code></pre>
+<p>This is the single biggest reason Playwright locators are more resilient to SPA re-renders than Selenium's find-once WebElement model.</p>`},
+{id:"Q10",cat:"Locators",diff:"Basic",q:"Explain getByRole(), getByText(), getByLabel(), and getByTestId() &mdash; when do you use each?",a:`<p>These are Playwright's recommended, user-facing locator strategies (mirroring Testing Library's philosophy: locate elements the way a user/assistive tech would):</p>
+<ul>
+<li><strong>getByRole</strong> &mdash; matches by ARIA role + accessible name. Most robust; also doubles as an accessibility smoke check. <code>page.getByRole('button', { name: 'Submit' })</code></li>
+<li><strong>getByText</strong> &mdash; matches visible text content. Good for non-interactive content like confirmation messages, headings.</li>
+<li><strong>getByLabel</strong> &mdash; matches a form control by its associated <code>&lt;label&gt;</code>. Ideal for form fields.</li>
+<li><strong>getByTestId</strong> &mdash; matches <code>data-testid</code> attributes. Use as a fallback when the DOM has no meaningful role/text/label, or when dev/QA have agreed on stable test hooks for volatile UI.</li>
+</ul>
+<p>Priority order I follow: role &gt; label &gt; text &gt; testId &gt; CSS/XPath (last resort).</p>`},
+{id:"Q11",cat:"Locators",diff:"Intermediate",q:"What is Playwright's strict mode for locators and how do you resolve a strict mode violation?",a:`<p>By default, Playwright locators operate in <strong>strict mode</strong>: if a locator matches more than one element and you call an action/assertion expecting a single element, Playwright throws immediately rather than silently acting on the first match (Selenium's <code>findElement</code> default behavior).</p>
+<p>Resolution strategies:</p>
+<ul>
+<li><strong>Narrow the locator</strong>: add more specific role/attribute filters.</li>
+<li><strong>Chain</strong>: scope inside a parent, e.g. <code>page.locator('table').getByRole('row', {name: 'X'})</code>.</li>
+<li><strong>.filter()</strong>: <code>page.getByRole('listitem').filter({ hasText: 'Overdue' })</code>.</li>
+<li><strong>.first() / .nth() / .last()</strong>: only when order is genuinely meaningful and stable &mdash; otherwise this masks a real ambiguity bug.</li>
+</ul>
+<p>Strict mode is intentional friction &mdash; it surfaces UI ambiguity at authoring time instead of causing a silent wrong-element interaction in production test runs.</p>`},
+{id:"Q12",cat:"Locators",diff:"Intermediate",q:"Demonstrate locator chaining and filtering with a realistic table example (e.g., approve a specific invoice row).",a:`<p>Chaining scopes a locator inside another; <code>.filter()</code> narrows by text/child locator without abandoning the base locator.</p>
+<pre><code><span class="kw">const</span> table = page.getByRole(<span class="kw">'table'</span>, { name: <span class="kw">'Pending Invoices'</span> });
+
+<span class="kw">const</span> targetRow = table
+  .getByRole(<span class="kw">'row'</span>)
+  .filter({ hasText: <span class="kw">'INV-4521'</span> })
+  .filter({ has: page.getByText(<span class="kw">'Overdue'</span>) });
+
+<span class="kw">await</span> targetRow.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Approve'</span> }).click();
+<span class="kw">await</span> expect(targetRow.getByText(<span class="kw">'Approved'</span>)).toBeVisible();</code></pre>
+<p><code>filter({ hasText })</code> matches on the row's text content; <code>filter({ has: locator })</code> matches only rows containing a specific child element &mdash; combining both lets you target a row by multiple independent conditions without brittle nth-child CSS.</p>`},
+{id:"Q13",cat:"Locators",diff:"Intermediate",q:"How do you locate elements inside an iframe with Playwright, and why is frameLocator preferred over switching frame context (like Selenium's driver.switchTo().frame())?",a:`<p>Selenium requires imperative context switching &mdash; <code>driver.switchTo().frame()</code> then <code>switchTo().defaultContent()</code> to get back &mdash; and every command in between operates in "frame mode" globally on the driver.</p>
+<p>Playwright uses <code>frameLocator()</code>, which returns a scoped locator root &mdash; no global state switch, no risk of forgetting to switch back:</p>
+<pre><code><span class="kw">const</span> billingFrame = page.frameLocator(<span class="kw">'#billing-iframe'</span>);
+<span class="kw">await</span> billingFrame.getByLabel(<span class="kw">'Card number'</span>).fill(<span class="kw">'4111111111111111'</span>);
+<span class="kw">await</span> billingFrame.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Pay'</span> }).click();
+
+<span class="kw">// page-level locators still work concurrently, no switch-back needed</span>
+<span class="kw">await</span> expect(page.getByText(<span class="kw">'Payment processed'</span>)).toBeVisible();</code></pre>
+<p>You can even nest <code>frameLocator</code> calls for iframes-within-iframes, common in payment gateway widgets in BFSI apps.</p>`},
+{id:"Q14",cat:"Locators",diff:"Advanced",q:"How does Playwright handle Shadow DOM, and what are the limits compared to regular DOM locators?",a:`<p>Playwright <strong>pierces open shadow roots automatically</strong> &mdash; <code>page.locator()</code> and the getBy* methods traverse into open shadow DOM the same way they traverse regular DOM, with no special API needed (unlike Selenium, which historically required manual JS execution to reach into shadow roots).</p>
+<pre><code><span class="kw">// works even if #custom-datepicker is a web component with an open shadow root</span>
+<span class="kw">await</span> page.locator(<span class="kw">'#custom-datepicker'</span>).getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Next month'</span> }).click();</code></pre>
+<p>Limits: it cannot pierce a <strong>closed</strong> shadow root (<code>mode: 'closed'</code>) &mdash; that's a real DOM API restriction, not a Playwright gap. For closed shadow roots you'd need the component to expose testing hooks, or evaluate JS in a scope the component itself controls.</p>`},
+{id:"Q15",cat:"Locators",diff:"Intermediate",q:"How do you handle file upload and file download in Playwright?",a:`<p><strong>Upload</strong> &mdash; no OS file-picker dialog automation needed (unlike Selenium+AutoIt/Robot workarounds); set files directly on the input:</p>
+<pre><code><span class="kw">await</span> page.getByLabel(<span class="kw">'Upload KYC document'</span>).setInputFiles(<span class="kw">'./fixtures/pan-card.pdf'</span>);
+<span class="kw">// multiple files</span>
+<span class="kw">await</span> page.getByLabel(<span class="kw">'Attachments'</span>).setInputFiles([<span class="kw">'a.pdf'</span>, <span class="kw">'b.pdf'</span>]);
+<span class="kw">// clear selection</span>
+<span class="kw">await</span> page.getByLabel(<span class="kw">'Attachments'</span>).setInputFiles([]);</code></pre>
+<p><strong>Download</strong> &mdash; listen for the <code>download</code> event, which fires when a download is triggered, then save/inspect it:</p>
+<pre><code><span class="kw">const</span> [download] = <span class="kw">await</span> Promise.all([
+  page.waitForEvent(<span class="kw">'download'</span>),
+  page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Download statement'</span> }).click(),
+]);
+<span class="kw">await</span> download.saveAs(<span class="kw">'./downloads/'</span> + download.suggestedFilename());</code></pre>`},
+{id:"Q16",cat:"Locators",diff:"Intermediate",q:"What's the difference between text= (exact/substring), has-text, and regex-based locators in Playwright?",a:`<p>Playwright's text matching has several modes with different strictness:</p>
+<ul>
+<li><code>getByText('Submit')</code> &mdash; substring match by default, case-insensitive whitespace-normalized.</li>
+<li><code>getByText('Submit', { exact: true })</code> &mdash; exact full-string match, case-sensitive.</li>
+<li><code>getByText(/^Submit$/)</code> &mdash; regex match, useful for dynamic text like <code>/Order #\\d+ confirmed/</code>.</li>
+<li><code>.filter({ hasText: 'Overdue' })</code> &mdash; not a standalone locator; narrows an existing locator to elements whose subtree contains that text/regex.</li>
+</ul>
+<p>Rule of thumb: prefer exact/regex matches for assertions (so a partial coincidental match doesn't create a false pass), and substring for loosely-worded UI copy that product may tweak.</p>`},
+{id:"Q17",cat:"Locators",diff:"Basic",q:"How do you locate an element by CSS or XPath in Playwright, and when is that still justified?",a:`<p>Playwright supports raw CSS and XPath via <code>page.locator()</code>:</p>
+<pre><code><span class="kw">await</span> page.locator(<span class="kw">'css=.txn-row:nth-child(3) .amount'</span>).click();
+<span class="kw">await</span> page.locator(<span class="kw">'xpath=//tr[td[text()="INV-4521"]]/td[last()]'</span>).click();</code></pre>
+<p>These are last-resort strategies. Justified when: the DOM has no roles/labels/text/testid at all (legacy jQuery widgets), you need a relationship XPath alone can express (e.g. "the sibling after the cell containing X"), or you're stabilizing a flaky legacy suite under time pressure before a proper testid can be added by dev. In a well-instrumented modern app, CSS/XPath should be a small minority of locators.</p>`},
+{id:"Q18",cat:"Locators",diff:"Advanced",q:"How would you build a resilient locator strategy for a design system where dev churns class names frequently (e.g., CSS-in-JS/Tailwind)?",a:`<p>Class-name churn breaks CSS locators, so the strategy is to locate by <strong>semantics, not styling hooks</strong>:</p>
+<ul>
+<li>Push for <code>getByRole</code> everywhere possible &mdash; ARIA role/name survive refactors and styling changes because they're tied to markup semantics, not CSS classes.</li>
+<li>Where role alone is ambiguous (e.g. two "Edit" buttons on a page), pair it with an accessible name or scope it inside a semantically identifiable parent (<code>getByRole('region', {name:'Billing'})</code>).</li>
+<li>Establish a <code>data-testid</code> convention with dev for genuinely ambiguous/dynamic widgets, and treat it as a contract dev shouldn't remove without notifying QA &mdash; ideally enforced via a lint rule or code review checklist.</li>
+<li>Avoid nth-child/positional CSS entirely; it's the most churn-sensitive strategy of all.</li>
+</ul>
+<p>This mirrors accessibility best practice, so the byproduct is your suite also acts as a lightweight a11y regression check.</p>`},
+{id:"Q19",cat:"Locators",diff:"Intermediate",q:"What is the difference between waitForSelector and a locator-based assertion like expect(locator).toBeVisible()?",a:`<p><code>page.waitForSelector()</code> is the older, imperative API &mdash; it resolves once an element matching a CSS/text selector reaches a given state, returning an ElementHandle. It's now largely superseded.</p>
+<p><code>expect(locator).toBeVisible()</code> (a "web-first assertion") is both an <strong>assertion and a wait</strong> &mdash; it polls/retries until the condition is true or the timeout elapses, and it fails the test with a clear diff if it never becomes true, whereas <code>waitForSelector</code> just throws a timeout error with no assertion semantics.</p>
+<p>Playwright's official guidance is to prefer locators + web-first assertions everywhere and reserve <code>waitForSelector</code>/ElementHandle for rare low-level cases (e.g. passing a handle into <code>page.evaluate()</code>).</p>`},
+{id:"Q20",cat:"Locators",diff:"Basic",q:"How do you assert on a list/collection of elements with Playwright, e.g. verifying a table has exactly 5 rows with specific text?",a:`<p>Locators are collection-aware; you don't need to manually loop and length-check like Selenium's <code>findElements().size()</code>.</p>
+<pre><code><span class="kw">const</span> rows = page.getByRole(<span class="kw">'row'</span>);
+<span class="kw">await</span> expect(rows).toHaveCount(<span class="kw">6</span>); <span class="kw">// 5 data rows + header</span>
+
+<span class="kw">await</span> expect(page.getByRole(<span class="kw">'columnheader'</span>)).toHaveText([
+  <span class="kw">'Invoice'</span>, <span class="kw">'Amount'</span>, <span class="kw">'Status'</span>
+]);
+
+<span class="kw">const</span> amounts = <span class="kw">await</span> page.getByTestId(<span class="kw">'amount-cell'</span>).allTextContents();
+expect(amounts).toContain(<span class="kw">'$4,521.00'</span>);</code></pre>
+<p><code>toHaveText</code> on a multi-element locator compares against an array, element-by-element, in DOM order &mdash; and like other web-first assertions it retries until it matches or times out.</p>`},
+{id:"Q21",cat:"Waiting",diff:"Intermediate",q:"What is networkidle and why is Playwright's documentation cautious about relying on it?",a:`<p><code>page.waitForLoadState('networkidle')</code> waits until there have been no network connections for 500ms. It sounds like a universal "page is fully ready" signal, but Playwright explicitly discourages over-reliance on it because:</p>
+<ul>
+<li>Modern SPAs often keep long-lived connections open (websockets, polling, analytics beacons) that never go idle, causing false timeouts.</li>
+<li>It waits for <em>network</em> quiet, not <em>UI/render</em> quiet &mdash; a page can be network-idle while a spinner is still animating.</li>
+</ul>
+<p>Preferred alternative: wait for the specific signal that actually indicates readiness &mdash; a visible element, a specific API response via <code>waitForResponse</code>, or a state change assertion. Use <code>networkidle</code> only for content genuinely dependent on background requests settling, like SEO-rendered pages.</p>`},
+{id:"Q22",cat:"Waiting",diff:"Advanced",q:"How do you write a custom wait condition in Playwright for something not covered by built-in actionability checks (e.g., waiting for a canvas chart to finish rendering)?",a:`<p>Use <code>page.waitForFunction()</code> to poll an arbitrary JS predicate inside the page context until it returns truthy:</p>
+<pre><code><span class="kw">await</span> page.waitForFunction(<span class="kw">() =></span> {
+  <span class="kw">const</span> canvas = document.querySelector(<span class="kw">'#txn-chart'</span>) <span class="kw">as</span> HTMLCanvasElement;
+  <span class="kw">return</span> canvas?.dataset.renderComplete === <span class="kw">'true'</span>;
+}, { timeout: <span class="kw">10000</span> });</code></pre>
+<p>For polling a value from your own test code (not the page) you'd use <code>expect.poll()</code> instead:</p>
+<pre><code><span class="kw">await</span> expect.poll(<span class="kw">async</span> () <span class="kw">=></span> {
+  <span class="kw">const</span> res = <span class="kw">await</span> apiContext.get(<span class="kw">'/txn/status/4521'</span>);
+  <span class="kw">return</span> (<span class="kw">await</span> res.json()).status;
+}, { timeout: <span class="kw">15000</span> }).toBe(<span class="kw">'SETTLED'</span>);</code></pre>
+<p>Both retry with backoff automatically &mdash; you never hand-roll a sleep-and-poll loop.</p>`},
+{id:"Q23",cat:"Waiting",diff:"Intermediate",q:"Your test intermittently fails because a toast notification disappears before the assertion runs. How do you fix this properly in Playwright?",a:`<p>This is a race between the assertion and an auto-dismissing element &mdash; the fix is to assert <strong>as soon as the triggering action completes</strong>, letting Playwright's built-in retry absorb small timing variance, rather than adding a manual sleep.</p>
+<pre><code><span class="kw">await</span> page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Save'</span> }).click();
+<span class="kw">await</span> expect(page.getByText(<span class="kw">'Changes saved'</span>)).toBeVisible({ timeout: <span class="kw">3000</span> });</code></pre>
+<p>If the toast can genuinely vanish before Playwright's first poll (very short-lived, &lt;300ms), a more robust design is to assert on a durable side effect instead of the transient toast &mdash; e.g. the underlying data state, or an ARIA live-region announcement history if the app logs one. Adding <code>page.waitForTimeout()</code> is explicitly an anti-pattern here; it masks the race instead of resolving it.</p>`},
+{id:"Q24",cat:"Waiting",diff:"Basic",q:"What is the default timeout in Playwright Test and at which levels can it be configured?",a:`<p>Default <strong>test timeout</strong> is 30 seconds per test (whole test, all steps combined); default <strong>action/assertion timeout</strong> is also effectively bounded by that unless overridden. Configurable at multiple levels, most specific wins:</p>
+<pre><code><span class="kw">// playwright.config.ts</span>
+export default defineConfig({
+  timeout: <span class="kw">30_000</span>,                 <span class="kw">// per test</span>
+  expect: { timeout: <span class="kw">5_000</span> },       <span class="kw">// per assertion</span>
+  use: { actionTimeout: <span class="kw">10_000</span> },   <span class="kw">// per action</span>
+});
+
+<span class="kw">// per-test override</span>
+test(<span class="kw">'slow report export'</span>, <span class="kw">async</span> ({ page }) <span class="kw">=></span> {
+  test.setTimeout(<span class="kw">90_000</span>);
+  ...
+});
+
+<span class="kw">// per-call override</span>
+<span class="kw">await</span> expect(locator).toBeVisible({ timeout: <span class="kw">15_000</span> });</code></pre>`},
+{id:"Q25",cat:"Waiting",diff:"Intermediate",q:"How does Playwright handle waiting for navigation after a click, and how is this different from Selenium where you often need explicit waits for the new page to load?",a:`<p>In Selenium, <code>click()</code> returns immediately once the click event fires; the DOM at that instant might still be the old page, so people commonly chase this with explicit waits for a post-navigation element.</p>
+<p>Playwright's <code>click()</code> automatically waits for navigations it itself triggers as part of its lifecycle &mdash; and any locator action performed right after (e.g. <code>getByRole('heading')</code>) will simply retry against whatever page is currently loaded, so it naturally resolves once the new page's element exists. You rarely need explicit navigation waits.</p>
+<p>For cases where you need to be certain a navigation happened before proceeding (not just wait-and-hope), wrap it explicitly:</p>
+<pre><code><span class="kw">await</span> Promise.all([
+  page.waitForURL(<span class="kw">'**/dashboard'</span>),
+  page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Sign in'</span> }).click(),
+]);</code></pre>
+<p>The <code>Promise.all</code> pattern matters &mdash; starting the wait <em>before</em> the click avoids a race where a very fast navigation completes before you start listening.</p>`},
+{id:"Q26",cat:"Waiting",diff:"Advanced",q:"You need to wait for a specific backend API call to complete before asserting UI state, but the endpoint URL has a dynamic transaction ID. How do you do this?",a:`<p>Use <code>page.waitForResponse()</code> with a predicate function (or regex) instead of an exact URL string:</p>
+<pre><code><span class="kw">const</span> [response] = <span class="kw">await</span> Promise.all([
+  page.waitForResponse(res =&gt;
+    /\\/api\\/txn\\/\\d+\\/settle/.test(res.url()) &amp;&amp; res.status() === <span class="kw">200</span>
+  ),
+  page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Confirm settlement'</span> }).click(),
+]);
+
+<span class="kw">const</span> body = <span class="kw">await</span> response.json();
+expect(body.status).toBe(<span class="kw">'SETTLED'</span>);
+<span class="kw">await</span> expect(page.getByText(<span class="kw">'Settlement complete'</span>)).toBeVisible();</code></pre>
+<p>Asserting on the actual API payload (not just the UI text) is important in BFSI reconciliation-style testing &mdash; it catches cases where the UI shows a success toast but the backend response body actually carries a partial-failure flag.</p>`},
+{id:"Q27",cat:"Waiting",diff:"Intermediate",q:"What's the difference between page.waitForTimeout() and proper waiting strategies, and why is it considered an anti-pattern?",a:`<p><code>page.waitForTimeout(ms)</code> is a hard sleep &mdash; it pauses execution for a fixed duration regardless of what's actually happening on the page. It's an anti-pattern because it's:</p>
+<ul>
+<li><strong>Slow</strong>: you always pay the full duration even when the condition is met in the first 50ms.</li>
+<li><strong>Flaky</strong>: if the environment is slower than usual (CI under load), the fixed sleep may still not be enough &mdash; it doesn't scale with actual load time.</li>
+</ul>
+<p>It should only appear in genuinely rare cases with no observable signal to wait on (e.g. deliberately testing a client-side debounce timer's exact delay), and even then, ideally paired with a comment explaining why no better wait exists. Every other case should use an actionability-backed action, a web-first assertion, or <code>waitForResponse</code>/<code>waitForFunction</code>.</p>`},
+{id:"Q28",cat:"Waiting",diff:"Basic",q:"How do retries work in Playwright Test, and how do they differ conceptually from just re-running a flaky Selenium/TestNG test?",a:`<p>Playwright Test has built-in retry configuration at the project/global level:</p>
+<pre><code>export default defineConfig({
+  retries: process.env.CI ? <span class="kw">2</span> : <span class="kw">0</span>,
+});</code></pre>
+<p>On failure, Playwright automatically re-runs the <em>entire test</em> (fresh context/page) up to N times, and &mdash; critically &mdash; captures trace/video/screenshot specifically <strong>on the retry</strong> (<code>trace: 'on-first-retry'</code>), so you get rich failure artifacts without paying that overhead on every green run.</p>
+<p>This differs from bolting a custom retry-annotation onto TestNG: Playwright's retry is a first-class reporter concept &mdash; retried tests are marked "flaky" (not silently green) in the HTML report if they eventually pass, which keeps flake visible instead of hiding it, unlike a naive re-run-until-green wrapper.</p>`},
+{id:"Q29",cat:"Network Mocking",diff:"Intermediate",q:"Explain page.route() &mdash; what problem does it solve and give a basic example of mocking an API response.",a:`<p><code>page.route(url, handler)</code> intercepts network requests matching a URL pattern <em>before</em> they reach the network, letting you inspect, modify, block, or fully mock them. This solves the classic testing problem of depending on a real (slow/flaky/rate-limited/costly) backend for UI-level tests, and lets you deterministically trigger edge cases (errors, empty states, slow responses) that are hard to reproduce with a real backend.</p>
+<pre><code><span class="kw">await</span> page.route(<span class="kw">'**/api/accounts/summary'</span>, <span class="kw">async</span> route <span class="kw">=></span> {
+  <span class="kw">await</span> route.fulfill({
+    status: <span class="kw">200</span>,
+    contentType: <span class="kw">'application/json'</span>,
+    body: JSON.stringify({ balance: <span class="kw">125000.50</span>, currency: <span class="kw">'INR'</span> }),
+  });
+});
+
+<span class="kw">await</span> page.goto(<span class="kw">'/dashboard'</span>);
+<span class="kw">await</span> expect(page.getByText(<span class="kw">'₹1,25,000.50'</span>)).toBeVisible();</code></pre>`},
+{id:"Q30",cat:"Network Mocking",diff:"Advanced",q:"How do you simulate a slow network or a specific HTTP error (500/timeout) for a payment endpoint to test the UI's error handling?",a:`<p>Combine <code>route.fulfill()</code> for the error body/status with an artificial delay:</p>
+<pre><code><span class="kw">await</span> page.route(<span class="kw">'**/api/payments/initiate'</span>, <span class="kw">async</span> route <span class="kw">=></span> {
+  <span class="kw">await</span> <span class="kw">new</span> Promise(r <span class="kw">=></span> setTimeout(r, <span class="kw">4000</span>)); <span class="kw">// simulate latency</span>
+  <span class="kw">await</span> route.fulfill({
+    status: <span class="kw">500</span>,
+    contentType: <span class="kw">'application/json'</span>,
+    body: JSON.stringify({ error: <span class="kw">'GATEWAY_TIMEOUT'</span> }),
+  });
+});
+
+<span class="kw">await</span> page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Pay now'</span> }).click();
+<span class="kw">await</span> expect(page.getByText(<span class="kw">'Payment could not be processed'</span>)).toBeVisible();
+<span class="kw">await</span> expect(page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Retry'</span> })).toBeEnabled();</code></pre>
+<p>For a hard connection failure (not just an HTTP error status), use <code>route.abort('failed')</code> instead of <code>fulfill()</code> to simulate a network-level drop, which exercises a different UI code path (network error vs. server error) in well-built apps.</p>`},
+{id:"Q31",cat:"Network Mocking",diff:"Intermediate",q:"What's the difference between route.fulfill(), route.continue(), and route.abort()?",a:`<ul>
+<li><strong>route.fulfill()</strong> &mdash; short-circuits the request entirely; the real backend is never called. You supply the full response (status, headers, body) yourself. Use for full mocking.</li>
+<li><strong>route.continue()</strong> &mdash; lets the request proceed to the real network, optionally after modifying the outgoing request (headers, method, postData). Use to inspect or tweak real traffic without faking the response.</li>
+<li><strong>route.abort(errorCode?)</strong> &mdash; kills the request before it's sent, simulating a network-level failure (e.g. <code>'failed'</code>, <code>'timedout'</code>, <code>'connectionrefused'</code>). Use to test offline/network-error handling.</li>
+</ul>
+<pre><code><span class="kw">await</span> page.route(<span class="kw">'**/api/audit-log'</span>, route <span class="kw">=></span> route.continue({
+  headers: { ...route.request().headers(), <span class="kw">'x-test-run'</span>: <span class="kw">'true'</span> },
+}));</code></pre>`},
+{id:"Q32",cat:"Network Mocking",diff:"Intermediate",q:"How do you assert that a specific network request was actually made (e.g. verifying an analytics or audit-log call fired) without mocking its response?",a:`<p>Use <code>page.waitForRequest()</code>, or subscribe to the <code>'request'</code>/<code>'requestfinished'</code> events for a running log &mdash; you don't need <code>route()</code> at all if you're only observing, not modifying.</p>
+<pre><code><span class="kw">const</span> requestPromise = page.waitForRequest(req =&gt;
+  req.url().includes(<span class="kw">'/api/audit-log'</span>) &amp;&amp; req.method() === <span class="kw">'POST'</span>
+);
+
+<span class="kw">await</span> page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Approve loan'</span> }).click();
+<span class="kw">const</span> auditRequest = <span class="kw">await</span> requestPromise;
+
+<span class="kw">const</span> payload = auditRequest.postDataJSON();
+expect(payload.action).toBe(<span class="kw">'LOAN_APPROVED'</span>);</code></pre>
+<p>This is valuable for compliance-sensitive flows in BFSI where "did we actually log this action" is itself a test requirement, independent of what the UI shows.</p>`},
+{id:"Q33",cat:"Network Mocking",diff:"Advanced",q:"How would you design a reusable mocking layer for a large test suite instead of scattering page.route() calls in every spec file?",a:`<p>I centralize mocks as composable fixture-level helpers rather than inline per-test routes:</p>
+<pre><code><span class="kw">// mocks/accountMocks.ts</span>
+<span class="kw">export async function</span> mockAccountSummary(page: Page, overrides: Partial&lt;AccountSummary&gt; = {}) {
+  <span class="kw">const</span> body: AccountSummary = { balance: <span class="kw">50000</span>, currency: <span class="kw">'INR'</span>, ...overrides };
+  <span class="kw">await</span> page.route(<span class="kw">'**/api/accounts/summary'</span>, route =&gt;
+    route.fulfill({ status: <span class="kw">200</span>, body: JSON.stringify(body) })
+  );
+}
+
+<span class="kw">// fixtures.ts</span>
+<span class="kw">export const</span> test = base.extend&lt;{ mockedPage: Page }&gt;({
+  mockedPage: <span class="kw">async</span> ({ page }, use) =&gt; {
+    <span class="kw">await</span> mockAccountSummary(page);
+    <span class="kw">await</span> use(page);
+  },
+});</code></pre>
+<p>Benefits: one source of truth per API contract (change the shape once when the backend changes), test-specific <code>overrides</code> for edge cases, and it keeps individual spec files focused on behavior instead of wire-format details. I typically colocate these with TypeScript interfaces generated/kept in sync with the API's OpenAPI schema where available.</p>`},
+{id:"Q34",cat:"Network Mocking",diff:"Intermediate",q:"Can you modify a real response instead of fully replacing it &mdash; e.g. take the live API response and just tweak one field?",a:`<p>Yes &mdash; fetch the real response inside the handler via <code>route.fetch()</code>, mutate the JSON, then fulfill with the modified body. This is useful when most of the payload is realistic/complex and you only need to force one edge-case field.</p>
+<pre><code><span class="kw">await</span> page.route(<span class="kw">'**/api/loan/eligibility'</span>, <span class="kw">async</span> route <span class="kw">=></span> {
+  <span class="kw">const</span> response = <span class="kw">await</span> route.fetch();
+  <span class="kw">const</span> json = <span class="kw">await</span> response.json();
+  json.creditScore = <span class="kw">300</span>; <span class="kw">// force a rejection-tier score</span>
+  <span class="kw">await</span> route.fulfill({ response, json });
+});</code></pre>
+<p>This "amend, don't replace" pattern keeps the mock in sync with real API drift automatically for every field you don't explicitly override.</p>`},
+{id:"Q35",cat:"Network Mocking",diff:"Basic",q:"How is network-level mocking with page.route() different from mocking at the API-testing layer using Playwright's APIRequestContext?",a:`<p>They operate at different layers of the test pyramid:</p>
+<ul>
+<li><strong>page.route()</strong> intercepts requests made <em>by the browser page under test</em> &mdash; you're testing the frontend's behavior in response to a given backend response, without a real backend. This is UI/E2E-layer mocking.</li>
+<li><strong>APIRequestContext</strong> (<code>request</code> fixture) makes real HTTP calls directly to a service, with no browser involved &mdash; it's for testing the API itself (contract, status codes, schema, data), or for fast test-data setup/teardown that a UI test then builds on.</li>
+</ul>
+<p>A common combined pattern: use <code>request</code> to seed a test account via API (fast, no UI navigation), then drive the actual scenario through the UI with <code>page</code>, mocking only the specific edge-case response you can't easily produce with real data.</p>`},
+{id:"Q36",cat:"Multi-Context",diff:"Intermediate",q:"How do you test a multi-tab flow in Playwright, e.g. clicking a link that opens a new tab, and asserting on content in the new tab?",a:`<p>Listen for the <code>'page'</code> event on the context (fired when a new tab/popup opens), started <em>before</em> the triggering click to avoid a race:</p>
+<pre><code><span class="kw">const</span> [newTab] = <span class="kw">await</span> Promise.all([
+  context.waitForEvent(<span class="kw">'page'</span>),
+  page.getByRole(<span class="kw">'link'</span>, { name: <span class="kw">'View statement PDF'</span> }).click(),
+]);
+
+<span class="kw">await</span> newTab.waitForLoadState();
+<span class="kw">await</span> expect(newTab).toHaveURL(/statement\\.pdf/);
+<span class="kw">await</span> newTab.close();</code></pre>
+<p>Each <code>Page</code> object is independent once obtained &mdash; you can interleave assertions/actions across both tabs within the same test, which is common for verifying "opens correctly in a new tab" UX requirements.</p>`},
+{id:"Q37",cat:"Multi-Context",diff:"Advanced",q:"How would you test a two-user workflow (e.g. maker-checker / dual approval, common in BFSI) where User A submits a transaction and User B approves it, in the same test?",a:`<p>Use two separate <strong>BrowserContexts</strong> (not just two tabs/pages in one context) &mdash; each context has isolated cookies/storage, so you can be logged in as two different users simultaneously without cross-contamination.</p>
+<pre><code>test(<span class="kw">'maker-checker approval flow'</span>, <span class="kw">async</span> ({ browser }) <span class="kw">=></span> {
+  <span class="kw">const</span> makerContext = <span class="kw">await</span> browser.newContext();
+  <span class="kw">const</span> checkerContext = <span class="kw">await</span> browser.newContext();
+
+  <span class="kw">const</span> makerPage = <span class="kw">await</span> makerContext.newPage();
+  <span class="kw">const</span> checkerPage = <span class="kw">await</span> checkerContext.newPage();
+
+  <span class="kw">await</span> loginAs(makerPage, <span class="kw">'maker_user'</span>);
+  <span class="kw">await</span> loginAs(checkerPage, <span class="kw">'checker_user'</span>);
+
+  <span class="kw">await</span> submitTransaction(makerPage, { amount: <span class="kw">50000</span>, beneficiary: <span class="kw">'INV-9981'</span> });
+
+  <span class="kw">await</span> checkerPage.reload();
+  <span class="kw">await</span> checkerPage.getByRole(<span class="kw">'row'</span>, { name: <span class="kw">'INV-9981'</span> })
+    .getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Approve'</span> }).click();
+
+  <span class="kw">await</span> makerPage.reload();
+  <span class="kw">await</span> expect(makerPage.getByText(<span class="kw">'Approved'</span>)).toBeVisible();
+
+  <span class="kw">await</span> makerContext.close();
+  <span class="kw">await</span> checkerContext.close();
+});</code></pre>
+<p>This maps directly onto GMF-style dual-control workflows and is something Selenium can only do clumsily (multiple driver instances with separate profiles).</p>`},
+{id:"Q38",cat:"Multi-Context",diff:"Intermediate",q:"How do you persist and reuse authentication state across tests instead of logging in through the UI every single time?",a:`<p>Use <strong>storageState</strong> &mdash; log in once (often in a setup project/global setup), save cookies + localStorage to a JSON file, then have every other test's context load that file directly, skipping the UI login entirely.</p>
+<pre><code><span class="kw">// auth.setup.ts</span>
+setup(<span class="kw">'authenticate'</span>, <span class="kw">async</span> ({ page }) <span class="kw">=></span> {
+  <span class="kw">await</span> page.goto(<span class="kw">'/login'</span>);
+  <span class="kw">await</span> page.getByLabel(<span class="kw">'Username'</span>).fill(<span class="kw">'qa_user'</span>);
+  <span class="kw">await</span> page.getByLabel(<span class="kw">'Password'</span>).fill(process.env.QA_PASSWORD!);
+  <span class="kw">await</span> page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Sign in'</span> }).click();
+  <span class="kw">await</span> page.context().storageState({ path: <span class="kw">'playwright/.auth/user.json'</span> });
+});
+
+<span class="kw">// playwright.config.ts</span>
+projects: [
+  { name: <span class="kw">'setup'</span>, testMatch: <span class="kw">/auth\\.setup\\.ts/</span> },
+  { name: <span class="kw">'chromium'</span>, use: { storageState: <span class="kw">'playwright/.auth/user.json'</span> }, dependencies: [<span class="kw">'setup'</span>] },
+]</code></pre>
+<p>This dramatically cuts suite runtime for large regression packs where login isn't the thing under test, and it's the direct Playwright equivalent of manually copying cookies between Selenium sessions.</p>`},
+{id:"Q39",cat:"Multi-Context",diff:"Intermediate",q:"What browser context options would you set to simulate a mobile device or a specific locale/timezone for a BFSI app serving multiple regions?",a:`<p><code>browser.newContext()</code> takes a rich options object &mdash; no separate mobile-emulation library needed:</p>
+<pre><code><span class="kw">import</span> { devices } <span class="kw">from</span> <span class="kw">'@playwright/test'</span>;
+
+<span class="kw">const</span> context = <span class="kw">await</span> browser.newContext({
+  ...devices[<span class="kw">'iPhone 13'</span>],
+  locale: <span class="kw">'en-IN'</span>,
+  timezoneId: <span class="kw">'Asia/Kolkata'</span>,
+  geolocation: { latitude: <span class="kw">17.385</span>, longitude: <span class="kw">78.4867</span> },
+  permissions: [<span class="kw">'geolocation'</span>],
+});</code></pre>
+<p>This is directly useful for date-sensitive BFSI logic (interest accrual cutoffs, statement generation at midnight local time) &mdash; running the same spec across multiple <code>timezoneId</code> values catches timezone-boundary bugs that a single-locale suite would never surface.</p>`},
+{id:"Q40",cat:"Multi-Context",diff:"Basic",q:"Why is BrowserContext-level isolation important for parallel test execution, and how does it compare to how Selenium Grid achieves parallelism?",a:`<p>Each Playwright <strong>worker process</strong> typically owns one <code>Browser</code>, and each <strong>test</strong> gets its own fresh <code>BrowserContext</code> (created/destroyed automatically by the <code>context</code>/<code>page</code> fixtures). Because a context is a fully isolated cookie/storage/cache sandbox, tests running in parallel within the same browser process never leak session state into each other &mdash; no test can accidentally see another test's login.</p>
+<p>Selenium Grid achieves parallelism at a coarser grain: separate <strong>browser processes/nodes</strong>, often across separate machines/containers, each with its own driver session. That gives isolation too, but at much higher resource cost per parallel stream &mdash; spinning up a whole browser process is far heavier than spinning up a lightweight context inside an already-running browser.</p>
+<p>Practically: Playwright can run more parallel streams per CI runner for the same memory/CPU budget than a Selenium Grid setup, because contexts are cheap.</p>`},
+{id:"Q41",cat:"API Testing",diff:"Intermediate",q:"What is Playwright's APIRequestContext and how do you use it to test a REST API directly, without a browser?",a:`<p><code>request</code> is a fixture exposing an <code>APIRequestContext</code> &mdash; a pure HTTP client (built on the same network stack Playwright uses) for calling APIs without launching a browser at all. Good for API-only test suites, or for fast test-data setup inside UI specs.</p>
+<pre><code>test(<span class="kw">'create beneficiary via API'</span>, <span class="kw">async</span> ({ request }) <span class="kw">=></span> {
+  <span class="kw">const</span> response = <span class="kw">await</span> request.post(<span class="kw">'/api/beneficiaries'</span>, {
+    data: { name: <span class="kw">'Acme Corp'</span>, accountNumber: <span class="kw">'0091234567'</span>, ifsc: <span class="kw">'HDFC0000091'</span> },
+    headers: { Authorization: <span class="kw">\`Bearer \${process.env.API_TOKEN}\`</span> },
+  });
+
+  expect(response.status()).toBe(<span class="kw">201</span>);
+  <span class="kw">const</span> body = <span class="kw">await</span> response.json();
+  expect(body).toMatchObject({ status: <span class="kw">'ACTIVE'</span> });
+});</code></pre>
+<p>A key advantage over a separate REST client library (like REST Assured in Java) is that it lives in the <strong>same tool and config</strong> as UI tests &mdash; shared base URL, shared auth setup, shared reporting &mdash; so hybrid UI+API specs don't need a second HTTP client dependency.</p>`},
+{id:"Q42",cat:"API Testing",diff:"Advanced",q:"Describe a hybrid test pattern: seed data via API, then verify via UI. Why is this preferred over doing everything through the UI?",a:`<p>Pattern: use <code>request</code> to create preconditions (accounts, transactions, users) directly against the API, then use <code>page</code> only to exercise the actual behavior under test.</p>
+<pre><code>test(<span class="kw">'overdue invoice shows red badge'</span>, <span class="kw">async</span> ({ request, page }) <span class="kw">=></span> {
+  <span class="kw">const</span> res = <span class="kw">await</span> request.post(<span class="kw">'/api/invoices'</span>, {
+    data: { customerId: <span class="kw">'CUST-1'</span>, amount: <span class="kw">4521</span>, dueDate: <span class="kw">'2026-01-01'</span> },
+  });
+  <span class="kw">const</span> { id } = <span class="kw">await</span> res.json();
+
+  <span class="kw">await</span> page.goto(<span class="kw">\`/invoices/\${id}\`</span>);
+  <span class="kw">await</span> expect(page.getByText(<span class="kw">'Overdue'</span>)).toHaveCSS(<span class="kw">'color'</span>, <span class="kw">'rgb(242, 68, 68)'</span>);
+});</code></pre>
+<p>Reasons this is preferred: it's <strong>far faster</strong> (no navigating through multi-step UI forms just to get data into a known state), it's <strong>more reliable</strong> (fewer UI steps that can flake before the real assertion even starts), and it keeps the UI test's scope narrow &mdash; the test only fails when the thing it's actually about breaks, not because an unrelated "create invoice" form changed.</p>`},
+{id:"Q43",cat:"API Testing",diff:"Intermediate",q:"How do you validate a JSON response schema in Playwright API tests, e.g. ensuring a /accounts response always has the expected shape?",a:`<p>Playwright doesn't ship a schema validator itself, but integrates cleanly with libraries like <strong>Zod</strong> or <strong>ajv</strong> (JSON Schema):</p>
+<pre><code><span class="kw">import</span> { z } <span class="kw">from</span> <span class="kw">'zod'</span>;
+
+<span class="kw">const</span> AccountSchema = z.object({
+  accountId: z.string(),
+  balance: z.number(),
+  currency: z.enum([<span class="kw">'INR'</span>, <span class="kw">'USD'</span>]),
+  status: z.enum([<span class="kw">'ACTIVE'</span>, <span class="kw">'FROZEN'</span>, <span class="kw">'CLOSED'</span>]),
+});
+
+test(<span class="kw">'account response matches contract'</span>, <span class="kw">async</span> ({ request }) <span class="kw">=></span> {
+  <span class="kw">const</span> res = <span class="kw">await</span> request.get(<span class="kw">'/api/accounts/1001'</span>);
+  <span class="kw">const</span> body = <span class="kw">await</span> res.json();
+  expect(() =&gt; AccountSchema.parse(body)).not.toThrow();
+});</code></pre>
+<p>Zod is my preference over raw JSON Schema when the codebase is already TypeScript, since the same schema also gives you inferred TS types (<code>z.infer&lt;typeof AccountSchema&gt;</code>) for free &mdash; one source of truth for both runtime validation and compile-time typing.</p>`},
+{id:"Q44",cat:"API Testing",diff:"Basic",q:"How do you handle authentication tokens/bearer tokens across multiple API requests in a test suite, cleanly?",a:`<p>Configure a shared <code>extraHTTPHeaders</code> at the context/project level (via <code>playwright.config.ts</code>) or build a custom fixture that logs in once and exposes an authenticated <code>APIRequestContext</code> to every test:</p>
+<pre><code><span class="kw">export const</span> test = base.extend&lt;{ authedRequest: APIRequestContext }&gt;({
+  authedRequest: <span class="kw">async</span> ({ playwright }, use) =&gt; {
+    <span class="kw">const</span> loginRes = <span class="kw">await</span> (<span class="kw">await</span> playwright.request.newContext())
+      .post(<span class="kw">'/api/auth/login'</span>, { data: { user: <span class="kw">'qa'</span>, pass: process.env.QA_PW } });
+    <span class="kw">const</span> { token } = <span class="kw">await</span> loginRes.json();
+
+    <span class="kw">const</span> context = <span class="kw">await</span> playwright.request.newContext({
+      extraHTTPHeaders: { Authorization: <span class="kw">\`Bearer \${token}\`</span> },
+    });
+    <span class="kw">await</span> use(context);
+    <span class="kw">await</span> context.dispose();
+  },
+});</code></pre>
+<p>This avoids re-authenticating on every request and keeps token handling out of individual test bodies.</p>`},
+{id:"Q45",cat:"Visual Testing",diff:"Intermediate",q:"How does toHaveScreenshot() work in Playwright, and what makes visual regression tests reliable rather than constantly flaky?",a:`<p><code>expect(page).toHaveScreenshot()</code> captures a screenshot and pixel-diffs it against a stored baseline image, failing if the difference exceeds a configurable threshold, and writing a diff image alongside actual/expected for review on failure.</p>
+<pre><code><span class="kw">await</span> expect(page).toHaveScreenshot(<span class="kw">'dashboard.png'</span>, {
+  maxDiffPixelRatio: <span class="kw">0.01</span>,
+  mask: [page.getByTestId(<span class="kw">'last-login-timestamp'</span>)],
+  animations: <span class="kw">'disabled'</span>,
+});</code></pre>
+<p>Reliability techniques: <code>mask</code> dynamic regions (timestamps, avatars, ad slots) instead of trying to make them deterministic; disable CSS animations/transitions for the snapshot; pin the OS/browser version generating baselines (pixel rendering differs subtly across platforms &mdash; usually done by generating baselines inside the same Docker image used in CI); and set a small but non-zero diff tolerance instead of demanding pixel-perfect equality.</p>`},
+{id:"Q46",cat:"Visual Testing",diff:"Basic",q:"When would you choose visual regression testing over functional assertions, and what are its limitations?",a:`<p>Choose visual regression when the thing you actually care about <strong>is</strong> the rendered appearance and can't be meaningfully captured by a functional assertion &mdash; layout shifts, CSS regressions, responsive breakpoints, a design-system component library's rendered states, or "does this chart actually draw correctly" (canvas/SVG content that has no accessible text).</p>
+<p>Limitations:</p>
+<ul>
+<li>High maintenance cost &mdash; any intentional UI change requires re-approving baselines across every viewport/browser combination.</li>
+<li>Environment sensitivity &mdash; font rendering, GPU differences, and OS anti-aliasing can cause false failures if baselines/CI aren't tightly pinned.</li>
+<li>It tells you <em>something</em> changed, not <em>why</em> or whether it matters &mdash; a human still has to review every diff.</li>
+</ul>
+<p>I use it selectively for high-value, low-churn UI (design system components, critical dashboards) rather than blanket-applying it across every page.</p>`},
+{id:"Q47",cat:"Architecture",diff:"Intermediate",q:"What browser engines does Playwright support and how does it achieve cross-browser testing without requiring separate driver binaries like Selenium does (chromedriver, geckodriver, etc.)?",a:`<p>Playwright supports three engines: <strong>Chromium</strong> (also covers Chrome/Edge behavior), <strong>Firefox</strong>, and <strong>WebKit</strong> (Safari's engine). Instead of depending on each vendor's separately-versioned driver binary, Playwright ships and manages <strong>patched builds</strong> of these browsers itself, downloaded via <code>npx playwright install</code>, each pinned to the exact Playwright npm package version.</p>
+<p>This matters practically: a <code>npm install</code> + <code>playwright install</code> gives you a fully working, version-matched cross-browser setup with zero separate driver management &mdash; no chromedriver-version-mismatch errors, which are a common Selenium maintenance headache. The tradeoff is you're testing against Playwright's WebKit build, which is very close to but not byte-identical to shipping Safari &mdash; real Safari verification for critical BFSI flows is still worth doing periodically on real devices/BrowserStack.</p>`},
+{id:"Q48",cat:"Core API",diff:"Basic",q:"What is the difference between test.step() and simply having multiple statements in a test, and why use it?",a:`<p><code>test.step()</code> groups a sequence of actions under a named, collapsible step that shows up distinctly in the HTML report and Trace Viewer timeline &mdash; it doesn't change execution, only reporting/debuggability.</p>
+<pre><code>test(<span class="kw">'loan application end to end'</span>, <span class="kw">async</span> ({ page }) <span class="kw">=></span> {
+  <span class="kw">await</span> test.step(<span class="kw">'fill applicant details'</span>, <span class="kw">async</span> () <span class="kw">=></span> {
+    <span class="kw">await</span> page.getByLabel(<span class="kw">'Full name'</span>).fill(<span class="kw">'Rahul Sharma'</span>);
+    <span class="kw">await</span> page.getByLabel(<span class="kw">'PAN'</span>).fill(<span class="kw">'ABCDE1234F'</span>);
+  });
+
+  <span class="kw">await</span> test.step(<span class="kw">'submit and verify eligibility check'</span>, <span class="kw">async</span> () <span class="kw">=></span> {
+    <span class="kw">await</span> page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Check eligibility'</span> }).click();
+    <span class="kw">await</span> expect(page.getByText(<span class="kw">'Eligible'</span>)).toBeVisible();
+  });
+});</code></pre>
+<p>For long multi-page BFSI flows (KYC &rarr; eligibility &rarr; disbursal), steps make failures instantly locatable in the report ("failed at step 3: submit and verify eligibility check") instead of scanning raw action logs.</p>`},
+{id:"Q49",cat:"Core API",diff:"Intermediate",q:"How do you implement the Page Object Model in TypeScript with Playwright, and how does it differ stylistically from a typical Selenium Java POM?",a:`<p>Structurally similar &mdash; encapsulate locators and page-level actions in a class &mdash; but the idioms differ:</p>
+<pre><code><span class="kw">// pages/LoginPage.ts</span>
+<span class="kw">import</span> { <span class="kw">type</span> Page, <span class="kw">type</span> Locator } <span class="kw">from</span> <span class="kw">'@playwright/test'</span>;
+
+<span class="kw">export class</span> LoginPage {
+  <span class="kw">readonly</span> page: Page;
+  <span class="kw">readonly</span> usernameInput: Locator;
+  <span class="kw">readonly</span> passwordInput: Locator;
+  <span class="kw">readonly</span> signInButton: Locator;
+
+  <span class="kw">constructor</span>(page: Page) {
+    <span class="kw">this</span>.page = page;
+    <span class="kw">this</span>.usernameInput = page.getByLabel(<span class="kw">'Username'</span>);
+    <span class="kw">this</span>.passwordInput = page.getByLabel(<span class="kw">'Password'</span>);
+    <span class="kw">this</span>.signInButton = page.getByRole(<span class="kw">'button'</span>, { name: <span class="kw">'Sign in'</span> });
+  }
+
+  <span class="kw">async</span> login(username: string, password: string) {
+    <span class="kw">await</span> <span class="kw">this</span>.usernameInput.fill(username);
+    <span class="kw">await</span> <span class="kw">this</span>.passwordInput.fill(password);
+    <span class="kw">await</span> <span class="kw">this</span>.signInButton.click();
+  }
+}</code></pre>
+<p>Differences from Java POM: locators are defined once as <code>Locator</code> objects in the constructor (no <code>@FindBy</code>/PageFactory annotations, no re-initialization step), no explicit waits littered through methods (auto-waiting handles it), and pages are typically wired into tests via <strong>fixtures</strong> rather than instantiated with <code>new</code> inside every test method &mdash; giving you the same DI ergonomics Spring gives Java, but built into the test runner itself.</p>`},
+{id:"Q50",cat:"Core API",diff:"Intermediate",q:"How do you wire Page Object classes into tests via custom fixtures instead of instantiating them manually in every test (the 'POM + fixtures' pattern)?",a:`<p>Extend the base <code>test</code> object so every POM is injected automatically, resolved lazily and only when a test actually references it:</p>
+<pre><code><span class="kw">// fixtures.ts</span>
+<span class="kw">import</span> { test <span class="kw">as</span> base } <span class="kw">from</span> <span class="kw">'@playwright/test'</span>;
+<span class="kw">import</span> { LoginPage } <span class="kw">from</span> <span class="kw">'./pages/LoginPage'</span>;
+<span class="kw">import</span> { DashboardPage } <span class="kw">from</span> <span class="kw">'./pages/DashboardPage'</span>;
+
+<span class="kw">type</span> Pages = { loginPage: LoginPage; dashboardPage: DashboardPage };
+
+<span class="kw">export const</span> test = base.extend&lt;Pages&gt;({
+  loginPage: <span class="kw">async</span> ({ page }, use) =&gt; { <span class="kw">await</span> use(<span class="kw">new</span> LoginPage(page)); },
+  dashboardPage: <span class="kw">async</span> ({ page }, use) =&gt; { <span class="kw">await</span> use(<span class="kw">new</span> DashboardPage(page)); },
+});
+<span class="kw">export</span> { expect } <span class="kw">from</span> <span class="kw">'@playwright/test'</span>;
+
+<span class="kw">// dashboard.spec.ts</span>
+<span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="kw">'./fixtures'</span>;
+
+test(<span class="kw">'shows account balance after login'</span>, <span class="kw">async</span> ({ loginPage, dashboardPage }) <span class="kw">=></span> {
+  <span class="kw">await</span> loginPage.login(<span class="kw">'qa_user'</span>, process.env.QA_PW!);
+  <span class="kw">await</span> expect(dashboardPage.balanceCard).toBeVisible();
+});</code></pre>
+<p>This keeps test files declarative (no boilerplate <code>new LoginPage(page)</code> in every test), and centralizes any change to how a page object is constructed in one place.</p>`},
+{id:"Q51",cat:"Test Structure",diff:"Intermediate",q:"What is globalSetup / globalTeardown in Playwright Test, and when would you use it instead of the auth-setup-project pattern?",a:"<p>globalSetup/globalTeardown are functions configured in playwright.config.ts that run exactly once for the entire test run, before/after all tests, outside of any worker process.</p><pre><code><span class=\"kw\">// global-setup.ts</span>\n<span class=\"kw\">async function</span> globalSetup() {\n  <span class=\"kw\">const</span> res = <span class=\"kw\">await</span> fetch(<span class=\"kw\">'https://api.example.com/test-db/seed'</span>, { method: <span class=\"kw\">'POST'</span> });\n  <span class=\"kw\">if</span> (!res.ok) <span class=\"kw\">throw new</span> Error(<span class=\"kw\">'Seed failed'</span>);\n}\n<span class=\"kw\">export default</span> globalSetup;\n\n<span class=\"kw\">// playwright.config.ts</span>\nexport default defineConfig({ globalSetup: require.resolve(<span class=\"kw\">'./global-setup'</span>) });</code></pre><p>Use globalSetup for run-wide, one-time concerns that aren't page/browser-related &mdash; seeding a shared test database, starting a mock server, validating environment health before burning CI minutes. Use the storageState/auth-setup-<strong>project</strong> pattern (Q38) specifically for producing per-role browser state, since that runs as a real Playwright project with its own page/context and reporting, which globalSetup does not have.</p>"},
+{id:"Q52",cat:"Test Structure",diff:"Intermediate",q:"What does test.describe.serial() do and when is it justified, given Playwright's default philosophy of independent, parallel-safe tests?",a:"<p>By default, tests within a describe block may run in parallel and in any order, and Playwright assumes each test is independent. <code>test.describe.serial()</code> forces tests inside that block to run in registration order, in the same worker, and &mdash; critically &mdash; if one fails, the remaining tests in that serial block are skipped rather than run.</p><pre><code>test.describe.serial(<span class=\"kw\">'loan application lifecycle'</span>, () <span class=\"kw\">=></span> {\n  <span class=\"kw\">let</span> applicationId: string;\n\n  test(<span class=\"kw\">'submit application'</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> {\n    applicationId = <span class=\"kw\">await</span> submitApplication(page);\n  });\n\n  test(<span class=\"kw\">'upload supporting documents'</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> {\n    <span class=\"kw\">await</span> uploadDocs(page, applicationId);\n  });\n});</code></pre><p>It's justified only when tests are <strong>genuinely stateful stages of one workflow</strong> that can't be independently seeded via API (Q42) &mdash; it's a deliberate trade-off of parallelism and isolation for realism. I treat it as an exception, not the default, since it also means one broken step hides the pass/fail signal of everything after it.</p>"},
+{id:"Q53",cat:"Test Structure",diff:"Basic",q:"How do you skip, focus, or mark a test as expected-to-fail in Playwright, and how would you conditionally skip a test based on environment?",a:"<p>Playwright Test provides annotation methods on <code>test</code>:</p><ul><li><code>test.skip()</code> &mdash; test doesn't run, reported as skipped.</li><li><code>test.only()</code> &mdash; only this test (and other .only tests) run; useful locally, should never be committed.</li><li><code>test.fixme()</code> &mdash; test is skipped and flagged as a known broken test to fix.</li><li><code>test.fail()</code> &mdash; test is expected to fail; if it unexpectedly passes, that's reported as a failure (catches regressions where a bug got silently fixed without updating the test).</li></ul><pre><code>test(<span class=\"kw\">'UPI limit enforcement (staging only)'</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> {\n  test.skip(process.env.ENV === <span class=\"kw\">'prod'</span>, <span class=\"kw\">'UPI sandbox unavailable in prod'</span>);\n  ...\n});</code></pre><p>Calling <code>test.skip(condition, reason)</code> inside the test body is the idiomatic way to conditionally skip based on environment, browser, or feature flag, and the reason string shows up directly in the report.</p>"},
+{id:"Q54",cat:"Test Structure",diff:"Intermediate",q:"How do you write data-driven / parametrized tests in Playwright Test (there's no built-in @DataProvider like TestNG)?",a:"<p>Playwright doesn't need a special annotation &mdash; since <code>test()</code> is just a function call, you generate tests by looping over a data array at the top level of the spec file:</p><pre><code><span class=\"kw\">const</span> loanScenarios = [\n  { creditScore: <span class=\"kw\">750</span>, income: <span class=\"kw\">80000</span>, expected: <span class=\"kw\">'APPROVED'</span> },\n  { creditScore: <span class=\"kw\">550</span>, income: <span class=\"kw\">80000</span>, expected: <span class=\"kw\">'REJECTED'</span> },\n  { creditScore: <span class=\"kw\">700</span>, income: <span class=\"kw\">15000</span>, expected: <span class=\"kw\">'MANUAL_REVIEW'</span> },\n];\n\n<span class=\"kw\">for</span> (<span class=\"kw\">const</span> scenario <span class=\"kw\">of</span> loanScenarios) {\n  test(<span class=\"kw\">\\`loan eligibility: score \\${scenario.creditScore}, income \\${scenario.income}\\`</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> {\n    <span class=\"kw\">await</span> checkEligibility(page, scenario);\n    <span class=\"kw\">await</span> expect(page.getByText(scenario.expected)).toBeVisible();\n  });\n}</code></pre><p>Each iteration registers as its own distinct, individually-reportable, individually-parallelizable test &mdash; the loop runs at file-collection time, not at test-run time, which is what makes each case show up separately in the HTML report instead of as one aggregated test.</p>"},
+{id:"Q55",cat:"Test Structure",diff:"Advanced",q:"What is the difference between a test-scoped fixture and a worker-scoped fixture, and when would you use worker scope?",a:"<p>By default, fixtures are <strong>test-scoped</strong>: a fresh instance is created for every test. A fixture declared with <code>{ scope: 'worker' }</code> is created once per worker process and reused across every test that worker runs, until the worker itself is recycled.</p><pre><code><span class=\"kw\">type</span> Fixtures = { dbConnection: DbClient };\n\n<span class=\"kw\">export const</span> test = base.extend&lt;{}, Fixtures&gt;({\n  dbConnection: [<span class=\"kw\">async</span> ({}, use) <span class=\"kw\">=></span> {\n    <span class=\"kw\">const</span> client = <span class=\"kw\">await</span> DbClient.connect(process.env.DB_URL!);\n    <span class=\"kw\">await</span> use(client);\n    <span class=\"kw\">await</span> client.close();\n  }, { scope: <span class=\"kw\">'worker'</span> }],\n});</code></pre><p>Use worker scope for expensive, stateless-enough-to-share resources: a DB connection pool, a compiled test-data cache, an authenticated API client used only for read/seed operations. Never use worker scope for anything that carries per-test state (like <code>page</code> itself) &mdash; that would silently leak state between tests and defeat isolation (Q40).</p>"},
+{id:"Q56",cat:"Test Structure",diff:"Intermediate",q:"Fixtures largely replace beforeEach/afterEach in Playwright &mdash; so when would you still reach for test.beforeEach()?",a:"<p>Fixtures are preferred for anything that <em>provides a resource</em> a test depends on (a page object, an authenticated context, seeded data) because they're composable and only instantiated when referenced. <code>test.beforeEach()</code> still has a place for <strong>cross-cutting side effects that every test in a file needs regardless of which fixtures it uses</strong> &mdash; things that aren't really a 'dependency' so much as a blanket setup step.</p><pre><code>test.describe(<span class=\"kw\">'dashboard'</span>, () <span class=\"kw\">=></span> {\n  test.beforeEach(<span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> {\n    <span class=\"kw\">await</span> page.route(<span class=\"kw\">'**/analytics/**'</span>, route <span class=\"kw\">=></span> route.abort());\n  });\n\n  test(<span class=\"kw\">'shows balance'</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> { ... });\n});</code></pre><p>Rule of thumb: if it's <em>data or an object the test uses</em>, make it a fixture; if it's a <em>blanket side effect scoped to a describe block</em> (blocking analytics calls, setting a viewport for a whole file), <code>beforeEach</code> is simpler and clearer.</p>"},
+{id:"Q57",cat:"Parallel Execution",diff:"Intermediate",q:"Explain workers and fullyParallel in Playwright Test &mdash; how does test parallelism actually work under the hood?",a:"<p><strong>Workers</strong> are separate OS processes; each worker launches its own browser and runs tests assigned to it. The <code>workers</code> config option caps how many run concurrently (default: half the CPU cores locally, often 1 in CI unless configured).</p><pre><code>export default defineConfig({\n  workers: process.env.CI ? <span class=\"kw\">4</span> : <span class=\"kw\">undefined</span>,\n  fullyParallel: <span class=\"kw\">true</span>,\n});</code></pre><p>By default, Playwright parallelizes at the <strong>file</strong> level &mdash; all tests within one file run sequentially in the same worker. <code>fullyParallel: true</code> changes this so every individual test (not just every file) can be distributed across workers independently, which matters a lot for files with many slow tests, since without it a single heavy spec file becomes a serial bottleneck no matter how many workers are available.</p>"},
+{id:"Q58",cat:"Parallel Execution",diff:"Advanced",q:"What is sharding in Playwright and how would you configure a 500-test suite to run across 5 CI machines?",a:"<p>Sharding splits the <strong>entire test suite</strong> across multiple independent machines/CI jobs (as opposed to workers, which parallelize within one machine). Each shard runs a subset of tests and produces its own report; you then merge the reports.</p><pre><code><span class=\"kw\">npx playwright test --shard=1/5</span>\n<span class=\"kw\">npx playwright test --shard=2/5</span>\n<span class=\"kw\">...</span>\n<span class=\"kw\">npx playwright test --shard=5/5</span></code></pre><p>In GitHub Actions, this maps naturally onto a matrix job:</p><pre><code>strategy:\n  matrix:\n    shard: [<span class=\"kw\">1, 2, 3, 4, 5</span>]\nsteps:\n  - run: <span class=\"kw\">npx playwright test --shard=\\${{ matrix.shard }}/5</span></code></pre><p>Each of 5 runners handles ~100 tests, cutting wall-clock time roughly 5x versus one machine, then a separate merge job combines the blob reports with <code>npx playwright merge-reports</code> into one HTML report for visibility.</p>"},
+{id:"Q59",cat:"Parallel Execution",diff:"Intermediate",q:"How do you configure retries in CI without masking real flakiness, and how does Playwright's report distinguish a flaky pass from a clean pass?",a:"<p>Set <code>retries</code> in the CI project config (typically 1&ndash;2), and pair it with tracing/video only on retry to control artifact volume:</p><pre><code>export default defineConfig({\n  retries: process.env.CI ? <span class=\"kw\">2</span> : <span class=\"kw\">0</span>,\n  use: { trace: <span class=\"kw\">'on-first-retry'</span>, video: <span class=\"kw\">'on-first-retry'</span> },\n});</code></pre><p>Crucially, when a test fails then passes on retry, Playwright's HTML/JSON report marks it as <strong>flaky</strong>, not simply 'passed' &mdash; it's a distinct status with its own count in the summary. This means retries buy you a green pipeline without silently hiding the flake; the flaky count is a metric I track over time and treat as a backlog of tests to actually fix, not accept indefinitely.</p><p>What retries should <em>not</em> be used for: masking a deterministic bug or a badly-designed race-prone test. If a test is flaky &gt;5-10% of runs, it needs root-causing (usually a missing wait-for-the-right-signal, per Q23/Q27), not just a higher retry count.</p>"},
+{id:"Q60",cat:"Parallel Execution",diff:"Basic",q:"How do you tag tests (e.g. @smoke, @regression) and run only a subset via the CLI?",a:"<p>Playwright supports tagging in the test title itself using an <code>@tag</code> convention, or the newer first-class <code>tag</code> option, then filtering with <code>--grep</code>/<code>--grep-invert</code> or the <code>--tag</code> flag:</p><pre><code>test(<span class=\"kw\">'login shows dashboard @smoke'</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> { ... });\n\ntest(<span class=\"kw\">'bulk export handles 10k rows'</span>, {\n  tag: <span class=\"kw\">'@regression'</span>,\n}, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> { ... });</code></pre><pre><code><span class=\"kw\">npx playwright test --grep @smoke</span>\n<span class=\"kw\">npx playwright test --grep-invert @regression</span></code></pre><p>In practice I run <code>@smoke</code> on every PR (fast, small, high-signal), and the full <code>@regression</code> tag set on a nightly schedule or before a release cut &mdash; the tagging strategy is really about balancing feedback speed against coverage depth at each pipeline stage.</p>"},
+{id:"Q61",cat:"Parallel Execution",diff:"Advanced",q:"You're running tests in parallel against a shared staging database, and tests start failing intermittently due to data collisions (e.g. two tests approving the same seeded invoice). How do you fix this architecturally?",a:"<p>This is a test-isolation-at-the-data-layer problem, not a Playwright config problem &mdash; parallel workers with isolated browser contexts (Q40) don't help if they're all pointed at the same mutable backend rows. Options, roughly in order of preference:</p><ul><li><strong>Generate unique data per test/worker</strong> &mdash; create a fresh invoice via API (Q42) inside each test using a worker-unique or test-unique identifier, instead of relying on shared seeded fixtures.</li><li><strong>Namespace by worker index</strong> &mdash; Playwright exposes <code>testInfo.parallelIndex</code>; you can suffix test data (accounts, usernames) with it so concurrent workers never touch the same row.</li><li><strong>Isolate at the environment level</strong> &mdash; ephemeral per-PR environments or per-worker database schemas/containers, if infra supports it.</li><li><strong>Serialize only the specific colliding tests</strong> via <code>test.describe.serial()</code> (Q52) as a last resort, accepting the parallelism cost for that subset.</li></ul><p>The underlying principle: parallel-safe UI automation requires parallel-safe <em>test data</em>, which is a design decision made at the data-seeding layer, not something Playwright config can paper over.</p>"},
+{id:"Q62",cat:"CI/CD",diff:"Intermediate",q:"Walk through a GitHub Actions workflow that runs a Playwright suite on every pull request, including caching and artifact upload.",a:"<pre><code>name: <span class=\"kw\">Playwright Tests</span>\non: [pull_request]\n\njobs:\n  test:\n    runs-on: <span class=\"kw\">ubuntu-latest</span>\n    steps:\n      - uses: <span class=\"kw\">actions/checkout@v4</span>\n\n      - uses: <span class=\"kw\">actions/setup-node@v4</span>\n        with: { node-version: <span class=\"kw\">'20'</span> }\n\n      - name: <span class=\"kw\">Install dependencies</span>\n        run: <span class=\"kw\">npm ci</span>\n\n      - name: <span class=\"kw\">Cache Playwright browsers</span>\n        uses: <span class=\"kw\">actions/cache@v4</span>\n        with:\n          path: <span class=\"kw\">~/.cache/ms-playwright</span>\n          key: <span class=\"kw\">\\${{ runner.os }}-playwright-\\${{ hashFiles('package-lock.json') }}</span>\n\n      - name: <span class=\"kw\">Install browsers</span>\n        run: <span class=\"kw\">npx playwright install --with-deps</span>\n\n      - name: <span class=\"kw\">Run tests</span>\n        run: <span class=\"kw\">npx playwright test</span>\n\n      - uses: <span class=\"kw\">actions/upload-artifact@v4</span>\n        if: <span class=\"kw\">always()</span>\n        with:\n          name: <span class=\"kw\">playwright-report</span>\n          path: <span class=\"kw\">playwright-report/</span>\n          retention-days: <span class=\"kw\">14</span></code></pre><p>Key details: caching <code>~/.cache/ms-playwright</code> keyed on the lockfile hash avoids re-downloading browser binaries on every run; <code>if: always()</code> on the artifact step ensures the report uploads even when tests fail (that's precisely when you need it most); and <code>--with-deps</code> installs the OS-level libraries Chromium/Firefox/WebKit need on a bare Ubuntu runner.</p>"},
+{id:"Q63",cat:"CI/CD",diff:"Intermediate",q:"How would you integrate a Playwright TypeScript suite into a Jenkins declarative pipeline?",a:"<pre><code>pipeline {\n  agent { docker { image <span class=\"kw\">'mcr.microsoft.com/playwright:v1.48.0-jammy'</span> } }\n\n  stages {\n    stage(<span class=\"kw\">'Install'</span>) {\n      steps { sh <span class=\"kw\">'npm ci'</span> }\n    }\n    stage(<span class=\"kw\">'Test'</span>) {\n      steps { sh <span class=\"kw\">'npx playwright test --reporter=junit,html'</span> }\n    }\n  }\n\n  post {\n    always {\n      junit <span class=\"kw\">'results.xml'</span>\n      archiveArtifacts artifacts: <span class=\"kw\">'playwright-report/**'</span>, allowEmptyArchive: <span class=\"kw\">true</span>\n      publishHTML(target: [\n        reportDir: <span class=\"kw\">'playwright-report'</span>, reportFiles: <span class=\"kw\">'index.html'</span>, reportName: <span class=\"kw\">'Playwright Report'</span>\n      ])\n    }\n  }\n}</code></pre><p>Using Microsoft's official Playwright Docker image as the build agent sidesteps browser-dependency installation entirely (Q64). Emitting a <strong>JUnit XML</strong> reporter alongside the HTML one is what lets Jenkins' native <code>junit</code> step parse pass/fail trends over time in its own UI, which the HTML report alone doesn't give you inside Jenkins.</p>"},
+{id:"Q64",cat:"CI/CD",diff:"Intermediate",q:"Why does Microsoft publish an official Playwright Docker image, and what problem does it solve versus installing Playwright on a generic Node image?",a:"<p>Chromium, Firefox, and WebKit each depend on dozens of OS-level shared libraries (font rendering, codecs, GTK, etc.) that a bare <code>node:20</code> image doesn't have. Installing them by hand is fragile and version-sensitive.</p><pre><code>FROM mcr.microsoft.com/playwright:v1.48.0-jammy\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nCMD [<span class=\"kw\">\"npx\"</span>, <span class=\"kw\">\"playwright\"</span>, <span class=\"kw\">\"test\"</span>]</code></pre><p>The official image bundles Node, all three browser engines, and every required OS dependency, <strong>version-locked to a specific Playwright release</strong> &mdash; the tag (<code>v1.48.0-jammy</code>) must match your <code>package.json</code>'s <code>@playwright/test</code> version, or you risk protocol mismatches between the installed browser build and the library driving it. This is the single most common source of 'works locally, fails in CI' Playwright issues, so pinning both to the same version is non-negotiable.</p>"},
+{id:"Q65",cat:"CI/CD",diff:"Intermediate",q:"What's your artifact strategy for Playwright in CI &mdash; what do you keep, for how long, and why not just always capture everything?",a:"<p>Tiered strategy balancing signal against storage cost/CI time:</p><ul><li><strong>HTML report</strong>: always uploaded, every run &mdash; cheap, and it's the primary triage entry point.</li><li><strong>Trace</strong>: <code>on-first-retry</code> &mdash; the richest artifact (full DOM snapshots), but heavy; only worth the size cost when a test actually failed once.</li><li><strong>Video</strong>: <code>retain-on-failure</code> &mdash; useful for visually confirming a UI bug, but large; discard for passing tests.</li><li><strong>Screenshot</strong>: <code>only-on-failure</code> &mdash; cheapest failure artifact, good first glance before opening a trace.</li></ul><pre><code>use: {\n  trace: <span class=\"kw\">'on-first-retry'</span>,\n  video: <span class=\"kw\">'retain-on-failure'</span>,\n  screenshot: <span class=\"kw\">'only-on-failure'</span>,\n}</code></pre><p>Capturing everything on every green run bloats CI storage and slows the pipeline for no diagnostic benefit &mdash; the goal is maximal diagnostic detail exactly when something actually went wrong, and near-zero overhead otherwise. Retention is usually 14&ndash;30 days, long enough to investigate a regression reported a sprint later without keeping artifacts indefinitely.</p>"},
+{id:"Q66",cat:"CI/CD",diff:"Advanced",q:"A test suite is 100% green locally but flaky specifically in CI. What's your systematic approach to diagnosing this?",a:"<p>CI-only flakiness usually traces to environment differences, not the test logic itself. Systematic checklist:</p><ul><li><strong>Resource contention</strong>: CI runners often have fewer cores/less memory than a dev laptop &mdash; a high <code>workers</code> count can starve the browser, causing real actionability timeouts. Try reducing workers or increasing default timeouts for CI specifically.</li><li><strong>Headless vs headed differences</strong>: rare, but some rendering/timing paths differ; confirm local repro is also headless.</li><li><strong>Network conditions</strong>: CI often has different latency to the target environment than a local dev machine; a test relying on a tight implicit timing window will surface this first.</li><li><strong>Font/rendering differences</strong> for visual tests (Q45) &mdash; different OS/font stack between local and the CI image.</li><li><strong>Pull the trace</strong> from a failed CI run (Q65) &mdash; this is usually the fastest path to root cause, since it shows exactly what the DOM looked like at the moment of failure, which a local repro attempt can't reproduce after the fact.</li></ul><p>I always start with the CI-captured trace before trying to reproduce locally &mdash; guessing and re-running is far slower than reading what actually happened.</p>"},
+{id:"Q67",cat:"CI/CD",diff:"Basic",q:"What does npx playwright install --with-deps do, and why is the --with-deps flag specifically needed in CI but often skipped locally?",a:"<p><code>npx playwright install</code> downloads the browser binaries (Chromium/Firefox/WebKit) into a local cache. The <code>--with-deps</code> flag additionally installs the <strong>OS-level system packages</strong> those browsers need to actually launch (shared libraries for graphics, fonts, audio, etc.) via the system package manager (apt on Ubuntu runners).</p><pre><code>npx playwright install --with-deps chromium</code></pre><p>Locally, developers' machines (macOS/Windows/a full desktop Linux distro) almost always already have these libraries present from normal desktop usage, so the flag is often unnecessary and skipped for a faster install. Bare CI runner images (minimal Ubuntu) typically don't have them, so omitting <code>--with-deps</code> there causes cryptic 'browser closed unexpectedly'/shared-library-not-found failures at launch time rather than a clear error.</p>"},
+{id:"Q68",cat:"CI/CD",diff:"Advanced",q:"How would you structure CI to run a fast smoke suite on every commit but a full regression suite only nightly, without duplicating pipeline config?",a:"<p>Use tagging (Q60) plus a shared reusable workflow/pipeline template, parametrized by which tag set and trigger to use:</p><pre><code># .github/workflows/pr.yml\non: [pull_request]\njobs:\n  smoke:\n    uses: <span class=\"kw\">./.github/workflows/run-tests.yml</span>\n    with: { grep: <span class=\"kw\">'@smoke'</span>, shards: <span class=\"kw\">1</span> }\n\n# .github/workflows/nightly.yml\non:\n  schedule: [{ cron: <span class=\"kw\">'0 2 * * *'</span> }]\njobs:\n  regression:\n    uses: <span class=\"kw\">./.github/workflows/run-tests.yml</span>\n    with: { grep: <span class=\"kw\">'@regression'</span>, shards: <span class=\"kw\">5</span> }</code></pre><p>The shared <code>run-tests.yml</code> reusable workflow contains the actual install/cache/test/upload steps once; the two triggers just supply different inputs (grep pattern, shard count). This avoids maintaining two near-duplicate pipeline files that drift out of sync over time, and matches the fast-feedback-on-PR vs deep-coverage-nightly balance most teams want.</p>"},
+{id:"Q69",cat:"Debugging",diff:"Basic",q:"What is Playwright UI Mode and how does it change the local debugging workflow compared to running headless and reading console output?",a:"<p><code>npx playwright test --ui</code> opens an interactive desktop app showing every test, a live timeline of each action with before/after DOM snapshots, network requests, console logs, and source &mdash; all while tests actually run, watchable and re-runnable individually.</p><p>Compared to reading terminal output from a headless run, UI Mode gives you: <strong>time-travel debugging</strong> (click any step to see the DOM at that exact moment, without re-running), a built-in <strong>watch mode</strong> that reruns affected tests as you edit spec files, and a locator picker to test selectors live against the current DOM. In practice it collapses what used to be several separate tools (print debugging, manual screenshot review, re-running with a debugger attached) into one workflow, and it's usually my first stop when authoring or fixing a test locally, with Trace Viewer (Q07) reserved for post-mortem CI failures I can't reproduce interactively.</p>"},
+{id:"Q70",cat:"Debugging",diff:"Basic",q:"How does page.pause() and the Playwright Inspector help you debug a test interactively, step by step?",a:"<p><code>await page.pause()</code> inside a test halts execution at that exact line and opens the <strong>Playwright Inspector</strong> &mdash; a paired browser window plus a control panel with step-over/resume buttons, a live locator picker, and a 'Copy locator' / 'Copy assertion' tool that generates code for the element you point at.</p><pre><code>test(<span class=\"kw\">'debug flaky approval flow'</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> {\n  <span class=\"kw\">await</span> page.goto(<span class=\"kw\">'/invoices'</span>);\n  <span class=\"kw\">await</span> page.pause(); <span class=\"kw\">// execution halts here, inspector opens</span>\n  <span class=\"kw\">await</span> page.getByRole(<span class=\"kw\">'button'</span>, { name: <span class=\"kw\">'Approve'</span> }).click();\n});</code></pre><p>Running with <code>PWDEBUG=1 npx playwright test</code> forces this behavior at the very start of every test automatically, useful when you want to step through from the first line rather than adding a pause statement manually. This is my go-to for figuring out exactly which locator matches (or fails to match) an unfamiliar page, especially mid-authoring.</p>"},
+{id:"Q71",cat:"Debugging",diff:"Intermediate",q:"How do you configure video and screenshot capture on failure, and what's the tradeoff between screenshot, video, and trace as debugging artifacts?",a:"<pre><code>use: {\n  screenshot: <span class=\"kw\">'only-on-failure'</span>,\n  video: <span class=\"kw\">'retain-on-failure'</span>,\n  trace: <span class=\"kw\">'retain-on-failure'</span>,\n}</code></pre><p>Tradeoff, roughly cheapest-to-richest:</p><ul><li><strong>Screenshot</strong>: instant visual context, near-zero overhead, but it's a single frozen frame &mdash; you see the failure state, not what led to it.</li><li><strong>Video</strong>: shows the whole sequence of visual changes, good intuition-builder, but you can't inspect the DOM/network at any given moment, and scrubbing through it to find the exact issue is slower than jumping to a step.</li><li><strong>Trace</strong>: richest by far &mdash; DOM snapshot, network, console, and source at every action &mdash; but heaviest to generate and store, which is why it's normally reserved for retries/failures rather than every run (Q65).</li></ul><p>In practice I keep all three enabled but scoped to failure/retry only, and start triage with the screenshot for a 2-second glance, escalating to the trace when the cause isn't immediately obvious.</p>"},
+{id:"Q72",cat:"Debugging",diff:"Advanced",q:"You have a CI failure trace showing the element was 'visible' but the click still didn't register. What actionability check likely failed, and how do you confirm it from the trace?",a:"<p>A click can fail even on a visible element if the <strong>'receives events'</strong> actionability check (Q05) fails &mdash; something else is on top of it at that pixel position (an overlay, a sticky header, a toast, a modal backdrop that hasn't fully dismissed). Playwright's error message for this case explicitly says the element was intercepting pointer events, naming the intercepting element.</p><p>To confirm from the trace: open the failing action's 'before' snapshot in Trace Viewer and inspect the DOM at that exact pixel &mdash; the intercepting element is usually visually obvious once you look at that frame (a spinner overlay still fading out, a fixed-position cookie banner, a z-index-stacked dropdown from a previous step that never closed).</p><p>Fix is almost always to wait for the actual blocking element to be gone/dismissed first (<code>expect(overlay).toBeHidden()</code>) rather than retrying the click, since retrying just races the same overlay again.</p>"},
+{id:"Q73",cat:"Debugging",diff:"Basic",q:"What debugging features does the official Playwright VS Code extension provide beyond the CLI/UI Mode?",a:"<p>The VS Code extension embeds Playwright's testing tools directly into the editor:</p><ul><li><strong>Inline run/debug buttons</strong> above every <code>test()</code> block, no terminal command needed.</li><li><strong>Live locator picker</strong> right in the editor &mdash; hover a running browser element to get its generated locator inserted at the cursor.</li><li><strong>Breakpoint debugging</strong> using VS Code's native debugger, stepping through TypeScript source directly (as opposed to Inspector's action-level stepping).</li><li><strong>Pick locator / Record new test</strong> commands that launch codegen scoped to the current file/project config.</li><li><strong>Test explorer integration</strong> showing pass/fail status inline in the file tree, and jump-to-trace on a failed run.</li></ul><p>For day-to-day authoring I mostly live in the VS Code extension for quick iteration, and reserve full UI Mode for reviewing a whole suite's timeline or watch-mode-driven TDD-style authoring.</p>"},
+{id:"Q74",cat:"Debugging",diff:"Intermediate",q:"How would you debug a test that passes when run alone but fails when run as part of the full suite?",a:"<p>This pattern almost always points to <strong>state leakage between tests</strong> rather than a bug in the failing test itself. Systematic approach:</p><ul><li><strong>Check for shared mutable state</strong>: a worker-scoped fixture (Q55) or module-level variable that isn't reset between tests.</li><li><strong>Check for shared backend data</strong>: another test running concurrently (or just before, in the same worker) mutated a database row this test also depends on (Q61).</li><li><strong>Run the suspected pair together, isolated</strong>: <code>npx playwright test testA.spec.ts testB.spec.ts</code> to narrow down which other test is the interfering one, rather than re-running the whole suite each iteration.</li><li><strong>Check execution order dependency</strong>: is the failing test silently relying on something a prior test set up (cookies, localStorage) that a fresh, isolated context (Q40) wouldn't normally have?</li></ul><p>The fix is essentially always to make the failing test (or the one polluting shared state) fully self-sufficient &mdash; seed its own data, don't depend on ordering, don't share mutable fixtures across tests that shouldn't share them.</p>"},
+{id:"Q75",cat:"Assertions",diff:"Basic",q:"What are 'web-first assertions' in Playwright (expect(locator)...) and how do they differ from a plain Node.js assert or Chai-style assertion?",a:"<p>Web-first assertions (<code>expect(locator).toBeVisible()</code>, <code>toHaveText()</code>, <code>toHaveCount()</code>, etc.) are <strong>auto-retrying</strong>: they poll the condition repeatedly until it's true or the timeout elapses, then fail with a rich diff showing the actual vs expected state at the moment of final failure.</p><pre><code><span class=\"kw\">await</span> expect(page.getByText(<span class=\"kw\">'Payment successful'</span>)).toBeVisible();</code></pre><p>A plain <code>assert(condition)</code> or a generic Chai/Jest matcher evaluates <strong>once, immediately</strong> &mdash; if the condition isn't true at that exact instant (even if it becomes true 100ms later), it fails. That's precisely the pattern that produces flaky Selenium-style assertions unless you manually wrap every check in a wait first. Playwright folds the wait and the assertion into a single call, which is why web-first assertions are the default recommended style for anything checking page state.</p>"},
+{id:"Q76",cat:"Assertions",diff:"Intermediate",q:"What is expect.soft() and when would you use soft assertions instead of the default hard-fail behavior?",a:"<p>A normal <code>expect()</code> failure throws immediately, aborting the rest of the test. <code>expect.soft()</code> records a failure but <strong>lets the test keep running</strong>, so you can collect multiple independent assertion failures from a single test run instead of stopping at the first one.</p><pre><code>test(<span class=\"kw\">'dashboard summary card values'</span>, <span class=\"kw\">async</span> ({ page }) <span class=\"kw\">=></span> {\n  <span class=\"kw\">await</span> expect.soft(page.getByTestId(<span class=\"kw\">'balance'</span>)).toHaveText(<span class=\"kw\">'₹1,25,000'</span>);\n  <span class=\"kw\">await</span> expect.soft(page.getByTestId(<span class=\"kw\">'pending-count'</span>)).toHaveText(<span class=\"kw\">'3'</span>);\n  <span class=\"kw\">await</span> expect.soft(page.getByTestId(<span class=\"kw\">'last-updated'</span>)).toBeVisible();\n  <span class=\"kw\">// test only actually fails at the end, reporting ALL three results</span>\n});</code></pre><p>Use it when checking several independent, non-dependent pieces of UI state in one test (a dashboard with multiple cards) &mdash; you want a complete picture of what's broken in one run rather than fixing one assertion, re-running, hitting the next one, and repeating. Not appropriate when a later assertion genuinely depends on an earlier one having succeeded, since soft assertions don't stop execution to protect against that.</p>"},
+{id:"Q77",cat:"Assertions",diff:"Advanced",q:"How do you write a custom matcher with expect.extend(), and give an example relevant to a BFSI app (e.g. asserting a currency-formatted value).",a:"<pre><code><span class=\"kw\">// custom-matchers.ts</span>\n<span class=\"kw\">import</span> { expect <span class=\"kw\">as</span> baseExpect } <span class=\"kw\">from</span> <span class=\"kw\">'@playwright/test'</span>;\n\n<span class=\"kw\">export const</span> expect = baseExpect.extend({\n  <span class=\"kw\">async</span> toHaveFormattedCurrency(locator: Locator, expectedAmount: number) {\n    <span class=\"kw\">const</span> text = <span class=\"kw\">await</span> locator.textContent();\n    <span class=\"kw\">const</span> expectedText = <span class=\"kw\">new</span> Intl.NumberFormat(<span class=\"kw\">'en-IN'</span>, {\n      style: <span class=\"kw\">'currency'</span>, currency: <span class=\"kw\">'INR'</span>,\n    }).format(expectedAmount);\n\n    <span class=\"kw\">const</span> pass = text?.trim() === expectedText;\n    <span class=\"kw\">return</span> {\n      pass,\n      message: () <span class=\"kw\">=></span> <span class=\"kw\">\\`expected \\${text} to equal formatted currency \\${expectedText}\\`</span>,\n    };\n  },\n});</code></pre><pre><code><span class=\"kw\">// spec file</span>\n<span class=\"kw\">import</span> { expect } <span class=\"kw\">from</span> <span class=\"kw\">'./custom-matchers'</span>;\n\n<span class=\"kw\">await</span> expect(page.getByTestId(<span class=\"kw\">'balance'</span>)).toHaveFormattedCurrency(<span class=\"kw\">125000.5</span>);</code></pre><p>Custom matchers are worth building when a domain-specific check (currency formatting, masked account numbers, date-range validity) is asserted repeatedly across many specs &mdash; it turns a multi-line inline check into a single readable, reusable, well-error-messaged assertion.</p>"},
+{id:"Q78",cat:"Assertions",diff:"Intermediate",q:"How does the timeout on a web-first assertion interact with the global expect timeout config, and can you override it per-call?",a:"<pre><code>export default defineConfig({\n  expect: { timeout: <span class=\"kw\">5000</span> }, <span class=\"kw\">// global default for every expect()</span>\n});</code></pre><pre><code><span class=\"kw\">// override for one specific slow assertion</span>\n<span class=\"kw\">await</span> expect(page.getByText(<span class=\"kw\">'Report generated'</span>)).toBeVisible({ timeout: <span class=\"kw\">30_000</span> });</code></pre><p>The per-call <code>timeout</code> option always wins over the global <code>expect.timeout</code> config for that specific assertion. I set the global default fairly tight (a few seconds) so genuinely broken assertions fail fast during authoring/CI, and override only the specific assertions I know are legitimately slow (a report generation job, an async settlement callback) &mdash; rather than raising the global timeout for everything, which would make every genuinely-broken test take longer to fail and slow down the whole suite's feedback loop.</p>"},
+{id:"Q79",cat:"Assertions",diff:"Basic",q:"How do you write a negative assertion in Playwright, e.g. asserting an element is NOT visible or a button is disabled?",a:"<p>Every web-first matcher has a <code>.not</code> negation, which still retries/polls the same way as the positive form &mdash; it's not a different code path, just an inverted condition:</p><pre><code><span class=\"kw\">await</span> expect(page.getByText(<span class=\"kw\">'Error'</span>)).not.toBeVisible();\n<span class=\"kw\">await</span> expect(page.getByRole(<span class=\"kw\">'button'</span>, { name: <span class=\"kw\">'Submit'</span> })).toBeDisabled();\n<span class=\"kw\">await</span> expect(page.getByTestId(<span class=\"kw\">'error-banner'</span>)).toHaveCount(<span class=\"kw\">0</span>);</code></pre><p>One subtlety worth knowing: <code>not.toBeVisible()</code> passes both when the element exists but is hidden <em>and</em> when it doesn't exist in the DOM at all &mdash; if you specifically need to assert it's absent from the DOM rather than just hidden, <code>toHaveCount(0)</code> is the more precise check.</p>"},
+{id:"Q80",cat:"Assertions",diff:"Advanced",q:"What does expect(...).toPass() do, and how is it different from just relying on a web-first assertion's built-in retry?",a:"<p><code>toPass()</code> wraps an arbitrary block of code (not just a single locator assertion) and retries the <strong>entire block</strong> until it succeeds or times out &mdash; useful when the thing you need to verify requires multiple steps or isn't expressible as a single locator/assertion call.</p><pre><code><span class=\"kw\">await</span> expect(<span class=\"kw\">async</span> () <span class=\"kw\">=></span> {\n  <span class=\"kw\">const</span> res = <span class=\"kw\">await</span> apiContext.get(<span class=\"kw\">'/txn/4521/status'</span>);\n  <span class=\"kw\">const</span> body = <span class=\"kw\">await</span> res.json();\n  expect(body.status).toBe(<span class=\"kw\">'SETTLED'</span>);\n}).toPass({ timeout: <span class=\"kw\">20_000</span>, intervals: [<span class=\"kw\">1000, 2000, 5000</span>] });</code></pre><p>The key difference from a normal web-first assertion is scope: a locator assertion retries one condition against the page; <code>toPass()</code> retries an arbitrary async function, which can include API polling (as an alternative to <code>expect.poll()</code>, Q22), multi-step verification logic, or a mix of UI and API checks in one retry loop. The <code>intervals</code> option also lets you configure backoff explicitly rather than accepting the default polling cadence.</p>"},
+{id:"Q81",cat:"TypeScript Fundamentals",diff:"Basic",q:"What's the practical difference between type and interface in TypeScript, and which would you default to in a Playwright framework?",a:"<p>Both describe the shape of an object, and for plain object shapes they're largely interchangeable. Key differences:</p><ul><li><strong>interface</strong> supports <strong>declaration merging</strong> &mdash; multiple interface declarations with the same name automatically merge into one. Can only describe object/class shapes (not unions, primitives, tuples directly).</li><li><strong>type</strong> can alias <em>anything</em> &mdash; unions, intersections, primitives, tuples, mapped types &mdash; not just object shapes, but cannot be re-opened/merged after declaration.</li></ul><pre><code><span class=\"kw\">interface</span> TestUser { username: string; role: <span class=\"kw\">'maker'</span> | <span class=\"kw\">'checker'</span>; }\n<span class=\"kw\">type</span> ApiResponse&lt;T&gt; = { status: number; data: T } | { status: number; error: string };</code></pre><p>My default in a test framework: <strong>interface</strong> for data shapes representing entities (fixtures, page object props, API DTOs) where merging isn't needed but the object-shape intent is clear; <strong>type</strong> whenever a union, intersection, or generic alias is involved, since interface literally can't express those.</p>"},
+{id:"Q82",cat:"TypeScript Fundamentals",diff:"Intermediate",q:"Explain generics in TypeScript with a Playwright-relevant example, e.g. a typed API helper function.",a:"<p>Generics let a function/type be parametrized by a type that's decided at the call site, so you keep type safety without duplicating code for every response shape.</p><pre><code><span class=\"kw\">async function</span> getJson&lt;T&gt;(request: APIRequestContext, url: string): Promise&lt;T&gt; {\n  <span class=\"kw\">const</span> res = <span class=\"kw\">await</span> request.get(url);\n  <span class=\"kw\">return</span> res.json() <span class=\"kw\">as</span> Promise&lt;T&gt;;\n}\n\n<span class=\"kw\">interface</span> Account { accountId: string; balance: number; }\n\n<span class=\"kw\">const</span> account = <span class=\"kw\">await</span> getJson&lt;Account&gt;(request, <span class=\"kw\">'/api/accounts/1001'</span>);\nconsole.log(account.balance); <span class=\"kw\">// TS knows this is a number, autocompletes .balance</span></code></pre><p>Without the generic, <code>getJson</code> would either return <code>any</code> (losing all type safety at every call site) or you'd need a separate near-duplicate function per response shape. This pattern &mdash; one generic HTTP helper reused across dozens of typed API calls &mdash; is one of the most common practical uses of generics in an automation framework.</p>"},
+{id:"Q83",cat:"TypeScript Fundamentals",diff:"Basic",q:"When would you use a TypeScript enum versus a union of string literals, e.g. for representing transaction status?",a:"<pre><code><span class=\"kw\">// enum</span>\n<span class=\"kw\">enum</span> TxnStatus { Pending = <span class=\"kw\">'PENDING'</span>, Settled = <span class=\"kw\">'SETTLED'</span>, Failed = <span class=\"kw\">'FAILED'</span> }\n\n<span class=\"kw\">// string literal union</span>\n<span class=\"kw\">type</span> TxnStatus = <span class=\"kw\">'PENDING'</span> | <span class=\"kw\">'SETTLED'</span> | <span class=\"kw\">'FAILED'</span>;</code></pre><p>Modern TypeScript guidance generally favors <strong>string literal unions</strong> over enums for most cases: unions don't generate any runtime JS code (enums do, adding a small runtime footprint), they work naturally with plain string values coming back from JSON API responses without a mapping step, and they're structurally compatible with any string matching the literal &mdash; useful when comparing against raw API response text.</p><p><code>enum</code> is still reasonable when you want a genuinely closed, named set with IDE-namespaced access (<code>TxnStatus.Settled</code>) and don't mind the small runtime object it generates &mdash; some teams prefer it for readability in large codebases. In a Playwright TS framework I lean toward string literal unions specifically because test data is so often just raw JSON matched directly against API/UI text.</p>"},
+{id:"Q84",cat:"TypeScript Fundamentals",diff:"Intermediate",q:"Explain union types and intersection types with a practical example from API response modeling.",a:"<p><strong>Union (|)</strong>: a value can be one of several types &mdash; useful for modeling 'either a success or an error shape' API responses.</p><p><strong>Intersection (&amp;)</strong>: a value must satisfy <em>all</em> the combined types simultaneously &mdash; useful for composing smaller shapes into a richer one.</p><pre><code><span class=\"kw\">type</span> SuccessResponse = { status: <span class=\"kw\">'success'</span>; data: Account };\n<span class=\"kw\">type</span> ErrorResponse = { status: <span class=\"kw\">'error'</span>; message: string };\n<span class=\"kw\">type</span> ApiResult = SuccessResponse | ErrorResponse; <span class=\"kw\">// union</span>\n\n<span class=\"kw\">type</span> Timestamped = { createdAt: string };\n<span class=\"kw\">type</span> AuditableAccount = Account &amp; Timestamped; <span class=\"kw\">// intersection: has ALL fields of both</span></code></pre><p>The union case pairs naturally with type narrowing (Q85) &mdash; checking <code>result.status === 'success'</code> lets TypeScript know within that branch that <code>result.data</code> exists, catching a whole class of 'accessed .data on an error response' bugs at compile time rather than at runtime.</p>"},
+{id:"Q85",cat:"TypeScript Fundamentals",diff:"Advanced",q:"What is type narrowing in TypeScript, and how would you write a type guard to safely handle a union API response?",a:"<p>Type narrowing is TypeScript's ability to refine a broader union type down to a more specific one within a conditional branch, based on a runtime check &mdash; the compiler tracks these checks and adjusts what's accessible at each point in the code.</p><pre><code><span class=\"kw\">type</span> ApiResult = { status: <span class=\"kw\">'success'</span>; data: Account } | { status: <span class=\"kw\">'error'</span>; message: string };\n\n<span class=\"kw\">function</span> isSuccess(result: ApiResult): result <span class=\"kw\">is</span> { status: <span class=\"kw\">'success'</span>; data: Account } {\n  <span class=\"kw\">return</span> result.status === <span class=\"kw\">'success'</span>;\n}\n\n<span class=\"kw\">const</span> result: ApiResult = <span class=\"kw\">await</span> fetchAccount();\n<span class=\"kw\">if</span> (isSuccess(result)) {\n  console.log(result.data.balance); <span class=\"kw\">// TS knows .data exists here</span>\n} <span class=\"kw\">else</span> {\n  console.log(result.message); <span class=\"kw\">// TS knows .message exists here instead</span>\n}</code></pre><p>The <code>result is { ... }</code> return-type annotation is a <strong>user-defined type guard</strong> &mdash; it tells the compiler, not just the runtime, that a true return means the input is narrowed to that specific shape. Simple inline checks (<code>typeof x === 'string'</code>, <code>'data' in result</code>, discriminant property checks like above) also narrow automatically without a separate guard function for straightforward cases.</p>"},
+{id:"Q86",cat:"TypeScript Fundamentals",diff:"Basic",q:"Explain async/await and how it relates to Promises under the hood &mdash; why does almost every Playwright API call need await?",a:"<p><code>async/await</code> is syntax sugar over Promises: an <code>async</code> function always returns a Promise, and <code>await</code> pauses execution of that function (without blocking the whole JS runtime) until the awaited Promise settles, then unwraps its resolved value (or throws if it rejected).</p><pre><code><span class=\"kw\">async function</span> approveInvoice(page: Page) {\n  <span class=\"kw\">await</span> page.getByRole(<span class=\"kw\">'button'</span>, { name: <span class=\"kw\">'Approve'</span> }).click(); <span class=\"kw\">// Promise&lt;void&gt;</span>\n  <span class=\"kw\">const</span> visible = <span class=\"kw\">await</span> page.getByText(<span class=\"kw\">'Approved'</span>).isVisible(); <span class=\"kw\">// Promise&lt;boolean&gt;</span>\n  <span class=\"kw\">return</span> visible;\n}</code></pre><p>Every Playwright action/locator/API method returns a Promise because it communicates with the browser process asynchronously over the wire (Q01) &mdash; nothing about it is synchronous. Forgetting <code>await</code> is one of the most common real-world Playwright bugs: the click 'fires' (the Promise starts) but your test code races ahead to the next line before it actually completes, since an un-awaited Promise just runs in the background while execution continues.</p>"},
+{id:"Q87",cat:"TypeScript Fundamentals",diff:"Basic",q:"What is optional chaining (?.) and nullish coalescing (??) and how do they help write safer test/framework code?",a:"<p><strong>Optional chaining (<code>?.</code>)</strong> short-circuits to <code>undefined</code> instead of throwing when accessing a property on <code>null</code>/<code>undefined</code>. <strong>Nullish coalescing (<code>??</code>)</strong> supplies a fallback specifically when the left side is <code>null</code> or <code>undefined</code> &mdash; unlike <code>||</code>, it doesn't also trigger on falsy-but-valid values like <code>0</code> or <code>''</code>.</p><pre><code><span class=\"kw\">const</span> response = <span class=\"kw\">await</span> apiContext.get(<span class=\"kw\">'/api/accounts/1001'</span>);\n<span class=\"kw\">const</span> body = <span class=\"kw\">await</span> response.json();\n\n<span class=\"kw\">const</span> city = body.address?.city ?? <span class=\"kw\">'Unknown'</span>;\n<span class=\"kw\">const</span> retryCount = config.retries ?? <span class=\"kw\">2</span>; <span class=\"kw\">// 0 is a valid explicit value, || would wrongly override it</span></code></pre><p>In test frameworks this matters a lot when parsing JSON responses of uncertain shape (an optional nested field a backend team might omit) or reading env/config values where <code>0</code> or <code>''</code> are legitimate values that shouldn't be treated as 'missing' the way <code>||</code> would treat them.</p>"},
+{id:"Q88",cat:"TypeScript Fundamentals",diff:"Intermediate",q:"Explain Partial, Pick, Omit, and Record utility types with an example relevant to building flexible test-data factories.",a:"<pre><code><span class=\"kw\">interface</span> Account {\n  accountId: string; ownerName: string; balance: number; status: <span class=\"kw\">'ACTIVE'</span> | <span class=\"kw\">'FROZEN'</span>;\n}\n\n<span class=\"kw\">// Partial&lt;T&gt;: all fields optional -- perfect for override params in a factory</span>\n<span class=\"kw\">function</span> buildAccount(overrides: Partial&lt;Account&gt; = {}): Account {\n  <span class=\"kw\">return</span> { accountId: <span class=\"kw\">'ACC-1'</span>, ownerName: <span class=\"kw\">'Test User'</span>, balance: <span class=\"kw\">50000</span>, status: <span class=\"kw\">'ACTIVE'</span>, ...overrides };\n}\n\n<span class=\"kw\">// Pick&lt;T, K&gt;: narrow to a subset of fields</span>\n<span class=\"kw\">type</span> AccountSummary = Pick&lt;Account, <span class=\"kw\">'accountId'</span> | <span class=\"kw\">'balance'</span>&gt;;\n\n<span class=\"kw\">// Omit&lt;T, K&gt;: everything except the excluded fields</span>\n<span class=\"kw\">type</span> NewAccountPayload = Omit&lt;Account, <span class=\"kw\">'accountId'</span>&gt;; <span class=\"kw\">// server assigns the id</span>\n\n<span class=\"kw\">// Record&lt;K, V&gt;: a typed dictionary</span>\n<span class=\"kw\">const</span> statusColors: Record&lt;Account[<span class=\"kw\">'status'</span>], string&gt; = { ACTIVE: <span class=\"kw\">'green'</span>, FROZEN: <span class=\"kw\">'blue'</span> };</code></pre><p><code>Partial&lt;T&gt;</code> is the one I use constantly in test-data builders &mdash; it lets every test override just the one or two fields it cares about, while everything else defaults sensibly, without redefining the whole interface as optional by hand.</p>"},
+{id:"Q89",cat:"TypeScript Fundamentals",diff:"Intermediate",q:"What tsconfig.json settings actually matter for a Playwright test project, and why?",a:"<pre><code>{\n  <span class=\"kw\">\"compilerOptions\"</span>: {\n    <span class=\"kw\">\"target\"</span>: <span class=\"kw\">\"ES2021\"</span>,\n    <span class=\"kw\">\"module\"</span>: <span class=\"kw\">\"commonjs\"</span>,\n    <span class=\"kw\">\"strict\"</span>: <span class=\"kw\">true</span>,\n    <span class=\"kw\">\"esModuleInterop\"</span>: <span class=\"kw\">true</span>,\n    <span class=\"kw\">\"skipLibCheck\"</span>: <span class=\"kw\">true</span>,\n    <span class=\"kw\">\"forceConsistentCasingInFileNames\"</span>: <span class=\"kw\">true</span>,\n    <span class=\"kw\">\"resolveJsonModule\"</span>: <span class=\"kw\">true</span>,\n    <span class=\"kw\">\"baseUrl\"</span>: <span class=\"kw\">\".\"</span>,\n    <span class=\"kw\">\"paths\"</span>: { <span class=\"kw\">\"@pages/*\"</span>: [<span class=\"kw\">\"pages/*\"</span>], <span class=\"kw\">\"@fixtures/*\"</span>: [<span class=\"kw\">\"fixtures/*\"</span>] }\n  }\n}</code></pre><ul><li><strong>strict: true</strong> &mdash; enables the full strict family (strictNullChecks, noImplicitAny, etc.); non-negotiable for a real framework, since it's what catches most locator-undefined and API-response-shape bugs at compile time instead of runtime.</li><li><strong>skipLibCheck</strong> &mdash; skips type-checking node_modules' own .d.ts files, meaningfully speeding up compilation in a large project.</li><li><strong>paths</strong> &mdash; lets you write clean absolute-style imports (<code>@pages/LoginPage</code>) instead of long relative chains (<code>../../../pages/LoginPage</code>) across a deep POM directory structure. Note Playwright Test itself needs this mirrored in its own config or a resolver like tsconfig-paths to actually honor these at runtime, not just at type-check time.</li></ul>"},
+{id:"Q90",cat:"TypeScript Fundamentals",diff:"Basic",q:"What is the readonly modifier and when would you use it on a Page Object's properties, and what's the difference between readonly and as const?",a:"<p><code>readonly</code> on a class property means it can be assigned once (in the constructor) and never reassigned afterward &mdash; enforced at compile time, not runtime.</p><pre><code><span class=\"kw\">export class</span> LoginPage {\n  <span class=\"kw\">readonly</span> page: Page;\n  <span class=\"kw\">readonly</span> usernameInput: Locator;\n\n  <span class=\"kw\">constructor</span>(page: Page) {\n    <span class=\"kw\">this</span>.page = page;\n    <span class=\"kw\">this</span>.usernameInput = page.getByLabel(<span class=\"kw\">'Username'</span>);\n  }\n}</code></pre><p>This is a good default on Page Object locator properties (Q49) &mdash; a locator should be wired up once in the constructor and never reassigned elsewhere in the class, so <code>readonly</code> documents that intent and lets the compiler catch an accidental reassignment.</p><p><code>as const</code> is different: it's used on a value/array/object literal to tell TypeScript to infer the narrowest possible literal type instead of widening it, and it makes nested properties deeply readonly too. E.g. <code>const roles = ['maker', 'checker'] as const;</code> gives a readonly tuple of the literal string types <code>'maker' | 'checker'</code>, rather than the widened <code>string[]</code> you'd get without it &mdash; useful for deriving a union type directly from a literal array of allowed values.</p>"},
+{id:"Q91",cat:"JS Coding",diff:"Intermediate",q:"Explain closures in JavaScript with a practical example relevant to test automation, e.g. a counter or a memoized locator factory.",a:"<p>A closure is a function that retains access to variables from its enclosing scope even after that outer function has finished executing. This is the mechanism behind private state without a class.</p><pre><code><span class=\"kw\">function</span> createRetryCounter(maxAttempts: number) {\n  <span class=\"kw\">let</span> attempts = <span class=\"kw\">0</span>; <span class=\"kw\">// captured by the closure, not accessible from outside directly</span>\n\n  <span class=\"kw\">return function</span> attempt(): boolean {\n    attempts++;\n    <span class=\"kw\">return</span> attempts &lt;= maxAttempts;\n  };\n}\n\n<span class=\"kw\">const</span> canRetry = createRetryCounter(<span class=\"kw\">3</span>);\ncanRetry(); <span class=\"kw\">// true (attempt 1)</span>\ncanRetry(); <span class=\"kw\">// true (attempt 2)</span>\ncanRetry(); <span class=\"kw\">// true (attempt 3)</span>\ncanRetry(); <span class=\"kw\">// false (attempt 4, exceeds max)</span></code></pre><p>Each call to <code>createRetryCounter</code> produces an independent closure with its own private <code>attempts</code> variable &mdash; useful for building small stateful helpers (retry trackers, memoized locator lookups, request counters for mock assertions) without needing a full class just to hold one piece of state.</p>"},
+{id:"Q92",cat:"JS Coding",diff:"Advanced",q:"Explain the JavaScript event loop, and specifically the difference between microtasks (Promises) and macrotasks (setTimeout) &mdash; why does this matter for async test code?",a:"<p>JavaScript is single-threaded; the event loop is what lets async operations not block that one thread. After the current synchronous code finishes, the event loop drains the <strong>microtask queue</strong> (Promise <code>.then</code>/<code>catch</code>/<code>finally</code> callbacks, <code>await</code> continuations) completely before picking even one task off the <strong>macrotask queue</strong> (<code>setTimeout</code>, <code>setInterval</code>, I/O callbacks).</p><pre><code>console.log(<span class=\"kw\">'1'</span>);\nsetTimeout(() =&gt; console.log(<span class=\"kw\">'2 (macrotask)'</span>), <span class=\"kw\">0</span>);\nPromise.resolve().then(() =&gt; console.log(<span class=\"kw\">'3 (microtask)'</span>));\nconsole.log(<span class=\"kw\">'4'</span>);\n<span class=\"kw\">// output order: 1, 4, 3, 2</span>\n<span class=\"kw\">// -- sync code first, then ALL pending microtasks, then macrotasks</span></code></pre><p>This matters for test code because it explains why a chain of <code>await</code>ed Promises always resolves fully before a pending <code>setTimeout</code> fires, even a <code>setTimeout(fn, 0)</code> &mdash; a subtlety worth understanding when debugging timing-sensitive custom wait logic (Q22) or reasoning about exactly when a mocked route handler's async logic actually executes relative to other pending async work in the page.</p>"},
+{id:"Q93",cat:"JS Coding",diff:"Basic",q:"When would you use Promise.then() chaining versus async/await, and can you show the same logic both ways?",a:"<pre><code><span class=\"kw\">// .then() chaining</span>\n<span class=\"kw\">function</span> approveAndVerify(page: Page) {\n  <span class=\"kw\">return</span> page.getByRole(<span class=\"kw\">'button'</span>, { name: <span class=\"kw\">'Approve'</span> }).click()\n    .then(() =&gt; page.waitForResponse(<span class=\"kw\">'**/api/approve'</span>))\n    .then(res =&gt; res.json())\n    .then(body =&gt; { <span class=\"kw\">if</span> (body.status !== <span class=\"kw\">'OK'</span>) <span class=\"kw\">throw new</span> Error(<span class=\"kw\">'Approval failed'</span>); });\n}\n\n<span class=\"kw\">// async/await -- same logic</span>\n<span class=\"kw\">async function</span> approveAndVerify(page: Page) {\n  <span class=\"kw\">await</span> page.getByRole(<span class=\"kw\">'button'</span>, { name: <span class=\"kw\">'Approve'</span> }).click();\n  <span class=\"kw\">const</span> res = <span class=\"kw\">await</span> page.waitForResponse(<span class=\"kw\">'**/api/approve'</span>);\n  <span class=\"kw\">const</span> body = <span class=\"kw\">await</span> res.json();\n  <span class=\"kw\">if</span> (body.status !== <span class=\"kw\">'OK'</span>) <span class=\"kw\">throw new</span> Error(<span class=\"kw\">'Approval failed'</span>);\n}</code></pre><p>Both are functionally equivalent (async/await literally compiles down to Promise chains). async/await is preferred almost everywhere in modern Playwright code because it reads top-to-bottom like synchronous code, and error handling uses plain try/catch instead of <code>.catch()</code> callback chains. <code>.then()</code> chaining still shows up when composing Promises functionally &mdash; e.g. <code>Promise.all([...])</code> combined with a single <code>.then()</code> &mdash; but as the primary control flow style, await wins for readability and stack-trace clarity.</p>"},
+{id:"Q94",cat:"JS Coding",diff:"Basic",q:"Demonstrate map, filter, and reduce with a realistic example: given an array of transaction objects, get the total amount of only the SETTLED ones.",a:"<pre><code><span class=\"kw\">interface</span> Txn { id: string; amount: number; status: string; }\n\n<span class=\"kw\">const</span> txns: Txn[] = [\n  { id: <span class=\"kw\">'T1'</span>, amount: <span class=\"kw\">5000</span>, status: <span class=\"kw\">'SETTLED'</span> },\n  { id: <span class=\"kw\">'T2'</span>, amount: <span class=\"kw\">1200</span>, status: <span class=\"kw\">'PENDING'</span> },\n  { id: <span class=\"kw\">'T3'</span>, amount: <span class=\"kw\">3000</span>, status: <span class=\"kw\">'SETTLED'</span> },\n];\n\n<span class=\"kw\">const</span> totalSettled = txns\n  .filter(t =&gt; t.status === <span class=\"kw\">'SETTLED'</span>)   <span class=\"kw\">// [T1, T3]</span>\n  .map(t =&gt; t.amount)                        <span class=\"kw\">// [5000, 3000]</span>\n  .reduce((sum, amount) =&gt; sum + amount, <span class=\"kw\">0</span>); <span class=\"kw\">// 8000</span>\n\nexpect(totalSettled).toBe(<span class=\"kw\">8000</span>);</code></pre><p>This filter &rarr; map &rarr; reduce chain is one of the most common real patterns in test assertions &mdash; validating an aggregate computed from a UI-rendered or API-returned list (total, count, average) against what the app displays, without writing an imperative for-loop with a manual accumulator.</p>"},
+{id:"Q95",cat:"JS Coding",diff:"Basic",q:"Demonstrate destructuring and spread/rest syntax with an example from a Playwright fixture or test-data object.",a:"<pre><code><span class=\"kw\">// object destructuring -- extremely common in Playwright fixtures</span>\ntest(<span class=\"kw\">'approve loan'</span>, <span class=\"kw\">async</span> ({ page, request, context }) <span class=\"kw\">=></span> { ... });\n\n<span class=\"kw\">// destructuring with renaming and defaults</span>\n<span class=\"kw\">const</span> { accountId, balance = <span class=\"kw\">0</span>, ...rest } = account; <span class=\"kw\">// rest = every other field</span>\n\n<span class=\"kw\">// array destructuring -- common with Promise.all pairs</span>\n<span class=\"kw\">const</span> [response] = <span class=\"kw\">await</span> Promise.all([\n  page.waitForResponse(<span class=\"kw\">'**/api/approve'</span>),\n  page.getByRole(<span class=\"kw\">'button'</span>, { name: <span class=\"kw\">'Approve'</span> }).click(),\n]);\n\n<span class=\"kw\">// spread -- building test-data overrides (same idea as Partial&lt;T&gt;, Q88)</span>\n<span class=\"kw\">const</span> highValueAccount = { ...defaultAccount, balance: <span class=\"kw\">1000000</span> };\n\n<span class=\"kw\">// rest params -- variadic helper</span>\n<span class=\"kw\">function</span> fillFields(page: Page, ...labels: string[]) {\n  <span class=\"kw\">return</span> Promise.all(labels.map(l =&gt; page.getByLabel(l).fill(<span class=\"kw\">'test'</span>)));\n}</code></pre><p>Destructuring fixtures (<code>{ page, request }</code>) is how every Playwright test consumes what it needs; spread is the standard way to build test-data variations from a shared base object without mutating the original.</p>"},
+{id:"Q96",cat:"JS Coding",diff:"Intermediate",q:"What is hoisting in JavaScript, and how does it differ between var, let/const, and function declarations?",a:"<p>Hoisting means variable and function declarations are processed before code execution begins, so they're 'known' to the engine even before the line they're written on runs &mdash; but what exactly is hoisted, and in what usable state, differs:</p><ul><li><strong>function declarations</strong> are fully hoisted, including their body &mdash; callable before their line in the file.</li><li><strong>var</strong> is hoisted and initialized to <code>undefined</code> immediately &mdash; accessing it before its declaration line gives <code>undefined</code>, not an error.</li><li><strong>let/const</strong> are hoisted but <strong>not initialized</strong> &mdash; they sit in the 'temporal dead zone' from the start of the block until their declaration line; accessing them before that throws a <code>ReferenceError</code>.</li></ul><pre><code>console.log(hoistedFn()); <span class=\"kw\">// works -- 'ready'</span>\n<span class=\"kw\">function</span> hoistedFn() { <span class=\"kw\">return</span> <span class=\"kw\">'ready'</span>; }\n\nconsole.log(varValue); <span class=\"kw\">// undefined, no error</span>\n<span class=\"kw\">var</span> varValue = <span class=\"kw\">5</span>;\n\nconsole.log(letValue); <span class=\"kw\">// ReferenceError: Cannot access before initialization</span>\n<span class=\"kw\">let</span> letValue = <span class=\"kw\">5</span>;</code></pre><p>Practically, this is one of several reasons modern TS/JS style avoids <code>var</code> entirely &mdash; <code>let</code>/<code>const</code>'s temporal-dead-zone behavior surfaces genuine ordering bugs immediately as a clear error, rather than silently proceeding with <code>undefined</code>.</p>"},
+{id:"Q97",cat:"JS Coding",diff:"Advanced",q:"Explain this binding: how does this differ between a regular function and an arrow function, and why does this matter inside a Page Object class method?",a:"<p>A regular function's <code>this</code> is determined by <strong>how it's called</strong> (dynamic binding) &mdash; call it as a method (<code>obj.method()</code>) and <code>this</code> is <code>obj</code>; detach it and call it standalone, and <code>this</code> becomes <code>undefined</code> (in strict mode/modules) or the global object. An arrow function has <strong>no own <code>this</code></strong> &mdash; it lexically captures <code>this</code> from its enclosing scope at definition time, permanently.</p><pre><code><span class=\"kw\">class</span> InvoicePage {\n  <span class=\"kw\">constructor</span>(<span class=\"kw\">private</span> page: Page) {}\n\n  <span class=\"kw\">async</span> approve() { <span class=\"kw\">await</span> <span class=\"kw\">this</span>.page.getByRole(<span class=\"kw\">'button'</span>, { name: <span class=\"kw\">'Approve'</span> }).click(); }\n\n  <span class=\"kw\">getApproveHandler</span> = () =&gt; { <span class=\"kw\">return</span> <span class=\"kw\">this</span>.approve(); }; <span class=\"kw\">// arrow: this is always the instance</span>\n}\n\n<span class=\"kw\">const</span> invoicePage = <span class=\"kw\">new</span> InvoicePage(page);\n<span class=\"kw\">const</span> handler = invoicePage.approve; <span class=\"kw\">// detached from the instance</span>\n<span class=\"kw\">// handler() would throw -- 'this' is undefined, this.page doesn't exist</span>\n<span class=\"kw\">const</span> safeHandler = invoicePage.getApproveHandler; <span class=\"kw\">// arrow-bound field, safe even detached</span></code></pre><p>This matters in Page Object classes specifically when a method is passed as a callback (e.g. into <code>page.route()</code> or an event listener) rather than called directly as <code>obj.method()</code> &mdash; the regular-function version loses its <code>this</code> binding once detached, while an arrow-function class field or an explicit <code>.bind(this)</code> preserves it.</p>"},
+{id:"Q98",cat:"JS Coding",diff:"Intermediate",q:"Explain debounce and throttle, and where a UI-testing scenario might need to account for either.",a:"<p><strong>Debounce</strong> delays invoking a function until a pause of silence (no new calls) for a given duration &mdash; used for things like a search-as-you-type box that shouldn't fire an API call on every keystroke, only once typing pauses. <strong>Throttle</strong> guarantees a function runs at most once per fixed interval regardless of how often it's triggered &mdash; used for things like a scroll-position handler.</p><pre><code><span class=\"kw\">function</span> debounce&lt;T <span class=\"kw\">extends</span> (...args: <span class=\"kw\">any</span>[]) =&gt; <span class=\"kw\">void</span>&gt;(fn: T, delayMs: number) {\n  <span class=\"kw\">let</span> timer: ReturnType&lt;<span class=\"kw\">typeof</span> setTimeout&gt;;\n  <span class=\"kw\">return</span> (...args: Parameters&lt;T&gt;) =&gt; {\n    clearTimeout(timer);\n    timer = setTimeout(() =&gt; fn(...args), delayMs);\n  };\n}</code></pre><p>Testing relevance: a debounced search box means clicking into it and typing fast, then immediately asserting on results, is a real race &mdash; the app hasn't fired the API call yet. The correct fix isn't <code>waitForTimeout</code> (Q27) but <code>waitForResponse</code> for the actual debounced call (Q26), so the assertion waits for the real signal regardless of the exact debounce delay the frontend team configured.</p>"},
+{id:"Q99",cat:"JS Coding",diff:"Advanced",q:"Coding exercise: write a generic retryAsync(fn, options) helper in TypeScript that retries a failing async operation with a fixed number of attempts and a delay between them.",a:"<pre><code><span class=\"kw\">interface</span> RetryOptions {\n  attempts?: number;\n  delayMs?: number;\n}\n\n<span class=\"kw\">async function</span> retryAsync&lt;T&gt;(\n  fn: () =&gt; Promise&lt;T&gt;,\n  { attempts = <span class=\"kw\">3</span>, delayMs = <span class=\"kw\">500</span> }: RetryOptions = {}\n): Promise&lt;T&gt; {\n  <span class=\"kw\">let</span> lastError: unknown;\n\n  <span class=\"kw\">for</span> (<span class=\"kw\">let</span> attempt = <span class=\"kw\">1</span>; attempt &lt;= attempts; attempt++) {\n    <span class=\"kw\">try</span> {\n      <span class=\"kw\">return</span> <span class=\"kw\">await</span> fn();\n    } <span class=\"kw\">catch</span> (err) {\n      lastError = err;\n      <span class=\"kw\">if</span> (attempt &lt; attempts) {\n        <span class=\"kw\">await new</span> Promise(resolve =&gt; setTimeout(resolve, delayMs));\n      }\n    }\n  }\n  <span class=\"kw\">throw</span> lastError;\n}\n\n<span class=\"kw\">// usage: retry a flaky settlement-status API check</span>\n<span class=\"kw\">const</span> status = <span class=\"kw\">await</span> retryAsync(<span class=\"kw\">async</span> () =&gt; {\n  <span class=\"kw\">const</span> res = <span class=\"kw\">await</span> apiContext.get(<span class=\"kw\">'/txn/4521/status'</span>);\n  <span class=\"kw\">const</span> body = <span class=\"kw\">await</span> res.json();\n  <span class=\"kw\">if</span> (body.status !== <span class=\"kw\">'SETTLED'</span>) <span class=\"kw\">throw new</span> Error(<span class=\"kw\">'not settled yet'</span>);\n  <span class=\"kw\">return</span> body.status;\n}, { attempts: <span class=\"kw\">5</span>, delayMs: <span class=\"kw\">1000</span> });</code></pre><p>Note in real Playwright code, <code>expect.poll()</code> or <code>toPass()</code> (Q22, Q80) already solve this exact problem with better reporting integration &mdash; this is worth knowing to implement by hand for interviews and for non-Playwright-context Node scripts, but I wouldn't hand-roll it inside an actual Playwright spec.</p>"},
+{id:"Q100",cat:"JS Coding",diff:"Advanced",q:"Coding exercise: write a TypeScript function that deep-flattens a nested array of arbitrary depth, and a separate one that deduplicates an array of objects by a given key (e.g. dedupe transactions by id).",a:"<pre><code><span class=\"kw\">// deep flatten -- arbitrary nesting depth</span>\n<span class=\"kw\">function</span> deepFlatten&lt;T&gt;(arr: <span class=\"kw\">any</span>[]): T[] {\n  <span class=\"kw\">return</span> arr.reduce((flat, item) =&gt; {\n    <span class=\"kw\">return</span> flat.concat(Array.isArray(item) ? deepFlatten&lt;T&gt;(item) : item);\n  }, [] <span class=\"kw\">as</span> T[]);\n}\n\ndeepFlatten([<span class=\"kw\">1</span>, [<span class=\"kw\">2</span>, [<span class=\"kw\">3</span>, [<span class=\"kw\">4</span>, <span class=\"kw\">5</span>]], <span class=\"kw\">6</span>]]); <span class=\"kw\">// [1, 2, 3, 4, 5, 6]</span>\n<span class=\"kw\">// (Array.prototype.flat(Infinity) does this natively in modern JS -- worth mentioning)</span>\n\n<span class=\"kw\">// dedupe objects by key -- e.g. transactions arriving from two merged API pages</span>\n<span class=\"kw\">function</span> dedupeByKey&lt;T, K <span class=\"kw\">extends</span> <span class=\"kw\">keyof</span> T&gt;(items: T[], key: K): T[] {\n  <span class=\"kw\">const</span> seen = <span class=\"kw\">new</span> Map&lt;T[K], T&gt;();\n  <span class=\"kw\">for</span> (<span class=\"kw\">const</span> item <span class=\"kw\">of</span> items) {\n    <span class=\"kw\">if</span> (!seen.has(item[key])) seen.set(item[key], item);\n  }\n  <span class=\"kw\">return</span> [...seen.values()];\n}\n\n<span class=\"kw\">const</span> deduped = dedupeByKey(txns, <span class=\"kw\">'id'</span>); <span class=\"kw\">// keeps first occurrence per unique id</span></code></pre><p>The <code>Map</code>-based dedupe is O(n) and preserves first-seen order, which matters when validating that a paginated API response (or a UI-rendered infinite-scroll list) doesn't contain duplicate transaction rows &mdash; a real reconciliation-testing scenario in a BFSI context, comparable to the kind of duplicate-detection logic in the event-reconciliation framework.</p>"},
+];
+
+const CATEGORIES = [...new Set(DATA.map(d => d.cat))].sort();
+let activeTag = "All";
+let searchTerm = "";
+
+const tagRow = document.getElementById('tagRow');
+const allBtn = document.createElement('div');
+allBtn.className = 'tag-btn active';
+allBtn.textContent = 'All';
+allBtn.onclick = () => setTag('All');
+tagRow.appendChild(allBtn);
+CATEGORIES.forEach(cat => {
+  const btn = document.createElement('div');
+  btn.className = 'tag-btn';
+  btn.textContent = cat;
+  btn.onclick = () => setTag(cat);
+  tagRow.appendChild(btn);
+});
+
+function setTag(tag){
+  activeTag = tag;
+  [...tagRow.children].forEach(b => b.classList.toggle('active', b.textContent === tag));
+  render();
+}
+
+document.getElementById('searchBox').addEventListener('input', (e) => {
+  searchTerm = e.target.value.toLowerCase();
+  render();
+});
+
+function matches(item){
+  const tagOk = activeTag === 'All' || item.cat === activeTag;
+  if(!tagOk) return false;
+  if(!searchTerm) return true;
+  const hay = (item.q + ' ' + item.a + ' ' + item.cat + ' ' + item.id).toLowerCase();
+  return hay.includes(searchTerm);
+}
+
+const wrap = document.getElementById('cardWrap');
+const countLine = document.getElementById('countLine');
+const emptyState = document.getElementById('emptyState');
+
+function render(){
+  const filtered = DATA.filter(matches);
+  wrap.innerHTML = '';
+  countLine.textContent = `Showing ${filtered.length} of ${DATA.length} questions`;
+  emptyState.style.display = filtered.length ? 'none' : 'block';
+
+  filtered.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-head">
+        <span class="qid">${item.id}</span>
+        <span class="qtitle">${item.q}</span>
+        <div class="qmeta">
+          <span class="badge">${item.cat}</span>
+          <span class="badge diff-${item.diff}">${item.diff}</span>
+        </div>
+        <span class="chevron">&#9656;</span>
+      </div>
+      <div class="card-body"><div class="card-body-inner">${item.a}</div></div>
+    `;
+    const head = card.querySelector('.card-head');
+    const body = card.querySelector('.card-body');
+    head.addEventListener('click', () => {
+      const isOpen = card.classList.contains('open');
+      if(isOpen){
+        card.classList.remove('open');
+        body.style.maxHeight = null;
+      } else {
+        card.classList.add('open');
+        body.style.maxHeight = body.scrollHeight + 40 + 'px';
+      }
+    });
+    wrap.appendChild(card);
+  });
+}
+
+document.getElementById('totalCount').textContent = DATA.length;
+render();
+</script>
+</body>
+</html>
