@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SDET Coding Interview Workbench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0E12;
+  --panel:#11161C;
+  --panel-alt:#161C24;
+  --panel-raised:#1A2129;
+  --border:#232B33;
+  --border-soft:#1B2229;
+  --text:#DCE3E9;
+  --text-dim:#AEB8C2;
+  --muted:#7C8894;
+  --faint:#4E5862;
+
+  --accent:#3DDC84;
+  --accent-dim:#2A6B4C;
+  --ts:#5AA9E6;
+  --ts-dim:#1F3A52;
+  --java:#F2A65A;
+  --java-dim:#4A3620;
+  --priority:#E8B339;
+
+  --tok-str:#9CCC65;
+  --tok-com:#6B7785;
+  --tok-kw:#C792EA;
+  --tok-type:#5FD0C0;
+
+  --font-ui: 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius: 6px;
+  --sidebar-w: 300px;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-ui);
+  -webkit-font-smoothing:antialiased;
+  font-size:15px;
+  line-height:1.55;
+}
+::selection{ background:var(--accent-dim); color:#fff; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+a{ color:inherit; }
+
+.app{
+  display:grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.sidebar-head{
+  padding:20px 18px 14px;
+  border-bottom:1px solid var(--border-soft);
+  flex-shrink:0;
+}
+.brand{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  margin-bottom:4px;
+}
+.brand-dot{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 8px var(--accent);
+  flex-shrink:0;
+  position:relative;
+  top:-1px;
+}
+.brand-title{
+  font-weight:700;
+  font-size:15px;
+  letter-spacing:0.2px;
+}
+.brand-sub{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--muted);
+  margin:0 0 14px;
+}
+.search-wrap{ position:relative; }
+.search-wrap input{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  padding:9px 10px 9px 28px;
+  border-radius:var(--radius);
+}
+.search-wrap input::placeholder{ color:var(--faint); }
+.search-wrap input:focus{ border-color:var(--accent-dim); }
+.search-icon{
+  position:absolute;
+  left:9px; top:50%; transform:translateY(-50%);
+  color:var(--muted);
+  font-size:12px;
+  pointer-events:none;
+  font-family:var(--font-mono);
+}
+
+nav#nav-list{
+  flex:1;
+  overflow-y:auto;
+  padding:10px 10px 24px;
+}
+.nav-overview{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  width:100%;
+  text-align:left;
+  background:none;
+  border:none;
+  color:var(--text-dim);
+  font-family:var(--font-ui);
+  font-size:13px;
+  font-weight:600;
+  padding:9px 8px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  border-left:2px solid transparent;
+  margin-bottom:10px;
+}
+.nav-overview:hover{ background:var(--panel-alt); color:var(--text); }
+.nav-overview.active{
+  background:var(--panel-raised);
+  color:var(--text);
+  border-left:2px solid var(--accent);
+}
+.nav-overview .ov-icon{
+  font-family:var(--font-mono);
+  color:var(--faint);
+  font-size:12px;
+  width:20px;
+  flex-shrink:0;
+}
+.nav-overview.active .ov-icon{ color:var(--accent); }
+.nav-group{ margin-bottom:2px; }
+.nav-group summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:9px 8px;
+  border-radius:var(--radius);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.3px;
+  color:var(--text-dim);
+}
+.nav-group summary::-webkit-details-marker{ display:none; }
+.nav-group summary:hover{ background:var(--panel-alt); }
+.nav-group summary .chev{
+  color:var(--faint);
+  transition:transform .15s ease;
+  font-size:10px;
+}
+.nav-group[open] summary .chev{ transform:rotate(90deg); }
+.nav-group summary .count{
+  font-family:var(--font-mono);
+  color:var(--faint);
+  font-weight:400;
+  margin-left:auto;
+  margin-right:8px;
+}
+.nav-items{ padding:2px 0 8px 4px; }
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  width:100%;
+  text-align:left;
+  background:none;
+  border:none;
+  color:var(--text-dim);
+  font-family:var(--font-ui);
+  font-size:13px;
+  padding:7px 8px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  border-left:2px solid transparent;
+}
+.nav-item:hover{ background:var(--panel-alt); color:var(--text); }
+.nav-item.active{
+  background:var(--panel-raised);
+  color:var(--text);
+  border-left:2px solid var(--accent);
+}
+.nav-item .idx{
+  font-family:var(--font-mono);
+  color:var(--faint);
+  font-size:11px;
+  width:20px;
+  flex-shrink:0;
+}
+.nav-item.active .idx{ color:var(--accent); }
+.nav-item .star{
+  color:var(--priority);
+  font-size:10px;
+  margin-left:auto;
+  flex-shrink:0;
+}
+.nav-item.hidden{ display:none; }
+.nav-group.hidden{ display:none; }
+
+/* ---------- MAIN ---------- */
+.main{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:0;
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 28px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  background:var(--bg);
+}
+.hub-link{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  font-family:var(--font-mono);
+  font-size:12px;
+  text-decoration:none;
+  padding:7px 12px;
+  border-radius:20px;
+  flex-shrink:0;
+  white-space:nowrap;
+}
+.hub-link:hover{ border-color:var(--accent-dim); color:var(--accent); }
+.hub-link .arrow{ font-size:13px; line-height:1; }
+#sidebar-toggle{
+  display:none;
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  width:34px; height:34px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  font-size:15px;
+  flex-shrink:0;
+}
+.crumbs{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:var(--muted);
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.crumbs .sep{ color:var(--faint); margin:0 6px; }
+.crumbs .current{ color:var(--text); }
+.topbar-right{
+  margin-left:auto;
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  color:var(--faint);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.topbar-right .pulse{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--accent);
+}
+
+.content{
+  flex:1;
+  overflow-y:auto;
+  padding:34px 40px 80px;
+}
+.content-inner{ max-width:840px; }
+
+/* ---------- OVERVIEW ---------- */
+.hero-eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--accent);
+  margin-bottom:10px;
+}
+.hero h1{
+  font-size:32px;
+  line-height:1.2;
+  margin:0 0 14px;
+  font-weight:700;
+  letter-spacing:-0.3px;
+}
+.hero p{
+  color:var(--text-dim);
+  max-width:60ch;
+  margin:0 0 30px;
+  font-size:15px;
+}
+.stat-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:38px;
+}
+.stat-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px 16px;
+}
+.stat-card .num{
+  font-family:var(--font-mono);
+  font-size:24px;
+  font-weight:700;
+  color:var(--text);
+}
+.stat-card .lbl{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.section-title{
+  font-size:12px;
+  font-weight:700;
+  text-transform:none;
+  color:var(--text-dim);
+  letter-spacing:0.2px;
+  margin:0 0 14px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border-soft);
+}
+
+.pattern-list{
+  list-style:none;
+  margin:0 0 40px;
+  padding:0;
+  counter-reset:step;
+}
+.pattern-list li{
+  counter-increment:step;
+  display:flex;
+  gap:14px;
+  padding:11px 0;
+  border-bottom:1px solid var(--border-soft);
+  font-size:13.5px;
+  color:var(--text-dim);
+}
+.pattern-list li:last-child{ border-bottom:none; }
+.pattern-list li::before{
+  content:counter(step);
+  font-family:var(--font-mono);
+  color:var(--accent);
+  background:var(--panel);
+  border:1px solid var(--border);
+  width:22px; height:22px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px;
+  flex-shrink:0;
+}
+
+.priority-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:40px;
+}
+.priority-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  cursor:pointer;
+  text-align:left;
+  width:100%;
+  color:var(--text);
+  font-family:var(--font-ui);
+}
+.priority-row:hover{ border-color:var(--accent-dim); background:var(--panel-alt); }
+.priority-row .star{ color:var(--priority); font-size:13px; flex-shrink:0; }
+.priority-row .ptitle{ font-size:13.5px; font-weight:500; }
+.priority-row .pcat{
+  margin-left:auto;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--muted);
+  flex-shrink:0;
+}
+
+table.checklist{
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:36px;
+  font-size:13px;
+}
+table.checklist th{
+  text-align:left;
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--muted);
+  font-weight:500;
+  padding:0 12px 10px 0;
+  border-bottom:1px solid var(--border);
+}
+table.checklist td{
+  padding:11px 12px 11px 0;
+  border-bottom:1px solid var(--border-soft);
+  color:var(--text-dim);
+  vertical-align:top;
+}
+table.checklist td:first-child{ color:var(--text); font-weight:500; white-space:nowrap; }
+
+.note-box{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-left:3px solid var(--java);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  font-size:13px;
+  color:var(--text-dim);
+  margin-bottom:10px;
+}
+.note-box strong{ color:var(--text); }
+
+/* ---------- QUESTION DETAIL ---------- */
+.q-head{ margin-bottom:24px; }
+.q-meta{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--muted);
+}
+.q-id{ color:var(--accent); }
+.q-cat-tag{
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:2px 8px;
+  border-radius:20px;
+  font-size:11px;
+}
+.q-star{ color:var(--priority); }
+.q-head h2{
+  font-size:24px;
+  margin:0;
+  font-weight:700;
+  letter-spacing:-0.2px;
+}
+.q-approach{
+  color:var(--text-dim);
+  font-size:14.5px;
+  max-width:70ch;
+  margin:14px 0 26px;
+}
+
+.io-panel{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:26px;
+}
+.io-cell{
+  background:var(--panel);
+  padding:14px 16px;
+}
+.io-cell .io-label{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.io-cell .io-value{
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--text);
+  word-break:break-word;
+  white-space:pre-wrap;
+}
+.io-cell.output .io-value{ color:var(--accent); }
+
+.lang-switch{
+  display:inline-flex;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:3px;
+  margin-bottom:14px;
+  gap:2px;
+}
+.lang-btn{
+  background:none;
+  border:none;
+  color:var(--muted);
+  font-family:var(--font-mono);
+  font-size:12px;
+  padding:6px 16px;
+  border-radius:16px;
+  cursor:pointer;
+}
+.lang-btn.active.ts{ background:var(--ts-dim); color:var(--ts); }
+.lang-btn.active.java{ background:var(--java-dim); color:var(--java); }
+
+.code-panel{
+  background:#0D1218;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.code-panel .code-bar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 14px;
+  border-bottom:1px solid var(--border-soft);
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--muted);
+}
+.code-panel .code-bar .dot{ width:9px; height:9px; border-radius:50%; background:var(--border); }
+.code-panel pre{
+  margin:0;
+  padding:16px 18px;
+  overflow-x:auto;
+  font-family:var(--font-mono);
+  font-size:12.8px;
+  line-height:1.65;
+  color:var(--text);
+}
+.tok-str{ color:var(--tok-str); }
+.tok-com{ color:var(--tok-com); font-style:italic; }
+.tok-kw{ color:var(--tok-kw); }
+.tok-type{ color:var(--tok-type); }
+
+.terminal{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  margin-bottom:24px;
+}
+.terminal .tline{ color:var(--muted); margin-bottom:6px; }
+.terminal .tline .prompt{ color:var(--accent); margin-right:8px; }
+.terminal .tout{ color:var(--text); white-space:pre-wrap; }
+
+.complexity-bar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--muted);
+  padding-top:4px;
+  border-top:1px solid var(--border-soft);
+  padding-top:16px;
+}
+.complexity-bar .tag{
+  color:var(--accent);
+}
+
+.q-nav-footer{
+  display:flex;
+  justify-content:space-between;
+  margin-top:36px;
+  padding-top:20px;
+  border-top:1px solid var(--border-soft);
+}
+.q-nav-btn{
+  background:var(--panel);
+  border:1px solid var(--border);
+  color:var(--text-dim);
+  font-family:var(--font-ui);
+  font-size:13px;
+  padding:9px 16px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  max-width:48%;
+}
+.q-nav-btn:hover{ border-color:var(--accent-dim); color:var(--text); }
+.q-nav-btn .dir{ font-family:var(--font-mono); font-size:10px; color:var(--muted); display:block; margin-bottom:2px; }
+.q-nav-btn.empty{ visibility:hidden; }
+
+/* ---------- MOBILE ---------- */
+.sidebar-overlay{ display:none; }
+
+@media (max-width: 860px){
+  .app{ grid-template-columns:1fr; }
+  .sidebar{
+    position:fixed;
+    left:0; top:0; bottom:0;
+    width:min(300px, 84vw);
+    z-index:40;
+    transform:translateX(-100%);
+    transition:transform .2s ease;
+    box-shadow:20px 0 40px rgba(0,0,0,0.4);
+  }
+  .sidebar.open{ transform:translateX(0); }
+  #sidebar-toggle{ display:flex; align-items:center; justify-content:center; }
+  .sidebar-overlay{
+    display:none;
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.5);
+    z-index:30;
+  }
+  .sidebar-overlay.show{ display:block; }
+  .content{ padding:24px 18px 60px; }
+  .stat-row{ grid-template-columns:repeat(2,1fr); }
+  .io-panel{ grid-template-columns:1fr; }
+  .topbar{ padding:12px 16px; }
+  .topbar-right{ display:none; }
+  .hub-link span:last-child{ display:none; }
+  .hub-link{ padding:7px 9px; }
+  .hero h1{ font-size:26px; }
+  table.checklist{ font-size:12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar-overlay" id="overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-title">SDET Coding Workbench</span>
+      </div>
+      <p class="brand-sub">50 problems · Java + TypeScript</p>
+      <div class="search-wrap">
+        <span class="search-icon">/</span>
+        <input id="search" type="text" placeholder="Filter by name or number" autocomplete="off" />
+      </div>
+    </div>
+    <nav id="nav-list"></nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <a class="hub-link" href="index.html"><span class="arrow">&#8592;</span><span>Hub</span></a>
+      <button id="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+      <div class="crumbs" id="crumbs">Overview</div>
+      <div class="topbar-right"><span class="pulse"></span> READY</div>
+    </div>
+    <section class="content"><div class="content-inner" id="content"></div></section>
+  </div>
+</div>
+
+<script type="application/json" id="question-data">[{"id": 1, "title": "Reverse a String", "category": "Strings", "priority": false, "approach": "Reverse the characters from the end to the beginning.", "input": "\"hello\"", "output": "\"olleh\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function reverseString(str: string): string {\n  return str.split(\"\").reverse().join(\"\");\n}\nconsole.log(reverseString(\"hello\"));", "java": "public String reverseString(String str) {\n    return new StringBuilder(str).reverse().toString();\n}\nSystem.out.println(reverseString(\"hello\")); // olleh", "note": null}, {"id": 2, "title": "Reverse Without Built-in reverse()", "category": "Strings", "priority": false, "approach": "Traverse the string from the last character to the first and build a result.", "input": "\"Playwright\"", "output": "\"thgirwalyP\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function reverseString(str: string): string {\n  let result = \"\";\n  for (let i = str.length - 1; i >= 0; i--) {\n    result += str[i];\n  }\n  return result;\n}\nconsole.log(reverseString(\"Playwright\"));", "java": "public String reverseString(String str) {\n    StringBuilder result = new StringBuilder();\n    for (int i = str.length() - 1; i >= 0; i--) {\n        result.append(str.charAt(i));\n    }\n    return result.toString();\n}\nSystem.out.println(reverseString(\"Playwright\")); // thgirwalyP", "note": null}, {"id": 3, "title": "Reverse Each Word", "category": "Strings", "priority": false, "approach": "Split into words, reverse each word, then join the words.", "input": "\"Hello World\"", "output": "\"olleH dlroW\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function reverseEachWord(str: string): string {\n  return str\n    .split(\" \")\n    .map(word => word.split(\"\").reverse().join(\"\"))\n    .join(\" \");\n}\nconsole.log(reverseEachWord(\"Hello World\"));", "java": "public String reverseEachWord(String str) {\n    String[] words = str.split(\" \");\n    StringBuilder result = new StringBuilder();\n    for (int i = 0; i < words.length; i++) {\n        result.append(new StringBuilder(words[i]).reverse());\n        if (i < words.length - 1) result.append(\" \");\n    }\n    return result.toString();\n}\nSystem.out.println(reverseEachWord(\"Hello World\")); // olleH dlroW", "note": null}, {"id": 4, "title": "Reverse Word Order", "category": "Strings", "priority": false, "approach": "Split into words and reverse the word array.", "input": "\"I love Playwright\"", "output": "\"Playwright love I\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function reverseWordOrder(str: string): string {\n  return str.split(\" \").reverse().join(\" \");\n}\nconsole.log(reverseWordOrder(\"I love Playwright\"));", "java": "public String reverseWordOrder(String str) {\n    String[] words = str.split(\" \");\n    Collections.reverse(Arrays.asList(words));\n    return String.join(\" \", words);\n}\nSystem.out.println(reverseWordOrder(\"I love Playwright\")); // Playwright love I", "note": null}, {"id": 5, "title": "Palindrome Check", "category": "Strings", "priority": true, "approach": "Compare characters from both ends moving toward the center.", "input": "\"madam\"", "output": "true", "complexity": "Time: O(n), Space: O(1)", "ts": "function isPalindrome(str: string): boolean {\n  let left = 0;\n  let right = str.length - 1;\n  while (left < right) {\n    if (str[left] !== str[right]) return false;\n    left++;\n    right--;\n  }\n  return true;\n}\nconsole.log(isPalindrome(\"madam\"));", "java": "public boolean isPalindrome(String str) {\n    int left = 0, right = str.length() - 1;\n    while (left < right) {\n        if (str.charAt(left) != str.charAt(right)) return false;\n        left++;\n        right--;\n    }\n    return true;\n}\nSystem.out.println(isPalindrome(\"madam\")); // true", "note": null}, {"id": 6, "title": "Character Frequency", "category": "Strings", "priority": false, "approach": "Use an object (map) as a frequency map.", "input": "\"hello\"", "output": "{ h: 1, e: 1, l: 2, o: 1 }", "complexity": "Time: O(n), Space: O(k)", "ts": "function characterFrequency(str: string): Record<string, number> {\n  const frequency: Record<string, number> = {};\n  for (const char of str) {\n    frequency[char] = (frequency[char] || 0) + 1;\n  }\n  return frequency;\n}\nconsole.log(characterFrequency(\"hello\"));", "java": "public Map<Character, Integer> characterFrequency(String str) {\n    Map<Character, Integer> frequency = new LinkedHashMap<>();\n    for (char c : str.toCharArray()) {\n        frequency.put(c, frequency.getOrDefault(c, 0) + 1);\n    }\n    return frequency;\n}\nSystem.out.println(characterFrequency(\"hello\")); // {h=1, e=1, l=2, o=1}", "note": null}, {"id": 7, "title": "First Non-Repeating Character", "category": "Strings", "priority": true, "approach": "Count every character first, then return the first character whose count is one.", "input": "\"aabbccde\"", "output": "\"d\"", "complexity": "Time: O(n), Space: O(k)", "ts": "function firstNonRepeating(str: string): string | null {\n  const count: Record<string, number> = {};\n  for (const char of str) {\n    count[char] = (count[char] || 0) + 1;\n  }\n  for (const char of str) {\n    if (count[char] === 1) return char;\n  }\n  return null;\n}\nconsole.log(firstNonRepeating(\"aabbccde\"));", "java": "public Character firstNonRepeating(String str) {\n    Map<Character, Integer> count = new LinkedHashMap<>();\n    for (char c : str.toCharArray()) count.put(c, count.getOrDefault(c, 0) + 1);\n    for (char c : str.toCharArray()) if (count.get(c) == 1) return c;\n    return null;\n}\nSystem.out.println(firstNonRepeating(\"aabbccde\")); // d", "note": null}, {"id": 8, "title": "Duplicate Characters", "category": "Strings", "priority": false, "approach": "Count characters and collect each character whose frequency is greater than one.", "input": "\"programming\"", "output": "[\"r\", \"g\", \"m\"]", "complexity": "Time: O(n²) worst-case (includes); O(n) with a Set", "ts": "function duplicateCharacters(str: string): string[] {\n  const count: Record<string, number> = {};\n  const result: string[] = [];\n  for (const char of str) {\n    count[char] = (count[char] || 0) + 1;\n  }\n  for (const char of str) {\n    if (count[char] > 1 && !result.includes(char)) {\n      result.push(char);\n    }\n  }\n  return result;\n}\nconsole.log(duplicateCharacters(\"programming\"));", "java": "public List<Character> duplicateCharacters(String str) {\n    Map<Character, Integer> count = new LinkedHashMap<>();\n    List<Character> result = new ArrayList<>();\n    for (char c : str.toCharArray()) count.put(c, count.getOrDefault(c, 0) + 1);\n    for (char c : str.toCharArray()) {\n        if (count.get(c) > 1 && !result.contains(c)) result.add(c);\n    }\n    return result;\n}\nSystem.out.println(duplicateCharacters(\"programming\")); // [r, g, m]", "note": null}, {"id": 9, "title": "Remove Duplicates From Array", "category": "Arrays", "priority": false, "approach": "Use a Set to keep only unique values while preserving insertion order.", "input": "[1,2,2,3,4,4,5]", "output": "[1,2,3,4,5]", "complexity": "Time: O(n), Space: O(n)", "ts": "function removeDuplicates(arr: number[]): number[] {\n  return [...new Set(arr)];\n}\nconsole.log(removeDuplicates([1,2,2,3,4,4,5]));", "java": "public List<Integer> removeDuplicates(int[] arr) {\n    LinkedHashSet<Integer> unique = new LinkedHashSet<>();\n    for (int num : arr) unique.add(num);\n    return new ArrayList<>(unique);\n}\nSystem.out.println(removeDuplicates(new int[]{1,2,2,3,4,4,5})); // [1, 2, 3, 4, 5]", "note": null}, {"id": 10, "title": "Print Duplicate Elements", "category": "Arrays", "priority": false, "approach": "Build a frequency map and return duplicated values in their first-seen order.", "input": "[1,2,3,2,4,1,5]", "output": "[2,1]", "complexity": "Time: O(n²) worst-case; O(n) with a Set", "ts": "function printDuplicates(arr: number[]): number[] {\n  const count: Record<number, number> = {};\n  const result: number[] = [];\n  for (const num of arr) {\n    count[num] = (count[num] || 0) + 1;\n  }\n  for (const num of arr) {\n    if (count[num] > 1 && !result.includes(num)) {\n      result.push(num);\n    }\n  }\n  return result;\n}\nconsole.log(printDuplicates([1,2,3,2,4,1,5]));", "java": "public List<Integer> printDuplicates(int[] arr) {\n    Map<Integer, Integer> count = new LinkedHashMap<>();\n    List<Integer> result = new ArrayList<>();\n    for (int num : arr) count.put(num, count.getOrDefault(num, 0) + 1);\n    for (int num : arr) {\n        if (count.get(num) > 1 && !result.contains(num)) result.add(num);\n    }\n    return result;\n}\nSystem.out.println(printDuplicates(new int[]{1,2,3,2,4,1,5})); // [2, 1]", "note": null}, {"id": 11, "title": "First & Second Largest", "category": "Arrays", "priority": false, "approach": "Track the largest and second-largest values in one pass.", "input": "[10,5,20,8,15]", "output": "First = 20, Second = 15", "complexity": "Time: O(n), Space: O(1)", "ts": "function findLargestTwo(arr: number[]) {\n  let first = -Infinity;\n  let second = -Infinity;\n  for (const num of arr) {\n    if (num > first) {\n      second = first;\n      first = num;\n    } else if (num > second && num !== first) {\n      second = num;\n    }\n  }\n  return { first, second };\n}\nconsole.log(findLargestTwo([10,5,20,8,15]));", "java": "public int[] findLargestTwo(int[] arr) {\n    int first = Integer.MIN_VALUE, second = Integer.MIN_VALUE;\n    for (int num : arr) {\n        if (num > first) {\n            second = first;\n            first = num;\n        } else if (num > second && num != first) {\n            second = num;\n        }\n    }\n    return new int[]{first, second};\n}\nSystem.out.println(Arrays.toString(findLargestTwo(new int[]{10,5,20,8,15}))); // [20, 15]", "note": null}, {"id": 12, "title": "Difference Between Largest & Second Largest", "category": "Arrays", "priority": false, "approach": "Find the top two distinct values and subtract the second from the first.", "input": "[10,5,20,8,15]", "output": "5", "complexity": "Time: O(n), Space: O(1)", "ts": "function difference(arr: number[]): number {\n  let first = -Infinity;\n  let second = -Infinity;\n  for (const num of arr) {\n    if (num > first) {\n      second = first;\n      first = num;\n    } else if (num > second && num !== first) {\n      second = num;\n    }\n  }\n  return first - second;\n}\nconsole.log(difference([10,5,20,8,15]));", "java": "public int difference(int[] arr) {\n    int first = Integer.MIN_VALUE, second = Integer.MIN_VALUE;\n    for (int num : arr) {\n        if (num > first) {\n            second = first;\n            first = num;\n        } else if (num > second && num != first) {\n            second = num;\n        }\n    }\n    return first - second;\n}\nSystem.out.println(difference(new int[]{10,5,20,8,15})); // 5", "note": null}, {"id": 13, "title": "Maximum in Array", "category": "Arrays", "priority": false, "approach": "Maintain a running maximum.", "input": "[10,25,7,40,15]", "output": "40", "complexity": "Time: O(n), Space: O(1)", "ts": "function findMax(arr: number[]): number {\n  let max = arr[0];\n  for (const num of arr) {\n    if (num > max) max = num;\n  }\n  return max;\n}\nconsole.log(findMax([10,25,7,40,15]));", "java": "public int findMax(int[] arr) {\n    int max = arr[0];\n    for (int num : arr) if (num > max) max = num;\n    return max;\n}\nSystem.out.println(findMax(new int[]{10,25,7,40,15})); // 40", "note": null}, {"id": 14, "title": "Minimum in Array", "category": "Arrays", "priority": false, "approach": "Maintain a running minimum.", "input": "[10,25,7,40,15]", "output": "7", "complexity": "Time: O(n), Space: O(1)", "ts": "function findMin(arr: number[]): number {\n  let min = arr[0];\n  for (const num of arr) {\n    if (num < min) min = num;\n  }\n  return min;\n}\nconsole.log(findMin([10,25,7,40,15]));", "java": "public int findMin(int[] arr) {\n    int min = arr[0];\n    for (int num : arr) if (num < min) min = num;\n    return min;\n}\nSystem.out.println(findMin(new int[]{10,25,7,40,15})); // 7", "note": null}, {"id": 15, "title": "Missing Number", "category": "Arrays", "priority": false, "approach": "Use the expected arithmetic sum minus the actual array sum.", "input": "[1,2,3,5,6]", "output": "4", "complexity": "Time: O(n), Space: O(1)", "ts": "function missingNumber(arr: number[]): number {\n  const n = arr.length + 1;\n  const expectedSum = (n * (n + 1)) / 2;\n  const actualSum = arr.reduce((sum, num) => sum + num, 0);\n  return expectedSum - actualSum;\n}\nconsole.log(missingNumber([1,2,3,5,6]));", "java": "public int missingNumber(int[] arr) {\n    int n = arr.length + 1;\n    int expectedSum = n * (n + 1) / 2;\n    int actualSum = Arrays.stream(arr).sum();\n    return expectedSum - actualSum;\n}\nSystem.out.println(missingNumber(new int[]{1,2,3,5,6})); // 4", "note": null}, {"id": 16, "title": "Two Sum", "category": "Arrays", "priority": true, "approach": "For each number, look for its complement in a Set.", "input": "[2,7,11,15], target = 9", "output": "[2,7]", "complexity": "Time: O(n), Space: O(n)", "ts": "function twoSum(arr: number[], target: number): number[] {\n  const seen = new Set<number>();\n  for (const num of arr) {\n    const complement = target - num;\n    if (seen.has(complement)) {\n      return [complement, num];\n    }\n    seen.add(num);\n  }\n  return [];\n}\nconsole.log(twoSum([2,7,11,15], 9));", "java": "public int[] twoSum(int[] arr, int target) {\n    Set<Integer> seen = new HashSet<>();\n    for (int num : arr) {\n        int complement = target - num;\n        if (seen.contains(complement)) {\n            return new int[]{complement, num};\n        }\n        seen.add(num);\n    }\n    return new int[]{};\n}\nSystem.out.println(Arrays.toString(twoSum(new int[]{2,7,11,15}, 9))); // [2, 7]", "note": null}, {"id": 17, "title": "Anagram Check", "category": "Strings", "priority": true, "approach": "Two strings are anagrams when their normalized character sequences match.", "input": "\"listen\", \"silent\"", "output": "true", "complexity": "Time: O(n log n), Space: O(n)", "ts": "function isAnagram(str1: string, str2: string): boolean {\n  if (str1.length !== str2.length) return false;\n  return str1.split(\"\").sort().join(\"\") ===\n    str2.split(\"\").sort().join(\"\");\n}\nconsole.log(isAnagram(\"listen\", \"silent\"));", "java": "public boolean isAnagram(String str1, String str2) {\n    if (str1.length() != str2.length()) return false;\n    char[] a = str1.toCharArray();\n    char[] b = str2.toCharArray();\n    Arrays.sort(a);\n    Arrays.sort(b);\n    return Arrays.equals(a, b);\n}\nSystem.out.println(isAnagram(\"listen\", \"silent\")); // true", "note": null}, {"id": 18, "title": "Longest Word", "category": "Strings", "priority": false, "approach": "Split into words and track the longest word.", "input": "\"I love automation testing\"", "output": "\"automation\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function longestWord(str: string): string {\n  let longest = \"\";\n  for (const word of str.split(\" \")) {\n    if (word.length > longest.length) longest = word;\n  }\n  return longest;\n}\nconsole.log(longestWord(\"I love automation testing\"));", "java": "public String longestWord(String str) {\n    String longest = \"\";\n    for (String word : str.split(\" \")) {\n        if (word.length() > longest.length()) longest = word;\n    }\n    return longest;\n}\nSystem.out.println(longestWord(\"I love automation testing\")); // automation", "note": null}, {"id": 19, "title": "Longest Substring Without Repeating Characters", "category": "Strings", "priority": true, "approach": "Use a sliding window and store the latest index of each character.", "input": "\"abcabccb\"", "output": "\"abc\" / 3", "complexity": "Time: O(n), Space: O(k)", "ts": "function longestUniqueSubstring(str: string): string {\n  let left = 0;\n  let maxLength = 0;\n  let result = \"\";\n  const seen = new Map<string, number>();\n  for (let right = 0; right < str.length; right++) {\n    const char = str[right];\n    if (seen.has(char) && seen.get(char)! >= left) {\n      left = seen.get(char)! + 1;\n    }\n    seen.set(char, right);\n    if (right - left + 1 > maxLength) {\n      maxLength = right - left + 1;\n      result = str.substring(left, right + 1);\n    }\n  }\n  return result;\n}\nconsole.log(longestUniqueSubstring(\"abcabccb\"));", "java": "public String longestUniqueSubstring(String str) {\n    int left = 0, maxLength = 0;\n    String result = \"\";\n    Map<Character, Integer> seen = new HashMap<>();\n    for (int right = 0; right < str.length(); right++) {\n        char c = str.charAt(right);\n        if (seen.containsKey(c) && seen.get(c) >= left) {\n            left = seen.get(c) + 1;\n        }\n        seen.put(c, right);\n        if (right - left + 1 > maxLength) {\n            maxLength = right - left + 1;\n            result = str.substring(left, right + 1);\n        }\n    }\n    return result;\n}\nSystem.out.println(longestUniqueSubstring(\"abcabccb\")); // abc", "note": null}, {"id": 20, "title": "Count Vowels and Consonants", "category": "Strings", "priority": false, "approach": "Check alphabetic characters and classify each as vowel or consonant.", "input": "\"Playwright\"", "output": "Vowels = 2, Consonants = 8", "complexity": "Time: O(n), Space: O(1)", "ts": "function countVowelsConsonants(str: string) {\n  let vowels = 0;\n  let consonants = 0;\n  for (const char of str.toLowerCase()) {\n    if (/[a-z]/.test(char)) {\n      if (\"aeiou\".includes(char)) vowels++;\n      else consonants++;\n    }\n  }\n  return { vowels, consonants };\n}\nconsole.log(countVowelsConsonants(\"Playwright\"));", "java": "public int[] countVowelsConsonants(String str) {\n    int vowels = 0, consonants = 0;\n    str = str.toLowerCase();\n    for (char c : str.toCharArray()) {\n        if (Character.isLetter(c)) {\n            if (\"aeiou\".indexOf(c) >= 0) vowels++;\n            else consonants++;\n        }\n    }\n    return new int[]{vowels, consonants};\n}\n// countVowelsConsonants(\"Playwright\") -> vowels = 2, consonants = 8", "note": null}, {"id": 21, "title": "Character Frequency From Word", "category": "Strings", "priority": false, "approach": "Use a frequency map.", "input": "\"testing\"", "output": "{ t: 2, e: 1, s: 1, i: 1, n: 1, g: 1 }", "complexity": "Time: O(n), Space: O(k)", "ts": "function frequency(str: string): Record<string, number> {\n  const result: Record<string, number> = {};\n  for (const char of str) {\n    result[char] = (result[char] || 0) + 1;\n  }\n  return result;\n}\nconsole.log(frequency(\"testing\"));", "java": "public Map<Character, Integer> frequency(String str) {\n    Map<Character, Integer> result = new LinkedHashMap<>();\n    for (char c : str.toCharArray()) {\n        result.put(c, result.getOrDefault(c, 0) + 1);\n    }\n    return result;\n}\nSystem.out.println(frequency(\"testing\")); // {t=2, e=1, s=1, i=1, n=1, g=1}", "note": null}, {"id": 22, "title": "Remove Spaces", "category": "Strings", "priority": false, "approach": "Remove all whitespace with a regular expression.", "input": "\"Hello World Test\"", "output": "\"HelloWorldTest\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function removeSpaces(str: string): string {\n  return str.replace(/\\s/g, \"\");\n}\nconsole.log(removeSpaces(\"Hello World Test\"));", "java": "public String removeSpaces(String str) {\n    return str.replaceAll(\"\\\\s\", \"\");\n}\nSystem.out.println(removeSpaces(\"Hello World Test\")); // HelloWorldTest", "note": null}, {"id": 23, "title": "Remove Special Characters", "category": "Strings", "priority": false, "approach": "Keep only letters and digits.", "input": "\"Hello@123#World!\"", "output": "\"Hello123World\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function removeSpecialCharacters(str: string): string {\n  return str.replace(/[^a-zA-Z0-9]/g, \"\");\n}\nconsole.log(removeSpecialCharacters(\"Hello@123#World!\"));", "java": "public String removeSpecialCharacters(String str) {\n    return str.replaceAll(\"[^a-zA-Z0-9]\", \"\");\n}\nSystem.out.println(removeSpecialCharacters(\"Hello@123#World!\")); // Hello123World", "note": null}, {"id": 24, "title": "Substring Occurrence Count", "category": "Strings", "priority": false, "approach": "Search repeatedly and advance by the substring length.", "input": "\"hello hello hello\", \"hello\"", "output": "3", "complexity": "Time: O(n·m) in general", "ts": "function countSubstring(str: string, sub: string): number {\n  let count = 0;\n  let index = 0;\n  while ((index = str.indexOf(sub, index)) !== -1) {\n    count++;\n    index += sub.length;\n  }\n  return count;\n}\nconsole.log(countSubstring(\"hello hello hello\", \"hello\"));", "java": "public int countSubstring(String str, String sub) {\n    int count = 0, index = 0;\n    while ((index = str.indexOf(sub, index)) != -1) {\n        count++;\n        index += sub.length();\n    }\n    return count;\n}\nSystem.out.println(countSubstring(\"hello hello hello\", \"hello\")); // 3", "note": null}, {"id": 25, "title": "Fibonacci Series", "category": "Algorithms", "priority": false, "approach": "Iteratively generate each next value from the previous two.", "input": "n = 7", "output": "[0,1,1,2,3,5,8]", "complexity": "Time: O(n), Space: O(n) for output", "ts": "function fibonacci(n: number): number[] {\n  const result: number[] = [];\n  let a = 0;\n  let b = 1;\n  for (let i = 0; i < n; i++) {\n    result.push(a);\n    const next = a + b;\n    a = b;\n    b = next;\n  }\n  return result;\n}\nconsole.log(fibonacci(7));", "java": "public List<Integer> fibonacci(int n) {\n    List<Integer> result = new ArrayList<>();\n    int a = 0, b = 1;\n    for (int i = 0; i < n; i++) {\n        result.add(a);\n        int next = a + b;\n        a = b;\n        b = next;\n    }\n    return result;\n}\nSystem.out.println(fibonacci(7)); // [0, 1, 1, 2, 3, 5, 8]", "note": null}, {"id": 26, "title": "Factorial", "category": "Algorithms", "priority": false, "approach": "Multiply all integers from 2 through n.", "input": "5", "output": "120", "complexity": "Time: O(n), Space: O(1)", "ts": "function factorial(n: number): number {\n  let result = 1;\n  for (let i = 2; i <= n; i++) {\n    result *= i;\n  }\n  return result;\n}\nconsole.log(factorial(5));", "java": "public long factorial(int n) {\n    long result = 1;\n    for (int i = 2; i <= n; i++) {\n        result *= i;\n    }\n    return result;\n}\nSystem.out.println(factorial(5)); // 120", "note": null}, {"id": 27, "title": "Prime Number Check", "category": "Algorithms", "priority": false, "approach": "A number is prime if it has no divisor other than 1 and itself; checking through sqrt(n) is sufficient.", "input": "17", "output": "true", "complexity": "Time: O(sqrt(n)), Space: O(1)", "ts": "function isPrime(n: number): boolean {\n  if (n < 2) return false;\n  for (let i = 2; i <= Math.sqrt(n); i++) {\n    if (n % i === 0) return false;\n  }\n  return true;\n}\nconsole.log(isPrime(17));", "java": "public boolean isPrime(int n) {\n    if (n < 2) return false;\n    for (int i = 2; i <= Math.sqrt(n); i++) {\n        if (n % i == 0) return false;\n    }\n    return true;\n}\nSystem.out.println(isPrime(17)); // true", "note": null}, {"id": 28, "title": "Even / Odd Check", "category": "Algorithms", "priority": false, "approach": "Use the remainder operator.", "input": "10", "output": "\"Even\"", "complexity": "Time: O(1), Space: O(1)", "ts": "function evenOdd(n: number): string {\n  return n % 2 === 0 ? \"Even\" : \"Odd\";\n}\nconsole.log(evenOdd(10));", "java": "public String evenOdd(int n) {\n    return n % 2 == 0 ? \"Even\" : \"Odd\";\n}\nSystem.out.println(evenOdd(10)); // Even", "note": null}, {"id": 29, "title": "Sum of Array", "category": "Arrays", "priority": false, "approach": "Accumulate all values.", "input": "[10,20,30,40]", "output": "100", "complexity": "Time: O(n), Space: O(1)", "ts": "function arraySum(arr: number[]): number {\n  return arr.reduce((sum, num) => sum + num, 0);\n}\nconsole.log(arraySum([10,20,30,40]));", "java": "public int arraySum(int[] arr) {\n    int sum = 0;\n    for (int num : arr) sum += num;\n    return sum;\n}\nSystem.out.println(arraySum(new int[]{10,20,30,40})); // 100", "note": null}, {"id": 30, "title": "Average of Array", "category": "Arrays", "priority": false, "approach": "Average equals sum divided by number of elements.", "input": "[10,20,30,40]", "output": "25", "complexity": "Time: O(n), Space: O(1)", "ts": "function average(arr: number[]): number {\n  const sum = arr.reduce((a, b) => a + b, 0);\n  return sum / arr.length;\n}\nconsole.log(average([10,20,30,40]));", "java": "public double average(int[] arr) {\n    int sum = 0;\n    for (int num : arr) sum += num;\n    return (double) sum / arr.length;\n}\nSystem.out.println(average(new int[]{10,20,30,40})); // 25.0", "note": null}, {"id": 31, "title": "Bubble Sort Ascending", "category": "Algorithms", "priority": false, "approach": "Repeatedly swap adjacent elements that are out of order.", "input": "[5,2,8,1,3]", "output": "[1,2,3,5,8]", "complexity": "Time: O(n²), Space: O(n) for copied array", "ts": "function bubbleSortAscending(arr: number[]): number[] {\n  const result = [...arr];\n  for (let i = 0; i < result.length; i++) {\n    for (let j = 0; j < result.length - i - 1; j++) {\n      if (result[j] > result[j + 1]) {\n        [result[j], result[j + 1]] =\n          [result[j + 1], result[j]];\n      }\n    }\n  }\n  return result;\n}\nconsole.log(bubbleSortAscending([5,2,8,1,3]));", "java": "public int[] bubbleSortAscending(int[] arr) {\n    int[] result = arr.clone();\n    for (int i = 0; i < result.length; i++) {\n        for (int j = 0; j < result.length - i - 1; j++) {\n            if (result[j] > result[j + 1]) {\n                int temp = result[j];\n                result[j] = result[j + 1];\n                result[j + 1] = temp;\n            }\n        }\n    }\n    return result;\n}\nSystem.out.println(Arrays.toString(bubbleSortAscending(new int[]{5,2,8,1,3}))); // [1, 2, 3, 5, 8]", "note": null}, {"id": 32, "title": "Bubble Sort Descending", "category": "Algorithms", "priority": false, "approach": "Swap adjacent elements when the left value is smaller.", "input": "[5,2,8,1,3]", "output": "[8,5,3,2,1]", "complexity": "Time: O(n²), Space: O(n) for copied array", "ts": "function bubbleSortDescending(arr: number[]): number[] {\n  const result = [...arr];\n  for (let i = 0; i < result.length; i++) {\n    for (let j = 0; j < result.length - i - 1; j++) {\n      if (result[j] < result[j + 1]) {\n        [result[j], result[j + 1]] =\n          [result[j + 1], result[j]];\n      }\n    }\n  }\n  return result;\n}\nconsole.log(bubbleSortDescending([5,2,8,1,3]));", "java": "public int[] bubbleSortDescending(int[] arr) {\n    int[] result = arr.clone();\n    for (int i = 0; i < result.length; i++) {\n        for (int j = 0; j < result.length - i - 1; j++) {\n            if (result[j] < result[j + 1]) {\n                int temp = result[j];\n                result[j] = result[j + 1];\n                result[j + 1] = temp;\n            }\n        }\n    }\n    return result;\n}\nSystem.out.println(Arrays.toString(bubbleSortDescending(new int[]{5,2,8,1,3}))); // [8, 5, 3, 2, 1]", "note": null}, {"id": 33, "title": "Find Common Elements", "category": "Arrays", "priority": false, "approach": "Put one array in a Set and filter the other.", "input": "[1,2,3,4], [3,4,5,6]", "output": "[3,4]", "complexity": "Time: O(n+m), Space: O(m)", "ts": "function commonElements(arr1: number[], arr2: number[]): number[] {\n  const set2 = new Set(arr2);\n  return arr1.filter(num => set2.has(num));\n}\nconsole.log(commonElements([1,2,3,4], [3,4,5,6]));", "java": "public List<Integer> commonElements(int[] arr1, int[] arr2) {\n    Set<Integer> set2 = new HashSet<>();\n    for (int n : arr2) set2.add(n);\n    List<Integer> result = new ArrayList<>();\n    for (int n : arr1) if (set2.contains(n)) result.add(n);\n    return result;\n}\nSystem.out.println(commonElements(new int[]{1,2,3,4}, new int[]{3,4,5,6})); // [3, 4]", "note": null}, {"id": 34, "title": "Merge Arrays", "category": "Arrays", "priority": false, "approach": "Concatenate the arrays.", "input": "[1,2,3], [4,5,6]", "output": "[1,2,3,4,5,6]", "complexity": "Time: O(n+m), Space: O(n+m)", "ts": "function mergeArrays(arr1: number[], arr2: number[]): number[] {\n  return [...arr1, ...arr2];\n}\nconsole.log(mergeArrays([1,2,3], [4,5,6]));", "java": "public int[] mergeArrays(int[] arr1, int[] arr2) {\n    int[] result = new int[arr1.length + arr2.length];\n    System.arraycopy(arr1, 0, result, 0, arr1.length);\n    System.arraycopy(arr2, 0, result, arr1.length, arr2.length);\n    return result;\n}\nSystem.out.println(Arrays.toString(mergeArrays(new int[]{1,2,3}, new int[]{4,5,6}))); // [1, 2, 3, 4, 5, 6]", "note": null}, {"id": 35, "title": "Count Array Values", "category": "Arrays", "priority": false, "approach": "Use an object (map) as a frequency map.", "input": "[1,2,2,3,3,3]", "output": "{1:1, 2:2, 3:3}", "complexity": "Time: O(n), Space: O(k)", "ts": "function countValues(arr: number[]): Record<number, number> {\n  const result: Record<number, number> = {};\n  for (const num of arr) {\n    result[num] = (result[num] || 0) + 1;\n  }\n  return result;\n}\nconsole.log(countValues([1,2,2,3,3,3]));", "java": "public Map<Integer, Integer> countValues(int[] arr) {\n    Map<Integer, Integer> result = new LinkedHashMap<>();\n    for (int num : arr) {\n        result.put(num, result.getOrDefault(num, 0) + 1);\n    }\n    return result;\n}\nSystem.out.println(countValues(new int[]{1,2,2,3,3,3})); // {1=1, 2=2, 3=3}", "note": null}, {"id": 36, "title": "Find Missing & Duplicate Value", "category": "Arrays", "priority": true, "approach": "Count values, identify the repeated number, then find the missing value in the expected range.", "input": "[1,2,3,3,5]", "output": "Missing = 4, Duplicate = 3", "complexity": "Time: O(n), Space: O(n)", "ts": "function findMissingDuplicate(arr: number[]) {\n  const count: Record<number, number> = {};\n  for (const num of arr) {\n    count[num] = (count[num] || 0) + 1;\n  }\n  let duplicate = -1;\n  for (const num of arr) {\n    if (count[num] > 1) {\n      duplicate = num;\n      break;\n    }\n  }\n  let missing = -1;\n  for (let i = 1; i <= arr.length; i++) {\n    if (!count[i]) {\n      missing = i;\n      break;\n    }\n  }\n  return { missing, duplicate };\n}\nconsole.log(findMissingDuplicate([1,2,3,3,5]));", "java": "public int[] findMissingDuplicate(int[] arr) {\n    Map<Integer, Integer> count = new HashMap<>();\n    for (int num : arr) count.put(num, count.getOrDefault(num, 0) + 1);\n\n    int duplicate = -1;\n    for (int num : arr) {\n        if (count.get(num) > 1) { duplicate = num; break; }\n    }\n    int missing = -1;\n    for (int i = 1; i <= arr.length; i++) {\n        if (!count.containsKey(i)) { missing = i; break; }\n    }\n    return new int[]{missing, duplicate};\n}\n// findMissingDuplicate({1,2,3,3,5}) -> missing = 4, duplicate = 3", "note": null}, {"id": 37, "title": "Move Zeros to End", "category": "Arrays", "priority": true, "approach": "Collect non-zero values first and append the required number of zeros.", "input": "[0,1,0,3,12]", "output": "[1,3,12,0,0]", "complexity": "Time: O(n), Space: O(n)", "ts": "function moveZeros(arr: number[]): number[] {\n  const nonZero = arr.filter(num => num !== 0);\n  const zeros = arr.filter(num => num === 0);\n  return [...nonZero, ...zeros];\n}\nconsole.log(moveZeros([0,1,0,3,12]));", "java": "public int[] moveZeros(int[] arr) {\n    int[] result = new int[arr.length];\n    int index = 0;\n    for (int num : arr) if (num != 0) result[index++] = num;\n    while (index < result.length) result[index++] = 0;\n    return result;\n}\nSystem.out.println(Arrays.toString(moveZeros(new int[]{0,1,0,3,12}))); // [1, 3, 12, 0, 0]", "note": null}, {"id": 38, "title": "Find Pairs With Target Sum", "category": "Arrays", "priority": false, "approach": "For each number, check whether its complement was already seen.", "input": "[2,4,3,5,7,8], target = 10", "output": "[[2,8],[3,7]]", "complexity": "Time: O(n), Space: O(n)", "ts": "function findPairs(arr: number[], target: number): number[][] {\n  const seen = new Set<number>();\n  const result: number[][] = [];\n  for (const num of arr) {\n    const complement = target - num;\n    if (seen.has(complement)) {\n      result.push([complement, num]);\n    }\n    seen.add(num);\n  }\n  return result;\n}\nconsole.log(findPairs([2,4,3,5,7,8], 10));", "java": "public List<int[]> findPairs(int[] arr, int target) {\n    Set<Integer> seen = new HashSet<>();\n    List<int[]> result = new ArrayList<>();\n    for (int num : arr) {\n        int complement = target - num;\n        if (seen.contains(complement)) {\n            result.add(new int[]{complement, num});\n        }\n        seen.add(num);\n    }\n    return result;\n}\n// findPairs({2,4,3,5,7,8}, 10) -> [[2, 8], [3, 7]]", "note": null}, {"id": 39, "title": "Find Largest Word", "category": "Strings", "priority": false, "approach": "Split into words and return the longest one.", "input": "\"JavaScript Playwright Automation\"", "output": "\"Automation\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function findLargestWord(str: string): string {\n  return str.split(\" \").reduce((longest, word) =>\n    word.length > longest.length ? word : longest\n  );\n}\nconsole.log(findLargestWord(\"JavaScript Playwright Automation\"));", "java": "public String findLargestWord(String str) {\n    String[] words = str.split(\" \");\n    String longest = words[0];\n    for (String word : words) {\n        if (word.length() > longest.length()) longest = word;\n    }\n    return longest;\n}\nSystem.out.println(findLargestWord(\"JavaScript Playwright Automation\")); // Automation", "note": null}, {"id": 40, "title": "Capitalize First Letter of Every Word", "category": "Strings", "priority": false, "approach": "Uppercase the first character of each word.", "input": "\"hello world\"", "output": "\"Hello World\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function capitalizeWords(str: string): string {\n  return str.split(\" \")\n    .map(word => word.charAt(0).toUpperCase() + word.slice(1))\n    .join(\" \");\n}\nconsole.log(capitalizeWords(\"hello world\"));", "java": "public String capitalizeWords(String str) {\n    String[] words = str.split(\" \");\n    StringBuilder result = new StringBuilder();\n    for (int i = 0; i < words.length; i++) {\n        String w = words[i];\n        result.append(Character.toUpperCase(w.charAt(0))).append(w.substring(1));\n        if (i < words.length - 1) result.append(\" \");\n    }\n    return result.toString();\n}\nSystem.out.println(capitalizeWords(\"hello world\")); // Hello World", "note": null}, {"id": 41, "title": "Remove Duplicate Words", "category": "Strings", "priority": false, "approach": "Use a Set on the word array and join the unique words.", "input": "\"hello world hello test world\"", "output": "\"hello world test\"", "complexity": "Time: O(n), Space: O(n)", "ts": "function removeDuplicateWords(str: string): string {\n  return [...new Set(str.split(\" \"))].join(\" \");\n}\nconsole.log(removeDuplicateWords(\"hello world hello test world\"));", "java": "public String removeDuplicateWords(String str) {\n    LinkedHashSet<String> words = new LinkedHashSet<>(Arrays.asList(str.split(\" \")));\n    return String.join(\" \", words);\n}\nSystem.out.println(removeDuplicateWords(\"hello world hello test world\")); // hello world test", "note": null}, {"id": 42, "title": "Valid Parentheses", "category": "Strings", "priority": true, "approach": "Use a stack because brackets must close in last-in-first-out order.", "input": "\"({[]})\"", "output": "true", "complexity": "Time: O(n), Space: O(n)", "ts": "function isValidParentheses(str: string): boolean {\n  const stack: string[] = [];\n  const pairs: Record<string, string> = {\n    \")\": \"(\",\n    \"]\": \"[\",\n    \"}\": \"{\"\n  };\n  for (const char of str) {\n    if (\"([{\".includes(char)) {\n      stack.push(char);\n    } else if (\")]}\".includes(char)) {\n      if (stack.pop() !== pairs[char]) return false;\n    }\n  }\n  return stack.length === 0;\n}\nconsole.log(isValidParentheses(\"({[]})\"));", "java": "public boolean isValidParentheses(String str) {\n    Deque<Character> stack = new ArrayDeque<>();\n    Map<Character, Character> pairs = Map.of(')', '(', ']', '[', '}', '{');\n    for (char c : str.toCharArray()) {\n        if (c == '(' || c == '[' || c == '{') {\n            stack.push(c);\n        } else if (c == ')' || c == ']' || c == '}') {\n            if (stack.isEmpty() || stack.pop() != pairs.get(c)) return false;\n        }\n    }\n    return stack.isEmpty();\n}\nSystem.out.println(isValidParentheses(\"({[]})\")); // true", "note": null}, {"id": 44, "title": "Longest Common Prefix", "category": "Strings", "priority": false, "approach": "Start with the first word as a prefix and shorten it until every word starts with it.", "input": "[\"flower\",\"flow\",\"flight\"]", "output": "\"fl\"", "complexity": "Time: O(total characters), Space: O(1) excluding input", "ts": "function longestCommonPrefix(words: string[]): string {\n  if (words.length === 0) return \"\";\n  let prefix = words[0];\n  for (let i = 1; i < words.length; i++) {\n    while (!words[i].startsWith(prefix)) {\n      prefix = prefix.slice(0, -1);\n      if (prefix === \"\") return \"\";\n    }\n  }\n  return prefix;\n}\nconsole.log(longestCommonPrefix([\"flower\",\"flow\",\"flight\"]));", "java": "public String longestCommonPrefix(String[] words) {\n    if (words.length == 0) return \"\";\n    String prefix = words[0];\n    for (int i = 1; i < words.length; i++) {\n        while (!words[i].startsWith(prefix)) {\n            prefix = prefix.substring(0, prefix.length() - 1);\n            if (prefix.isEmpty()) return \"\";\n        }\n    }\n    return prefix;\n}\nSystem.out.println(longestCommonPrefix(new String[]{\"flower\",\"flow\",\"flight\"})); // fl", "note": "The source workbook's screenshot skipped from Question 42 to 44, so Question 43 was never part of the original material."}, {"id": 45, "title": "Intersection of Arrays", "category": "Arrays", "priority": false, "approach": "Use a Set for one array and return matching values from the other.", "input": "[1,2,3,4], [2,4,6,8]", "output": "[2,4]", "complexity": "Time: O(n+m), Space: O(n+m)", "ts": "function intersection(arr1: number[], arr2: number[]): number[] {\n  const set2 = new Set(arr2);\n  return [...new Set(\n    arr1.filter(num => set2.has(num))\n  )];\n}\nconsole.log(intersection([1,2,3,4], [2,4,6,8]));", "java": "public List<Integer> intersection(int[] arr1, int[] arr2) {\n    Set<Integer> set2 = new HashSet<>();\n    for (int n : arr2) set2.add(n);\n    LinkedHashSet<Integer> result = new LinkedHashSet<>();\n    for (int n : arr1) if (set2.contains(n)) result.add(n);\n    return new ArrayList<>(result);\n}\nSystem.out.println(intersection(new int[]{1,2,3,4}, new int[]{2,4,6,8})); // [2, 4]", "note": null}, {"id": 46, "title": "Generate Unique PAN-Like Synthetic Test Data", "category": "SDET Data", "priority": true, "approach": "For automation tests, generate synthetic data that matches the required format; never use production or customer PII.", "input": "Generate 3 PAN-like values", "output": "3 unique synthetic PAN-format strings", "complexity": "Time: O(1) per value; output size is O(n)", "ts": "function generateDummyPAN(): string {\n  const letters = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\n  const randomLetters = () =>\n    Array.from({ length: 5 }, () =>\n      letters[Math.floor(Math.random() * letters.length)]\n    ).join(\"\");\n  const digits = Math.floor(1000 + Math.random() * 9000);\n  const lastLetter =\n    letters[Math.floor(Math.random() * letters.length)];\n  return `${randomLetters()}${digits}${lastLetter}`;\n}\nfor (let i = 0; i < 3; i++) {\n  console.log(generateDummyPAN());\n}\n// Example:\n// ABCDE1234F\n// QWERT5678M\n// ZXCVB9012P", "java": "public String generateDummyPAN() {\n    String letters = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\";\n    Random rand = new Random();\n    StringBuilder randomLetters = new StringBuilder();\n    for (int i = 0; i < 5; i++) {\n        randomLetters.append(letters.charAt(rand.nextInt(26)));\n    }\n    int digits = 1000 + rand.nextInt(9000);\n    char lastLetter = letters.charAt(rand.nextInt(26));\n    return randomLetters.toString() + digits + lastLetter;\n}\nfor (int i = 0; i < 3; i++) {\n    System.out.println(generateDummyPAN());\n}\n// Example:\n// ABCDE1234F\n// QWERT5678M\n// ZXCVB9012P", "note": null}, {"id": 47, "title": "Generate Unique Numeric Test Data", "category": "SDET Data", "priority": true, "approach": "Use a Set so duplicates are automatically rejected.", "input": "Generate 3 numbers", "output": "3 unique numeric values", "complexity": "Expected runtime is approximately O(n) for a reasonable range", "ts": "function generateUniqueNumbers(count: number): number[] {\n  const numbers = new Set<number>();\n  while (numbers.size < count) {\n    numbers.add(\n      Math.floor(100000 + Math.random() * 900000)\n    );\n  }\n  return [...numbers];\n}\nconsole.log(generateUniqueNumbers(3));\n// Example:\n// [483921, 728154, 193847]", "java": "public List<Integer> generateUniqueNumbers(int count) {\n    LinkedHashSet<Integer> numbers = new LinkedHashSet<>();\n    Random rand = new Random();\n    while (numbers.size() < count) {\n        numbers.add(100000 + rand.nextInt(900000));\n    }\n    return new ArrayList<>(numbers);\n}\nSystem.out.println(generateUniqueNumbers(3));\n// Example:\n// [483921, 728154, 193847]", "note": null}, {"id": 48, "title": "Generate Unique Aadhaar-Like Synthetic Test Data", "category": "SDET Data", "priority": true, "approach": "Use dummy values only for test-data demonstrations. In a real system, follow the application's approved synthetic-data rules and never use real customer identifiers.", "input": "Generate 3 test values", "output": "3 synthetic 12-digit values", "complexity": "Time: O(1) per value; output size is O(n)", "ts": "function generateDummy12DigitValue(): string {\n  let value = \"\";\n  for (let i = 0; i < 12; i++) {\n    value += Math.floor(Math.random() * 10);\n  }\n  return value;\n}\nfor (let i = 0; i < 3; i++) {\n  console.log(generateDummy12DigitValue());\n}\n// Example:\n// 483921748392\n// 728154193847\n// 193847562910", "java": "public String generateDummy12DigitValue() {\n    Random rand = new Random();\n    StringBuilder value = new StringBuilder();\n    for (int i = 0; i < 12; i++) {\n        value.append(rand.nextInt(10));\n    }\n    return value.toString();\n}\nfor (int i = 0; i < 3; i++) {\n    System.out.println(generateDummy12DigitValue());\n}\n// Example:\n// 483921748392\n// 728154193847\n// 193847562910", "note": null}, {"id": 49, "title": "Case-Insensitive Error Count", "category": "SDET Data", "priority": false, "approach": "Normalize case for comparison while preserving the requested display labels.", "input": "[\"Syntax Error\",\"SyntaxError\",\"syntax error\",\"Locator Issue\",\"SYNTAX ERROR\"]", "output": "Syntax Error = 3; SyntaxError = 1; Locator Issue = 1", "complexity": "Time: O(n), Space: O(k)", "ts": "function countErrors(errors: string[]) {\n  const result: Record<string, number> = {};\n  for (const error of errors) {\n    const normalized = error.toLowerCase();\n    const key =\n      normalized === \"syntax error\" ? \"Syntax Error\" :\n      normalized === \"syntaxerror\" ? \"SyntaxError\" :\n      normalized === \"locator issue\" ? \"Locator Issue\" :\n      error;\n    result[key] = (result[key] || 0) + 1;\n  }\n  return result;\n}\nconsole.log(countErrors([\n  \"Syntax Error\",\n  \"SyntaxError\",\n  \"syntax error\",\n  \"Locator Issue\",\n  \"SYNTAX ERROR\"\n]));", "java": "public Map<String, Integer> countErrors(String[] errors) {\n    Map<String, Integer> result = new LinkedHashMap<>();\n    for (String error : errors) {\n        String normalized = error.toLowerCase();\n        String key = switch (normalized) {\n            case \"syntax error\" -> \"Syntax Error\";\n            case \"syntaxerror\" -> \"SyntaxError\";\n            case \"locator issue\" -> \"Locator Issue\";\n            default -> error;\n        };\n        result.put(key, result.getOrDefault(key, 0) + 1);\n    }\n    return result;\n}\n// countErrors({\"Syntax Error\",\"SyntaxError\",\"syntax error\",\"Locator Issue\",\"SYNTAX ERROR\"})\n// -> {Syntax Error=3, SyntaxError=1, Locator Issue=1}", "note": null}, {"id": 50, "title": "Find All Palindromic Substrings (length ≥ 2)", "category": "Strings", "priority": false, "approach": "Expand around every possible center to find odd- and even-length palindromes.", "input": "\"madam\"", "output": "[\"ada\",\"madam\"]", "complexity": "Time: O(n²), Space: O(n²) in the worst case for output", "ts": "function palindromicSubstrings(str: string): string[] {\n  const result: string[] = [];\n  function expand(left: number, right: number) {\n    while (\n      left >= 0 &&\n      right < str.length &&\n      str[left] === str[right]\n    ) {\n      if (right - left + 1 >= 2) {\n        result.push(str.substring(left, right + 1));\n      }\n      left--;\n      right++;\n    }\n  }\n  for (let i = 0; i < str.length; i++) {\n    expand(i, i);     // odd length\n    expand(i, i + 1); // even length\n  }\n  return [...new Set(result)];\n}\nconsole.log(palindromicSubstrings(\"madam\"));", "java": "public List<String> palindromicSubstrings(String str) {\n    LinkedHashSet<String> result = new LinkedHashSet<>();\n    for (int i = 0; i < str.length(); i++) {\n        expand(str, i, i, result);       // odd length\n        expand(str, i, i + 1, result);   // even length\n    }\n    return new ArrayList<>(result);\n}\n\nprivate void expand(String str, int left, int right, Set<String> result) {\n    while (left >= 0 && right < str.length() && str.charAt(left) == str.charAt(right)) {\n        if (right - left + 1 >= 2) result.add(str.substring(left, right + 1));\n        left--;\n        right++;\n    }\n}\nSystem.out.println(palindromicSubstrings(\"madam\")); // [ada, madam]", "note": null}, {"id": 51, "title": "Frequency-Based Output", "category": "Arrays", "priority": false, "approach": "Return the frequency only for the first occurrence of each value; later occurrences become zero.", "input": "[1,2,2,3,3,3]", "output": "[1,2,0,3,0,0]", "complexity": "Time: O(n), Space: O(k)", "ts": "function frequencyBasedOutput(arr: number[]): number[] {\n  const frequency: Record<number, number> = {};\n  for (const num of arr) {\n    frequency[num] = (frequency[num] || 0) + 1;\n  }\n  const seen = new Set<number>();\n  return arr.map(num => {\n    if (seen.has(num)) return 0;\n    seen.add(num);\n    return frequency[num];\n  });\n}\nconsole.log(frequencyBasedOutput([1,2,2,3,3,3]));", "java": "public int[] frequencyBasedOutput(int[] arr) {\n    Map<Integer, Integer> frequency = new HashMap<>();\n    for (int num : arr) frequency.put(num, frequency.getOrDefault(num, 0) + 1);\n\n    Set<Integer> seen = new HashSet<>();\n    int[] result = new int[arr.length];\n    for (int i = 0; i < arr.length; i++) {\n        if (seen.contains(arr[i])) {\n            result[i] = 0;\n        } else {\n            seen.add(arr[i]);\n            result[i] = frequency.get(arr[i]);\n        }\n    }\n    return result;\n}\nSystem.out.println(Arrays.toString(frequencyBasedOutput(new int[]{1,2,2,3,3,3}))); // [1, 2, 0, 3, 0, 0]", "note": null}]</script>
+<script>
+const QUESTIONS = JSON.parse(document.getElementById('question-data').textContent);
+const CATEGORY_ORDER = ["Strings", "Arrays", "Algorithms", "SDET Data"];
+const CATEGORY_DESC = {"Strings": "Loops, maps, two pointers", "Arrays": "Set/Map, filtering, sorting", "Algorithms": "Efficient numeric & sorting approaches", "SDET Data": "Synthetic, deterministic test data"};
+
+let currentLang = 'ts';
+let activeId = null;
+
+const KEYWORDS = new Set([
+  'function','const','let','var','return','if','else','for','while','new','class',
+  'public','private','protected','static','void','import','package','interface',
+  'extends','implements','this','break','continue','switch','case','default',
+  'try','catch','finally','throw','throws','null','true','false','instanceof',
+  'super','final','abstract','enum','export','from','of','in','type','readonly',
+  'number','string','boolean'
+]);
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlight(code){
+  let out = '';
+  let i = 0;
+  const n = code.length;
+  while(i < n){
+    const c = code[i];
+    if(c === '"' || c === "'" || c === '`'){
+      const quote = c;
+      let start = i;
+      i++;
+      while(i < n && !(code[i] === quote && code[i-1] !== '\\')) i++;
+      i++;
+      out += '<span class="tok-str">' + escapeHtml(code.slice(start, i)) + '</span>';
+      continue;
+    }
+    if(c === '/' && code[i+1] === '/'){
+      let start = i;
+      while(i < n && code[i] !== '\n') i++;
+      out += '<span class="tok-com">' + escapeHtml(code.slice(start, i)) + '</span>';
+      continue;
+    }
+    if(/[A-Za-z_$]/.test(c)){
+      let start = i;
+      while(i < n && /[A-Za-z0-9_$]/.test(code[i])) i++;
+      const word = code.slice(start, i);
+      if(KEYWORDS.has(word)){
+        out += '<span class="tok-kw">' + word + '</span>';
+      } else if(/^[A-Z]/.test(word)){
+        out += '<span class="tok-type">' + word + '</span>';
+      } else {
+        out += escapeHtml(word);
+      }
+      continue;
+    }
+    out += escapeHtml(c);
+    i++;
+  }
+  return out;
+}
+
+function groupByCategory(){
+  const groups = {};
+  CATEGORY_ORDER.forEach(c => groups[c] = []);
+  QUESTIONS.forEach(q => { if(!groups[q.category]) groups[q.category] = []; groups[q.category].push(q); });
+  return groups;
+}
+
+function renderNav(){
+  const groups = groupByCategory();
+  const nav = document.getElementById('nav-list');
+  nav.innerHTML = '';
+
+  const overviewBtn = document.createElement('button');
+  overviewBtn.className = 'nav-overview';
+  overviewBtn.id = 'nav-overview';
+  overviewBtn.innerHTML = '<span class="ov-icon">&#8962;</span><span>Overview</span>';
+  overviewBtn.addEventListener('click', renderOverview);
+  nav.appendChild(overviewBtn);
+
+  CATEGORY_ORDER.forEach(cat => {
+    const items = groups[cat] || [];
+    if(items.length === 0) return;
+    const details = document.createElement('details');
+    details.className = 'nav-group';
+    details.open = true;
+    details.dataset.category = cat;
+
+    const summary = document.createElement('summary');
+    summary.innerHTML = '<span class="chev">&#9656;</span>&nbsp; ' + cat +
+      '<span class="count">' + items.length + '</span>';
+    details.appendChild(summary);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'nav-items';
+    items.forEach(q => {
+      const btn = document.createElement('button');
+      btn.className = 'nav-item';
+      btn.dataset.id = q.id;
+      btn.dataset.search = (q.id + ' ' + q.title).toLowerCase();
+      btn.innerHTML = '<span class="idx">' + String(q.id).padStart(2,'0') + '</span>' +
+        '<span class="ttl">' + q.title + '</span>' +
+        (q.priority ? '<span class="star">&#9733;</span>' : '');
+      btn.addEventListener('click', () => selectQuestion(q.id));
+      wrap.appendChild(btn);
+    });
+    details.appendChild(wrap);
+    nav.appendChild(details);
+  });
+}
+
+function setActiveNav(id){
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', Number(el.dataset.id) === id);
+  });
+  const ov = document.getElementById('nav-overview');
+  if(ov) ov.classList.toggle('active', id === null);
+}
+
+function renderOverview(){
+  document.getElementById('crumbs').innerHTML = 'Overview';
+  setActiveNav(null);
+  activeId = null;
+
+  const total = QUESTIONS.length;
+  const groups = groupByCategory();
+  const priorityQs = QUESTIONS.filter(q => q.priority);
+
+  let statCards = CATEGORY_ORDER.map(cat => {
+    const n = (groups[cat] || []).length;
+    if(n === 0) return '';
+    return '<div class="stat-card"><div class="num">' + n + '</div><div class="lbl">' + cat + '</div></div>';
+  }).join('');
+
+  let priorityRows = priorityQs.map(q =>
+    '<button class="priority-row" data-id="' + q.id + '">' +
+      '<span class="star">&#9733;</span>' +
+      '<span class="ptitle">' + q.title + '</span>' +
+      '<span class="pcat">' + q.category + '</span>' +
+    '</button>'
+  ).join('');
+
+  const html = '' +
+  '<div class="hero">' +
+    '<div class="hero-eyebrow">// sdet · automation · qa engineering</div>' +
+    '<h1>Coding interview workbench</h1>' +
+    '<p>Fifty hands-on problems built for SDET and QA automation interviews — each one worked in both TypeScript (Playwright-ready) and Java, with the approach, sample input/output, and complexity laid out the way an interviewer expects to hear it.</p>' +
+  '</div>' +
+  '<div class="stat-row">' +
+    '<div class="stat-card"><div class="num">' + total + '</div><div class="lbl">Total questions</div></div>' +
+    statCards +
+  '</div>' +
+  '<div class="section-title">SDET interview answer pattern</div>' +
+  '<ol class="pattern-list">' +
+    '<li>Clarify the input and expected output.</li>' +
+    '<li>State the approach before writing code.</li>' +
+    '<li>Write a clean, reusable function.</li>' +
+    '<li>Run the sample input and verify the output.</li>' +
+    '<li>Mention time and space complexity.</li>' +
+    '<li>Discuss edge cases: empty input, null/undefined, duplicates, negative numbers, invalid formats.</li>' +
+    '<li>If relevant, explain how you\'d call the utility from a Playwright or Selenium test, or a test-data fixture.</li>' +
+  '</ol>' +
+  '<div class="section-title">High-priority questions</div>' +
+  '<div class="priority-list">' + priorityRows + '</div>' +
+  '<div class="section-title">Interview checklist</div>' +
+  '<table class="checklist">' +
+    '<tr><th>Skill</th><th>What to demonstrate</th><th>Typical follow-up</th></tr>' +
+    '<tr><td>Strings</td><td>Loops, maps, two pointers</td><td>Can you avoid built-ins?</td></tr>' +
+    '<tr><td>Arrays</td><td>Set/Map, filtering, sorting</td><td>Can you do it in O(n)?</td></tr>' +
+    '<tr><td>Algorithms</td><td>Efficient approach</td><td>Explain complexity.</td></tr>' +
+    '<tr><td>SDET data</td><td>Synthetic and deterministic data</td><td>How would you use it in Playwright?</td></tr>' +
+    '<tr><td>Edge cases</td><td>Empty/null/duplicates</td><td>What happens for invalid input?</td></tr>' +
+  '</table>';
+
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('.priority-row').forEach(row => {
+    row.addEventListener('click', () => selectQuestion(Number(row.dataset.id)));
+  });
+}
+
+function neighbours(id){
+  const idx = QUESTIONS.findIndex(q => q.id === id);
+  return { prev: QUESTIONS[idx-1] || null, next: QUESTIONS[idx+1] || null };
+}
+
+function renderQuestion(id){
+  const q = QUESTIONS.find(q => q.id === id);
+  if(!q) return renderOverview();
+  activeId = id;
+  setActiveNav(id);
+
+  document.getElementById('crumbs').innerHTML =
+    q.category + '<span class="sep">/</span><span class="current">' + String(q.id).padStart(2,'0') + '</span>';
+
+  const code = currentLang === 'ts' ? q.ts : q.java;
+  const runCmd = currentLang === 'ts' ? 'ts-node solution.ts' : 'java Solution.java';
+  const langLabel = currentLang === 'ts' ? 'solution.ts' : 'Solution.java';
+
+  const { prev, next } = neighbours(id);
+
+  const html = '' +
+  '<div class="q-head">' +
+    '<div class="q-meta">' +
+      '<span class="q-id">#' + String(q.id).padStart(2,'0') + '</span>' +
+      '<span class="q-cat-tag">' + q.category + '</span>' +
+      (q.priority ? '<span class="q-star">&#9733; high priority</span>' : '') +
+    '</div>' +
+    '<h2>' + q.title + '</h2>' +
+    '<p class="q-approach">' + q.approach + '</p>' +
+  '</div>' +
+
+  '<div class="io-panel">' +
+    '<div class="io-cell input"><div class="io-label">INPUT</div><div class="io-value">' + escapeHtml(q.input) + '</div></div>' +
+    '<div class="io-cell output"><div class="io-label">EXPECTED OUTPUT</div><div class="io-value">' + escapeHtml(q.output) + '</div></div>' +
+  '</div>' +
+
+  '<div class="lang-switch">' +
+    '<button class="lang-btn ts' + (currentLang==='ts' ? ' active' : '') + '" data-lang="ts">TypeScript</button>' +
+    '<button class="lang-btn java' + (currentLang==='java' ? ' active' : '') + '" data-lang="java">Java</button>' +
+  '</div>' +
+
+  '<div class="code-panel">' +
+    '<div class="code-bar"><span class="dot"></span><span>' + langLabel + '</span></div>' +
+    '<pre><code>' + highlight(code) + '</code></pre>' +
+  '</div>' +
+
+  '<div class="terminal">' +
+    '<div class="tline"><span class="prompt">$</span>' + runCmd + '</div>' +
+    '<div class="tout">' + escapeHtml(q.output) + '</div>' +
+  '</div>' +
+
+  '<div class="complexity-bar">' +
+    '<span>Complexity</span><span class="tag">' + q.complexity + '</span>' +
+  '</div>' +
+
+  (q.note ? '<div class="note-box" style="margin-top:22px;"><strong>Note</strong> — ' + q.note + '</div>' : '') +
+
+  '<div class="q-nav-footer">' +
+    (prev ? '<button class="q-nav-btn" data-nav="' + prev.id + '"><span class="dir">&larr; previous</span>' + prev.title + '</button>' : '<div class="q-nav-btn empty"></div>') +
+    (next ? '<button class="q-nav-btn" data-nav="' + next.id + '" style="text-align:right;"><span class="dir">next &rarr;</span>' + next.title + '</button>' : '<div class="q-nav-btn empty"></div>') +
+  '</div>';
+
+  document.getElementById('content').innerHTML = html;
+  document.getElementById('content').scrollParentTop && null;
+  document.querySelector('.content').closest('.content') && (document.querySelector('.content').scrollTop = 0);
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentLang = btn.dataset.lang;
+      renderQuestion(id);
+    });
+  });
+  document.querySelectorAll('[data-nav]').forEach(btn => {
+    btn.addEventListener('click', () => selectQuestion(Number(btn.dataset.nav)));
+  });
+
+  closeSidebarMobile();
+}
+
+function selectQuestion(id){
+  renderQuestion(id);
+}
+
+function closeSidebarMobile(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+});
+document.getElementById('overlay').addEventListener('click', closeSidebarMobile);
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const term = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('.nav-group').forEach(group => {
+    let anyVisible = false;
+    group.querySelectorAll('.nav-item').forEach(item => {
+      const match = !term || item.dataset.search.includes(term);
+      item.classList.toggle('hidden', !match);
+      if(match) anyVisible = true;
+    });
+    group.classList.toggle('hidden', !anyVisible);
+    if(term) group.open = true;
+  });
+});
+
+renderNav();
+renderOverview();
+</script>
+</body>
+</html>
